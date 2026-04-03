@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isHeadminick() {
+      return isAuthenticated()
+        && get(/databases/$(database)/documents/app/config).data.headminickUid == request.auth.uid;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasModule(userId, moduleId) {
+      return get(/databases/$(database)/documents/users/$(userId)/profile/main).data.modules[moduleId] == true;
+    }
+
+    match /app/config {
+      allow read: if isAuthenticated();
+      allow write: if isHeadminick();
+    }
+
+    match /invites/{inviteCode} {
+      allow read: if isAuthenticated();
+      // Headminick: full write (create, delete, etc.)
+      allow write: if isHeadminick();
+      // Any authenticated user: can redeem an unclaimed invite
+      // Only linkedUid and usedAt may be set, and only if currently unclaimed
+      allow update: if isAuthenticated()
+        && resource.data.linkedUid == null
+        && request.resource.data.linkedUid == request.auth.uid
+        && request.resource.data.usedAt is string
+        && request.resource.data.code == resource.data.code
+        && request.resource.data.name == resource.data.name
+        && request.resource.data.modules == resource.data.modules
+        && request.resource.data.createdBy == resource.data.createdBy
+        && request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    match /users/{userId}/profile/{document=**} {
+      allow read: if isOwner(userId) || isHeadminick();
+      // Headminick: unrestricted profile writes (manage any user)
+      allow write: if isHeadminick();
+      // Owner: can create profile (invite redemption) but not as admin
+      allow create: if isOwner(userId)
+        && request.resource.data.role != 'theAdminNick';
+      // Owner: can update theme/colorMode/name — not role or modules
+      allow update: if isOwner(userId)
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.modules == resource.data.modules;
+    }
+
+    match /users/{userId}/body/{docId} {
+      allow read, write: if (isOwner(userId) && hasModule(userId, 'body')) || isHeadminick();
+    }
+
+    match /users/{userId}/expenses/{docId} {
+      allow read, write: if (isOwner(userId) && hasModule(userId, 'expenses')) || isHeadminick();
+    }
+
+    match /users/{userId}/baby/{subCollection}/{docId} {
+      allow read, write: if (isOwner(userId) && hasModule(userId, 'baby')) || isHeadminick();
+    }
+  }
+}

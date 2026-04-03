@@ -1,0 +1,20 @@
+/* Night City: Apartment — noir black, warning gold, dark-only */
+
+.theme-night-city-apartment {
+  --bg-primary: #0d0505;
+  --bg-secondary: #141010;
+  --bg-card: #141010;
+  --bg-card-hover: #1c1616;
+  --accent: #ffb803;
+  --accent-hover: #cc9400;
+  --accent-muted: rgba(255, 184, 3, 0.15);
+  --text-primary: #d0d0d0;
+  --text-secondary: #909090;
+  --text-muted: #505050;
+  --text-on-accent: #0d0505;
+  --border: #2a2020;
+  --border-light: #141010;
+  --success: #4ade80;
+  --error: #f87171;
+  --warning: #fbbf24;
+}

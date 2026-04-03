@@ -1,0 +1,98 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project
+
+AFP ("It Started On April Fools Day") — unified personal PWA combining body/fitness tracking, expense tracking, and baby tracking. Invite-only access via TheAdminNick admin model.
+Design spec: `docs/specs/2026-04-01-aprilfoolsjoke-design.md`
+Implementation plan: `docs/plans/2026-04-01-aprilfoolsjoke-phase1.md`
+Firebase setup: `docs/firebase-setup.md`
+
+## Commands
+
+- `bun run dev` — dev server (port 3000)
+- `bun run build` — tsc + vite build
+- `bun run lint` — tsc --noEmit + eslint
+- `bun run test` / `bun run test:watch` — vitest
+- `bun run test:coverage` — vitest with v8 coverage
+- `bun run test:e2e` — playwright
+- `bun run setup:env` — creates .env.development from .env.example
+- `bun run setup:env:all` — creates both .env.development and .env.production
+- `bun run clean` — removes dist, coverage, dev-dist, reports
+- Single test: `bunx vitest run src/shared/__tests__/types.test.ts`
+
+Package manager: **bun** (not npm/yarn). Cross-platform scripts use **shx** (not bash).
+
+## Architecture
+
+React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
+
+- **Hash routing** via react-router-dom (avoids GitHub Pages 404)
+- **Default branch**: `master` (not main)
+- **Module system**: body, expenses, baby — all disabled by default, TheAdminNick enables per user
+- **Storage abstraction**: `StorageAdapter` interface in `src/shared/storage/`, Firebase impl + localStorage impl (dev mode). Factory: `createAdapter(basePath)` auto-selects
+- **Enums**: `ModuleId`, `SyncStatus`, `UserRole`, `AppPath`, `DbCollection`, `DbSubcollection`, `DbDoc`, `DbField` are TypeScript string enums — use enum members, not string literals
+- **Constants**: `constants/config.ts` (app config), `constants/routes.ts` (AppPath enum + ROUTES), `constants/db.ts` (Firestore paths), `constants/messages.ts` (error/toast messages)
+- **Result types**: Every async operation returns `Result<T>`, never void. Use `ok()`, `err()`, `isOk()`, `isErr()` from `@/shared/types`
+- **Error handling**: Toast notifications via `useToast()`, `ErrorBoundary` for React crashes, `SyncStatusIndicator` in header
+- **Route guards**: `ModuleGate` wraps module routes, `AdminGate` wraps admin routes — redirect to `/` if unauthorized
+- **Dev bypass**: When Firebase isn't configured (`isFirebaseConfigured = false`), auth is bypassed — all modules enabled, TheAdminNick role, localStorage adapter used instead of Firebase
+
+## File Organization
+
+- **Hooks in separate files from providers**: `useAuth` is in `useAuth.ts`, not `auth-context.tsx`. Same for `useToast` → `useToast.ts`. Required by react-refresh/fast-refresh.
+- **Context + Provider** files export the Context object and the Provider component. Hook files import the Context.
+- `StorageAdapter.onSnapshot` accepts optional `onError` callback — always provide one in data hooks to surface listener failures
+- Firestore paths: invites at root `/invites/{code}`, config at `/app/config`, user profiles at `/users/{uid}/profile/main`
+
+## Theme System
+
+7 themes in `src/themes/`. CSS custom properties per theme, mapped to Tailwind via `@theme` in `index.css`.
+
+- **Default**: Family Blue (light + dark)
+- Theme class derived via `themeClass(id)` — never hardcode `theme-{name}` strings
+- `CONFIG.DEFAULT_THEME` is typed as `ThemeId` — compile-time checked
+- `applyTheme(themeId, colorMode)` applies to `<html>`, `useActiveThemeId()` reads it
+- Adding a theme: (1) new CSS file in `src/themes/`, (2) import in `index.css`, (3) entry in `THEME_DEFINITIONS`
+
+## Key Conventions
+
+- **Path alias**: `@/*` → `src/*` (NOT project root)
+- **Import order**: React → external libs → internal components → types/constants → utils (always last)
+- **JSDoc**: One-line `/** */` on every exported function — enables doc sweep hook
+- **IDs**: `crypto.randomUUID()`
+- **Dates**: `YYYY-MM-DD` strings, timestamps as ISO 8601
+- **Date helpers**: Import `todayStr()`, `nowTime()` from `@/shared/utils/date` — never define local copies in components
+- **Validation helpers**: Import `isValidNumber()` from `@/shared/utils/validation`
+- **Regex helpers**: Import `DATE_RE`, `INVITE_CODE_RE` from `@/shared/utils/regex`
+- **Naming**: Scoring/calculation functions use `compute*` prefix (e.g., `computeBodyScore`), not `calculate*` or `get*`
+- **Arrow functions**: Exported arrow functions always have explicit `return` (except tiny type helpers like `ok`/`err`)
+- **JSX ternary**: Use `cond && ...` / `!cond && ...` instead of ternary in JSX (className ternaries are acceptable)
+- **JSX curly newlines**: `react/jsx-curly-newline: require` enforced via ESLint — multiline expressions get `{` and `}` on their own lines
+- **Tests**: vitest in `__tests__/` dirs. `src/test-setup.ts` loads jest-dom matchers. Test files excluded from tsconfig. E2E in `e2e/` (excluded from vitest).
+
+## Gotchas
+
+- `src/vite-env.d.ts` must exist with `/// <reference types="vite/client" />` or CSS imports fail tsc
+- `bun init -y` creates `index.ts`, `README.md`, `CLAUDE.md` that need manual cleanup
+- `tsconfig.json` was initialized by bun, then customized — keep the internal comments
+- ESLint ignores: `dist`, `coverage`, `dev-dist`, `.final-countdown-reports`
+- ESLint allows `_` prefixed unused args (`argsIgnorePattern: '^_'`)
+- Context exports (`AuthContext`, `ToastContext`) are allowed in react-refresh config
+- Don't use `setState` synchronously inside `useEffect` — move to initial state or `useMemo`
+- `.env.development` and `.env.production` are gitignored; `.env.example` is committed
+- `firebase-config.ts` has separate `DEV_FIREBASE_CONFIG` / `PROD_FIREBASE_CONFIG` — never use `||` fallbacks for env vars (masks misconfiguration in prod)
+- Avoid naming components the same as enums/types — `SyncStatusIndicator` (not `SyncStatus`) to avoid collision with the `SyncStatus` enum
+- Dev mode injects `{ uid: 'dev-user' } as User` into `firebaseUser` state — hooks check `if (!firebaseUser) return` so this fake object is required for the localStorage adapter path to activate
+
+## Security (Firestore Rules)
+
+- Invites: TheAdminNick has full write. Any authenticated user can redeem an unclaimed invite (update `linkedUid` + `usedAt` only, all other fields immutable)
+- Profiles: TheAdminNick has full write. Owner can create (non-admin role only) and update (only `theme`, `colorMode`, `name` — `role` and `modules` locked server-side)
+- Module data: Owner + module enabled, or TheAdminNick. Enforced per-collection in rules
+- Invite redemption uses `runTransaction` for atomicity (prevents double-redemption)
+
+## Remaining Backlog
+
+- Hash routing → BrowserRouter + 404.html trick (user: "hash routing NO")

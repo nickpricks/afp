@@ -1,0 +1,114 @@
+import { useState } from 'react';
+
+import { useAuth } from '@/shared/auth/useAuth';
+import { useToast } from '@/shared/errors/useToast';
+import { generateInviteCode, createInvite } from '@/shared/auth/invite';
+import { ModuleId, type ModuleConfig } from '@/shared/types';
+import { ALL_MODULES } from '@/shared/types';
+import { isOk } from '@/shared/types';
+import { InviteMsg, ValidationMsg } from '@/constants/messages';
+
+/** Form for generating invite links with module selection */
+export function InviteGenerator() {
+  const { firebaseUser } = useAuth();
+  const { addToast } = useToast();
+
+  const [name, setName] = useState('');
+  const [modules, setModules] = useState<ModuleConfig>({
+    [ModuleId.Body]: false,
+    [ModuleId.Expenses]: false,
+    [ModuleId.Baby]: false,
+  });
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+
+  /** Toggles a module's enabled state in the local config */
+  function toggleModule(id: ModuleId) {
+    setModules((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
+
+  /** Generates a new invite code and persists it to Firestore */
+  async function handleCreate() {
+    if (!firebaseUser || !name.trim()) {
+      addToast(ValidationMsg.InviteNameRequired, 'error');
+      return;
+    }
+
+    setIsCreating(true);
+    const code = generateInviteCode();
+    const result = await createInvite(code, name.trim(), modules, firebaseUser.uid);
+
+    if (isOk(result)) {
+      const link = `${window.location.origin}${window.location.pathname}#/invite/${code}`;
+      setInviteLink(link);
+      setName('');
+      setModules({ [ModuleId.Body]: false, [ModuleId.Expenses]: false, [ModuleId.Baby]: false });
+      addToast(InviteMsg.Created, 'success');
+    } else {
+      addToast(result.error, 'error');
+    }
+
+    setIsCreating(false);
+  }
+
+  return (
+    <section className="rounded-xl bg-surface-card border border-line p-6 shadow-sm">
+      <h2 className="text-lg font-semibold text-fg mb-4">Create Invite</h2>
+
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="invite-name" className="block text-sm font-medium text-fg-muted mb-1">
+            Invitee Name
+          </label>
+          <input
+            id="invite-name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter name"
+            className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
+          />
+        </div>
+
+        <fieldset>
+          <legend className="text-sm font-medium text-fg-muted mb-2">Modules</legend>
+          <div className="flex flex-wrap gap-4">
+            {
+ALL_MODULES.map((id) => (
+              <label key={id} className="flex items-center gap-2 text-sm text-fg">
+                <input
+                  type="checkbox"
+                  checked={modules[id]}
+                  onChange={() => toggleModule(id)}
+                  className="rounded border-line accent-accent"
+                />
+                <span className="capitalize">{id}</span>
+              </label>
+            ))
+}
+          </div>
+        </fieldset>
+
+        <button
+          onClick={handleCreate}
+          disabled={isCreating || !name.trim()}
+          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-fg-on-accent transition-colors hover:bg-accent-hover disabled:opacity-50"
+        >
+          {isCreating && 'Creating...'}
+          {!isCreating && 'Create Invite'}
+        </button>
+      </div>
+
+      {
+inviteLink && (
+        <div className="mt-6">
+          <p className="text-sm font-medium text-fg-muted mb-1">Invite Link</p>
+          <div className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-fg break-all select-all">
+            {inviteLink}
+          </div>
+        </div>
+      )
+}
+    </section>
+  );
+}

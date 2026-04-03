@@ -1,0 +1,35 @@
+/* ═══════════════════════════════════════════════════════════════
+   Shared Button System — theme-aware via CSS custom properties
+   ═══════════════════════════════════════════════════════════════ */
+
+.btn-uniform {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-uniform:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-card-hover);
+}
+
+.btn-uniform:active {
+  transform: scale(0.95);
+}
+
+/* ── Reduced motion ───────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-uniform {
+    transition: none;
+  }
+
+  .btn-uniform:active {
+    transform: none;
+  }
+}

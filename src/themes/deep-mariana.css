@@ -1,0 +1,20 @@
+/* Deep: Mariana — ocean navy, bioluminescent green, dark-only */
+
+.theme-deep-mariana {
+  --bg-primary: #030b12;
+  --bg-secondary: #071520;
+  --bg-card: #071520;
+  --bg-card-hover: #0c1f2e;
+  --accent: #00e89a;
+  --accent-hover: #00b878;
+  --accent-muted: rgba(0, 232, 154, 0.15);
+  --text-primary: #8cb4c8;
+  --text-secondary: #4a7a90;
+  --text-muted: #2a4f62;
+  --text-on-accent: #030b12;
+  --border: #0c2535;
+  --border-light: #071520;
+  --success: #4ade80;
+  --error: #f87171;
+  --warning: #fbbf24;
+}

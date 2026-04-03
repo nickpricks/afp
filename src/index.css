@@ -1,0 +1,35 @@
+@import 'tailwindcss';
+
+/* Theme CSS files */
+@import './themes/family-blue.css';
+@import './themes/summit-instrument.css';
+@import './themes/corporate-glass.css';
+@import './themes/night-city-elevator.css';
+@import './themes/night-city-apartment.css';
+@import './themes/deep-mariana.css';
+@import './themes/industrial-furnace.css';
+@import './themes/buttons.css';
+@import './themes/effects.css';
+
+/* Map CSS custom properties to Tailwind semantic tokens */
+@theme {
+  --color-surface: var(--bg-primary);
+  --color-surface-secondary: var(--bg-secondary);
+  --color-surface-card: var(--bg-card);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-fg: var(--text-primary);
+  --color-fg-secondary: var(--text-secondary);
+  --color-fg-muted: var(--text-muted);
+  --color-fg-on-accent: var(--text-on-accent);
+  --color-line: var(--border);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-warning: var(--warning);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s, color 0.2s;
+}

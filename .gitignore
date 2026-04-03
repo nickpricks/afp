@@ -1,0 +1,57 @@
+# Nick's eyes only
+NickReadme.md
+
+# Logs
+logs
+*.log
+
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+dev-dist
+out
+*.tgz
+
+# Coverage
+coverage
+*.lcov
+
+# Local files
+*.local
+
+# Editor directories and files
+.zed/
+.vscode/*
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env*
+!.env.example
+
+# Caches
+.eslintcache
+.cache
+*.tsbuildinfo
+
+# AI assistants / tools
+.claude/
+.copilot/
+.gemini/
+.agents/
+.superpowers/
+.worktrees/
+.final-countdown-reports/
+
+# Test artifacts
+test-results
+playwright-report
+e2e/screenshots
+e2e/results

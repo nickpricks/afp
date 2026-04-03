@@ -1,0 +1,54 @@
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+
+import { db } from '@/shared/auth/firebase-config';
+import { DbCollection, DbSubcollection, DbDoc, DbField } from '@/constants/db';
+import { ModuleId, UserRole, type ModuleConfig } from '@/shared/types';
+import { err, ok, type Result } from '@/shared/types';
+import { toErrorMessage } from '@/shared/utils/error';
+import { createDefaultProfile } from '@/shared/utils/profile';
+
+/** Checks whether the given UID matches the headminickUid in app/config */
+export async function isCurrentUserHeadminick(uid: string): Promise<boolean> {
+  try {
+    const snap = await getDoc(doc(db, DbCollection.App, DbDoc.Config));
+    if (!snap.exists()) return false;
+    return snap.data()[DbField.HeadminickUid] === uid;
+  } catch {
+    return false;
+  }
+}
+
+/** Sets up the app/config doc and creates the headminick user profile with all modules enabled */
+export async function initializeHeadminick(
+  uid: string,
+  name: string,
+): Promise<Result<void>> {
+  try {
+    await setDoc(doc(db, DbCollection.App, DbDoc.Config), { [DbField.HeadminickUid]: uid });
+
+    const allEnabled: ModuleConfig = {
+      [ModuleId.Body]: true,
+      [ModuleId.Expenses]: true,
+      [ModuleId.Baby]: true,
+    };
+    const profile = createDefaultProfile(name, UserRole.TheAdminNick, allEnabled);
+    await setDoc(doc(db, DbCollection.Users, uid, DbSubcollection.Profile, DbDoc.Main), profile);
+
+    return ok(undefined);
+  } catch (e) {
+    return err(`Failed to initialize headminick: ${toErrorMessage(e)}`);
+  }
+}
+
+/** Updates the module configuration for a user's profile */
+export async function updateUserModules(
+  uid: string,
+  modules: ModuleConfig,
+): Promise<Result<void>> {
+  try {
+    await updateDoc(doc(db, DbCollection.Users, uid, DbSubcollection.Profile, DbDoc.Main), { [DbField.Modules]: modules });
+    return ok(undefined);
+  } catch (e) {
+    return err(`Failed to update modules: ${toErrorMessage(e)}`);
+  }
+}
