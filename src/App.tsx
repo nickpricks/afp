@@ -10,6 +10,7 @@ import { AdminGate } from '@/shared/components/AdminGate';
 import { InviteRedeem } from '@/shared/auth/InviteRedeem';
 import { AdminPanel } from '@/admin/components/AdminPanel';
 import { InviteGenerator } from '@/admin/components/InviteGenerator';
+import { DebugPage } from '@/shared/components/DebugPage';
 import { BodyTracker } from '@/modules/body/components/BodyTracker';
 import { ExpenseListPage } from '@/modules/expenses/pages/ExpenseListPage';
 import { AddExpensePage } from '@/modules/expenses/pages/AddExpensePage';
@@ -53,6 +54,7 @@ export function App() {
                 <Route path={ROUTES.BABY_DIAPER} element={<ModuleGate moduleId={ModuleId.Baby}><DiaperLog /></ModuleGate>} />
                 <Route path={ROUTES.ADMIN} element={<AdminGate><AdminPanel /></AdminGate>} />
                 <Route path={ROUTES.ADMIN_INVITE} element={<AdminGate><InviteGenerator /></AdminGate>} />
+                <Route path={ROUTES.DEBUG} element={<DebugPage />} />
               </Route>
             </Routes>
           </ToastProvider>
