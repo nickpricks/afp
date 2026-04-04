@@ -48,12 +48,12 @@ export function DebugPage() {
           {
             checks.map(({ label, value, expected }) => {
               const display = typeof value === 'boolean' ? (value ? 'true' : 'false') : String(value);
-              const isOk = expected === undefined || value === expected;
+              const isPassing = expected === undefined || value === expected;
 
               return (
                 <tr key={label} className="border-b border-gray-200 dark:border-gray-700">
                   <td className="py-2 pr-4 text-gray-500">{label}</td>
-                  <td className={`py-2 font-semibold ${isOk ? 'text-green-600' : 'text-red-500'}`}>
+                  <td className={`py-2 font-semibold ${isPassing ? 'text-green-600' : 'text-red-500'}`}>
                     {display}
                   </td>
                 </tr>
@@ -63,7 +63,7 @@ export function DebugPage() {
         </tbody>
       </table>
       <p className="mt-4 text-xs text-gray-400">
-        Navigate to /#/debug to view this page.
+        Navigate to /debug to view this page.
       </p>
     </div>
   );

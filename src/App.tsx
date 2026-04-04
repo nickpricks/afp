@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import { AuthProvider } from '@/shared/auth/auth-context';
 import { ToastProvider } from '@/shared/errors/toast-context';
@@ -36,7 +36,7 @@ function ThemeInitializer() {
 export function App() {
   return (
     <ErrorBoundary>
-      <HashRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <AuthProvider>
           <ToastProvider>
             <ThemeInitializer />
@@ -59,7 +59,7 @@ export function App() {
             </Routes>
           </ToastProvider>
         </AuthProvider>
-      </HashRouter>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }

@@ -6,24 +6,16 @@ Last updated: 2026-04-04
 
 ## P0 — Critical (blocks real usage)
 
-- [ ] **Hash → BrowserRouter** — switch from hash routing to BrowserRouter + 404.html trick for GitHub Pages.
-- [ ] **Body module: walk/run tracking** — distance input (meters/km), derives steps from configurable defaults. New `body_activities` subcollection for individual entries, daily summary on `BodyRecord`. Floors unchanged.
-- [ ] **Body module: activity input UI** — bubble selector (Walk/Run), distance input, save. Below existing floor taps.
+All P0 items completed.
 
 ## P1 — Important (quality + correctness)
 
 - [ ] **Firestore runtime validation** — replace `as T` casts in adapters with parse/validate functions at the Firestore boundary.
-- [ ] **Baby module validation** — add `validateFeedEntry()`, `validateSleepEntry()`, etc. following the expense module pattern.
-- [ ] **`useBabyData` sync status race** — 4 listeners race to `SyncStatus.Synced`. Track listener readiness properly.
-- [ ] **`init-admin.ts` uses string literals** — should use enum imports for role/modules/theme.
-- [ ] **`DebugPage` local `isOk` shadows canonical helper** — rename to `isPassing`.
-- [ ] **Split `useBabyData`** — into `useFeedData`, `useSleepData`, `useGrowthData`, `useDiaperData`.
 
 ## P2 — Enhancement (better UX)
 
 - [ ] **`credential-already-in-use` UID orphan** — admin clear or auto-clear policy for orphaned anonymous profiles. Low risk for personal app.
 - [ ] **Theme selector in app** — users can pick from 7 themes.
-- [ ] **`ThemeId` → enum** — convert string union to TypeScript enum.
 - [ ] **Profile/settings page** — theme, color mode, display name.
 - [ ] **Admin: user management** — list users, toggle modules, revoke access.
 - [ ] **Expense bulk import** — mentioned in design spec.
@@ -45,30 +37,28 @@ Last updated: 2026-04-04
 
 ---
 
-## Uncommitted (this session, pending review + commit)
-
-| File | Change |
-|------|--------|
-| `src/shared/components/Layout.tsx` | Profile photo in header, no-profile wall fix |
-| `src/shared/auth/google-auth.ts` | Popup cancel returns 'cancelled' |
-| `src/shared/components/GoogleSignInButton.tsx` | Ignores cancel, compact errors via toast |
-| `src/shared/auth/InviteRedeem.tsx` | "Try Again" button on failure |
-| `src/modules/expenses/pages/ExpenseListPage.tsx` | FAB (+) button |
-| `src/shared/components/DebugPage.tsx` | Email row |
-| `src/shared/auth/the-admin-nick.ts` | Renamed from headminick.ts |
-| `src/constants/db.ts` | `DbField.AdminUid` (was HeadminickUid) |
-| `scripts/init-admin.ts` | Renamed from init-headminick.ts |
-| `src/shared/components/AdminGate.tsx` | Comment updated |
-| `e2e/app.spec.ts` | Comments updated |
-| `docs/ROADMAP.md` | This file |
-
 ---
 
 ## Done
 
-### 2026-04-04 (this session)
+### 2026-04-04 — Session 2 (P0/P1/P2 sprint)
 
-- [x] Debug page (`/#/debug`) — Firebase config, auth state, storage mode, version, email
+- [x] **Hash → BrowserRouter** — `BrowserRouter` with `basename={import.meta.env.BASE_URL}`, `public/404.html` for GitHub Pages SPA
+- [x] **Body module: walk/run tracking** — `ActivityType` enum, `ActivityEntry` type, `body_activities` subcollection, `BODY_DEFAULTS` constants, `computeBodyScore` updated for floors + walk + run
+- [x] **Body module: activity input UI** — `AddActivity` (bubble selector, distance input, m/km toggle), `ActivityLog` (today's entries), integrated into `BodyTracker`
+- [x] **Baby module refactor** — generic `useBabyCollection<T>` hook, `useBabyData` now composes 4 hooks with proper sync tracking (all listeners must report before `Synced`)
+- [x] **Baby validation** — `validateFeedEntry`, `validateSleepEntry`, `validateGrowthEntry`, `validateDiaperEntry`
+- [x] **ThemeId → enum** — string union converted to TypeScript string enum, `CONFIG.DEFAULT_THEME` uses `ThemeId.FamilyBlue`
+- [x] **DebugPage `isOk` rename** → `isPassing` to avoid shadowing canonical helper
+- [x] **init-admin.ts** — documented string literal → enum mapping
+- [x] **Firestore rules** — added `body_activities` rule
+- [x] **E2e tests updated** — all `/#/` paths → `/` for BrowserRouter, added 6 body activity tests
+- [x] **Unit tests** — 60 tests (was 32): body scoring, types, constants, baby validation
+- [x] **Docs updated** — CLAUDE.md, ROADMAP.md, CHANGELOG.md
+
+### 2026-04-04 — Session 1 (Firebase + auth)
+
+- [x] Debug page (`/debug`) — Firebase config, auth state, storage mode, version, email
 - [x] Google Sign-In — anonymous account linking, compact header button, full button on invite/landing
 - [x] Admin bootstrap — `scripts/init-admin.ts` via Firebase Admin SDK
 - [x] Baby Firestore path fix — flattened to `baby_feeds`/`baby_sleep`/`baby_growth`/`baby_diapers`

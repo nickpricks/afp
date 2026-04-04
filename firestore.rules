@@ -58,6 +58,10 @@ service cloud.firestore {
       allow read, write: if (isOwner(userId) && hasModule(userId, 'body')) || isHeadminick();
     }
 
+    match /users/{userId}/body_activities/{docId} {
+      allow read, write: if (isOwner(userId) && hasModule(userId, 'body')) || isHeadminick();
+    }
+
     match /users/{userId}/expenses/{docId} {
       allow read, write: if (isOwner(userId) && hasModule(userId, 'expenses')) || isHeadminick();
     }

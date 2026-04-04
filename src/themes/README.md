@@ -4,7 +4,7 @@ CSS custom properties per theme, mapped to Tailwind via `@theme` in index.css.
 
 ## Files
 
-- **themes.ts** — `ThemeId` type, `THEME_DEFINITIONS` record, `themeClass()`, `applyTheme()`, `isValidThemeId()`, and `useActiveThemeId()` hook
+- **themes.ts** — `ThemeId` enum, `THEME_DEFINITIONS` record, `themeClass()`, `applyTheme()`, `isValidThemeId()`, and `useActiveThemeId()` hook
 - **buttons.css** — Shared button styles across themes
 - **effects.css** — Shared visual effects (transitions, animations)
 - **family-blue.css** — Family Blue theme (light + dark, default)

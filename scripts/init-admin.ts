@@ -56,7 +56,11 @@ if (configSnap.exists) {
 }
 
 // Write both documents
-// Note: Firestore field 'headminickUid' is the legacy name — kept to match deployed rules
+// String literals match enum values in src/shared/types.ts and src/themes/themes.ts:
+//   role: UserRole.TheAdminNick = 'theAdminNick'
+//   modules: ModuleId.Body = 'body', ModuleId.Expenses = 'expenses', ModuleId.Baby = 'baby'
+//   theme: ThemeId 'family-blue' (CONFIG.DEFAULT_THEME)
+// Firestore field 'headminickUid' is the legacy name — kept to match deployed rules
 await configRef.set({ headminickUid: uid });
 await profileRef.set({
   name,

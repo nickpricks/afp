@@ -9,6 +9,7 @@ export enum DbCollection {
 export enum DbSubcollection {
   Profile = 'profile',
   Body = 'body',
+  BodyActivities = 'body_activities',
   Expenses = 'expenses',
   BabyFeeds = 'baby_feeds',
   BabySleep = 'baby_sleep',

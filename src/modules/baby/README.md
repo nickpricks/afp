@@ -1,13 +1,16 @@
 # baby/
 
-Baby tracking across 4 subcollections: feeds, sleep, growth, and diapers.
+Baby tracking across 4 flat subcollections: `baby_feeds`, `baby_sleep`, `baby_growth`, `baby_diapers`.
 
 ## Files
 
-- **types.ts** -- `FeedEntry`, `SleepEntry`, `GrowthEntry`, and `DiaperEntry` type definitions
-- **constants.ts** -- Typed `as const` arrays for feed types, sleep types, sleep qualities, and diaper types
-- **hooks/useBabyData.ts** -- `useBabyData` hook managing all 4 subcollections via `createAdapter`, uses `DbSubcollection` enum members (`Feeds`, `Sleep`, `Growth`, `Diapers`) and `SyncStatus` enum
-- **components/FeedLog.tsx** -- Feed tracking form with type-dependent quantity/duration fields and recent entries list
-- **components/SleepLog.tsx** -- Sleep tracking form with type/quality selection and recent entries list
-- **components/GrowthLog.tsx** -- Growth measurement form for weight, height, and head circumference with recent entries list
-- **components/DiaperLog.tsx** -- Diaper tracking form with quick-log buttons and recent entries list
+- **types.ts** — `FeedEntry`, `SleepEntry`, `GrowthEntry`, `DiaperEntry` type definitions
+- **constants.ts** — Typed `as const` arrays for feed types, sleep types, sleep qualities, diaper types
+- **validation.ts** — `validateFeedEntry`, `validateSleepEntry`, `validateGrowthEntry`, `validateDiaperEntry` — input validation following expense module pattern
+- **hooks/useBabyCollection.ts** — Generic `useBabyCollection<T>` hook — handles listener, state, `ready` tracking, and save for a single subcollection
+- **hooks/useBabyData.ts** — Composes 4 `useBabyCollection` hooks, tracks overall sync status (only `Synced` when all 4 listeners report)
+- **components/FeedLog.tsx** — Feed tracking form with type-dependent quantity/duration fields
+- **components/SleepLog.tsx** — Sleep tracking with type/quality selection
+- **components/GrowthLog.tsx** — Growth measurement form (weight, height, head circumference)
+- **components/DiaperLog.tsx** — Diaper tracking with quick-log buttons
+- **__tests__/validation.test.ts** — Unit tests for all 4 validation functions
