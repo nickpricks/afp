@@ -12,6 +12,7 @@ export enum AppPath {
   BabyDiaper = '/baby/diaper',
   Admin = '/admin',
   AdminInvite = '/admin/invite',
+  Debug = '/debug',
 }
 
 /** Route lookup object — preserves backwards compat with ROUTES.BODY style access */
@@ -28,6 +29,7 @@ export const ROUTES = {
   BABY_DIAPER: AppPath.BabyDiaper,
   ADMIN: AppPath.Admin,
   ADMIN_INVITE: AppPath.AdminInvite,
+  DEBUG: AppPath.Debug,
 } as const;
 
 /** Union type of all route path values */
