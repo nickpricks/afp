@@ -36,6 +36,9 @@ coverage
 .env*
 !.env.example
 
+# Firebase Admin SDK (NEVER commit)
+service-account.json
+
 # Caches
 .eslintcache
 .cache

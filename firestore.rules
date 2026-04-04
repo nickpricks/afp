@@ -62,7 +62,19 @@ service cloud.firestore {
       allow read, write: if (isOwner(userId) && hasModule(userId, 'expenses')) || isHeadminick();
     }
 
-    match /users/{userId}/baby/{subCollection}/{docId} {
+    match /users/{userId}/baby_feeds/{docId} {
+      allow read, write: if (isOwner(userId) && hasModule(userId, 'baby')) || isHeadminick();
+    }
+
+    match /users/{userId}/baby_sleep/{docId} {
+      allow read, write: if (isOwner(userId) && hasModule(userId, 'baby')) || isHeadminick();
+    }
+
+    match /users/{userId}/baby_growth/{docId} {
+      allow read, write: if (isOwner(userId) && hasModule(userId, 'baby')) || isHeadminick();
+    }
+
+    match /users/{userId}/baby_diapers/{docId} {
       allow read, write: if (isOwner(userId) && hasModule(userId, 'baby')) || isHeadminick();
     }
   }

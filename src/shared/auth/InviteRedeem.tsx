@@ -1,53 +1,53 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/shared/auth/useAuth';
 import { isValidInviteCode, redeemInvite } from '@/shared/auth/invite';
 import { isOk } from '@/shared/types';
+import { GoogleSignInButton } from '@/shared/components/GoogleSignInButton';
 
-type RedeemState =
-  | { status: 'loading' }
+type RedeemResult =
+  | { status: 'pending' }
   | { status: 'success'; name: string }
   | { status: 'error'; message: string };
 
-/** Page that redeems an invite code from the URL and redirects on success */
+/** Page that redeems an invite code from the URL — requires Google sign-in first */
 export function InviteRedeem() {
   const { code } = useParams<{ code: string }>();
   const { firebaseUser } = useAuth();
   const navigate = useNavigate();
+  const [result, setResult] = useState<RedeemResult>({ status: 'pending' });
+  const redeemAttempted = useRef(false);
 
-  const initialState = useMemo<RedeemState>(() => {
-    if (!code || !isValidInviteCode(code)) {
-      return { status: 'error', message: 'Invalid invite code format' };
-    }
-    return { status: 'loading' };
-  }, [code]);
+  const codeValid = useMemo(() => !!code && isValidInviteCode(code), [code]);
+  const needsGoogleSignIn = firebaseUser?.isAnonymous ?? true;
+  const readyToRedeem = codeValid && !needsGoogleSignIn && !!firebaseUser;
 
-  const [state, setState] = useState<RedeemState>(initialState);
-
+  // Redeem the invite once signed in with Google — ref prevents double-execution
   useEffect(() => {
-    if (state.status === 'error' || !code || !firebaseUser) {
+    if (!readyToRedeem || redeemAttempted.current || !code || !firebaseUser) {
       return;
     }
 
+    redeemAttempted.current = true;
     let cancelled = false;
 
     async function redeem() {
-      const result = await redeemInvite(code!, firebaseUser!.uid);
+      const res = await redeemInvite(code!, firebaseUser!.uid);
 
       if (cancelled) {
         return;
       }
 
-      if (isOk(result)) {
-        setState({ status: 'success', name: result.data.name });
+      if (isOk(res)) {
+        setResult({ status: 'success', name: res.data.name });
         setTimeout(() => {
           if (!cancelled) {
             navigate('/', { replace: true });
           }
         }, 2000);
       } else {
-        setState({ status: 'error', message: result.error });
+        setResult({ status: 'error', message: res.error });
       }
     }
 
@@ -56,9 +56,32 @@ export function InviteRedeem() {
     return () => {
       cancelled = true;
     };
-  }, [code, firebaseUser, navigate, state.status]);
+  }, [readyToRedeem, code, firebaseUser, navigate]);
 
-  if (state.status === 'loading') {
+  if (!codeValid) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface p-4">
+        <div className="w-full max-w-sm rounded-xl bg-surface-card border border-line p-8 text-center shadow-lg">
+          <h1 className="text-lg font-semibold text-fg mb-2">Invite Failed</h1>
+          <p className="text-sm text-fg-muted">Invalid invite code format</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (needsGoogleSignIn) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface p-4">
+        <div className="w-full max-w-sm rounded-xl bg-surface-card border border-line p-8 text-center shadow-lg">
+          <h1 className="text-lg font-semibold text-fg mb-2">You're Invited!</h1>
+          <p className="mb-4 text-sm text-fg-muted">Sign in with Google to claim your invite.</p>
+          <GoogleSignInButton />
+        </div>
+      </div>
+    );
+  }
+
+  if (result.status === 'pending') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface">
         <p className="text-fg-muted">Redeeming invite...</p>
@@ -66,12 +89,12 @@ export function InviteRedeem() {
     );
   }
 
-  if (state.status === 'error') {
+  if (result.status === 'error') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface p-4">
         <div className="w-full max-w-sm rounded-xl bg-surface-card border border-line p-8 text-center shadow-lg">
           <h1 className="text-lg font-semibold text-fg mb-2">Invite Failed</h1>
-          <p className="text-sm text-fg-muted">{state.message}</p>
+          <p className="text-sm text-fg-muted">{result.message}</p>
         </div>
       </div>
     );
@@ -80,7 +103,7 @@ export function InviteRedeem() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface p-4">
       <div className="w-full max-w-sm rounded-xl bg-surface-card border border-line p-8 text-center shadow-lg">
-        <h1 className="text-lg font-semibold text-fg mb-2">Welcome, {state.name}!</h1>
+        <h1 className="text-lg font-semibold text-fg mb-2">Welcome, {result.name}!</h1>
         <p className="text-sm text-fg-muted">Invite redeemed. Redirecting...</p>
       </div>
     </div>

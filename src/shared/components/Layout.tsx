@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { SyncStatusIndicator } from '@/shared/components/SyncStatus';
 import { TabBar } from '@/shared/components/TabBar';
 import { UpdatePrompt } from '@/shared/components/UpdatePrompt';
+import { GoogleSignInButton } from '@/shared/components/GoogleSignInButton';
 import { useAuth } from '@/shared/auth/useAuth';
 
 /** Root app shell with header, routed content area, tab bar, and PWA update prompt */
@@ -21,8 +22,9 @@ export function Layout() {
     return (
       <div className="flex h-screen items-center justify-center bg-surface">
         <div className="rounded-lg bg-surface-card border border-line p-6 text-center shadow-md">
-          <h2 className="text-lg font-semibold text-fg">Waiting for Access</h2>
-          <p className="mt-2 text-sm text-fg-muted">You need an invite to use this app.</p>
+          <h2 className="text-lg font-semibold text-fg">Welcome to AFP</h2>
+          <p className="mt-2 mb-4 text-sm text-fg-muted">Sign in to continue, or use an invite link.</p>
+          <GoogleSignInButton />
         </div>
       </div>
     );
