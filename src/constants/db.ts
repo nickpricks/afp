@@ -24,7 +24,7 @@ export enum DbDoc {
 
 /** Firestore field names */
 export enum DbField {
-  HeadminickUid = 'headminickUid',
+  AdminUid = 'headminickUid',
   LinkedUid = 'linkedUid',
   UsedAt = 'usedAt',
   Modules = 'modules',

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-// Dev mode: Firebase not configured, all modules enabled, Headminick role, localStorage adapter
+// Dev mode: Firebase not configured, all modules enabled, TheAdminNick role, localStorage adapter
 
 test.describe('App shell', () => {
   test('loads and redirects to /body', async ({ page }) => {
@@ -245,7 +245,7 @@ test.describe('Route guards', () => {
     await expect(page.locator('button', { hasText: 'Nap' })).toBeVisible();
   });
 
-  test('direct URL to /admin works (headminick in dev)', async ({ page }) => {
+  test('direct URL to /admin works (TheAdminNick in dev)', async ({ page }) => {
     await page.goto('/#/admin');
     await expect(page.getByRole('heading', { name: 'Create Invite' })).toBeVisible();
   });

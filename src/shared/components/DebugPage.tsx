@@ -21,6 +21,7 @@ export function DebugPage() {
     { label: 'Auth UID', value: currentUser?.uid ?? 'none' },
     { label: 'Auth Provider', value: currentUser?.providerId ?? 'none' },
     { label: 'Is Anonymous', value: currentUser?.isAnonymous ?? 'N/A' },
+    { label: 'Email', value: currentUser?.email ?? 'none' },
     { label: 'Profile Loaded', value: !!profile, expected: true },
     { label: 'User Role', value: profile?.role ?? 'none' },
     { label: 'Modules Enabled', value: formatModules(profile?.modules) },

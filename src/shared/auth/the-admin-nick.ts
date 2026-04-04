@@ -7,24 +7,24 @@ import { err, ok, type Result } from '@/shared/types';
 import { toErrorMessage } from '@/shared/utils/error';
 import { createDefaultProfile } from '@/shared/utils/profile';
 
-/** Checks whether the given UID matches the headminickUid in app/config */
-export async function isCurrentUserHeadminick(uid: string): Promise<boolean> {
+/** Checks whether the given UID matches the admin UID in app/config */
+export async function isCurrentUserAdmin(uid: string): Promise<boolean> {
   try {
     const snap = await getDoc(doc(db, DbCollection.App, DbDoc.Config));
     if (!snap.exists()) return false;
-    return snap.data()[DbField.HeadminickUid] === uid;
+    return snap.data()[DbField.AdminUid] === uid;
   } catch {
     return false;
   }
 }
 
-/** Sets up the app/config doc and creates the headminick user profile with all modules enabled */
-export async function initializeHeadminick(
+/** Sets up the app/config doc and creates the admin user profile with all modules enabled */
+export async function initializeAdmin(
   uid: string,
   name: string,
 ): Promise<Result<void>> {
   try {
-    await setDoc(doc(db, DbCollection.App, DbDoc.Config), { [DbField.HeadminickUid]: uid });
+    await setDoc(doc(db, DbCollection.App, DbDoc.Config), { [DbField.AdminUid]: uid });
 
     const allEnabled: ModuleConfig = {
       [ModuleId.Body]: true,
@@ -36,7 +36,7 @@ export async function initializeHeadminick(
 
     return ok(undefined);
   } catch (e) {
-    return err(`Failed to initialize headminick: ${toErrorMessage(e)}`);
+    return err(`Failed to initialize admin: ${toErrorMessage(e)}`);
   }
 }
 

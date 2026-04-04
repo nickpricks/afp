@@ -7,10 +7,10 @@
  *   2. Save as `service-account.json` in project root (gitignored)
  *
  * Usage:
- *   bun run scripts/init-headminick.ts <uid> [name]
+ *   bun run scripts/init-admin.ts <uid> [name]
  *
  * Example:
- *   bun run scripts/init-headminick.ts xkMUY12abc "Nick"
+ *   bun run scripts/init-admin.ts xkMUY12abc "Nick"
  */
 
 import { cert, initializeApp } from 'firebase-admin/app';
@@ -22,7 +22,7 @@ const uid = process.argv[2];
 const name = process.argv[3] ?? 'Nick';
 
 if (!uid) {
-  console.error('Usage: bun run scripts/init-headminick.ts <uid> [name]');
+  console.error('Usage: bun run scripts/init-admin.ts <uid> [name]');
   process.exit(1);
 }
 
@@ -48,13 +48,15 @@ const profileRef = db.doc(`users/${uid}/profile/main`);
 // Safety check — don't overwrite if already initialized
 const configSnap = await configRef.get();
 if (configSnap.exists) {
+  // Firestore field is 'headminickUid' (legacy name, not renamed to avoid migration)
   const existing = configSnap.data()?.headminickUid;
-  console.error(`❌ app/config already exists — headminickUid is "${existing}"`);
+  console.error(`❌ app/config already exists — admin UID is "${existing}"`);
   console.error('   Delete the doc in Firebase Console first if you want to re-initialize.');
   process.exit(1);
 }
 
 // Write both documents
+// Note: Firestore field 'headminickUid' is the legacy name — kept to match deployed rules
 await configRef.set({ headminickUid: uid });
 await profileRef.set({
   name,
@@ -65,10 +67,10 @@ await profileRef.set({
   createdAt: new Date().toISOString(),
 });
 
-console.log(`✅ Headminick initialized!`);
+console.log(`✅ TheAdminNick initialized!`);
 console.log(`   UID:     ${uid}`);
 console.log(`   Name:    ${name}`);
 console.log(`   Profile: users/${uid}/profile/main`);
-console.log(`   Config:  app/config → headminickUid: ${uid}`);
+console.log(`   Config:  app/config → adminUid: ${uid}`);
 console.log('');
 console.log('   Refresh the app — you should now see the Admin tab.');

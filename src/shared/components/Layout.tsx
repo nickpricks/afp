@@ -22,10 +22,13 @@ export function Layout() {
   if (!profile) {
     return (
       <div className="flex h-screen items-center justify-center bg-surface">
-        <div className="rounded-lg bg-surface-card border border-line p-6 text-center shadow-md">
+        <div className="rounded-lg bg-surface-card border border-line p-6 text-center shadow-md max-w-sm">
           <h2 className="text-lg font-semibold text-fg">Welcome to AFP</h2>
-          <p className="mt-2 mb-4 text-sm text-fg-muted">Sign in to continue, or use an invite link.</p>
-          <GoogleSignInButton />
+          <p className="mt-2 text-sm text-fg-muted">This app is invite-only. Ask the admin for an invite link to get started.</p>
+          <div className="mt-4 border-t border-line pt-4">
+            <p className="mb-2 text-xs text-fg-muted">Already have an account?</p>
+            <GoogleSignInButton />
+          </div>
         </div>
       </div>
     );
@@ -37,6 +40,16 @@ export function Layout() {
         <h1 className="text-base font-semibold">AFP</h1>
         <div className="flex items-center gap-3">
           {isAnonymous && <GoogleSignInButton compact />}
+          {
+            !isAnonymous && firebaseUser?.photoURL && (
+              <img
+                src={firebaseUser.photoURL}
+                alt=""
+                referrerPolicy="no-referrer"
+                className="h-7 w-7 rounded-full border border-line"
+              />
+            )
+          }
           <SyncStatusIndicator />
         </div>
       </header>

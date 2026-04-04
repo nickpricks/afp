@@ -1,9 +1,24 @@
+import { Link } from 'react-router-dom';
+import { Plus } from 'lucide-react';
+
 import { ExpenseList } from '@/modules/expenses/components/ExpenseList';
 import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
+import { ROUTES } from '@/constants/routes';
 
 /** Page wrapper that connects ExpenseList to the expense data hook */
 export function ExpenseListPage() {
   const { expenses, deleteExpense } = useExpenses();
 
-  return <ExpenseList expenses={expenses} onDelete={deleteExpense} />;
+  return (
+    <div className="relative">
+      <ExpenseList expenses={expenses} onDelete={deleteExpense} />
+      <Link
+        to={ROUTES.EXPENSES_ADD}
+        className="fixed bottom-20 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg transition hover:bg-primary/90 active:scale-95"
+        aria-label="Add expense"
+      >
+        <Plus size={24} />
+      </Link>
+    </div>
+  );
 }

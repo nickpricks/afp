@@ -39,7 +39,14 @@ export async function signInWithGoogle(): Promise<Result<string>> {
     // No current user or not anonymous — direct Google sign-in
     const result = await signInWithPopup(auth, googleProvider);
     return ok(result.user.uid);
-  } catch (e) {
+  } catch (e: unknown) {
+    const code = (e as { code?: string }).code;
+
+    // User closed the popup or cancelled — not an error, just a no-op
+    if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+      return err('cancelled');
+    }
+
     return err(`Google sign-in failed: ${toErrorMessage(e)}`);
   }
 }
