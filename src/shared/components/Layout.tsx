@@ -8,7 +8,8 @@ import { useAuth } from '@/shared/auth/useAuth';
 
 /** Root app shell with header, routed content area, tab bar, and PWA update prompt */
 export function Layout() {
-  const { isLoading, profile } = useAuth();
+  const { isLoading, profile, firebaseUser } = useAuth();
+  const isAnonymous = firebaseUser?.isAnonymous ?? true;
 
   if (isLoading) {
     return (
@@ -34,7 +35,10 @@ export function Layout() {
     <div className="min-h-screen bg-surface text-fg">
       <header className="flex items-center justify-between px-4 py-3 bg-surface-card border-b border-line">
         <h1 className="text-base font-semibold">AFP</h1>
-        <SyncStatusIndicator />
+        <div className="flex items-center gap-3">
+          {isAnonymous && <GoogleSignInButton compact />}
+          <SyncStatusIndicator />
+        </div>
       </header>
 
       <main className="p-4 pb-20">
