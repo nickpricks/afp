@@ -6,7 +6,7 @@ import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { FeedEntry, SleepEntry, GrowthEntry, DiaperEntry } from '@/modules/baby/types';
 import { SyncStatus, isOk } from '@/shared/types';
-import { DbSubcollection, userBabyPath } from '@/constants/db';
+import { DbSubcollection, userPath } from '@/constants/db';
 
 /** Saves a record to a collection via the adapter, showing a toast on result */
 async function saveEntry<T extends Record<string, unknown>>(
@@ -38,7 +38,7 @@ export function useBabyData() {
   useEffect(() => {
     if (!firebaseUser) return;
 
-    const adapter = createAdapter(userBabyPath(firebaseUser.uid));
+    const adapter = createAdapter(userPath(firebaseUser.uid));
     adapterRef.current = adapter;
     setSyncStatus(SyncStatus.Syncing);
 
@@ -47,25 +47,25 @@ export function useBabyData() {
       setSyncStatus(SyncStatus.Error);
     };
 
-    const unsubFeeds = adapter.onSnapshot<FeedEntry>(DbSubcollection.Feeds, (items) => {
+    const unsubFeeds = adapter.onSnapshot<FeedEntry>(DbSubcollection.BabyFeeds, (items) => {
       setFeeds(items);
       setSyncStatus(SyncStatus.Synced);
-    }, handleError(DbSubcollection.Feeds));
+    }, handleError(DbSubcollection.BabyFeeds));
 
-    const unsubSleeps = adapter.onSnapshot<SleepEntry>(DbSubcollection.Sleep, (items) => {
+    const unsubSleeps = adapter.onSnapshot<SleepEntry>(DbSubcollection.BabySleep, (items) => {
       setSleeps(items);
       setSyncStatus(SyncStatus.Synced);
-    }, handleError(DbSubcollection.Sleep));
+    }, handleError(DbSubcollection.BabySleep));
 
-    const unsubGrowth = adapter.onSnapshot<GrowthEntry>(DbSubcollection.Growth, (items) => {
+    const unsubGrowth = adapter.onSnapshot<GrowthEntry>(DbSubcollection.BabyGrowth, (items) => {
       setGrowth(items);
       setSyncStatus(SyncStatus.Synced);
-    }, handleError(DbSubcollection.Growth));
+    }, handleError(DbSubcollection.BabyGrowth));
 
-    const unsubDiapers = adapter.onSnapshot<DiaperEntry>(DbSubcollection.Diapers, (items) => {
+    const unsubDiapers = adapter.onSnapshot<DiaperEntry>(DbSubcollection.BabyDiapers, (items) => {
       setDiapers(items);
       setSyncStatus(SyncStatus.Synced);
-    }, handleError(DbSubcollection.Diapers));
+    }, handleError(DbSubcollection.BabyDiapers));
 
     return () => {
       unsubFeeds();
@@ -81,7 +81,7 @@ export function useBabyData() {
     async (data: Omit<FeedEntry, 'id'>) => {
       const adapter = adapterRef.current;
       if (!adapter) return;
-      await saveEntry(adapter, DbSubcollection.Feeds, { ...data, id: crypto.randomUUID() }, addToast, 'Feed');
+      await saveEntry(adapter, DbSubcollection.BabyFeeds, { ...data, id: crypto.randomUUID() }, addToast, 'Feed');
     },
     [addToast],
   );
@@ -91,7 +91,7 @@ export function useBabyData() {
     async (data: Omit<SleepEntry, 'id'>) => {
       const adapter = adapterRef.current;
       if (!adapter) return;
-      await saveEntry(adapter, DbSubcollection.Sleep, { ...data, id: crypto.randomUUID() }, addToast, 'Sleep');
+      await saveEntry(adapter, DbSubcollection.BabySleep, { ...data, id: crypto.randomUUID() }, addToast, 'Sleep');
     },
     [addToast],
   );
@@ -101,7 +101,7 @@ export function useBabyData() {
     async (data: Omit<GrowthEntry, 'id'>) => {
       const adapter = adapterRef.current;
       if (!adapter) return;
-      await saveEntry(adapter, DbSubcollection.Growth, { ...data, id: crypto.randomUUID() }, addToast, 'Growth');
+      await saveEntry(adapter, DbSubcollection.BabyGrowth, { ...data, id: crypto.randomUUID() }, addToast, 'Growth');
     },
     [addToast],
   );
@@ -111,7 +111,7 @@ export function useBabyData() {
     async (data: Omit<DiaperEntry, 'id'>) => {
       const adapter = adapterRef.current;
       if (!adapter) return;
-      await saveEntry(adapter, DbSubcollection.Diapers, { ...data, id: crypto.randomUUID() }, addToast, 'Diaper');
+      await saveEntry(adapter, DbSubcollection.BabyDiapers, { ...data, id: crypto.randomUUID() }, addToast, 'Diaper');
     },
     [addToast],
   );

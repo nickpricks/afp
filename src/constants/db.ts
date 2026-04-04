@@ -10,11 +10,10 @@ export enum DbSubcollection {
   Profile = 'profile',
   Body = 'body',
   Expenses = 'expenses',
-  Baby = 'baby',
-  Feeds = 'feeds',
-  Sleep = 'sleep',
-  Growth = 'growth',
-  Diapers = 'diapers',
+  BabyFeeds = 'baby_feeds',
+  BabySleep = 'baby_sleep',
+  BabyGrowth = 'baby_growth',
+  BabyDiapers = 'baby_diapers',
 }
 
 /** Firestore document names */
@@ -35,6 +34,3 @@ export enum DbField {
 export const userPath = (uid: string): string =>
   `${DbCollection.Users}/${uid}`;
 
-/** Builds user baby base path: `users/{uid}/baby` */
-export const userBabyPath = (uid: string): string =>
-  `${DbCollection.Users}/${uid}/${DbSubcollection.Baby}`;
