@@ -1,12 +1,14 @@
 import { useState } from 'react';
 
 import { signInWithGoogle } from '@/shared/auth/google-auth';
+import { useToast } from '@/shared/errors/useToast';
 import { isErr } from '@/shared/types';
 
 /** Google sign-in button that handles linking and error display */
 export function GoogleSignInButton({ compact = false }: { compact?: boolean }) {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { addToast } = useToast();
 
   const handleSignIn = async () => {
     setIsSigningIn(true);
@@ -14,8 +16,12 @@ export function GoogleSignInButton({ compact = false }: { compact?: boolean }) {
 
     const result = await signInWithGoogle();
 
-    if (isErr(result)) {
-      setError(result.error);
+    if (isErr(result) && result.error !== 'cancelled') {
+      if (compact) {
+        addToast(result.error, 'error');
+      } else {
+        setError(result.error);
+      }
     }
 
     setIsSigningIn(false);

@@ -28,11 +28,13 @@ Package manager: **bun** (not npm/yarn). Cross-platform scripts use **shx** (not
 
 React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 
-- **Hash routing** via react-router-dom (avoids GitHub Pages 404)
+- **BrowserRouter** via react-router-dom with `basename={import.meta.env.BASE_URL}`. GitHub Pages SPA supported via `public/404.html` redirect trick
 - **Default branch**: `master` (not main)
 - **Module system**: body, expenses, baby — all disabled by default, TheAdminNick enables per user
 - **Storage abstraction**: `StorageAdapter` interface in `src/shared/storage/`, Firebase impl + localStorage impl (dev mode). Factory: `createAdapter(basePath)` auto-selects
-- **Enums**: `ModuleId`, `SyncStatus`, `UserRole`, `AppPath`, `DbCollection`, `DbSubcollection`, `DbDoc`, `DbField` are TypeScript string enums — use enum members, not string literals
+- **Enums**: `ModuleId`, `SyncStatus`, `UserRole`, `AppPath`, `DbCollection`, `DbSubcollection`, `DbDoc`, `DbField`, `ThemeId`, `ActivityType` are TypeScript string enums — use enum members, not string literals
+- **Auth**: Anonymous auth + Google Sign-In (account linking). `signInWithGoogle()` in `google-auth.ts`. Invite flow requires Google sign-in before redemption
+- **Body module**: Floors (daily aggregate on `body/{dateKey}`) + walk/run activities (individual entries on `body_activities/{id}`). Scoring combines all
 - **Constants**: `constants/config.ts` (app config), `constants/routes.ts` (AppPath enum + ROUTES), `constants/db.ts` (Firestore paths), `constants/messages.ts` (error/toast messages)
 - **Result types**: Every async operation returns `Result<T>`, never void. Use `ok()`, `err()`, `isOk()`, `isErr()` from `@/shared/types`
 - **Error handling**: Toast notifications via `useToast()`, `ErrorBoundary` for React crashes, `SyncStatusIndicator` in header
@@ -44,7 +46,9 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Hooks in separate files from providers**: `useAuth` is in `useAuth.ts`, not `auth-context.tsx`. Same for `useToast` → `useToast.ts`. Required by react-refresh/fast-refresh.
 - **Context + Provider** files export the Context object and the Provider component. Hook files import the Context.
 - `StorageAdapter.onSnapshot` accepts optional `onError` callback — always provide one in data hooks to surface listener failures
-- Firestore paths: invites at root `/invites/{code}`, config at `/app/config`, user profiles at `/users/{uid}/profile/main`
+- Firestore paths: invites at root `/invites/{code}`, config at `/app/config`, user profiles at `/users/{uid}/profile/main`, body activities at `/users/{uid}/body_activities/{id}`
+- **Baby hooks**: `useBabyCollection<T>` generic hook in `useBabyCollection.ts`, composed by `useBabyData`. Each subcollection tracks `ready` state independently — sync status only shows `Synced` when all 4 listeners have reported
+- **Generic data hooks**: `useBabyCollection<T>` pattern — reusable hook for subcollection listener + state + save. New modules should follow this pattern instead of duplicating listener boilerplate
 
 ## Theme System
 
@@ -71,6 +75,8 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **JSX ternary**: Use `cond && ...` / `!cond && ...` instead of ternary in JSX (className ternaries are acceptable)
 - **JSX curly newlines**: `react/jsx-curly-newline: require` enforced via ESLint — multiline expressions get `{` and `}` on their own lines
 - **Tests**: vitest in `__tests__/` dirs. `src/test-setup.ts` loads jest-dom matchers. Test files excluded from tsconfig. E2E in `e2e/` (excluded from vitest).
+- **Refs for async callbacks**: When `useCallback` needs current state in an async flow, use a ref (`fooRef.current`) alongside `useState` — avoids stale closures
+- **ESLint autofix**: `bunx eslint --fix <file>` handles `react/jsx-curly-newline` — don't manually fix these
 
 ## Gotchas
 
@@ -85,6 +91,9 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - `firebase-config.ts` has separate `DEV_FIREBASE_CONFIG` / `PROD_FIREBASE_CONFIG` — never use `||` fallbacks for env vars (masks misconfiguration in prod)
 - Avoid naming components the same as enums/types — `SyncStatusIndicator` (not `SyncStatus`) to avoid collision with the `SyncStatus` enum
 - Dev mode injects `{ uid: 'dev-user' } as User` into `firebaseUser` state — hooks check `if (!firebaseUser) return` so this fake object is required for the localStorage adapter path to activate
+- Firestore `collection()` requires odd segment count (1, 3, 5...). Baby subcollections are flat: `baby_feeds`, not `baby/feeds`. New subcollections must follow this pattern
+- `react-hooks/set-state-in-effect` — no synchronous `setState` in `useEffect` body. Use refs, derived state via `useMemo`, or move to initial `useState` value
+- `scripts/*.ts` run in Bun (not Vite) — no `@/` path aliases. Use relative imports or document enum value mappings in comments
 
 ## Security (Firestore Rules)
 
@@ -95,4 +104,4 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 
 ## Remaining Backlog
 
-- Hash routing → BrowserRouter + 404.html trick (user: "hash routing NO")
+See `docs/ROADMAP.md` for full prioritized backlog (P0-P3).

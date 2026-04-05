@@ -90,11 +90,23 @@ export function InviteRedeem() {
   }
 
   if (result.status === 'error') {
+    const handleRetry = () => {
+      redeemAttempted.current = false;
+      setResult({ status: 'pending' });
+    };
+
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface p-4">
         <div className="w-full max-w-sm rounded-xl bg-surface-card border border-line p-8 text-center shadow-lg">
           <h1 className="text-lg font-semibold text-fg mb-2">Invite Failed</h1>
           <p className="text-sm text-fg-muted">{result.message}</p>
+          <button
+            type="button"
+            onClick={handleRetry}
+            className="mt-4 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary/90 active:scale-95"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );

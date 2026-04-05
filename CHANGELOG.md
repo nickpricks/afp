@@ -4,6 +4,82 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.1.0] — 2026-04-04
+
+App goes live. Firebase connected, admin bootstrapped, Google auth, body module expanded.
+
+### Firebase & Auth
+
+| Change | What |
+|---|---|
+| Google Sign-In | Anonymous account linking via popup, compact header button, full button on invite/landing |
+| Invite flow | Requires Google sign-in before redeeming — prevents orphaned anonymous profiles |
+| Admin bootstrap | `scripts/init-admin.ts` using Firebase Admin SDK (one-time service account script) |
+| Profile photo | Google avatar in header when signed in, "Link Google" button when anonymous |
+| No-profile wall | Explains invite-only access, Google sign-in for returning users |
+| Popup cancel | Handled gracefully — no ugly SDK error, compact mode uses toast |
+| InviteRedeem retry | "Try Again" button on redemption failure |
+| Debug page | `/#/debug` → `/debug` — shows Firebase config, auth state, email, storage mode |
+
+### BrowserRouter Migration
+
+| Change | What |
+|---|---|
+| HashRouter → BrowserRouter | `basename={import.meta.env.BASE_URL}`, dynamic dev/prod |
+| `public/404.html` | GitHub Pages SPA redirect trick |
+| `index.html` | SPA restore script pairs with 404.html |
+| E2E tests | All `/#/` paths → `/` |
+
+### Body Module Expansion
+
+| Change | What |
+|---|---|
+| Walk/Run tracking | `ActivityType` enum, `ActivityEntry` type, `body_activities` subcollection |
+| Distance input | `AddActivity` component — bubble selector (Walk/Run), m/km toggle |
+| Activity log | `ActivityLog` component — today's entries in reverse chronological order |
+| Scoring | `computeBodyScore(record)` — floors + walk (0.5 pt/100m) + run (1 pt/100m) |
+| Step approximation | `computeSteps(distance, stride)` — derives from configurable defaults |
+| Constants | `BODY_DEFAULTS` (floor height, stride), `SCORING_WEIGHTS`, `ACTIVITY_LABELS` |
+| Firestore rules | Added `body_activities` rule |
+
+### Baby Module Refactor
+
+| Change | What |
+|---|---|
+| Generic hook | `useBabyCollection<T>` — shared listener, state, ready tracking, save |
+| Sync race fix | `useBabyData` only sets `Synced` when all 4 listeners report ready |
+| Validation | `validateFeedEntry`, `validateSleepEntry`, `validateGrowthEntry`, `validateDiaperEntry` |
+
+### Code Quality
+
+| Change | What |
+|---|---|
+| ThemeId → enum | String union converted to TypeScript string enum |
+| Rename headminick | `headminick.ts` → `the-admin-nick.ts`, `DbField.HeadminickUid` → `DbField.AdminUid` (Firestore value unchanged) |
+| DebugPage | `isOk` → `isPassing` (avoids shadowing canonical helper) |
+| init-admin.ts | Documented string literal → enum mappings |
+| Expense FAB | Floating `+` button on expense list page |
+| AddActivity try/finally | `isSaving` always resets even on error |
+| logActivity ref | Uses `activitiesRef` to avoid stale closure in summary save |
+
+### Tests
+
+| Change | What |
+|---|---|
+| Unit tests | 60 tests (was 32) — body scoring/types/constants, baby validation |
+| E2E tests | 41 tests (was 35) — body activity flow, BrowserRouter URLs |
+
+### Docs
+
+| Change | What |
+|---|---|
+| `docs/getting-started.md` | Setup guide — dev mode, prod, Firebase console, auth, modules |
+| `docs/ROADMAP.md` | Prioritized backlog (P0-P3) with done items |
+| CLAUDE.md | BrowserRouter, auth, body activities, baby hooks, ThemeId enum |
+| Subdirectory READMEs | Updated body, baby, auth, themes |
+
+---
+
 ## [pre-0.0.5] — 2026-04-03
 
 Nick's 20-point review — remaining 9 items + Final Countdown critical fixes.

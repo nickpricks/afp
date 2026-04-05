@@ -2,14 +2,15 @@ import { useState, useEffect } from 'react';
 
 import { CONFIG } from '@/constants/config';
 
-export type ThemeId =
-  | 'family-blue'
-  | 'summit-instrument'
-  | 'night-city-elevator'
-  | 'deep-mariana'
-  | 'night-city-apartment'
-  | 'industrial-furnace'
-  | 'corporate-glass';
+export enum ThemeId {
+  FamilyBlue = 'family-blue',
+  SummitInstrument = 'summit-instrument',
+  NightCityElevator = 'night-city-elevator',
+  DeepMariana = 'deep-mariana',
+  NightCityApartment = 'night-city-apartment',
+  IndustrialFurnace = 'industrial-furnace',
+  CorporateGlass = 'corporate-glass',
+}
 
 export type ColorMode = 'light' | 'dark' | 'system';
 
@@ -35,56 +36,56 @@ export const themeClass = (id: ThemeId): string => {
 };
 
 export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
-  'family-blue': {
-    id: 'family-blue',
+  [ThemeId.FamilyBlue]: {
+    id: ThemeId.FamilyBlue,
     name: 'Family Blue',
     family: 'Family',
     darkOnly: false,
     fonts: FONTS_DEFAULT,
     previewColors: { bg: '#f0f7ff', accent: '#60a5fa', text: '#1e293b' },
   },
-  'summit-instrument': {
-    id: 'summit-instrument',
+  [ThemeId.SummitInstrument]: {
+    id: ThemeId.SummitInstrument,
     name: 'Summit Instrument',
     family: 'Summit',
     darkOnly: false,
     fonts: FONTS_DEFAULT,
     previewColors: { bg: '#faf7f2', accent: '#f59e0b', text: '#1a1613' },
   },
-  'night-city-elevator': {
-    id: 'night-city-elevator',
+  [ThemeId.NightCityElevator]: {
+    id: ThemeId.NightCityElevator,
     name: 'Night City: Elevator',
     family: 'Cyberpunk',
     darkOnly: true,
     fonts: FONTS_CYBERPUNK,
     previewColors: { bg: '#0a0a0f', accent: '#00f0ff', text: '#c0c0c8' },
   },
-  'deep-mariana': {
-    id: 'deep-mariana',
+  [ThemeId.DeepMariana]: {
+    id: ThemeId.DeepMariana,
     name: 'Deep: Mariana',
     family: 'Deep',
     darkOnly: true,
     fonts: FONTS_MONO,
     previewColors: { bg: '#030b12', accent: '#00e89a', text: '#8cb4c8' },
   },
-  'night-city-apartment': {
-    id: 'night-city-apartment',
+  [ThemeId.NightCityApartment]: {
+    id: ThemeId.NightCityApartment,
     name: 'Night City: Apartment',
     family: 'Cyberpunk',
     darkOnly: true,
     fonts: FONTS_CYBERPUNK,
     previewColors: { bg: '#0d0505', accent: '#ffb803', text: '#d0d0d0' },
   },
-  'industrial-furnace': {
-    id: 'industrial-furnace',
+  [ThemeId.IndustrialFurnace]: {
+    id: ThemeId.IndustrialFurnace,
     name: 'Industrial Furnace',
     family: 'Industrial',
     darkOnly: true,
     fonts: FONTS_MONO,
     previewColors: { bg: '#100804', accent: '#ff6820', text: '#c8a888' },
   },
-  'corporate-glass': {
-    id: 'corporate-glass',
+  [ThemeId.CorporateGlass]: {
+    id: ThemeId.CorporateGlass,
     name: 'Corporate Glass',
     family: 'Corporate',
     darkOnly: false,

@@ -1,4 +1,19 @@
-/** Computes the body score: up floors count 1 point, down floors count 0.5 */
-export function computeBodyScore(up: number, down: number): number {
-  return up + down * 0.5;
+import { SCORING_WEIGHTS } from '@/modules/body/constants';
+import type { BodyRecord } from '@/modules/body/types';
+
+/** Computes the composite body score from floors and activity distances */
+export function computeBodyScore(record: Pick<BodyRecord, 'floors' | 'walkMeters' | 'runMeters'>): number {
+  const floorScore =
+    record.floors.up * SCORING_WEIGHTS.FLOOR_UP +
+    record.floors.down * SCORING_WEIGHTS.FLOOR_DOWN;
+  const walkScore = (record.walkMeters / 100) * SCORING_WEIGHTS.WALK_PER_100M;
+  const runScore = (record.runMeters / 100) * SCORING_WEIGHTS.RUN_PER_100M;
+
+  return Math.round((floorScore + walkScore + runScore) * 10) / 10;
+}
+
+/** Approximates step count from distance in meters using stride length */
+export function computeSteps(distanceMeters: number, strideMeters: number): number {
+  if (strideMeters <= 0) return 0;
+  return Math.round(distanceMeters / strideMeters);
 }
