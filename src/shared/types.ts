@@ -26,7 +26,7 @@ export const isErr = <T>(
 /** Identifier for each toggleable app module */
 export enum ModuleId {
   Body = 'body',
-  Expenses = 'expenses',
+  Budget = 'budget',
   Baby = 'baby',
 }
 
@@ -34,12 +34,12 @@ export enum ModuleId {
 export type ModuleConfig = Record<ModuleId, boolean>;
 
 /** All available module identifiers */
-export const ALL_MODULES: readonly ModuleId[] = [ModuleId.Body, ModuleId.Expenses, ModuleId.Baby];
+export const ALL_MODULES: readonly ModuleId[] = [ModuleId.Body, ModuleId.Budget, ModuleId.Baby];
 
 /** Default module config with every module disabled */
 export const DEFAULT_MODULES: ModuleConfig = {
   [ModuleId.Body]: false,
-  [ModuleId.Expenses]: false,
+  [ModuleId.Budget]: false,
   [ModuleId.Baby]: false,
 };
 
@@ -49,16 +49,21 @@ export const DEFAULT_MODULES: ModuleConfig = {
 export enum UserRole {
   TheAdminNick = 'theAdminNick',
   User = 'user',
+  Viewer = 'viewer',
 }
 
 /** Core user profile stored in the database */
 export interface UserProfile {
-  name: string;
   role: UserRole;
-  modules: ModuleConfig;
+  name: string;
+  email: string | null;
+  username: string | null;
+  viewerOf: string | null;
   theme: string;
   colorMode: 'light' | 'dark' | 'system';
+  modules: ModuleConfig;
   createdAt: string;
+  updatedAt: string;
 }
 
 // ─── Sync Types ──────────────────────────────────────────────────────────────
@@ -69,4 +74,132 @@ export enum SyncStatus {
   Syncing = 'syncing',
   Error = 'error',
   Offline = 'offline',
+}
+
+// ─── Activity Types ─────────────────────────────────────────────────────────
+
+/** Type of physical activity tracked in the body module */
+export enum ActivityType {
+  Walk = 'walk',
+  Run = 'run',
+  Cycle = 'cycle',
+  Yoga = 'yoga',
+}
+
+/** Budget list view timeframe */
+export enum BudgetView {
+  Today = 'today',
+  Week = 'week',
+  Month = 'month',
+  All = 'all',
+}
+
+// ─── Numeric Enums (high-volume data) ───────────────────────────────────────
+
+/** @description Payment method for transactions. Stored as number in Firestore. */
+export enum PaymentMethod {
+  /** 💵 Physical cash */
+  Cash = 0,
+  /** 🏦 Bank transfer — IMPS (instant) */
+  BankAccountImps = 1,
+  /** 🏦 Bank transfer — RTGS (high value) */
+  BankAccountRtgs = 2,
+  /** 🏦 Bank transfer — NEFT (batch) */
+  BankAccountNeft = 3,
+  /** 📲 UPI from bank account */
+  UpiBankAccount = 4,
+  /** 📲 UPI from credit card (RuPay CC on UPI) */
+  UpiCreditCard = 5,
+  /** 💳 Credit card (swipe/online) */
+  CreditCard = 6,
+}
+
+/** @description Expense category. Stored as number in Firestore. */
+export enum ExpenseCategory {
+  /** 🏠 Housing */
+  Housing = 0,
+  /** 🍔 Food */
+  Food = 1,
+  /** 🛒 Shopping */
+  Shopping = 2,
+  /** ✈️ Travel */
+  Travel = 3,
+  /** 🚗 Vehicle */
+  Vehicle = 4,
+  /** 📱 Bills */
+  Bills = 5,
+  /** 🏥 Medical */
+  Medical = 6,
+  /** 💆 Care */
+  Care = 7,
+  /** 🎁 Gifts */
+  Gifts = 8,
+  /** 📚 Education */
+  Education = 9,
+  /** 🏡 Household */
+  Household = 10,
+  /** 💰 Finance */
+  Finance = 11,
+  /** 🎬 Entertainment */
+  Entertainment = 12,
+  /** 🔄 Transfer */
+  Transfer = 13,
+  /** 📦 Misc */
+  Misc = 14,
+}
+
+/** @description Income source. Stored as number in Firestore. */
+export enum IncomeSource {
+  /** 💼 Salary */
+  Salary = 0,
+  /** 🏢 Business */
+  Business = 1,
+  /** 🏦 Interest */
+  Interest = 2,
+  /** 🔙 Refund */
+  Refund = 3,
+  /** 📦 Other */
+  Other = 4,
+}
+
+/** @description Feed type for baby module. Stored as number in Firestore. */
+export enum FeedType {
+  /** 🤱 Breast — left */
+  BreastLeft = 0,
+  /** 🤱 Breast — right */
+  BreastRight = 1,
+  /** 🤱 Breast — both */
+  BreastBoth = 2,
+  /** 🍼 Bottle */
+  Bottle = 3,
+  /** 🥣 Solid food */
+  Solid = 4,
+}
+
+/** @description Sleep type. Stored as number in Firestore. */
+export enum SleepType {
+  /** 😴 Daytime nap */
+  Nap = 0,
+  /** 🌙 Night sleep */
+  Night = 1,
+}
+
+/** @description Sleep quality. Stored as number in Firestore. */
+export enum SleepQuality {
+  /** 😊 Good */
+  Good = 0,
+  /** 😐 Fair */
+  Fair = 1,
+  /** 😟 Poor */
+  Poor = 2,
+}
+
+/** @description Diaper type. Stored as number in Firestore. */
+export enum DiaperType {
+  /** 💧 Wet */
+  Wet = 0,
+  /** 💩 Dirty */
+  Dirty = 1,
+  /** 💧💩 Mixed */
+  Mixed = 2,
 }

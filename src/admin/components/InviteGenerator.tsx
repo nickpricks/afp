@@ -16,7 +16,7 @@ export function InviteGenerator() {
   const [name, setName] = useState('');
   const [modules, setModules] = useState<ModuleConfig>({
     [ModuleId.Body]: false,
-    [ModuleId.Expenses]: false,
+    [ModuleId.Budget]: false,
     [ModuleId.Baby]: false,
   });
   const [inviteLink, setInviteLink] = useState<string | null>(null);
@@ -42,7 +42,7 @@ export function InviteGenerator() {
       const link = `${window.location.origin}${window.location.pathname}#/invite/${code}`;
       setInviteLink(link);
       setName('');
-      setModules({ [ModuleId.Body]: false, [ModuleId.Expenses]: false, [ModuleId.Baby]: false });
+      setModules({ [ModuleId.Body]: false, [ModuleId.Budget]: false, [ModuleId.Baby]: false });
       addToast(InviteMsg.Created, 'success');
     } else {
       addToast(result.error, 'error');

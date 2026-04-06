@@ -1,3 +1,156 @@
+# Pre-Phase 0: Shared Foundation
+
+> **Master plan:** [Phase 2 Master](2026-04-06-phase2-master.md)
+> **Design Spec:** [Phase 2 Design](../specs/2026-04-06-phase2-design.md)
+
+---
+
+Before any phase, update shared enums and types that all phases depend on.
+
+### Task 0.1: Update Shared Enums & Types
+
+**Files:**
+- Modify: `src/shared/types.ts`
+- Modify: `src/constants/config.ts`
+- Modify: `src/constants/db.ts`
+- Modify: `src/constants/messages.ts`
+- Modify: `src/constants/routes.ts`
+- Test: `src/shared/__tests__/types.test.ts`
+
+- [ ] **Step 1: Write failing test for new UserRole.Viewer**
+
+```typescript
+// src/shared/__tests__/types.test.ts — add test
+it('UserRole includes Viewer', () => {
+  expect(UserRole.Viewer).toBe('viewer');
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `bunx vitest run src/shared/__tests__/types.test.ts -v`
+Expected: FAIL — `UserRole.Viewer` is undefined
+
+- [ ] **Step 3: Add Viewer to UserRole enum**
+
+```typescript
+// src/shared/types.ts — update UserRole
+export enum UserRole {
+  TheAdminNick = 'theAdminNick',
+  User = 'user',
+  Viewer = 'viewer',
+}
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `bunx vitest run src/shared/__tests__/types.test.ts -v`
+Expected: PASS
+
+- [ ] **Step 5: Update ModuleId — rename Expenses to Budget**
+
+```typescript
+// src/shared/types.ts — update ModuleId
+export enum ModuleId {
+  Body = 'body',
+  Budget = 'budget',
+  Baby = 'baby',
+}
+```
+
+Update `ALL_MODULES` and `DEFAULT_MODULES` to use `Budget` instead of `Expenses`. Fix all imports across the codebase that reference `ModuleId.Expenses` — change to `ModuleId.Budget`.
+
+- [ ] **Step 6: Add new enums to types.ts**
+
+Add `ActivityType`, `BudgetView`, `PaymentMethod`, `ExpenseCategory`, `IncomeSource`, `FeedType`, `SleepType`, `SleepQuality`, `DiaperType` — all exactly as defined in the design spec's Enums Reference section. Every numeric enum member gets a JSDoc comment.
+
+- [ ] **Step 7: Add viewerOf to UserProfile type**
+
+```typescript
+// src/shared/types.ts — update UserProfile
+export interface UserProfile {
+  role: UserRole;
+  name: string;
+  email: string | null;
+  username: string | null;
+  viewerOf: string | null;
+  theme: ThemeId;
+  colorMode: ColorMode;
+  modules: ModuleConfig;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+- [ ] **Step 8: Update DbSubcollection enum**
+
+```typescript
+// src/constants/db.ts — add new subcollections
+export enum DbSubcollection {
+  Profile = 'profile',
+  Body = 'body',
+  BodyActivities = 'body_activities',
+  BodyConfig = 'body_config',
+  BudgetConfig = 'budget_config',
+  Expenses = 'expenses',
+  Income = 'income',
+  Children = 'children',
+  Feeds = 'feeds',
+  Sleep = 'sleep',
+  Growth = 'growth',
+  Diapers = 'diapers',
+}
+```
+
+Remove old `BabyFeeds`, `BabySleep`, `BabyGrowth`, `BabyDiapers` entries.
+
+- [ ] **Step 9: Update routes for new pages**
+
+```typescript
+// src/constants/routes.ts — add new paths
+export enum AppPath {
+  Home = '/',
+  Dashboard = '/dashboard',
+  Body = '/body',
+  Budget = '/budget',
+  BudgetAdd = '/budget/add',
+  Baby = '/baby',
+  BabyChild = '/baby/:childId',
+  Profile = '/profile',
+  Admin = '/admin',
+  AdminInvites = '/admin/invites',
+  AdminUsers = '/admin/users',
+  Invite = '/invite/:code',
+  Debug = '/debug',
+}
+```
+
+- [ ] **Step 10: Update messages.ts with new message enums**
+
+Add `BudgetMsg`, `BodyMsg`, `BabyMsg` enums for module-specific toast messages.
+
+- [ ] **Step 11: Run full type check**
+
+Run: `bun run typecheck`
+Expected: Errors from components still referencing old types. Note them — they'll be fixed in each phase.
+
+- [ ] **Step 12: Commit**
+
+```bash
+git add src/shared/types.ts src/constants/ src/shared/__tests__/types.test.ts
+git commit -m "feat: update shared enums and types for Phase 2"
+```
+
+### Task 0.2: Update Firestore Rules (All Phases)
+
+**Files:**
+- Modify: `firestore.rules`
+
+- [ ] **Step 1: Write complete updated rules**
+
+Replace `firestore.rules` with rules that cover all Phase 2 collections:
+
+```
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -141,3 +294,13 @@ service cloud.firestore {
     }
   }
 }
+```
+
+- [ ] **Step 2: Commit rules**
+
+```bash
+git add firestore.rules
+git commit -m "feat: update Firestore rules for Phase 2 (viewer role, children, budget, usernames)"
+```
+
+---

@@ -7,7 +7,7 @@ import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { Expense } from '@/modules/expenses/types';
 import { validateExpense } from '@/modules/expenses/validation';
 import { SyncStatus, isOk } from '@/shared/types';
-import { ExpenseMsg } from '@/constants/messages';
+import { BudgetMsg } from '@/constants/messages';
 import { DbSubcollection, userPath } from '@/constants/db';
 
 /** Provides expense CRUD operations with real-time sync and soft-delete */
@@ -79,7 +79,7 @@ export function useExpenses() {
         return false;
       }
 
-      addToast(ExpenseMsg.Added, 'success');
+      addToast(BudgetMsg.ExpenseAdded, 'success');
       return true;
     },
     [addToast],
@@ -102,7 +102,7 @@ export function useExpenses() {
         return;
       }
 
-      addToast(ExpenseMsg.Deleted, 'success');
+      addToast(BudgetMsg.ExpenseDeleted, 'success');
     },
     [addToast],
   );

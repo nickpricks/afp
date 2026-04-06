@@ -28,7 +28,7 @@ export async function initializeAdmin(
 
     const allEnabled: ModuleConfig = {
       [ModuleId.Body]: true,
-      [ModuleId.Expenses]: true,
+      [ModuleId.Budget]: true,
       [ModuleId.Baby]: true,
     };
     const profile = createDefaultProfile(name, UserRole.TheAdminNick, allEnabled);

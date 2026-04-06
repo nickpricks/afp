@@ -13,7 +13,7 @@ export function ExpenseListPage() {
     <div className="relative">
       <ExpenseList expenses={expenses} onDelete={deleteExpense} />
       <Link
-        to={ROUTES.EXPENSES_ADD}
+        to={ROUTES.BUDGET_ADD}
         className="fixed bottom-20 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg transition hover:bg-primary/90 active:scale-95"
         aria-label="Add expense"
       >

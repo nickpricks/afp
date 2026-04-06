@@ -26,7 +26,7 @@ export const AuthContext = createContext<AuthContextValue | null>(null);
 /** Dev-mode profile with all modules enabled */
 const DEV_PROFILE: UserProfile = createDefaultProfile('Dev User', UserRole.TheAdminNick, {
   [ModuleId.Body]: true,
-  [ModuleId.Expenses]: true,
+  [ModuleId.Budget]: true,
   [ModuleId.Baby]: true,
 });
 

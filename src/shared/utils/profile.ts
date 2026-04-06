@@ -8,12 +8,17 @@ export function createDefaultProfile(
   role: UserRole,
   modules: ModuleConfig = DEFAULT_MODULES,
 ): UserProfile {
+  const now = new Date().toISOString();
   return {
-    name,
     role,
-    modules,
+    name,
+    email: null,
+    username: null,
+    viewerOf: null,
     theme: CONFIG.DEFAULT_THEME,
     colorMode: 'system',
-    createdAt: new Date().toISOString(),
+    modules,
+    createdAt: now,
+    updatedAt: now,
   };
 }

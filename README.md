@@ -66,9 +66,15 @@ src/
 
 Family Blue (default, light+dark), Summit Instrument, Night City: Elevator, Deep: Mariana, Night City: Apartment, Industrial Furnace, Corporate Glass.
 
-## Firebase Setup
+## Docs
 
-See `docs/firebase-setup.md` for step-by-step guide.
+| Doc | What |
+|---|---|
+| `docs/firebase-setup.md` | Firebase setup guide |
+| `../docs/auth-journey.md` | Auth architecture: anonymous → Google sign-in, invite flow, lessons learned |
+| `docs/specs/2026-04-01-aprilfoolsjoke-design.md` | Original design spec |
+| `docs/plans/2026-04-01-aprilfoolsjoke-phase1.md` | Phase 1 implementation plan |
+| `docs/ROADMAP.md` | Prioritized backlog (P0-P3) |
 
 ## License
 

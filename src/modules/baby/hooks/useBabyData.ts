@@ -10,10 +10,10 @@ import { DbSubcollection } from '@/constants/db';
 export function useBabyData() {
   const { setSyncStatus } = useAuth();
 
-  const feedCol = useBabyCollection<FeedEntry>(DbSubcollection.BabyFeeds, 'Feed');
-  const sleepCol = useBabyCollection<SleepEntry>(DbSubcollection.BabySleep, 'Sleep');
-  const growthCol = useBabyCollection<GrowthEntry>(DbSubcollection.BabyGrowth, 'Growth');
-  const diaperCol = useBabyCollection<DiaperEntry>(DbSubcollection.BabyDiapers, 'Diaper');
+  const feedCol = useBabyCollection<FeedEntry>(DbSubcollection.Feeds, 'Feed');
+  const sleepCol = useBabyCollection<SleepEntry>(DbSubcollection.Sleep, 'Sleep');
+  const growthCol = useBabyCollection<GrowthEntry>(DbSubcollection.Growth, 'Growth');
+  const diaperCol = useBabyCollection<DiaperEntry>(DbSubcollection.Diapers, 'Diaper');
 
   // Only set Synced when ALL listeners have reported
   useEffect(() => {
