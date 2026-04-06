@@ -1,4 +1,4 @@
-import { FEED_TYPES, SLEEP_TYPES, SLEEP_QUALITIES, DIAPER_TYPES } from '@/modules/baby/constants';
+import { FeedType, SleepType, SleepQuality, DiaperType } from '@/modules/baby/types';
 import type { Result } from '@/shared/types';
 import { err, ok } from '@/shared/types';
 import { DATE_RE } from '@/shared/utils/regex';
@@ -6,12 +6,12 @@ import { DATE_RE } from '@/shared/utils/regex';
 /** Validates feed entry input */
 export function validateFeedEntry(input: {
   date: string;
-  type: string;
+  type: FeedType;
 }): Result<void> {
   if (!input.date || !DATE_RE.test(input.date)) {
     return err('Valid date is required');
   }
-  if (!(FEED_TYPES as readonly string[]).includes(input.type)) {
+  if (!(input.type in FeedType)) {
     return err('Invalid feed type');
   }
   return ok(undefined);
@@ -20,16 +20,16 @@ export function validateFeedEntry(input: {
 /** Validates sleep entry input */
 export function validateSleepEntry(input: {
   date: string;
-  type: string;
-  quality: string;
+  type: SleepType;
+  quality: SleepQuality | null;
 }): Result<void> {
   if (!input.date || !DATE_RE.test(input.date)) {
     return err('Valid date is required');
   }
-  if (!(SLEEP_TYPES as readonly string[]).includes(input.type)) {
+  if (!(input.type in SleepType)) {
     return err('Invalid sleep type');
   }
-  if (input.quality && !(SLEEP_QUALITIES as readonly string[]).includes(input.quality)) {
+  if (input.quality !== null && !(input.quality in SleepQuality)) {
     return err('Invalid sleep quality');
   }
   return ok(undefined);
@@ -38,12 +38,12 @@ export function validateSleepEntry(input: {
 /** Validates growth entry input */
 export function validateGrowthEntry(input: {
   date: string;
-  weight: number;
+  weight: number | null;
 }): Result<void> {
   if (!input.date || !DATE_RE.test(input.date)) {
     return err('Valid date is required');
   }
-  if (input.weight <= 0) {
+  if (input.weight !== null && input.weight <= 0) {
     return err('Weight must be positive');
   }
   return ok(undefined);
@@ -52,13 +52,27 @@ export function validateGrowthEntry(input: {
 /** Validates diaper entry input */
 export function validateDiaperEntry(input: {
   date: string;
-  type: string;
+  type: DiaperType;
 }): Result<void> {
   if (!input.date || !DATE_RE.test(input.date)) {
     return err('Valid date is required');
   }
-  if (!(DIAPER_TYPES as readonly string[]).includes(input.type)) {
+  if (!(input.type in DiaperType)) {
     return err('Invalid diaper type');
+  }
+  return ok(undefined);
+}
+
+/** Validates child input for add/update operations */
+export function validateChild(input: {
+  name: string;
+  dob: string;
+}): Result<void> {
+  if (!input.name || input.name.trim().length === 0) {
+    return err('Name is required');
+  }
+  if (!input.dob || !DATE_RE.test(input.dob)) {
+    return err('Valid date of birth is required');
   }
   return ok(undefined);
 }

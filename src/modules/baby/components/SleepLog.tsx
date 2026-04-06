@@ -2,14 +2,15 @@ import { useState } from 'react';
 
 import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { SleepEntry } from '@/modules/baby/types';
-import { SLEEP_TYPES, SLEEP_QUALITIES } from '@/modules/baby/constants';
+import { SleepType, SleepQuality } from '@/modules/baby/types';
+import { ALL_SLEEP_TYPES, ALL_SLEEP_QUALITIES, SLEEP_TYPE_LABELS, SLEEP_QUALITY_LABELS } from '@/modules/baby/constants';
 import { todayStr } from '@/shared/utils/date';
 
 /** Sleep tracking form with type/quality selection and recent entries list */
-export function SleepLog() {
-  const { sleeps, logSleep } = useBabyData();
-  const [type, setType] = useState<(typeof SLEEP_TYPES)[number]>(SLEEP_TYPES[0]);
-  const [quality, setQuality] = useState<(typeof SLEEP_QUALITIES)[number] | ''>(SLEEP_QUALITIES[0]);
+export function SleepLog({ childId }: { childId?: string }) {
+  const { sleeps, logSleep } = useBabyData(childId ?? null);
+  const [type, setType] = useState<SleepType>(SleepType.Nap);
+  const [quality, setQuality] = useState<SleepQuality | null>(SleepQuality.Good);
   const [date, setDate] = useState(todayStr);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
@@ -20,7 +21,17 @@ export function SleepLog() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    await logSleep({ date, startTime, endTime, type, quality, notes });
+    const now = new Date().toISOString();
+    await logSleep({
+      date,
+      startTime,
+      endTime,
+      type,
+      quality,
+      timestamp: now,
+      createdAt: now,
+      notes,
+    });
     setStartTime('');
     setEndTime('');
     setNotes('');
@@ -36,7 +47,7 @@ export function SleepLog() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex gap-2">
           {
-SLEEP_TYPES.map((st) => (
+ALL_SLEEP_TYPES.map((st) => (
             <button
               key={st}
               type="button"
@@ -49,7 +60,7 @@ SLEEP_TYPES.map((st) => (
               }`
 }
             >
-              {st}
+              {SLEEP_TYPE_LABELS[st]}
             </button>
           ))
 }
@@ -85,7 +96,7 @@ SLEEP_TYPES.map((st) => (
 
         <div className="flex gap-2">
           {
-SLEEP_QUALITIES.map((sq) => (
+ALL_SLEEP_QUALITIES.map((sq) => (
             <button
               key={sq}
               type="button"
@@ -98,7 +109,7 @@ SLEEP_QUALITIES.map((sq) => (
               }`
 }
             >
-              {sq}
+              {SLEEP_QUALITY_LABELS[sq]}
             </button>
           ))
 }
@@ -138,11 +149,12 @@ function RecentSleeps({ entries }: { entries: SleepEntry[] }) {
 entries.map((entry) => (
         <div key={entry.id} className="rounded-lg bg-surface-card border border-line p-3">
           <div className="flex justify-between text-sm">
-            <span className="font-medium text-fg">{entry.type}</span>
+            <span className="font-medium text-fg">{SLEEP_TYPE_LABELS[entry.type]}</span>
             <span className="text-fg-muted">{entry.date}</span>
           </div>
           <p className="text-xs text-fg-muted mt-1">
-            {entry.startTime} &ndash; {entry.endTime} &middot; {entry.quality}
+            {entry.startTime} &ndash; {entry.endTime}
+            {entry.quality !== null && ` \u00B7 ${SLEEP_QUALITY_LABELS[entry.quality]}`}
           </p>
           {
 entry.notes && (

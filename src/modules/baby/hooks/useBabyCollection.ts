@@ -5,10 +5,11 @@ import { useToast } from '@/shared/errors/useToast';
 import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import { isOk } from '@/shared/types';
-import { userPath } from '@/constants/db';
+import { childPath } from '@/constants/db';
 
-/** Generic hook for a baby subcollection — handles listener, state, and save */
+/** Generic hook for a baby subcollection nested under a child — handles listener, state, and save */
 export function useBabyCollection<T extends Record<string, unknown> & { id: string }>(
+  childId: string | null,
   subcollection: string,
   label: string,
 ) {
@@ -19,9 +20,9 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
   const adapterRef = useRef<StorageAdapter | null>(null);
 
   useEffect(() => {
-    if (!firebaseUser) return;
+    if (!firebaseUser || !childId) return;
 
-    const adapter = createAdapter(userPath(firebaseUser.uid));
+    const adapter = createAdapter(childPath(firebaseUser.uid, childId));
     adapterRef.current = adapter;
 
     const unsubscribe = adapter.onSnapshot<T>(
@@ -38,10 +39,8 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
     return () => {
       unsubscribe();
       adapterRef.current = null;
-      // Do not reset ready — it's a one-time "first snapshot arrived" signal.
-      // Resetting on unmount causes useBabyData to flip sync status to Syncing.
     };
-  }, [firebaseUser, subcollection, label]);
+  }, [firebaseUser, childId, subcollection, label]);
 
   const log = useCallback(
     async (data: Omit<T, 'id'>) => {

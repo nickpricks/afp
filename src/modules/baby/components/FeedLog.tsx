@@ -2,27 +2,22 @@ import { useState } from 'react';
 
 import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { FeedEntry } from '@/modules/baby/types';
-import { FEED_TYPES } from '@/modules/baby/constants';
+import { FeedType } from '@/modules/baby/types';
+import { ALL_FEED_TYPES, FEED_TYPE_LABELS } from '@/modules/baby/constants';
 import { todayStr, nowTime } from '@/shared/utils/date';
 
-/** Determines whether the feed type uses quantity (Bottle/Solid Food) */
-function isQuantityType(type: string): boolean {
-  return type === 'Bottle' || type === 'Solid Food';
-}
-
-/** Determines whether the feed type uses duration (Breast types) */
-function isDurationType(type: string): boolean {
-  return type.startsWith('Breast');
+/** Determines whether the feed type uses amount (Bottle/Solid Food) */
+function isAmountType(type: FeedType): boolean {
+  return type === FeedType.Bottle || type === FeedType.SolidFood;
 }
 
 /** Feed tracking form with type selection and recent entries list */
-export function FeedLog() {
-  const { feeds, logFeed } = useBabyData();
-  const [type, setType] = useState<(typeof FEED_TYPES)[number]>(FEED_TYPES[0]);
+export function FeedLog({ childId }: { childId?: string }) {
+  const { feeds, logFeed } = useBabyData(childId ?? null);
+  const [type, setType] = useState<FeedType>(FeedType.Bottle);
   const [date, setDate] = useState(todayStr);
   const [time, setTime] = useState(nowTime);
-  const [quantity, setQuantity] = useState(0);
-  const [duration, setDuration] = useState(0);
+  const [amount, setAmount] = useState<number | null>(null);
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -30,9 +25,17 @@ export function FeedLog() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    await logFeed({ date, time, type, quantity, duration, notes });
-    setQuantity(0);
-    setDuration(0);
+    const now = new Date().toISOString();
+    await logFeed({
+      date,
+      time,
+      type,
+      amount: isAmountType(type) ? amount : null,
+      timestamp: now,
+      createdAt: now,
+      notes,
+    });
+    setAmount(null);
     setNotes('');
     setTime(nowTime());
     setSaving(false);
@@ -47,7 +50,7 @@ export function FeedLog() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-wrap gap-2">
           {
-FEED_TYPES.map((ft) => (
+ALL_FEED_TYPES.map((ft) => (
             <button
               key={ft}
               type="button"
@@ -60,7 +63,7 @@ FEED_TYPES.map((ft) => (
               }`
 }
             >
-              {ft}
+              {FEED_TYPE_LABELS[ft]}
             </button>
           ))
 }
@@ -82,29 +85,14 @@ FEED_TYPES.map((ft) => (
         </div>
 
         {
-isQuantityType(type) && (
+isAmountType(type) && (
           <label className="flex flex-col gap-1">
-            <span className="text-sm text-fg-muted">Quantity (ml/g)</span>
+            <span className="text-sm text-fg-muted">Amount (ml/g)</span>
             <input
               type="number"
               min={0}
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
-            />
-          </label>
-        )
-}
-
-        {
-isDurationType(type) && (
-          <label className="flex flex-col gap-1">
-            <span className="text-sm text-fg-muted">Duration (minutes)</span>
-            <input
-              type="number"
-              min={0}
-              value={duration}
-              onChange={(e) => setDuration(Number(e.target.value))}
+              value={amount ?? ''}
+              onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : null)}
               className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
             />
           </label>
@@ -145,17 +133,12 @@ function RecentFeeds({ entries }: { entries: FeedEntry[] }) {
 entries.map((entry) => (
         <div key={entry.id} className="rounded-lg bg-surface-card border border-line p-3">
           <div className="flex justify-between text-sm">
-            <span className="font-medium text-fg">{entry.type}</span>
+            <span className="font-medium text-fg">{FEED_TYPE_LABELS[entry.type]}</span>
             <span className="text-fg-muted">{entry.date} {entry.time}</span>
           </div>
           {
-entry.quantity > 0 && (
-            <p className="text-xs text-fg-muted mt-1">{entry.quantity} ml/g</p>
-          )
-}
-          {
-entry.duration > 0 && (
-            <p className="text-xs text-fg-muted mt-1">{entry.duration} min</p>
+entry.amount !== null && entry.amount > 0 && (
+            <p className="text-xs text-fg-muted mt-1">{entry.amount} ml/g</p>
           )
 }
           {

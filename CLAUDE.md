@@ -78,6 +78,34 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Refs for async callbacks**: When `useCallback` needs current state in an async flow, use a ref (`fooRef.current`) alongside `useState` — avoids stale closures
 - **ESLint autofix**: `bunx eslint --fix <file>` handles `react/jsx-curly-newline` — don't manually fix these
 
+## Known Issues (fix later)
+
+- ~~**Body recent lists have no pagination**~~ — DONE: FloorsTab has "Show more" (7→30). WalkingTab/RunningTab still render all items — need pagination or virtual scroll for large datasets.
+- **ActivityLog edit UX**: Currently uses inline edit per row. Better approach: tap a row → populate the main form at top (distance pre-filled, button text changes to "Update", Cancel to dismiss). Same pattern for FloorsTab. Inline edit works but main-form edit is better mobile UX.
+- ~~**Expense FAB uses `bg-primary`**~~ — DONE: Changed to `bg-accent text-fg-on-accent`.
+- **No way to reconfigure Body module**: Once `body_config` is saved, there's no UI to change activity toggles or floor height. Nuking localStorage is the only reset. Needs a gear/settings entry point — either on BodyStats dashboard or Profile page (Phase 2d).
+- ~~**BodyStats quick action buttons are hardcoded**~~ — DONE: Now reads config, only shows enabled activity buttons.
+- ~~**RunningTab shows no activity list**~~ — DONE: BodyPage now passes all activities (not just today's).
+- **Cycling tab not implemented**: Same pattern as WalkingTab/RunningTab — distance-based, uses `ActivityType.Cycle`. Clone WalkingTab, swap enum. Config toggle already exists in `BodyConfig.cycling`.
+- **Yoga tab not implemented (coming soon)**: Duration-based, not distance. UI: duration input (minutes) + select dropdown of known yoga asanas. `BodyActivity` already supports `duration: number | null` with `distance: null`. Config toggle exists in `BodyConfig.yoga`.
+
+### Design Observations (from 2026-04-06 review)
+- **Stats score lacks context**: "45.4" has no goal/target reference. Consider progress ring, color gradient (green/amber/red), or daily goal indicator.
+- **Stats "THIS WEEK" card cramped**: 3 stats (Avg, Total, Streak) crammed in one row. Consider separate cards like Floors Up/Down.
+- ~~**Stats missing Run distance card**~~ — DONE: Run card now shows when `config.running` enabled or `runMeters > 0`.
+- **Floors recent list is flat**: All rows identical styling. Highlight today's row, dim older, consider subtle bar visualization.
+- **Walking/Running list no date grouping**: Activities dump in flat list. Group by date with sticky headers ("Today", "Yesterday", "Apr 4").
+- ~~**Walking tab shows redundant "Walk" label**~~ — DONE: Shows date instead of type label.
+- **Budget list has no summary header**: No daily/weekly total at top of expense list.
+- **Overall contrast low**: Family Blue theme (`#60a5fa` accent on white) feels washed out. Needs stronger card shadows or darker text contrast.
+
+### Stats Dashboard Design Samples (SAM/design-samples/)
+Three HTML mockups for the Body Stats dashboard — each maps to a theme family:
+- **stats-A-warm-instrument.html** → Family Blue / Summit Instrument — progress ring, warm terracotta, DM Serif Display, weekly bar chart
+- **stats-B-dense-editorial.html** → Corporate Glass — big bold score, data table with mini-bars, Fraunces serif, newspaper hierarchy
+- **stats-C-playful-streak.html** → Night City / Deep Mariana (dark) — streak banner with fire, XP progress bar, GitHub heatmap, Bricolage Grotesque
+All three to be implemented as theme-aware variants in Phase 2f. Can mix elements across samples.
+
 ## Gotchas
 
 - `src/vite-env.d.ts` must exist with `/// <reference types="vite/client" />` or CSS imports fail tsc

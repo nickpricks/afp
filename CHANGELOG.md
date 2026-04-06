@@ -4,6 +4,123 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.0] — 2026-04-06
+
+Phase 2 redesign — shared foundation, body module config/tabbed UI, baby multi-child architecture.
+
+### Phase 2.0: Shared Foundation
+
+| Change | What |
+|---|---|
+| `UserRole.Viewer` | New role for read-only family access, scoped via `viewerOf` field |
+| `ModuleId.Budget` | Renamed from `Expenses` — all references updated across codebase |
+| String enums | `ActivityType` (Walk, Run, Cycle, Yoga), `BudgetView` (Today, Week, Month, All) |
+| Numeric enums | `PaymentMethod` (7), `ExpenseCategory` (15), `IncomeSource` (5), `FeedType` (5), `SleepType` (2), `SleepQuality` (3), `DiaperType` (3) — JSDoc documented, compact Firestore storage |
+| `UserProfile` expanded | Added `email`, `username`, `viewerOf`, `updatedAt` fields |
+| `DbSubcollection` | Replaced `BabyFeeds`/`BabySleep`/`BabyGrowth`/`BabyDiapers` → `Feeds`/`Sleep`/`Growth`/`Diapers`; added `BodyConfig`, `BudgetConfig`, `Income`, `Children` |
+| Routes | Added `Dashboard`, `Budget*`, `BabyChild`, `Profile`, `AdminInvites`/`AdminUsers`; removed old baby sub-routes |
+| Messages | `ExpenseMsg` → `BudgetMsg`; added `BodyMsg`, `BabyMsg` with module-specific toasts |
+| `childPath()` helper | Builds `users/{uid}/children/{childId}` path |
+| Firestore rules | Viewer role (`isViewer`, `isViewerOf`), `exists()` guard on admin check, nested children subcollections, budget module (`'budget'` not `'expenses'`), `usernames` collection for uniqueness |
+| Tooling | `.worktrees/**` and `.claude/**` excluded from vitest + eslint (prevents cross-contamination from git worktrees) |
+
+### Phase 2a: Body Module Redesign
+
+| Change | What |
+|---|---|
+| `BodyConfig` type | Activity toggles (floors, walking, running, cycling, yoga) + `floorHeight` + `configuredAt` |
+| `BodyRecord` flattened | `.up`/`.down` instead of `.floors.up`/`.floors.down`; added `updatedAt` |
+| `BodyActivity` type | Replaces `ActivityEntry` — nullable `distance`/`duration`, uses shared `ActivityType` enum |
+| `useBodyConfig` hook | Listener + save for `body_config/main` document |
+| `BodyPage` | Tabbed container with config gate — shows `BodyConfigForm` if unconfigured, tabs if configured |
+| `BodyConfigForm` | Activity toggle checkboxes, floor height radio (2.5/3.0/3.5m), Cycling/Yoga as "coming soon" |
+| `BodyStats` | Today summary (floors, walk, score) + weekly stats dashboard |
+| `FloorsTab` | Floor counting with tap buttons + recent days list + inline edit/backfill |
+| `WalkingTab` / `RunningTab` | Activity logging + recent list |
+| `saveRecord()` | Added to `useBodyData` — allows saving/editing any date (backfill support) |
+| Scoring | Updated `computeBodyScore` for flattened `BodyRecord` shape |
+
+### Phase 2b: Baby Module Redesign
+
+| Change | What |
+|---|---|
+| `Child` / `ChildConfig` types | Multi-child support — name, dob, per-child module toggles (feeding, sleep, growth, diapers) |
+| Entry types updated | `FeedEntry`, `SleepEntry`, `GrowthEntry`, `DiaperEntry` now use numeric enums from shared types, added `timestamp`/`createdAt` |
+| `useChildren` hook | CRUD for `users/{uid}/children/{childId}` collection |
+| `useBabyCollection` refactored | Accepts `childId` parameter — paths now `users/{uid}/children/{childId}/feeds` (nested, not flat) |
+| `useBabyData` refactored | Takes `childId`, composes per-child subcollection hooks |
+| `BabyLanding` | All-children card view with age display, config badges, "Add Child" onboarding |
+| `AddChild` | Form for name, DOB, module toggles |
+| `ChildDetail` | Route-aware (`useParams`), per-child tabbed view: Dashboard + configured module tabs |
+| `computeAge()` | Utility: Newborn / X months / X years from DOB |
+| Log components | `FeedLog`, `SleepLog`, `GrowthLog`, `DiaperLog` accept `childId` prop |
+
+### Routing
+
+| Route | Component |
+|---|---|
+| `/body` | `BodyPage` (config gate → tabbed) |
+| `/baby` | `BabyLanding` (children list) |
+| `/baby/:childId` | `ChildDetail` (per-child tabs) |
+| `/budget` | `ExpenseListPage` (was `/expenses`) |
+| `/budget/add` | `AddExpensePage` (was `/expenses/add`) |
+
+### Bug Fixes
+
+| Bug | Fix |
+|---|---|
+| BodyStats buttons hardcoded | Now reads `BodyConfig`, only shows buttons for enabled activities |
+| RunningTab empty list | `BodyPage` passes all activities instead of `todayActivities` |
+| ActivityLog oldest first | Sorted by `createdAt` descending (newest first) |
+| ActivityLog no edit | Added inline tap-to-edit for distance |
+| Redundant "Walk"/"Run" label | Shows activity date instead of type on Walking/Running tabs |
+| FloorsTab capped at 7 | "Show more" expands to 30 days |
+| Expense FAB invisible | `bg-primary` → `bg-accent text-fg-on-accent` |
+| Stats missing Run card | Run distance card now shows when `config.running` enabled or has data |
+
+### Dev Tooling
+
+| Change | What |
+|---|---|
+| DevBench | Dev-only panel on `/debug` — seed random data per module with single or bulk (×100, ×1k) buttons |
+| Nuke localStorage | One-click wipe of all `afp:*` keys + reload |
+| Baby bench | Auto-creates random child (gibberish name, random DOB) on first press |
+| Bulk seed | `console.table` output for bulk runs |
+| `.worktrees`/`.claude` excluded | vitest + eslint ignore worktree/agent directories |
+
+### Design Samples
+
+| File | Direction |
+|---|---|
+| `SAM/design-samples/stats-A-warm-instrument.html` | Warm tones, progress ring, DM Serif, weekly bar chart → Family Blue / Summit |
+| `SAM/design-samples/stats-B-dense-editorial.html` | Editorial, data table with mini-bars, Fraunces → Corporate Glass |
+| `SAM/design-samples/stats-C-playful-streak.html` | Dark, gamified, streak banner, XP bar, heatmap → Night City / Deep Mariana |
+
+### Tests
+
+| Change | What |
+|---|---|
+| Phase 2.0 tests | All new enums, constants, routes, messages — 34 new tests |
+| Body tests | Config validation, gate logic, tab building, scoring with flattened records — 18 new tests |
+| Baby tests | Child type shapes, `computeAge`, `ChildDetail` render (MemoryRouter), validation with enums — 29 new tests |
+| Total | 60 → **143** tests (+83) across 17 test files |
+
+### Design Docs (created in brainstorming session)
+
+| File | What |
+|---|---|
+| `docs/specs/2026-04-06-phase2-design.md` | Full Phase 2 design spec — enums, Firestore schema, JSON examples, all 6 sub-phases |
+| `docs/plans/2026-04-06-phase2-master.md` | Master plan with progress table and phase links |
+| `docs/plans/2026-04-06-phase2-00-foundation.md` | Phase 0: shared enums, types, Firestore rules |
+| `docs/plans/2026-04-06-phase2-2a-body.md` | Phase 2a: body module redesign |
+| `docs/plans/2026-04-06-phase2-2b-baby.md` | Phase 2b: baby module redesign |
+| `docs/plans/2026-04-06-phase2-2c-budget.md` | Phase 2c: budget module (future) |
+| `docs/plans/2026-04-06-phase2-2d-profile.md` | Phase 2d: profile/settings (future) |
+| `docs/plans/2026-04-06-phase2-2e-admin-viewer.md` | Phase 2e: admin + viewer (future) |
+| `docs/plans/2026-04-06-phase2-2f-themes.md` | Phase 2f: new themes (future) |
+
+---
+
 ## [0.1.0] — 2026-04-04
 
 App goes live. Firebase connected, admin bootstrapped, Google auth, body module expanded.

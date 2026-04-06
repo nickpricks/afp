@@ -1,27 +1,45 @@
-/** Activity types for body tracking */
-export enum ActivityType {
-  Walk = 'walk',
-  Run = 'run',
-}
+import type { ActivityType } from '@/shared/types';
 
-/** All available activity types */
-export const ALL_ACTIVITY_TYPES: readonly ActivityType[] = [ActivityType.Walk, ActivityType.Run];
+/** Per-activity toggle configuration for the body module */
+export type BodyConfig = {
+  floors: boolean;
+  walking: boolean;
+  running: boolean;
+  cycling: boolean;
+  yoga: boolean;
+  floorHeight: number;
+  configuredAt: string;
+};
+
+/** Default body config with floors and walking enabled */
+export const DEFAULT_BODY_CONFIG: BodyConfig = {
+  floors: true,
+  walking: true,
+  running: false,
+  cycling: false,
+  yoga: false,
+  floorHeight: 3.0,
+  configuredAt: '',
+};
 
 /** Daily body tracking record — floors aggregate + summary of activities */
 export type BodyRecord = {
-  id: string;
   dateStr: string;
-  floors: { up: number; down: number };
+  up: number;
+  down: number;
   walkMeters: number;
   runMeters: number;
   total: number;
+  updatedAt: string;
 };
 
 /** Individual activity entry stored in body_activities subcollection */
-export type ActivityEntry = {
-  id: string;
+export type BodyActivity = {
+  id?: string;
   type: ActivityType;
-  distanceMeters: number;
-  dateStr: string;
+  distance: number | null;
+  duration: number | null;
+  date: string;
+  timestamp: string;
   createdAt: string;
 };

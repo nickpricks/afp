@@ -2,13 +2,14 @@ import { useState } from 'react';
 
 import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { DiaperEntry } from '@/modules/baby/types';
-import { DIAPER_TYPES } from '@/modules/baby/constants';
+import { DiaperType } from '@/modules/baby/types';
+import { ALL_DIAPER_TYPES, DIAPER_TYPE_LABELS } from '@/modules/baby/constants';
 import { todayStr, nowTime } from '@/shared/utils/date';
 
 /** Diaper tracking form with quick-log buttons and recent entries list */
-export function DiaperLog() {
-  const { diapers, logDiaper } = useBabyData();
-  const [type, setType] = useState<(typeof DIAPER_TYPES)[number]>(DIAPER_TYPES[0]);
+export function DiaperLog({ childId }: { childId?: string }) {
+  const { diapers, logDiaper } = useBabyData(childId ?? null);
+  const [type, setType] = useState<DiaperType>(DiaperType.Wet);
   const [date, setDate] = useState(todayStr);
   const [time, setTime] = useState(nowTime);
   const [notes, setNotes] = useState('');
@@ -18,16 +19,25 @@ export function DiaperLog() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    await logDiaper({ date, time, type, notes });
+    const now = new Date().toISOString();
+    await logDiaper({ date, time, type, timestamp: now, createdAt: now, notes });
     setNotes('');
     setTime(nowTime());
     setSaving(false);
   }
 
   /** Logs a diaper entry immediately with the given type and current date/time */
-  async function quickLog(quickType: (typeof DIAPER_TYPES)[number]) {
+  async function quickLog(quickType: DiaperType) {
     setSaving(true);
-    await logDiaper({ date: todayStr(), time: nowTime(), type: quickType, notes: '' });
+    const now = new Date().toISOString();
+    await logDiaper({
+      date: todayStr(),
+      time: nowTime(),
+      type: quickType,
+      timestamp: now,
+      createdAt: now,
+      notes: '',
+    });
     setSaving(false);
   }
 
@@ -41,7 +51,7 @@ export function DiaperLog() {
         <button
           type="button"
           disabled={saving}
-          onClick={() => quickLog('Wet')}
+          onClick={() => quickLog(DiaperType.Wet)}
           className="flex-1 py-3 rounded-lg bg-surface-card text-fg border border-line font-medium disabled:opacity-50 active:scale-95 transition-transform"
         >
           Quick Wet
@@ -49,7 +59,7 @@ export function DiaperLog() {
         <button
           type="button"
           disabled={saving}
-          onClick={() => quickLog('Dirty')}
+          onClick={() => quickLog(DiaperType.Dirty)}
           className="flex-1 py-3 rounded-lg bg-surface-card text-fg border border-line font-medium disabled:opacity-50 active:scale-95 transition-transform"
         >
           Quick Dirty
@@ -59,7 +69,7 @@ export function DiaperLog() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex gap-2">
           {
-DIAPER_TYPES.map((dt) => (
+ALL_DIAPER_TYPES.map((dt) => (
             <button
               key={dt}
               type="button"
@@ -72,7 +82,7 @@ DIAPER_TYPES.map((dt) => (
               }`
 }
             >
-              {dt}
+              {DIAPER_TYPE_LABELS[dt]}
             </button>
           ))
 }
@@ -127,7 +137,7 @@ function RecentDiapers({ entries }: { entries: DiaperEntry[] }) {
 entries.map((entry) => (
         <div key={entry.id} className="rounded-lg bg-surface-card border border-line p-3">
           <div className="flex justify-between text-sm">
-            <span className="font-medium text-fg">{entry.type}</span>
+            <span className="font-medium text-fg">{DIAPER_TYPE_LABELS[entry.type]}</span>
             <span className="text-fg-muted">{entry.date} {entry.time}</span>
           </div>
           {

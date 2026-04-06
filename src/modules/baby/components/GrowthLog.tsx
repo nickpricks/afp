@@ -5,12 +5,12 @@ import type { GrowthEntry } from '@/modules/baby/types';
 import { todayStr } from '@/shared/utils/date';
 
 /** Growth measurement form with weight, height, head circumference and recent entries */
-export function GrowthLog() {
-  const { growth, logGrowth } = useBabyData();
+export function GrowthLog({ childId }: { childId?: string }) {
+  const { growth, logGrowth } = useBabyData(childId ?? null);
   const [date, setDate] = useState(todayStr);
-  const [weight, setWeight] = useState(0);
-  const [height, setHeight] = useState(0);
-  const [headCircumference, setHeadCircumference] = useState(0);
+  const [weight, setWeight] = useState<number | null>(null);
+  const [height, setHeight] = useState<number | null>(null);
+  const [headCircumference, setHeadCircumference] = useState<number | null>(null);
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -18,10 +18,11 @@ export function GrowthLog() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    await logGrowth({ date, weight, height, headCircumference, notes });
-    setWeight(0);
-    setHeight(0);
-    setHeadCircumference(0);
+    const now = new Date().toISOString();
+    await logGrowth({ date, weight, height, headCircumference, createdAt: now, notes });
+    setWeight(null);
+    setHeight(null);
+    setHeadCircumference(null);
     setNotes('');
     setSaving(false);
   }
@@ -46,8 +47,8 @@ export function GrowthLog() {
             type="number"
             min={0}
             step={0.01}
-            value={weight}
-            onChange={(e) => setWeight(Number(e.target.value))}
+            value={weight ?? ''}
+            onChange={(e) => setWeight(e.target.value ? Number(e.target.value) : null)}
             className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
           />
         </label>
@@ -58,8 +59,8 @@ export function GrowthLog() {
             type="number"
             min={0}
             step={0.1}
-            value={height}
-            onChange={(e) => setHeight(Number(e.target.value))}
+            value={height ?? ''}
+            onChange={(e) => setHeight(e.target.value ? Number(e.target.value) : null)}
             className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
           />
         </label>
@@ -70,8 +71,8 @@ export function GrowthLog() {
             type="number"
             min={0}
             step={0.1}
-            value={headCircumference}
-            onChange={(e) => setHeadCircumference(Number(e.target.value))}
+            value={headCircumference ?? ''}
+            onChange={(e) => setHeadCircumference(e.target.value ? Number(e.target.value) : null)}
             className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
           />
         </label>
@@ -113,7 +114,11 @@ entries.map((entry) => (
             <span className="font-medium text-fg">{entry.date}</span>
           </div>
           <p className="text-xs text-fg-muted mt-1">
-            {entry.weight} kg &middot; {entry.height} cm &middot; HC {entry.headCircumference} cm
+            {entry.weight !== null && `${entry.weight} kg`}
+            {entry.weight !== null && entry.height !== null && ' \u00B7 '}
+            {entry.height !== null && `${entry.height} cm`}
+            {(entry.weight !== null || entry.height !== null) && entry.headCircumference !== null && ' \u00B7 '}
+            {entry.headCircumference !== null && `HC ${entry.headCircumference} cm`}
           </p>
           {
 entry.notes && (

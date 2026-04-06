@@ -1,16 +1,21 @@
 import { useState } from 'react';
 
-import { ActivityType, ALL_ACTIVITY_TYPES } from '@/modules/body/types';
 import { ACTIVITY_LABELS } from '@/modules/body/constants';
+import { ActivityType } from '@/shared/types';
 import { isValidNumber } from '@/shared/utils/validation';
+
+/** Available activity types for logging (cycle/yoga are coming soon) */
+const LOGGABLE_TYPES: readonly ActivityType[] = [ActivityType.Walk, ActivityType.Run];
 
 /** Form for logging a walk or run activity with distance input */
 export function AddActivity({
   onLog,
+  defaultType,
 }: {
   onLog: (type: ActivityType, distanceMeters: number) => Promise<void>;
+  defaultType?: ActivityType;
 }) {
-  const [type, setType] = useState<ActivityType>(ActivityType.Walk);
+  const [type, setType] = useState<ActivityType>(defaultType ?? ActivityType.Walk);
   const [distance, setDistance] = useState('');
   const [unit, setUnit] = useState<'m' | 'km'>('m');
   const [isSaving, setIsSaving] = useState(false);
@@ -32,26 +37,30 @@ export function AddActivity({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex gap-2">
-        {
-          ALL_ACTIVITY_TYPES.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setType(t)}
-              className={
-`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                t === type
-                  ? 'bg-accent text-fg-on-accent'
-                  : 'bg-surface-card text-fg border border-line'
-              }`
-}
-            >
-              {ACTIVITY_LABELS[t]}
-            </button>
-          ))
-        }
-      </div>
+      {
+        !defaultType && (
+          <div className="flex gap-2">
+            {
+              LOGGABLE_TYPES.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setType(t)}
+                  className={
+                    `flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                      t === type
+                        ? 'bg-accent text-fg-on-accent'
+                        : 'bg-surface-card text-fg border border-line'
+                    }`
+                  }
+                >
+                  {ACTIVITY_LABELS[t]}
+                </button>
+              ))
+            }
+          </div>
+        )
+      }
 
       <div className="flex gap-2">
         <input
@@ -67,10 +76,10 @@ export function AddActivity({
             type="button"
             onClick={() => setUnit('m')}
             className={
-`px-3 py-2 text-sm font-medium transition ${
-              unit === 'm' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'
-            }`
-}
+              `px-3 py-2 text-sm font-medium transition ${
+                unit === 'm' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'
+              }`
+            }
           >
             m
           </button>
@@ -78,10 +87,10 @@ export function AddActivity({
             type="button"
             onClick={() => setUnit('km')}
             className={
-`px-3 py-2 text-sm font-medium transition ${
-              unit === 'km' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'
-            }`
-}
+              `px-3 py-2 text-sm font-medium transition ${
+                unit === 'km' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'
+              }`
+            }
           >
             km
           </button>

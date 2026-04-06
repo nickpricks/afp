@@ -11,10 +11,11 @@ import { InviteRedeem } from '@/shared/auth/InviteRedeem';
 import { AdminPanel } from '@/admin/components/AdminPanel';
 import { InviteGenerator } from '@/admin/components/InviteGenerator';
 import { DebugPage } from '@/shared/components/DebugPage';
-import { BodyTracker } from '@/modules/body/components/BodyTracker';
+import { BodyPage } from '@/modules/body/components/BodyPage';
 import { ExpenseListPage } from '@/modules/expenses/pages/ExpenseListPage';
 import { AddExpensePage } from '@/modules/expenses/pages/AddExpensePage';
-import { FeedLog } from '@/modules/baby/components/FeedLog';
+import { BabyLanding } from '@/modules/baby/components/BabyLanding';
+import { ChildDetail } from '@/modules/baby/components/ChildDetail';
 import { ModuleId } from '@/shared/types';
 import { ROUTES } from '@/constants/routes';
 import { CONFIG } from '@/constants/config';
@@ -41,11 +42,11 @@ export function App() {
               <Route path={ROUTES.INVITE} element={<InviteRedeem />} />
               <Route element={<Layout />}>
                 <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.BODY} replace />} />
-                <Route path={ROUTES.BODY} element={<ModuleGate moduleId={ModuleId.Body}><BodyTracker /></ModuleGate>} />
+                <Route path={ROUTES.BODY} element={<ModuleGate moduleId={ModuleId.Body}><BodyPage /></ModuleGate>} />
                 <Route path={ROUTES.BUDGET} element={<ModuleGate moduleId={ModuleId.Budget}><ExpenseListPage /></ModuleGate>} />
                 <Route path={ROUTES.BUDGET_ADD} element={<ModuleGate moduleId={ModuleId.Budget}><AddExpensePage /></ModuleGate>} />
-                <Route path={ROUTES.BABY} element={<ModuleGate moduleId={ModuleId.Baby}><FeedLog /></ModuleGate>} />
-                <Route path={ROUTES.BABY_CHILD} element={<ModuleGate moduleId={ModuleId.Baby}><FeedLog /></ModuleGate>} />
+                <Route path={ROUTES.BABY} element={<ModuleGate moduleId={ModuleId.Baby}><BabyLanding /></ModuleGate>} />
+                <Route path={ROUTES.BABY_CHILD} element={<ModuleGate moduleId={ModuleId.Baby}><ChildDetail /></ModuleGate>} />
                 <Route path={ROUTES.ADMIN} element={<AdminGate><AdminPanel /></AdminGate>} />
                 <Route path={ROUTES.ADMIN_INVITES} element={<AdminGate><InviteGenerator /></AdminGate>} />
                 <Route path={ROUTES.DEBUG} element={<DebugPage />} />

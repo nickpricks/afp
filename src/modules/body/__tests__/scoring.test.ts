@@ -4,7 +4,7 @@ import { computeBodyScore, computeSteps } from '@/modules/body/scoring';
 
 /** Helper to build a minimal record for scoring */
 function rec(up: number, down: number, walkMeters = 0, runMeters = 0) {
-  return { floors: { up, down }, walkMeters, runMeters };
+  return { up, down, walkMeters, runMeters };
 }
 
 describe('computeBodyScore', () => {

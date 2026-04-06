@@ -29,6 +29,12 @@ export enum BodyMsg {
   ActivityDeleted = 'Activity deleted',
   FloorsUpdated = 'Floors updated',
   ConfigSaved = 'Body config saved',
+  ConfigFailed = 'Failed to save body config',
+  RecordSaved = 'Body record saved',
+  RecordFailed = 'Failed to save body record',
+  ActivityUpdated = 'Activity updated',
+  ActivityUpdateFailed = 'Failed to update activity',
+  AtLeastOneActivity = 'Enable at least one activity',
 }
 
 /** Baby module messages */
@@ -38,6 +44,7 @@ export enum BabyMsg {
   GrowthAdded = 'Growth recorded',
   DiaperAdded = 'Diaper logged',
   ChildAdded = 'Child added',
+  ChildUpdated = 'Child updated',
 }
 
 /** Context provider guard messages */

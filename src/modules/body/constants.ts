@@ -1,4 +1,4 @@
-import { ActivityType } from '@/modules/body/types';
+import { ActivityType } from '@/shared/types';
 
 /** Default physical constants for distance-to-step approximation */
 export const BODY_DEFAULTS = {
@@ -26,4 +26,9 @@ export const SCORING_WEIGHTS = {
 export const ACTIVITY_LABELS: Record<ActivityType, string> = {
   [ActivityType.Walk]: 'Walk',
   [ActivityType.Run]: 'Run',
+  [ActivityType.Cycle]: 'Cycle',
+  [ActivityType.Yoga]: 'Yoga',
 };
+
+/** Floor height options for config */
+export const FLOOR_HEIGHT_OPTIONS = [2.5, 3.0, 3.5] as const;

@@ -1,14 +1,66 @@
-import type { DIAPER_TYPES, FEED_TYPES, SLEEP_QUALITIES, SLEEP_TYPES } from './constants';
+// ─── Baby Enums ─────────────────────────────────────────────────────────────
+
+/** Feed type categories */
+export enum FeedType {
+  Bottle = 0,
+  BreastLeft = 1,
+  BreastRight = 2,
+  BreastBoth = 3,
+  SolidFood = 4,
+}
+
+/** Sleep type categories */
+export enum SleepType {
+  Nap = 0,
+  Night = 1,
+}
+
+/** Sleep quality ratings */
+export enum SleepQuality {
+  Good = 0,
+  Fair = 1,
+  Poor = 2,
+}
+
+/** Diaper change type categories */
+export enum DiaperType {
+  Wet = 0,
+  Dirty = 1,
+  Mixed = 2,
+}
+
+// ─── Child Types ────────────────────────────────────────────────────────────
+
+/** Per-child module toggles controlling which tracking tabs are visible */
+export type ChildConfig = {
+  feeding: boolean;
+  sleep: boolean;
+  growth: boolean;
+  diapers: boolean;
+};
+
+/** A child profile in the children collection */
+export type Child = {
+  id?: string;
+  name: string;
+  dob: string;
+  config: ChildConfig;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// ─── Entry Types ────────────────────────────────────────────────────────────
 
 /** Feed tracking entry — bottle, breast, or solid food */
 export type FeedEntry = {
   id: string;
   date: string;
   time: string;
-  type: (typeof FEED_TYPES)[number];
-  quantity: number;
+  type: FeedType;
+  amount: number | null;
+  timestamp: string;
+  createdAt: string;
   notes: string;
-  duration: number;
 };
 
 /** Sleep tracking entry — nap or night sleep */
@@ -17,8 +69,10 @@ export type SleepEntry = {
   date: string;
   startTime: string;
   endTime: string;
-  type: (typeof SLEEP_TYPES)[number];
-  quality: (typeof SLEEP_QUALITIES)[number] | '';
+  type: SleepType;
+  quality: SleepQuality | null;
+  timestamp: string;
+  createdAt: string;
   notes: string;
 };
 
@@ -26,9 +80,10 @@ export type SleepEntry = {
 export type GrowthEntry = {
   id: string;
   date: string;
-  weight: number;
-  height: number;
-  headCircumference: number;
+  weight: number | null;
+  height: number | null;
+  headCircumference: number | null;
+  createdAt: string;
   notes: string;
 };
 
@@ -37,6 +92,8 @@ export type DiaperEntry = {
   id: string;
   date: string;
   time: string;
-  type: (typeof DIAPER_TYPES)[number];
+  type: DiaperType;
+  timestamp: string;
+  createdAt: string;
   notes: string;
 };
