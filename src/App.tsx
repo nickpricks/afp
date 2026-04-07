@@ -11,6 +11,7 @@ import { InviteRedeem } from '@/shared/auth/InviteRedeem';
 import { AdminPanel } from '@/admin/components/AdminPanel';
 import { InviteGenerator } from '@/admin/components/InviteGenerator';
 import { DebugPage } from '@/shared/components/DebugPage';
+import { ProfilePage } from '@/shared/components/ProfilePage';
 import { BodyPage } from '@/modules/body/components/BodyPage';
 import { ExpenseListPage } from '@/modules/expenses/pages/ExpenseListPage';
 import { AddExpensePage } from '@/modules/expenses/pages/AddExpensePage';
@@ -47,6 +48,7 @@ export function App() {
                 <Route path={ROUTES.BUDGET_ADD} element={<ModuleGate moduleId={ModuleId.Budget}><AddExpensePage /></ModuleGate>} />
                 <Route path={ROUTES.BABY} element={<ModuleGate moduleId={ModuleId.Baby}><BabyLanding /></ModuleGate>} />
                 <Route path={ROUTES.BABY_CHILD} element={<ModuleGate moduleId={ModuleId.Baby}><ChildDetail /></ModuleGate>} />
+                <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
                 <Route path={ROUTES.ADMIN} element={<AdminGate><AdminPanel /></AdminGate>} />
                 <Route path={ROUTES.ADMIN_INVITES} element={<AdminGate><InviteGenerator /></AdminGate>} />
                 <Route path={ROUTES.DEBUG} element={<DebugPage />} />

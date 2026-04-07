@@ -1,52 +1,50 @@
 import { useState } from 'react';
 
-import { CATEGORIES, getAllCategoryIds, getSubCategories, PAYMENT_METHOD_LABELS } from '@/modules/expenses/categories';
-import { PaymentMethod, ExpenseCategory } from '@/shared/types';
+import { INCOME_SOURCE_LABELS, PAYMENT_METHOD_LABELS } from '@/modules/expenses/categories';
+import { IncomeSource, PaymentMethod } from '@/shared/types';
 import { CONFIG } from '@/constants/config';
 import { todayStr } from '@/shared/utils/date';
 import { isValidNumber } from '@/shared/utils/validation';
 
-/** Quick-access payment methods shown by default */
+/** Quick-access payment methods for income */
 const QUICK_PAYMENT_METHODS: PaymentMethod[] = [
   PaymentMethod.UpiBankAccount,
-  PaymentMethod.UpiCreditCard,
-  PaymentMethod.CreditCard,
+  PaymentMethod.BankAccountImps,
+  PaymentMethod.Cash,
 ];
 
-/** All remaining payment methods shown when expanded */
+/** Remaining payment methods shown when expanded */
 const EXTRA_PAYMENT_METHODS: PaymentMethod[] = [
-  PaymentMethod.Cash,
-  PaymentMethod.BankAccountImps,
+  PaymentMethod.UpiCreditCard,
+  PaymentMethod.CreditCard,
   PaymentMethod.BankAccountRtgs,
   PaymentMethod.BankAccountNeft,
 ];
 
-/** Form for adding a new expense with category, subcategory, amount, payment method, and note */
-export function AddExpense({
+/** All income source enum values (filter out reverse-mapped strings from numeric enum) */
+const ALL_INCOME_SOURCES = Object.values(IncomeSource).filter((v) => typeof v === 'number') as IncomeSource[];
+
+/** Form for adding a new income entry with source, amount, payment method, and note */
+export function AddIncome({
   onSubmit,
 }: {
   onSubmit: (input: {
     date: string;
-    category: ExpenseCategory;
-    subCat: string;
+    source: IncomeSource;
     amount: number;
     paymentMethod: PaymentMethod;
-    isSettlement: boolean;
     note: string;
   }) => Promise<boolean>;
 }) {
   const [date, setDate] = useState(todayStr);
-  const [category, setCategory] = useState<ExpenseCategory>(getAllCategoryIds()[0]!);
-  const [subCat, setSubCat] = useState('');
+  const [source, setSource] = useState<IncomeSource>(IncomeSource.Salary);
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.UpiBankAccount);
   const [showAllMethods, setShowAllMethods] = useState(false);
   const [note, setNote] = useState('');
 
-  const subCategories = getSubCategories(category);
   const parsedAmount = Number(amount);
   const isDisabled = !amount || !isValidNumber(parsedAmount);
-  const isSettlement = category === ExpenseCategory.Finance && subCat === 'Credit Card Payment';
 
   /** Handles form submission, clears fields on success */
   async function handleSubmit(e: React.FormEvent) {
@@ -54,18 +52,15 @@ export function AddExpense({
 
     const success = await onSubmit({
       date,
-      category,
-      subCat,
+      source,
       amount: parsedAmount,
       paymentMethod,
-      isSettlement,
       note,
     });
 
     if (success) {
       setAmount('');
       setNote('');
-      setSubCat('');
     }
   }
 
@@ -101,42 +96,21 @@ export function AddExpense({
       />
 
       <select
-        value={category}
-        onChange={
-(e) => {
-          setCategory(Number(e.target.value) as ExpenseCategory);
-          setSubCat('');
-        }
-}
+        value={source}
+        onChange={(e) => setSource(Number(e.target.value) as IncomeSource)}
         className="rounded-lg border border-line bg-surface-card px-3 py-2 text-fg"
       >
         {
-getAllCategoryIds().map((id) => (
-          <option key={id} value={id}>
-            {CATEGORIES[id]!.label}
-          </option>
-        ))
+ALL_INCOME_SOURCES.map((s) => {
+          const label = INCOME_SOURCE_LABELS[s];
+          return (
+            <option key={s} value={s}>
+              {label.emoji} {label.label}
+            </option>
+          );
+        })
 }
       </select>
-
-      {
-subCategories.length > 0 && (
-        <select
-          value={subCat}
-          onChange={(e) => setSubCat(e.target.value)}
-          className="rounded-lg border border-line bg-surface-card px-3 py-2 text-fg"
-        >
-          <option value="">-- Sub-category --</option>
-          {
-subCategories.map((sc) => (
-            <option key={sc} value={sc}>
-              {sc}
-            </option>
-          ))
-}
-        </select>
-      )
-}
 
       <div className="flex items-center gap-2">
         <span className="text-fg-muted text-sm font-medium">{CONFIG.CURRENCY_SYMBOL}</span>
@@ -184,7 +158,7 @@ showAllMethods && EXTRA_PAYMENT_METHODS.map(renderMethodBubble)
         disabled={isDisabled}
         className="rounded-lg bg-accent px-4 py-2 text-fg-on-accent font-medium disabled:opacity-40"
       >
-        {isSettlement ? 'Add Settlement' : 'Add Expense'}
+        Add Income
       </button>
     </form>
   );

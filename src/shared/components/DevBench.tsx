@@ -6,7 +6,8 @@ import type { BodyConfig, BodyRecord, BodyActivity } from '@/modules/body/types'
 import type { Child, FeedEntry, SleepEntry, DiaperEntry } from '@/modules/baby/types';
 import { FeedType, SleepType, SleepQuality, DiaperType } from '@/modules/baby/types';
 import type { Expense } from '@/modules/expenses/types';
-import { CATEGORIES } from '@/modules/expenses/categories';
+import { CATEGORIES, getAllCategoryIds } from '@/modules/expenses/categories';
+import { PaymentMethod } from '@/shared/types';
 import { todayStr } from '@/shared/utils/date';
 
 // ─── localStorage helpers ────────────────────────────────────────────────────
@@ -123,11 +124,12 @@ const benchRun = (): string => {
 
 /** Adds a random expense */
 const benchExpense = (): string => {
-  const catIds = Object.keys(CATEGORIES);
+  const catIds = getAllCategoryIds();
   const catId = pick(catIds);
   const cat = CATEGORIES[catId]!;
   const subCat = pick(cat.subCategories);
   const amount = rand(20, 5000);
+  const paymentMethods = Object.values(PaymentMethod).filter((v): v is PaymentMethod => typeof v === 'number');
   const now = new Date().toISOString();
   const expense: Expense = {
     id: crypto.randomUUID(),
@@ -135,6 +137,8 @@ const benchExpense = (): string => {
     category: catId,
     subCat,
     amount,
+    paymentMethod: pick(paymentMethods),
+    isSettlement: false,
     note: '',
     isDeleted: false,
     createdAt: now,

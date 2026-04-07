@@ -4,18 +4,18 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { useToast } from '@/shared/errors/useToast';
 import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
-import type { Expense } from '@/modules/expenses/types';
-import { validateExpense } from '@/modules/expenses/validation';
-import { SyncStatus, isOk, PaymentMethod } from '@/shared/types';
-import type { ExpenseCategory } from '@/shared/types';
+import type { Income } from '@/modules/expenses/types';
+import { validateIncome } from '@/modules/expenses/validation';
+import { SyncStatus, isOk } from '@/shared/types';
+import type { IncomeSource, PaymentMethod } from '@/shared/types';
 import { BudgetMsg } from '@/constants/messages';
 import { DbSubcollection, userPath } from '@/constants/db';
 
-/** Provides expense CRUD operations with real-time sync and soft-delete */
-export function useExpenses() {
+/** Provides income CRUD operations with real-time sync */
+export function useIncome() {
   const { firebaseUser, setSyncStatus } = useAuth();
   const { addToast } = useToast();
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [income, setIncome] = useState<Income[]>([]);
   const adapterRef = useRef<StorageAdapter | null>(null);
 
   useEffect(() => {
@@ -25,14 +25,14 @@ export function useExpenses() {
     adapterRef.current = adapter;
     setSyncStatus(SyncStatus.Syncing);
 
-    const unsubscribe = adapter.onSnapshot<Expense>(
-      DbSubcollection.Expenses,
+    const unsubscribe = adapter.onSnapshot<Income>(
+      DbSubcollection.Income,
       (items) => {
-        setExpenses(items.filter((e) => !e.isDeleted));
+        setIncome(items);
         setSyncStatus(SyncStatus.Synced);
       },
       (error) => {
-        console.error('[AFP] Expenses listener error:', error);
+        console.error('[AFP] Income listener error:', error);
         setSyncStatus(SyncStatus.Error);
       },
     );
@@ -43,18 +43,16 @@ export function useExpenses() {
     };
   }, [firebaseUser, setSyncStatus]);
 
-  /** Validates and persists a new expense, showing a toast on success or failure */
-  const addExpense = useCallback(
+  /** Validates and persists a new income entry, showing a toast on success or failure */
+  const addIncome = useCallback(
     async (input: {
       date: string;
-      category: ExpenseCategory;
-      subCat: string;
+      source: IncomeSource;
       amount: number;
-      paymentMethod?: PaymentMethod;
-      isSettlement?: boolean;
+      paymentMethod: PaymentMethod;
       note: string;
     }) => {
-      const validation = validateExpense(input);
+      const validation = validateIncome(input);
       if (!isOk(validation)) {
         addToast(validation.error, 'error');
         return false;
@@ -64,53 +62,46 @@ export function useExpenses() {
       if (!adapter) return false;
 
       const now = new Date().toISOString();
-      const expense: Expense = {
+      const entry: Income = {
         id: crypto.randomUUID(),
         date: input.date,
-        category: input.category,
-        subCat: input.subCat,
+        source: input.source,
         amount: input.amount,
-        paymentMethod: input.paymentMethod ?? PaymentMethod.UpiBankAccount,
-        isSettlement: input.isSettlement ?? false,
+        paymentMethod: input.paymentMethod,
         note: input.note,
-        isDeleted: false,
         createdAt: now,
         updatedAt: now,
       };
 
-      const result = await adapter.save(DbSubcollection.Expenses, { ...expense });
+      const result = await adapter.save(DbSubcollection.Income, { ...entry });
       if (!isOk(result)) {
         addToast(result.error, 'error');
         return false;
       }
 
-      addToast(BudgetMsg.ExpenseAdded, 'success');
+      addToast(BudgetMsg.IncomeAdded, 'success');
       return true;
     },
     [addToast],
   );
 
-  /** Soft-deletes an expense by marking it as deleted */
-  const deleteExpense = useCallback(
+  /** Deletes an income entry by ID */
+  const deleteIncome = useCallback(
     async (id: string) => {
       const adapter = adapterRef.current;
       if (!adapter) return;
 
-      const result = await adapter.save(DbSubcollection.Expenses, {
-        id,
-        isDeleted: true,
-        updatedAt: new Date().toISOString(),
-      });
+      const result = await adapter.remove(DbSubcollection.Income, id);
 
       if (!isOk(result)) {
         addToast(result.error, 'error');
         return;
       }
 
-      addToast(BudgetMsg.ExpenseDeleted, 'success');
+      addToast(BudgetMsg.IncomeDeleted, 'success');
     },
     [addToast],
   );
 
-  return { expenses, addExpense, deleteExpense };
+  return { income, addIncome, deleteIncome };
 }

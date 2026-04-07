@@ -4,7 +4,12 @@ export enum ValidationMsg {
   DateFormat = 'Date must be in YYYY-MM-DD format',
   UnknownCategory = 'Unknown category',
   AmountPositive = 'Amount must be greater than zero',
+  UnknownIncomeSource = 'Unknown income source',
   InviteNameRequired = 'Please enter a name for the invitee',
+  UsernameRequired = 'Username is required',
+  UsernameTooShort = 'Username must be at least 3 characters',
+  UsernameTooLong = 'Username must be at most 20 characters',
+  UsernameInvalid = 'Username can only contain letters, numbers, and underscores',
 }
 
 /** Invite-related messages */
@@ -45,6 +50,15 @@ export enum BabyMsg {
   DiaperAdded = 'Diaper logged',
   ChildAdded = 'Child added',
   ChildUpdated = 'Child updated',
+}
+
+/** Profile-related messages */
+export enum ProfileMsg {
+  UsernameClaimed = 'Username claimed',
+  UsernameReleased = 'Username released',
+  UsernameTaken = 'Username is already taken',
+  ThemeSaved = 'Theme updated',
+  ProfileUpdated = 'Profile updated',
 }
 
 /** Context provider guard messages */

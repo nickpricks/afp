@@ -1,13 +1,15 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 import { SyncStatusIndicator } from '@/shared/components/SyncStatus';
 import { TabBar } from '@/shared/components/TabBar';
 import { UpdatePrompt } from '@/shared/components/UpdatePrompt';
 import { GoogleSignInButton } from '@/shared/components/GoogleSignInButton';
 import { useAuth } from '@/shared/auth/useAuth';
+import { ROUTES } from '@/constants/routes';
 
 /** Root app shell with header, routed content area, tab bar, and PWA update prompt */
 export function Layout() {
+  const navigate = useNavigate();
   const { isLoading, profile, firebaseUser } = useAuth();
   const isAnonymous = firebaseUser?.isAnonymous ?? true;
 
@@ -42,12 +44,36 @@ export function Layout() {
           {isAnonymous && <GoogleSignInButton compact />}
           {
             !isAnonymous && firebaseUser?.photoURL && (
-              <img
-                src={firebaseUser.photoURL}
-                alt=""
-                referrerPolicy="no-referrer"
-                className="h-7 w-7 rounded-full border border-line"
-              />
+              <button type="button" onClick={() => navigate(ROUTES.PROFILE)} className="rounded-full">
+                <img
+                  src={firebaseUser.photoURL}
+                  alt="Profile"
+                  referrerPolicy="no-referrer"
+                  className="h-7 w-7 rounded-full border border-line"
+                />
+              </button>
+            )
+          }
+          {
+            !isAnonymous && !firebaseUser?.photoURL && (
+              <button
+                type="button"
+                onClick={() => navigate(ROUTES.PROFILE)}
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-fg-on-accent text-xs font-bold"
+              >
+                {profile?.name?.[0]?.toUpperCase() ?? 'U'}
+              </button>
+            )
+          }
+          {
+            isAnonymous && (
+              <button
+                type="button"
+                onClick={() => navigate(ROUTES.PROFILE)}
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-surface border border-line text-fg-muted text-xs font-bold"
+              >
+                D
+              </button>
             )
           }
           <SyncStatusIndicator />

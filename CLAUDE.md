@@ -34,7 +34,9 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Storage abstraction**: `StorageAdapter` interface in `src/shared/storage/`, Firebase impl + localStorage impl (dev mode). Factory: `createAdapter(basePath)` auto-selects
 - **Enums**: `ModuleId`, `SyncStatus`, `UserRole`, `AppPath`, `DbCollection`, `DbSubcollection`, `DbDoc`, `DbField`, `ThemeId`, `ActivityType` are TypeScript string enums — use enum members, not string literals
 - **Auth**: Anonymous auth + Google Sign-In (account linking). `signInWithGoogle()` in `google-auth.ts`. Invite flow requires Google sign-in before redemption
-- **Body module**: Floors (daily aggregate on `body/{dateKey}`) + walk/run activities (individual entries on `body_activities/{id}`). Scoring combines all
+- **Body module**: Config gate (`useBodyConfig` → `BodyConfigForm` if unconfigured, tabbed `BodyPage` if configured). Floors (daily aggregate on `body/{dateKey}`) + walk/run activities (`body_activities/{id}`). Config in `body_config/main`. Scoring combines all
+- **Budget module**: Directory is `src/modules/expenses/` but `ModuleId` is `Budget`. Income tracking via `useIncome`, payment methods via `PaymentMethod` enum, summary math in `budget-math.ts`
+- **Baby module**: Multi-child via `children/{childId}` collection. `useBabyCollection(childId, subcollection)` for nested paths. `BabyLanding` → `ChildDetail` routing
 - **Constants**: `constants/config.ts` (app config), `constants/routes.ts` (AppPath enum + ROUTES), `constants/db.ts` (Firestore paths), `constants/messages.ts` (error/toast messages)
 - **Result types**: Every async operation returns `Result<T>`, never void. Use `ok()`, `err()`, `isOk()`, `isErr()` from `@/shared/types`
 - **Error handling**: Toast notifications via `useToast()`, `ErrorBoundary` for React crashes, `SyncStatusIndicator` in header
@@ -47,6 +49,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Context + Provider** files export the Context object and the Provider component. Hook files import the Context.
 - `StorageAdapter.onSnapshot` accepts optional `onError` callback — always provide one in data hooks to surface listener failures
 - Firestore paths: invites at root `/invites/{code}`, config at `/app/config`, user profiles at `/users/{uid}/profile/main`, body activities at `/users/{uid}/body_activities/{id}`
+- Firestore paths: baby children at `/users/{uid}/children/{childId}`, baby subcollections at `/users/{uid}/children/{childId}/feeds/{id}` (nested, not flat)
 - **Baby hooks**: `useBabyCollection<T>` generic hook in `useBabyCollection.ts`, composed by `useBabyData`. Each subcollection tracks `ready` state independently — sync status only shows `Synced` when all 4 listeners have reported
 - **Generic data hooks**: `useBabyCollection<T>` pattern — reusable hook for subcollection listener + state + save. New modules should follow this pattern instead of duplicating listener boilerplate
 
@@ -88,6 +91,13 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - ~~**RunningTab shows no activity list**~~ — DONE: BodyPage now passes all activities (not just today's).
 - **Cycling tab not implemented**: Same pattern as WalkingTab/RunningTab — distance-based, uses `ActivityType.Cycle`. Clone WalkingTab, swap enum. Config toggle already exists in `BodyConfig.cycling`.
 - **Yoga tab not implemented (coming soon)**: Duration-based, not distance. UI: duration input (minutes) + select dropdown of known yoga asanas. `BodyActivity` already supports `duration: number | null` with `distance: null`. Config toggle exists in `BodyConfig.yoga`.
+- **Negative/zero amounts accepted in inputs but won't save**: Number inputs allow typing negative and zero values — validation blocks save (correct behavior), but UX should prevent entry or show inline error. Consider `min="0.01"` on number inputs or real-time validation feedback.
+- **Payment method bubbles don't deselect on second click**: Bubble selector should toggle — tap selected bubble to deselect (reset to no method). Currently stays selected. Same applies to all bubble/chip selectors across modules.
+- ~~**Income module throws app error**~~ — DONE: Fixed numeric enum `Object.values()` filter in AddIncome.tsx.
+- **Baby tabs need edit and delete**: Feed/Sleep/Growth/Diaper log entries have no edit or delete actions. Body module has inline edit, Expense has delete. Baby entries need both — tap row to edit (main-form pattern), swipe or icon to delete.
+- **Multi-baby not tested**: Only single child flow tested. Adding a second child, switching between children, and verifying data isolation across children needs manual/automated testing.
+- ~~**Profile page has no nav link**~~ — DONE: Header shows "D" button (dev) or avatar (prod) linking to /profile.
+- **Dev user mode possibilities**: Dev mode currently gives TheAdminNick role with all modules. Consider: (1) role switcher (test as User/Viewer), (2) module toggle (test with specific modules disabled), (3) simulate multiple users, (4) time travel (test with different "today" dates).
 
 ### Design Observations (from 2026-04-06 review)
 - **Stats score lacks context**: "45.4" has no goal/target reference. Consider progress ring, color gradient (green/amber/red), or daily goal indicator.
@@ -108,6 +118,10 @@ All three to be implemented as theme-aware variants in Phase 2f. Can mix element
 
 ## Gotchas
 
+- **Agent worktree drift**: `isolation: "worktree"` branches from repo HEAD, which may not match the working branch. Agents may miss recent changes (new enums, renamed routes) and invent members that don't exist. **Fix**: Either (1) merge working branch into master before dispatching, or (2) explicitly tell agents which enums/types/routes already exist in the prompts. **Conflict-prone files**: `App.tsx` (routes), `constants/db.ts`, `constants/messages.ts`, `constants/routes.ts`, `shared/types.ts` — these are shared across modules. When dispatching parallel agents, instruct them to NOT modify these files and instead list what they need added, so the coordinator merges cleanly. Module-internal files (`src/modules/{name}/`) are safe for agents to own
+- **Numeric enum `Object.values()` trap**: `Object.values(ExpenseCategory)` returns BOTH numbers AND reverse-mapped strings. Always filter: `.filter(v => typeof v === 'number')`. String enums don't have this issue
+- `vitest.config.ts` excludes `.worktrees/**` and `.claude/**` — prevents agent worktrees from contaminating test runs
+- `eslint.config.js` ignores `.worktrees` and `.claude` — same reason
 - `src/vite-env.d.ts` must exist with `/// <reference types="vite/client" />` or CSS imports fail tsc
 - `bun init -y` creates `index.ts`, `README.md`, `CLAUDE.md` that need manual cleanup
 - `tsconfig.json` was initialized by bun, then customized — keep the internal comments
