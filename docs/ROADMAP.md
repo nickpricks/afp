@@ -16,7 +16,8 @@ Last updated: 2026-04-07
 | Phase 2d (Profile) | 🚧 Partial | 6/9 | Missing: tests, negative tests, doc sweep |
 | Phase 2e (Admin+Viewer) | ❌ Not started | 0/35 | No viewer UI, no admin user management |
 | Phase 2f (Themes) | ❌ Not started | 0/18 | No new theme CSS, design samples exist |
-| **Total** | **~51%** | **86/170** | |
+| Phase 2g (E2E + Bench) | ❌ Not started | 0/8 | Interactive E2E flows, build/bundle/test benchmarks |
+| **Total** | **~51%** | **86/178** | |
 
 ---
 
@@ -40,7 +41,7 @@ All P0 items completed.
 | 🔨 | ReconciliationView — CC charges vs settlements UI | 2c | Not started |
 | 🔨 | BudgetView time-range — Today/Week/Month/All filter | 2c | Not started |
 | 🔨 | Amount presets — [10] [20] [50] [100] [200] bubbles | 2c | Not started |
-| 🔨 | Body module reconfigure — gear icon to re-enter config | 2d | Not started |
+| ~~🔨~~ | ~~Body module reconfigure — gear icon to re-enter config~~ | 2d | DONE |
 | 🔨 | Link/unlink auth providers in profile | 2d | Not started |
 | 🔨 | Admin user management — list users, toggle modules | 2e | Not started |
 | 🔨 | Viewer role UI — read-only dashboard, invite flow | 2e | Not started |
@@ -52,15 +53,16 @@ All P0 items completed.
 
 | | Bug | Module | Severity |
 |---|-----|--------|----------|
-| 🐛 | Walking/Running list no pagination | Body | Medium |
+| ~~🐛~~ | ~~Walking/Running list no pagination~~ | Body | ~~Medium~~ — DONE (ActivityLog 7→30) |
 | 🐛 | Walking/Running list no date grouping | Body | Medium |
 | 🐛 | Floors recent list flat styling | Body | Low |
 | 🐛 | Stats score lacks context (no goal) | Body | Low |
 | 🐛 | Stats "THIS WEEK" card cramped | Body | Low |
 | 🐛 | ActivityLog edit UX (inline → main-form) | Body | Low |
-| 🐛 | Payment method bubbles don't deselect | Budget | Low |
-| 🐛 | Negative/zero amounts accepted in inputs | All | Low |
-| 🐛 | Baby tabs need edit and delete | Baby | Medium |
+| ~~🐛~~ | ~~Payment method bubbles don't deselect~~ | Budget | ~~Low~~ — DONE (toggle deselect) |
+| ~~🐛~~ | ~~Negative/zero amounts accepted in inputs~~ | All | ~~Low~~ — DONE (min/step attrs) |
+| 🐛 | Baby tabs need edit (tap-to-populate) | Baby | Medium |
+| ~~🐛~~ | ~~Baby tabs need delete~~ | Baby | ~~Medium~~ — DONE (x button on all 4 logs) |
 | 🐛 | Multi-baby not tested | Baby | Medium |
 | 🐛 | Budget list no summary header | Budget | Low |
 | 🐛 | Overall contrast low (Family Blue) | Theme | Low |
@@ -70,7 +72,7 @@ All P0 items completed.
 
 | | Feature | Module | Effort |
 |---|---------|--------|--------|
-| 💡 | Cycling tab — clone WalkingTab, swap enum | Body | Small |
+| ~~💡~~ | ~~Cycling tab — clone WalkingTab, swap enum~~ | Body | ~~Small~~ — DONE |
 | 💡 | Yoga tab — duration + asana select | Body | Medium |
 | 💡 | Daily challenge / streak | Body | Medium |
 | 💡 | Configurable scoring weights | Body | Small |
@@ -78,6 +80,19 @@ All P0 items completed.
 | 💡 | Growth chart visualization | Baby | Medium |
 | 💡 | Expense bulk import | Budget | Medium |
 | 💡 | Dev mode enhancements — role switcher, time travel | Dev | Medium |
+
+## P2 — Phase 2g: E2E Interaction Tests + Benchmarking
+
+| | Item | Phase | Status |
+|---|------|-------|--------|
+| 🔨 | E2E: Budget full expense flow (fill form → submit → verify in list) | 2g | Not started |
+| 🔨 | E2E: Body configure → log floors → switch tab → log walk → verify | 2g | Not started |
+| 🔨 | E2E: Payment bubble toggle (select → deselect → verify styling) | 2g | Not started |
+| 🔨 | E2E: Body gear reconfigure (click gear → enable running → save → verify tab) | 2g | Not started |
+| 🔨 | E2E: Baby add child → navigate to child → log feed → verify in recent | 2g | Not started |
+| 🔨 | Bench: build time measurement (vite build with timing) | 2g | Not started |
+| 🔨 | Bench: bundle size report from dist/ | 2g | Not started |
+| 🔨 | Bench: test suite duration tracking (unit + E2E) | 2g | Not started |
 
 ## P3 — Future
 

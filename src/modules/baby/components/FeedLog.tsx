@@ -13,7 +13,7 @@ function isAmountType(type: FeedType): boolean {
 
 /** Feed tracking form with type selection and recent entries list */
 export function FeedLog({ childId }: { childId?: string }) {
-  const { feeds, logFeed } = useBabyData(childId ?? null);
+  const { feeds, logFeed, removeFeed } = useBabyData(childId ?? null);
   const [type, setType] = useState<FeedType>(FeedType.Bottle);
   const [date, setDate] = useState(todayStr);
   const [time, setTime] = useState(nowTime);
@@ -117,13 +117,13 @@ isAmountType(type) && (
         </button>
       </form>
 
-      <RecentFeeds entries={recentFeeds} />
+      <RecentFeeds entries={recentFeeds} onRemove={removeFeed} />
     </div>
   );
 }
 
-/** Renders a sorted list of recent feed entries */
-function RecentFeeds({ entries }: { entries: FeedEntry[] }) {
+/** Renders a sorted list of recent feed entries with delete action */
+function RecentFeeds({ entries, onRemove }: { entries: FeedEntry[]; onRemove: (id: string) => Promise<void> }) {
   if (entries.length === 0) return null;
 
   return (
@@ -134,7 +134,17 @@ entries.map((entry) => (
         <div key={entry.id} className="rounded-lg bg-surface-card border border-line p-3">
           <div className="flex justify-between text-sm">
             <span className="font-medium text-fg">{FEED_TYPE_LABELS[entry.type]}</span>
-            <span className="text-fg-muted">{entry.date} {entry.time}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-fg-muted">{entry.date} {entry.time}</span>
+              <button
+                type="button"
+                aria-label="Delete"
+                onClick={() => onRemove(entry.id)}
+                className="text-xs text-fg-muted hover:text-red-500 transition-colors"
+              >
+                x
+              </button>
+            </div>
           </div>
           {
 entry.amount !== null && entry.amount > 0 && (

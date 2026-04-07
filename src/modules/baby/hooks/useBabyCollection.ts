@@ -57,5 +57,20 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
     [addToast, subcollection, label],
   );
 
-  return { items, ready, log };
+  /** Removes an entry by ID */
+  const remove = useCallback(
+    async (id: string) => {
+      const adapter = adapterRef.current;
+      if (!adapter) return;
+      const result = await adapter.remove(subcollection, id);
+      if (isOk(result)) {
+        addToast(`${label} deleted`, 'success');
+      } else {
+        addToast(result.error, 'error');
+      }
+    },
+    [addToast, subcollection, label],
+  );
+
+  return { items, ready, log, remove };
 }

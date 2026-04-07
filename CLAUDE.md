@@ -22,6 +22,8 @@ Firebase setup: `docs/firebase-setup.md`
 - `bun run clean` — removes dist, coverage, dev-dist, reports
 - Single test: `bunx vitest run src/shared/__tests__/types.test.ts`
 
+- `bun run dev -- --port 3005 --host` — dev server on custom port with network access (for Chrome DevTools MCP)
+
 Package manager: **bun** (not npm/yarn). Cross-platform scripts use **shx** (not bash).
 
 ## Architecture
@@ -83,18 +85,18 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 
 ## Known Issues (fix later)
 
-- ~~**Body recent lists have no pagination**~~ — DONE: FloorsTab has "Show more" (7→30). WalkingTab/RunningTab still render all items — need pagination or virtual scroll for large datasets.
+- ~~**Body recent lists have no pagination**~~ — DONE: FloorsTab has "Show more" (7→30). ActivityLog (shared by Walking/Running/Cycling) now also has "Show more" (7→30).
 - **ActivityLog edit UX**: Currently uses inline edit per row. Better approach: tap a row → populate the main form at top (distance pre-filled, button text changes to "Update", Cancel to dismiss). Same pattern for FloorsTab. Inline edit works but main-form edit is better mobile UX.
 - ~~**Expense FAB uses `bg-primary`**~~ — DONE: Changed to `bg-accent text-fg-on-accent`.
-- **No way to reconfigure Body module**: Once `body_config` is saved, there's no UI to change activity toggles or floor height. Nuking localStorage is the only reset. Needs a gear/settings entry point — either on BodyStats dashboard or Profile page (Phase 2d).
+- ~~**No way to reconfigure Body module**~~ — DONE: ⚙ gear button in tab bar opens `BodyConfigForm` pre-filled with current config.
 - ~~**BodyStats quick action buttons are hardcoded**~~ — DONE: Now reads config, only shows enabled activity buttons.
 - ~~**RunningTab shows no activity list**~~ — DONE: BodyPage now passes all activities (not just today's).
-- **Cycling tab not implemented**: Same pattern as WalkingTab/RunningTab — distance-based, uses `ActivityType.Cycle`. Clone WalkingTab, swap enum. Config toggle already exists in `BodyConfig.cycling`.
+- ~~**Cycling tab not implemented**~~ — DONE: `CyclingTab` component added, wired into `BodyPage`, config form checkbox enabled.
 - **Yoga tab not implemented (coming soon)**: Duration-based, not distance. UI: duration input (minutes) + select dropdown of known yoga asanas. `BodyActivity` already supports `duration: number | null` with `distance: null`. Config toggle exists in `BodyConfig.yoga`.
-- **Negative/zero amounts accepted in inputs but won't save**: Number inputs allow typing negative and zero values — validation blocks save (correct behavior), but UX should prevent entry or show inline error. Consider `min="0.01"` on number inputs or real-time validation feedback.
-- **Payment method bubbles don't deselect on second click**: Bubble selector should toggle — tap selected bubble to deselect (reset to no method). Currently stays selected. Same applies to all bubble/chip selectors across modules.
+- ~~**Negative/zero amounts accepted in inputs but won't save**~~ — DONE: All number inputs now have `min`/`step` attributes. Amounts: `min="0.01" step="0.01"`, floors: `min="0" step="1"`.
+- ~~**Payment method bubbles don't deselect on second click**~~ — DONE: Clicking active bubble now deselects (`PaymentMethod | null`). Toggle pattern applied to expense payment selector.
 - ~~**Income module throws app error**~~ — DONE: Fixed numeric enum `Object.values()` filter in AddIncome.tsx.
-- **Baby tabs need edit and delete**: Feed/Sleep/Growth/Diaper log entries have no edit or delete actions. Body module has inline edit, Expense has delete. Baby entries need both — tap row to edit (main-form pattern), swipe or icon to delete.
+- ~~**Baby tabs need edit and delete**~~ — PARTIAL: Delete buttons added to all 4 baby log components via `useBabyCollection.remove`. Edit (tap-to-populate-form) still TODO.
 - **Multi-baby not tested**: Only single child flow tested. Adding a second child, switching between children, and verifying data isolation across children needs manual/automated testing.
 - ~~**Profile page has no nav link**~~ — DONE: Header shows "D" button (dev) or avatar (prod) linking to /profile.
 - **Dev user mode possibilities**: Dev mode currently gives TheAdminNick role with all modules. Consider: (1) role switcher (test as User/Viewer), (2) module toggle (test with specific modules disabled), (3) simulate multiple users, (4) time travel (test with different "today" dates).
@@ -119,6 +121,7 @@ All three to be implemented as theme-aware variants in Phase 2f. Can mix element
 ## Gotchas
 
 - **Agent worktree drift**: `isolation: "worktree"` branches from repo HEAD, which may not match the working branch. Agents may miss recent changes (new enums, renamed routes) and invent members that don't exist. **Fix**: Either (1) merge working branch into master before dispatching, or (2) explicitly tell agents which enums/types/routes already exist in the prompts. **Conflict-prone files**: `App.tsx` (routes), `constants/db.ts`, `constants/messages.ts`, `constants/routes.ts`, `shared/types.ts` — these are shared across modules. When dispatching parallel agents, instruct them to NOT modify these files and instead list what they need added, so the coordinator merges cleanly. Module-internal files (`src/modules/{name}/`) are safe for agents to own
+- `import foo from '../path/file.md?raw'` — Vite raw import returns string at build time. Typed by `vite/client` — no `@ts-expect-error` needed
 - **Numeric enum `Object.values()` trap**: `Object.values(ExpenseCategory)` returns BOTH numbers AND reverse-mapped strings. Always filter: `.filter(v => typeof v === 'number')`. String enums don't have this issue
 - `vitest.config.ts` excludes `.worktrees/**` and `.claude/**` — prevents agent worktrees from contaminating test runs
 - `eslint.config.js` ignores `.worktrees` and `.claude` — same reason

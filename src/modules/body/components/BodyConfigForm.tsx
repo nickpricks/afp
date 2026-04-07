@@ -12,7 +12,7 @@ const ACTIVITY_TOGGLES: ActivityToggle[] = [
   { key: 'floors', label: 'Floors', disabled: false },
   { key: 'walking', label: 'Walking', disabled: false },
   { key: 'running', label: 'Running', disabled: false },
-  { key: 'cycling', label: 'Cycling (coming soon)', disabled: true },
+  { key: 'cycling', label: 'Cycling', disabled: false },
   { key: 'yoga', label: 'Yoga (coming soon)', disabled: true },
 ];
 

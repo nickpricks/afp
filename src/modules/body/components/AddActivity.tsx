@@ -4,8 +4,8 @@ import { ACTIVITY_LABELS } from '@/modules/body/constants';
 import { ActivityType } from '@/shared/types';
 import { isValidNumber } from '@/shared/utils/validation';
 
-/** Available activity types for logging (cycle/yoga are coming soon) */
-const LOGGABLE_TYPES: readonly ActivityType[] = [ActivityType.Walk, ActivityType.Run];
+/** Available activity types for logging (yoga is coming soon) */
+const LOGGABLE_TYPES: readonly ActivityType[] = [ActivityType.Walk, ActivityType.Run, ActivityType.Cycle];
 
 /** Form for logging a walk or run activity with distance input */
 export function AddActivity({
@@ -66,6 +66,8 @@ export function AddActivity({
         <input
           type="number"
           inputMode="decimal"
+          min="0.01"
+          step="0.01"
           placeholder="Distance"
           value={distance}
           onChange={(e) => setDistance(e.target.value)}

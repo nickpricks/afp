@@ -8,7 +8,7 @@ import { todayStr } from '@/shared/utils/date';
 
 /** Sleep tracking form with type/quality selection and recent entries list */
 export function SleepLog({ childId }: { childId?: string }) {
-  const { sleeps, logSleep } = useBabyData(childId ?? null);
+  const { sleeps, logSleep, removeSleep } = useBabyData(childId ?? null);
   const [type, setType] = useState<SleepType>(SleepType.Nap);
   const [quality, setQuality] = useState<SleepQuality | null>(SleepQuality.Good);
   const [date, setDate] = useState(todayStr);
@@ -133,13 +133,13 @@ ALL_SLEEP_QUALITIES.map((sq) => (
         </button>
       </form>
 
-      <RecentSleeps entries={recentSleeps} />
+      <RecentSleeps entries={recentSleeps} onRemove={removeSleep} />
     </div>
   );
 }
 
-/** Renders a sorted list of recent sleep entries */
-function RecentSleeps({ entries }: { entries: SleepEntry[] }) {
+/** Renders a sorted list of recent sleep entries with delete action */
+function RecentSleeps({ entries, onRemove }: { entries: SleepEntry[]; onRemove: (id: string) => Promise<void> }) {
   if (entries.length === 0) return null;
 
   return (
@@ -150,7 +150,17 @@ entries.map((entry) => (
         <div key={entry.id} className="rounded-lg bg-surface-card border border-line p-3">
           <div className="flex justify-between text-sm">
             <span className="font-medium text-fg">{SLEEP_TYPE_LABELS[entry.type]}</span>
-            <span className="text-fg-muted">{entry.date}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-fg-muted">{entry.date}</span>
+              <button
+                type="button"
+                aria-label="Delete"
+                onClick={() => onRemove(entry.id)}
+                className="text-xs text-fg-muted hover:text-red-500 transition-colors"
+              >
+                x
+              </button>
+            </div>
           </div>
           <p className="text-xs text-fg-muted mt-1">
             {entry.startTime} &ndash; {entry.endTime}

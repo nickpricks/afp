@@ -31,5 +31,9 @@ export function useBabyData(childId: string | null) {
     logSleep: sleepCol.log,
     logGrowth: growthCol.log,
     logDiaper: diaperCol.log,
+    removeFeed: feedCol.remove,
+    removeSleep: sleepCol.remove,
+    removeGrowth: growthCol.remove,
+    removeDiaper: diaperCol.remove,
   };
 }

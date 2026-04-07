@@ -13,6 +13,9 @@ const QUICK_PAYMENT_METHODS: PaymentMethod[] = [
   PaymentMethod.CreditCard,
 ];
 
+/** Quick-tap amount presets */
+const AMOUNT_PRESETS = [10, 20, 50, 100, 200];
+
 /** All remaining payment methods shown when expanded */
 const EXTRA_PAYMENT_METHODS: PaymentMethod[] = [
   PaymentMethod.Cash,
@@ -30,7 +33,7 @@ export function AddExpense({
     category: ExpenseCategory;
     subCat: string;
     amount: number;
-    paymentMethod: PaymentMethod;
+    paymentMethod: PaymentMethod | null;
     isSettlement: boolean;
     note: string;
   }) => Promise<boolean>;
@@ -39,7 +42,7 @@ export function AddExpense({
   const [category, setCategory] = useState<ExpenseCategory>(getAllCategoryIds()[0]!);
   const [subCat, setSubCat] = useState('');
   const [amount, setAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.UpiBankAccount);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(PaymentMethod.UpiBankAccount);
   const [showAllMethods, setShowAllMethods] = useState(false);
   const [note, setNote] = useState('');
 
@@ -77,7 +80,7 @@ export function AddExpense({
       <button
         key={method}
         type="button"
-        onClick={() => setPaymentMethod(method)}
+        onClick={() => setPaymentMethod(paymentMethod === method ? null : method)}
         className={
 `rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
           isActive
@@ -143,11 +146,28 @@ subCategories.map((sc) => (
         <input
           type="number"
           inputMode="decimal"
+          min="0.01"
+          step="0.01"
           placeholder="Amount"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="flex-1 rounded-lg border border-line bg-surface-card px-3 py-2 text-fg"
         />
+      </div>
+
+      <div className="flex gap-1.5">
+        {
+          AMOUNT_PRESETS.map((preset) => (
+            <button
+              key={preset}
+              type="button"
+              onClick={() => setAmount(String(preset))}
+              className="flex-1 rounded-lg border border-line bg-surface-card px-2 py-1 text-xs font-medium text-fg-muted hover:border-accent/50 transition-colors"
+            >
+              {preset}
+            </button>
+          ))
+        }
       </div>
 
       <div className="flex flex-col gap-1.5">

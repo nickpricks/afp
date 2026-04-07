@@ -8,7 +8,7 @@ import { todayStr, nowTime } from '@/shared/utils/date';
 
 /** Diaper tracking form with quick-log buttons and recent entries list */
 export function DiaperLog({ childId }: { childId?: string }) {
-  const { diapers, logDiaper } = useBabyData(childId ?? null);
+  const { diapers, logDiaper, removeDiaper } = useBabyData(childId ?? null);
   const [type, setType] = useState<DiaperType>(DiaperType.Wet);
   const [date, setDate] = useState(todayStr);
   const [time, setTime] = useState(nowTime);
@@ -121,13 +121,13 @@ ALL_DIAPER_TYPES.map((dt) => (
         </button>
       </form>
 
-      <RecentDiapers entries={recentDiapers} />
+      <RecentDiapers entries={recentDiapers} onRemove={removeDiaper} />
     </div>
   );
 }
 
-/** Renders a sorted list of recent diaper entries */
-function RecentDiapers({ entries }: { entries: DiaperEntry[] }) {
+/** Renders a sorted list of recent diaper entries with delete action */
+function RecentDiapers({ entries, onRemove }: { entries: DiaperEntry[]; onRemove: (id: string) => Promise<void> }) {
   if (entries.length === 0) return null;
 
   return (
@@ -138,7 +138,17 @@ entries.map((entry) => (
         <div key={entry.id} className="rounded-lg bg-surface-card border border-line p-3">
           <div className="flex justify-between text-sm">
             <span className="font-medium text-fg">{DIAPER_TYPE_LABELS[entry.type]}</span>
-            <span className="text-fg-muted">{entry.date} {entry.time}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-fg-muted">{entry.date} {entry.time}</span>
+              <button
+                type="button"
+                aria-label="Delete"
+                onClick={() => onRemove(entry.id)}
+                className="text-xs text-fg-muted hover:text-red-500 transition-colors"
+              >
+                x
+              </button>
+            </div>
           </div>
           {
 entry.notes && (

@@ -4,9 +4,10 @@ import {
   computeTotalIncome,
   computeTotalSpent,
   computeCCOutstanding,
+  filterByDateRange,
 } from '@/modules/expenses/budget-math';
 import type { Expense, Income } from '@/modules/expenses/types';
-import { ExpenseCategory, IncomeSource, PaymentMethod } from '@/shared/types';
+import { BudgetView, ExpenseCategory, IncomeSource, PaymentMethod } from '@/shared/types';
 
 /** Creates a minimal expense for testing */
 function makeExpense(overrides: Partial<Expense> = {}): Expense {
@@ -110,5 +111,41 @@ describe('computeCCOutstanding', () => {
 
   it('returns 0 for empty array', () => {
     expect(computeCCOutstanding([])).toBe(0);
+  });
+});
+
+describe('filterByDateRange', () => {
+  const expenses = [
+    makeExpense({ date: '2026-04-07' }),
+    makeExpense({ date: '2026-04-06' }),
+    makeExpense({ date: '2026-04-03' }),
+    makeExpense({ date: '2026-03-15' }),
+    makeExpense({ date: '2025-12-01' }),
+  ];
+
+  it('All returns everything', () => {
+    expect(filterByDateRange(expenses, BudgetView.All, '2026-04-07')).toHaveLength(5);
+  });
+
+  it('Today returns only today', () => {
+    const result = filterByDateRange(expenses, BudgetView.Today, '2026-04-07');
+    expect(result).toHaveLength(1);
+    expect(result[0]!.date).toBe('2026-04-07');
+  });
+
+  it('Week returns last 7 days', () => {
+    const result = filterByDateRange(expenses, BudgetView.Week, '2026-04-07');
+    // Apr 7, 6, 3 are within 7 days; Mar 15 and Dec 1 are not
+    expect(result).toHaveLength(3);
+  });
+
+  it('Month returns last 30 days', () => {
+    const result = filterByDateRange(expenses, BudgetView.Month, '2026-04-07');
+    // Apr 7, 6, 3 and Mar 15 are within 30 days; Dec 1 is not
+    expect(result).toHaveLength(4);
+  });
+
+  it('returns empty array for empty input', () => {
+    expect(filterByDateRange([], BudgetView.Today, '2026-04-07')).toHaveLength(0);
   });
 });

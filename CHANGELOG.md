@@ -4,6 +4,56 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.1] — 2026-04-07
+
+Bug fixes and feature additions (TDD).
+
+### Bug Fixes
+
+| Change | What |
+|---|---|
+| Payment bubble toggle | Clicking an active payment method bubble now deselects it. `paymentMethod` state is `PaymentMethod \| null` — `null` means no method selected. Bubbles across all chip selectors should follow this toggle pattern |
+| Number input min/step constraints | All `type="number"` inputs now have `min` and `step` attributes: amounts use `min="0.01" step="0.01"`, floor counts use `min="0" step="1"`. Prevents browser from accepting negative/zero values. Affected: `AddExpense`, `AddIncome`, `AddActivity`, `ActivityLog`, `FloorsTab` (6 inputs total; baby `GrowthLog` already had `min={0}`) |
+
+### New Features
+
+| Change | What |
+|---|---|
+| Cycling tab | `CyclingTab` component — same pattern as Walking/Running: `AddActivity` with `ActivityType.Cycle` default + `ActivityLog` filtered to cycle activities. Wired into `BodyPage` tab bar via `buildTabs(config)`. `BodyConfigForm` checkbox no longer disabled |
+| Body reconfigure | ⚙ gear button in `BodyPage` tab bar opens `BodyConfigForm` pre-filled with current config. Saving returns to tabbed view. Users can now change activity toggles and floor height after initial setup |
+| Activity list pagination | `ActivityLog` now shows 7 activities by default with "Show more" to expand to 30. Applies to Walking, Running, and Cycling tabs |
+| Baby entry delete | All 4 baby log components (`FeedLog`, `SleepLog`, `GrowthLog`, `DiaperLog`) now have "x" delete buttons on each recent entry. `useBabyCollection` exposes `remove(id)` via the `StorageAdapter.remove` method. `useBabyData` exposes `removeFeed`, `removeSleep`, `removeGrowth`, `removeDiaper` |
+| Budget time-range filter | `filterByDateRange()` in `budget-math.ts` — generic filter for Today/Week/Month/All using `BudgetView` enum. `ExpenseListPage` has 4-button toggle bar. Summary cards, expense list, and income list all reflect the selected range |
+| Amount presets | Quick-tap [10] [20] [50] [100] [200] buttons below amount input in `AddExpense`. Tapping fills the amount field |
+| CC Reconciliation | `ReconciliationView` component — shows CC charges, settlements, and outstanding balance. Accessible via "CC" tab on budget landing page. Respects time-range filter |
+
+### Tests Added
+
+| Test | File |
+|---|---|
+| Payment bubble deselect on 2nd click | `src/modules/expenses/__tests__/AddExpense.test.tsx` |
+| No payment method → submits null | `src/modules/expenses/__tests__/AddExpense.test.tsx` |
+| All bubbles deselectable | `src/modules/expenses/__tests__/AddExpense.test.tsx` |
+| Amount input has min="0.01" | `src/modules/expenses/__tests__/AddExpense.test.tsx` |
+| Amount input has step="0.01" | `src/modules/expenses/__tests__/AddExpense.test.tsx` |
+| CyclingTab renders with Cycle default | `src/modules/body/__tests__/CyclingTab.test.tsx` |
+| CyclingTab filters to cycle activities only | `src/modules/body/__tests__/CyclingTab.test.tsx` |
+| CyclingTab hides log when no cycle activities | `src/modules/body/__tests__/CyclingTab.test.tsx` |
+| BodyPage gear button visible when configured | `src/modules/body/__tests__/BodyPage.test.tsx` |
+| Gear button opens config form | `src/modules/body/__tests__/BodyPage.test.tsx` |
+| Config form pre-filled with current config | `src/modules/body/__tests__/BodyPage.test.tsx` |
+| ActivityLog shows max 7 by default | `src/modules/body/__tests__/ActivityLog.test.tsx` |
+| "Show more" appears when >7 activities | `src/modules/body/__tests__/ActivityLog.test.tsx` |
+| No "Show more" when <=7 activities | `src/modules/body/__tests__/ActivityLog.test.tsx` |
+| "Show more" expands to 30 | `src/modules/body/__tests__/ActivityLog.test.tsx` |
+| FeedLog shows delete button on entries | `src/modules/baby/__tests__/BabyLogActions.test.tsx` |
+| Delete button calls removeFeed with correct ID | `src/modules/baby/__tests__/BabyLogActions.test.tsx` |
+| filterByDateRange: All/Today/Week/Month + empty | `src/modules/expenses/__tests__/summary.test.ts` (5 tests) |
+| Amount presets render, fill, replace | `src/modules/expenses/__tests__/AddExpense.test.tsx` (3 tests) |
+| ReconciliationView summary + outstanding + empty | `src/modules/expenses/__tests__/ReconciliationView.test.tsx` (3 tests) |
+
+---
+
 ## [0.2.0] — 2026-04-06
 
 Phase 2 redesign — shared foundation, body module config/tabbed UI, baby multi-child architecture.

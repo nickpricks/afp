@@ -22,11 +22,14 @@ export function AddExpensePage() {
     category: ExpenseCategory;
     subCat: string;
     amount: number;
-    paymentMethod: PaymentMethod;
+    paymentMethod: PaymentMethod | null;
     isSettlement: boolean;
     note: string;
   }): Promise<boolean> {
-    const success = await addExpense(input);
+    const success = await addExpense({
+      ...input,
+      paymentMethod: input.paymentMethod ?? undefined,
+    });
     if (success) {
       navigate('/expenses', { replace: true });
     }

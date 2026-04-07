@@ -65,7 +65,7 @@ test.describe('Body — Config gate', () => {
     await expect(page.getByText('Floors')).toBeVisible();
     await expect(page.getByText('Walking')).toBeVisible();
     await expect(page.getByText('Running')).toBeVisible();
-    await expect(page.getByText('Cycling (coming soon)')).toBeVisible();
+    await expect(page.getByLabel('Cycling')).toBeVisible();
     await expect(page.getByText('Yoga (coming soon)')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Save Configuration' })).toBeVisible();
   });

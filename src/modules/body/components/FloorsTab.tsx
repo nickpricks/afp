@@ -95,6 +95,8 @@ export function FloorsTab({
                           <input
                             type="number"
                             inputMode="numeric"
+                            min="0"
+                            step="1"
                             value={editUp}
                             onChange={(e) => setEditUp(e.target.value)}
                             placeholder="Up"
@@ -103,6 +105,8 @@ export function FloorsTab({
                           <input
                             type="number"
                             inputMode="numeric"
+                            min="0"
+                            step="1"
                             value={editDown}
                             onChange={(e) => setEditDown(e.target.value)}
                             placeholder="Down"

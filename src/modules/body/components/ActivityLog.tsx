@@ -22,8 +22,15 @@ export function ActivityLog({
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDistance, setEditDistance] = useState('');
+  const [showAll, setShowAll] = useState(false);
+
+  const INITIAL_LIMIT = 7;
+  const EXPANDED_LIMIT = 30;
 
   const sorted = [...activities].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const limit = showAll ? EXPANDED_LIMIT : INITIAL_LIMIT;
+  const visible = sorted.slice(0, limit);
+  const hasMore = sorted.length > limit;
 
   const startEdit = (activity: BodyActivity) => {
     setEditingId(activity.id ?? null);
@@ -43,7 +50,7 @@ export function ActivityLog({
       <h3 className="text-xs font-medium text-fg-muted uppercase tracking-wide">Activities</h3>
       <ul className="flex flex-col gap-1">
         {
-          sorted.map((a) => (
+          visible.map((a) => (
             <li key={a.id ?? a.createdAt}>
               {
                 editingId === a.id && (
@@ -52,6 +59,8 @@ export function ActivityLog({
                     <input
                       type="number"
                       inputMode="numeric"
+                      min="0.01"
+                      step="0.01"
                       value={editDistance}
                       onChange={(e) => setEditDistance(e.target.value)}
                       placeholder="meters"
@@ -90,6 +99,17 @@ export function ActivityLog({
           ))
         }
       </ul>
+      {
+        hasMore && (
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            className="text-xs text-accent font-medium py-1"
+          >
+            Show more ({sorted.length - limit} remaining)
+          </button>
+        )
+      }
     </div>
   );
 }

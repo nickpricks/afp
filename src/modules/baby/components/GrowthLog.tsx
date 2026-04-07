@@ -6,7 +6,7 @@ import { todayStr } from '@/shared/utils/date';
 
 /** Growth measurement form with weight, height, head circumference and recent entries */
 export function GrowthLog({ childId }: { childId?: string }) {
-  const { growth, logGrowth } = useBabyData(childId ?? null);
+  const { growth, logGrowth, removeGrowth } = useBabyData(childId ?? null);
   const [date, setDate] = useState(todayStr);
   const [weight, setWeight] = useState<number | null>(null);
   const [height, setHeight] = useState<number | null>(null);
@@ -95,13 +95,13 @@ export function GrowthLog({ childId }: { childId?: string }) {
         </button>
       </form>
 
-      <RecentGrowth entries={recentGrowth} />
+      <RecentGrowth entries={recentGrowth} onRemove={removeGrowth} />
     </div>
   );
 }
 
-/** Renders a sorted list of recent growth measurements */
-function RecentGrowth({ entries }: { entries: GrowthEntry[] }) {
+/** Renders a sorted list of recent growth measurements with delete action */
+function RecentGrowth({ entries, onRemove }: { entries: GrowthEntry[]; onRemove: (id: string) => Promise<void> }) {
   if (entries.length === 0) return null;
 
   return (
@@ -112,6 +112,14 @@ entries.map((entry) => (
         <div key={entry.id} className="rounded-lg bg-surface-card border border-line p-3">
           <div className="flex justify-between text-sm">
             <span className="font-medium text-fg">{entry.date}</span>
+            <button
+              type="button"
+              aria-label="Delete"
+              onClick={() => onRemove(entry.id)}
+              className="text-xs text-fg-muted hover:text-red-500 transition-colors"
+            >
+              x
+            </button>
           </div>
           <p className="text-xs text-fg-muted mt-1">
             {entry.weight !== null && `${entry.weight} kg`}
