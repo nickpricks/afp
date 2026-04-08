@@ -23,7 +23,7 @@ const noop = vi.fn();
 
 describe('ActivityLog — pagination', () => {
   it('shows at most 7 activities by default', () => {
-    render(<ActivityLog activities={makeActivities(15)} onSave={noop} />);
+    render(<ActivityLog activities={makeActivities(15)} onEdit={noop} />);
     // Each activity renders as a button with date text
     const rows = screen.getAllByRole('button');
     // Should be 7 activity rows + 1 "Show more" button = 8
@@ -31,17 +31,17 @@ describe('ActivityLog — pagination', () => {
   });
 
   it('shows "Show more" when more than 7 activities', () => {
-    render(<ActivityLog activities={makeActivities(15)} onSave={noop} />);
+    render(<ActivityLog activities={makeActivities(15)} onEdit={noop} />);
     expect(screen.getByRole('button', { name: /show more/i })).toBeInTheDocument();
   });
 
   it('does not show "Show more" when 7 or fewer activities', () => {
-    render(<ActivityLog activities={makeActivities(5)} onSave={noop} />);
+    render(<ActivityLog activities={makeActivities(5)} onEdit={noop} />);
     expect(screen.queryByRole('button', { name: /show more/i })).not.toBeInTheDocument();
   });
 
   it('clicking "Show more" reveals up to 30 activities', () => {
-    render(<ActivityLog activities={makeActivities(25)} onSave={noop} />);
+    render(<ActivityLog activities={makeActivities(25)} onEdit={noop} />);
     fireEvent.click(screen.getByRole('button', { name: /show more/i }));
     const rows = screen.getAllByRole('button');
     // 25 activity rows, no "Show more" since 25 < 30

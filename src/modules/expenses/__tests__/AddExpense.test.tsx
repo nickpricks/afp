@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 
 import { AddExpense } from '@/modules/expenses/components/AddExpense';
 
@@ -105,12 +105,13 @@ describe('AddExpense — payment method bubbles', () => {
 
     // Fill required fields and submit
     fireEvent.change(screen.getByPlaceholderText('Amount'), { target: { value: '100' } });
-    fireEvent.submit(screen.getByRole('button', { name: 'Add Expense' }));
 
-    await vi.waitFor(() => {
-      expect(onSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({ paymentMethod: null }),
-      );
+    await act(async () => {
+      fireEvent.submit(screen.getByRole('button', { name: 'Add Expense' }));
     });
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ paymentMethod: null }),
+    );
   });
 });

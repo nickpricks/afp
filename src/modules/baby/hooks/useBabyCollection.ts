@@ -78,5 +78,21 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
     [addToast, subcollection, label],
   );
 
-  return { items, ready, log, remove };
+  /** Updates an existing entry by ID */
+  const update = useCallback(
+    async (data: T) => {
+      if (readOnly) return;
+      const adapter = adapterRef.current;
+      if (!adapter) return;
+      const result = await adapter.save(subcollection, data);
+      if (isOk(result)) {
+        addToast(`${label} updated`, 'success');
+      } else {
+        addToast(result.error, 'error');
+      }
+    },
+    [addToast, subcollection, label],
+  );
+
+  return { items, ready, log, update, remove };
 }
