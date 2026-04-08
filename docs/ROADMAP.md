@@ -81,6 +81,7 @@ All P0 items completed.
 | 💡 | Growth chart visualization | Baby | Medium |
 | 💡 | Expense bulk import | Budget | Medium |
 | 💡 | Dev mode enhancements — role switcher, time travel | Dev | Medium |
+| 💡 | Climbing stick-figure loading animation — port from Floor-Tracker (`LoadingScreen.tsx`). Inline SVG, CSS-only, theme-aware. Shows during Firestore cache hydration | UI | Small |
 
 ## P2 — Phase 2g: E2E Interaction Tests + Benchmarking
 
