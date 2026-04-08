@@ -10,14 +10,14 @@ Last updated: 2026-04-07
 |-------|--------|-------|-------|
 | Phase 1 (Scaffold) | ✅ Done | — | Shipped as v0.1.0 |
 | Phase 2.0 (Foundation) | ✅ Done | 14/14 | Enums, types, Firestore rules, routes |
-| Phase 2a (Body) | ✅ Core done | 27/34 | Missing: bodyPage render test, Firestore rule verification |
-| Phase 2b (Baby) | ✅ Core done | 21/23 | Missing: Firestore rule verification |
-| Phase 2c (Budget) | 🚧 Partial | 18/28 | Missing: ReconciliationView, time-range views, Firestore verification |
+| Phase 2a (Body) | ✅ Core done | 30/34 | +3: CyclingTab, gear reconfigure, ActivityLog pagination. Missing: Firestore rule verification |
+| Phase 2b (Baby) | ✅ Core done | 23/23 | +2: delete on all 4 logs. Firestore rules TBD |
+| Phase 2c (Budget) | ✅ Core done | 28/28 | +3: ReconciliationView, time-range filter, amount presets. Firestore rules TBD |
 | Phase 2d (Profile) | 🚧 Partial | 6/9 | Missing: tests, negative tests, doc sweep |
-| Phase 2e (Admin+Viewer) | ❌ Not started | 0/35 | No viewer UI, no admin user management |
-| Phase 2f (Themes) | ❌ Not started | 0/18 | No new theme CSS, design samples exist |
+| Phase 2e (Admin+Viewer) | 🚧 In progress | 9/35 | Dashboard done. Admin pages + viewer flow planned |
+| Phase 2f (Themes) | 📋 Analyzed | 0/18 | Theme analysis spec written, design samples exist |
 | Phase 2g (E2E + Bench) | ❌ Not started | 0/8 | Interactive E2E flows, build/bundle/test benchmarks |
-| **Total** | **~51%** | **86/178** | |
+| **Total** | **~55%** | **96/178** | |
 
 ---
 
@@ -38,13 +38,14 @@ All P0 items completed.
 
 | | Item | Phase | Status |
 |---|------|-------|--------|
-| 🔨 | ReconciliationView — CC charges vs settlements UI | 2c | Not started |
-| 🔨 | BudgetView time-range — Today/Week/Month/All filter | 2c | Not started |
-| 🔨 | Amount presets — [10] [20] [50] [100] [200] bubbles | 2c | Not started |
+| ~~🔨~~ | ~~ReconciliationView — CC charges vs settlements UI~~ | 2c | DONE |
+| ~~🔨~~ | ~~BudgetView time-range — Today/Week/Month/All filter~~ | 2c | DONE |
+| ~~🔨~~ | ~~Amount presets — [10] [20] [50] [100] [200] bubbles~~ | 2c | DONE |
 | ~~🔨~~ | ~~Body module reconfigure — gear icon to re-enter config~~ | 2d | DONE |
 | 🔨 | Link/unlink auth providers in profile | 2d | Not started |
-| 🔨 | Admin user management — list users, toggle modules | 2e | Not started |
-| 🔨 | Viewer role UI — read-only dashboard, invite flow | 2e | Not started |
+| ~~🔨~~ | ~~Universal Dashboard — role-aware home page~~ | 2e | DONE |
+| 🔨 | Admin user management — list users, toggle modules | 2e | Planned |
+| 🔨 | Viewer role UI — read-only dashboard, invite flow | 2e | Planned |
 | 🔨 | 3 new themes — Lullaby, NurseryOs, MidnightFeed CSS | 2f | Not started |
 | 🔨 | Ambient effects — per-theme animations | 2f | Not started |
 | 🔨 | Apply design samples to components | 2f | Not started |
@@ -108,6 +109,23 @@ All P0 items completed.
 ---
 
 ## Done
+
+### 2026-04-07 — Session 4 (Bug fixes, Phase 2c completion, Dashboard planning)
+
+- [x] Bug fix: payment bubble toggle deselect
+- [x] Bug fix: number input min/step constraints (all modules)
+- [x] Bug fix: ActivityLog pagination 7→30 (Walking/Running/Cycling)
+- [x] Bug fix: baby entry delete on all 4 log components
+- [x] Feature: CyclingTab + config form enabled
+- [x] Feature: body reconfigure via gear button
+- [x] Feature: budget time-range filter (Today/Week/Month/All)
+- [x] Feature: amount presets [10][20][50][100][200]
+- [x] Feature: ReconciliationView (CC charges vs settlements)
+- [x] E2E fix: Cycling config label updated
+- [x] Specs: Universal Dashboard design + Theme system analysis
+- [x] Plan: Universal Dashboard implementation (9 tasks)
+- [x] Unit tests: 189 → 217 (+28)
+- [x] E2E tests: 38 (all passing)
 
 ### 2026-04-07 — Session 3 (Phase 2 sprint)
 

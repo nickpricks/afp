@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { AuthProvider } from '@/shared/auth/auth-context';
 import { ToastProvider } from '@/shared/errors/toast-context';
@@ -17,6 +17,7 @@ import { ExpenseListPage } from '@/modules/expenses/pages/ExpenseListPage';
 import { AddExpensePage } from '@/modules/expenses/pages/AddExpensePage';
 import { BabyLanding } from '@/modules/baby/components/BabyLanding';
 import { ChildDetail } from '@/modules/baby/components/ChildDetail';
+import { Dashboard } from '@/shared/components/Dashboard';
 import { ModuleId } from '@/shared/types';
 import { ROUTES } from '@/constants/routes';
 import { CONFIG } from '@/constants/config';
@@ -42,7 +43,8 @@ export function App() {
             <Routes>
               <Route path={ROUTES.INVITE} element={<InviteRedeem />} />
               <Route element={<Layout />}>
-                <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.BODY} replace />} />
+                <Route path={ROUTES.HOME} element={<Dashboard />} />
+                <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
                 <Route path={ROUTES.BODY} element={<ModuleGate moduleId={ModuleId.Body}><BodyPage /></ModuleGate>} />
                 <Route path={ROUTES.BUDGET} element={<ModuleGate moduleId={ModuleId.Budget}><ExpenseListPage /></ModuleGate>} />
                 <Route path={ROUTES.BUDGET_ADD} element={<ModuleGate moduleId={ModuleId.Budget}><AddExpensePage /></ModuleGate>} />

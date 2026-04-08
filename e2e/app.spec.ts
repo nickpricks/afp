@@ -19,14 +19,14 @@ async function ensureBodyConfigured(page: Page) {
 }
 
 test.describe('App shell', () => {
-  test('loads and redirects to /body', async ({ page }) => {
+  test('loads and shows dashboard', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveURL(/.*\/body/);
+    await expect(page.getByText(/Good (morning|afternoon|evening)/)).toBeVisible();
   });
 
-  test('shows header with AFP title and sync status', async ({ page }) => {
+  test('shows header with logo and sync status', async ({ page }) => {
     await page.goto('/body');
-    await expect(page.locator('header')).toContainText('AFP');
+    await expect(page.locator('header img[alt="AFP"]')).toBeVisible();
     await expect(page.locator('header')).toContainText('Synced');
   });
 

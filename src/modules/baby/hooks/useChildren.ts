@@ -11,18 +11,21 @@ import { userPath, DbSubcollection } from '@/constants/db';
 import { BabyMsg } from '@/constants/messages';
 import type { Child } from '@/modules/baby/types';
 
-/** Manages the children collection for the current user */
-export function useChildren() {
+/** Manages the children collection for a user */
+export function useChildren(targetUid?: string) {
   const { firebaseUser } = useAuth();
   const { addToast } = useToast();
   const [children, setChildren] = useState<Child[]>([]);
   const [loading, setLoading] = useState(true);
   const adapterRef = useRef<StorageAdapter | null>(null);
 
-  useEffect(() => {
-    if (!firebaseUser) return;
+  const uid = targetUid ?? firebaseUser?.uid;
+  const readOnly = targetUid != null && targetUid !== firebaseUser?.uid;
 
-    const adapter = createAdapter(userPath(firebaseUser.uid));
+  useEffect(() => {
+    if (!uid) return;
+
+    const adapter = createAdapter(userPath(uid));
     adapterRef.current = adapter;
 
     const unsubscribe = adapter.onSnapshot<Child>(
@@ -40,10 +43,11 @@ export function useChildren() {
       unsubscribe();
       adapterRef.current = null;
     };
-  }, [firebaseUser]);
+  }, [uid]);
 
   const addChild = useCallback(
     async (child: Omit<Child, 'id'>): Promise<Result<string>> => {
+      if (readOnly) return err('Read-only mode');
       const adapter = adapterRef.current;
       if (!adapter) {
         return err('Not authenticated');
@@ -63,6 +67,7 @@ export function useChildren() {
 
   const updateChild = useCallback(
     async (childId: string, data: Partial<Omit<Child, 'id'>>): Promise<Result<void>> => {
+      if (readOnly) return err('Read-only mode');
       const adapter = adapterRef.current;
       if (!adapter) {
         return err('Not authenticated');

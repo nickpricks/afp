@@ -11,21 +11,25 @@ import { DbSubcollection, DbDoc, userPath } from '@/constants/db';
 import { BodyMsg } from '@/constants/messages';
 
 /** Provides body module configuration state, loading, and save action */
-export function useBodyConfig() {
+export function useBodyConfig(targetUid?: string) {
   const { firebaseUser, setSyncStatus } = useAuth();
   const { addToast } = useToast();
   const [config, setConfig] = useState<BodyConfig>(DEFAULT_BODY_CONFIG);
   const [loading, setLoading] = useState(true);
   const adapterRef = useRef<StorageAdapter | null>(null);
 
+  const uid = targetUid ?? firebaseUser?.uid;
+  const readOnly = targetUid != null && targetUid !== firebaseUser?.uid;
+  const syncFn = readOnly ? () => {} : setSyncStatus;
+
   const isConfigured = config.configuredAt !== '';
 
   useEffect(() => {
-    if (!firebaseUser) return;
+    if (!uid) return;
 
-    const adapter = createAdapter(userPath(firebaseUser.uid));
+    const adapter = createAdapter(userPath(uid));
     adapterRef.current = adapter;
-    setSyncStatus(SyncStatus.Syncing);
+    syncFn(SyncStatus.Syncing);
 
     const unsub = adapter.onSnapshot<BodyConfig>(
       DbSubcollection.BodyConfig,
@@ -35,12 +39,12 @@ export function useBodyConfig() {
           setConfig(doc);
         }
         setLoading(false);
-        setSyncStatus(SyncStatus.Synced);
+        syncFn(SyncStatus.Synced);
       },
       (error) => {
         console.error('[AFP] Body config listener error:', error);
         setLoading(false);
-        setSyncStatus(SyncStatus.Error);
+        syncFn(SyncStatus.Error);
       },
     );
 
@@ -48,11 +52,12 @@ export function useBodyConfig() {
       unsub();
       adapterRef.current = null;
     };
-  }, [firebaseUser, setSyncStatus]);
+  }, [uid, syncFn]);
 
   /** Persists the body config */
   const saveConfig = useCallback(
     async (updated: BodyConfig) => {
+      if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter) return;
 

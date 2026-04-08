@@ -12,28 +12,32 @@ import { BudgetMsg } from '@/constants/messages';
 import { DbSubcollection, userPath } from '@/constants/db';
 
 /** Provides income CRUD operations with real-time sync */
-export function useIncome() {
+export function useIncome(targetUid?: string) {
   const { firebaseUser, setSyncStatus } = useAuth();
   const { addToast } = useToast();
   const [income, setIncome] = useState<Income[]>([]);
   const adapterRef = useRef<StorageAdapter | null>(null);
 
-  useEffect(() => {
-    if (!firebaseUser) return;
+  const uid = targetUid ?? firebaseUser?.uid;
+  const readOnly = targetUid != null && targetUid !== firebaseUser?.uid;
+  const syncFn = readOnly ? () => {} : setSyncStatus;
 
-    const adapter = createAdapter(userPath(firebaseUser.uid));
+  useEffect(() => {
+    if (!uid) return;
+
+    const adapter = createAdapter(userPath(uid));
     adapterRef.current = adapter;
-    setSyncStatus(SyncStatus.Syncing);
+    syncFn(SyncStatus.Syncing);
 
     const unsubscribe = adapter.onSnapshot<Income>(
       DbSubcollection.Income,
       (items) => {
         setIncome(items);
-        setSyncStatus(SyncStatus.Synced);
+        syncFn(SyncStatus.Synced);
       },
       (error) => {
         console.error('[AFP] Income listener error:', error);
-        setSyncStatus(SyncStatus.Error);
+        syncFn(SyncStatus.Error);
       },
     );
 
@@ -41,7 +45,7 @@ export function useIncome() {
       unsubscribe();
       adapterRef.current = null;
     };
-  }, [firebaseUser, setSyncStatus]);
+  }, [uid, syncFn]);
 
   /** Validates and persists a new income entry, showing a toast on success or failure */
   const addIncome = useCallback(
@@ -52,6 +56,7 @@ export function useIncome() {
       paymentMethod: PaymentMethod;
       note: string;
     }) => {
+      if (readOnly) return false;
       const validation = validateIncome(input);
       if (!isOk(validation)) {
         addToast(validation.error, 'error');
@@ -88,6 +93,7 @@ export function useIncome() {
   /** Deletes an income entry by ID */
   const deleteIncome = useCallback(
     async (id: string) => {
+      if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter) return;
 

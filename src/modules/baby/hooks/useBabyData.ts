@@ -7,13 +7,13 @@ import { SyncStatus } from '@/shared/types';
 import { DbSubcollection } from '@/constants/db';
 
 /** Provides baby tracking state, real-time sync, and log actions for all subcollections of a child */
-export function useBabyData(childId: string | null) {
+export function useBabyData(childId: string | null, targetUid?: string) {
   const { setSyncStatus } = useAuth();
 
-  const feedCol = useBabyCollection<FeedEntry>(childId, DbSubcollection.Feeds, 'Feed');
-  const sleepCol = useBabyCollection<SleepEntry>(childId, DbSubcollection.Sleep, 'Sleep');
-  const growthCol = useBabyCollection<GrowthEntry>(childId, DbSubcollection.Growth, 'Growth');
-  const diaperCol = useBabyCollection<DiaperEntry>(childId, DbSubcollection.Diapers, 'Diaper');
+  const feedCol = useBabyCollection<FeedEntry>(childId, DbSubcollection.Feeds, 'Feed', targetUid);
+  const sleepCol = useBabyCollection<SleepEntry>(childId, DbSubcollection.Sleep, 'Sleep', targetUid);
+  const growthCol = useBabyCollection<GrowthEntry>(childId, DbSubcollection.Growth, 'Growth', targetUid);
+  const diaperCol = useBabyCollection<DiaperEntry>(childId, DbSubcollection.Diapers, 'Diaper', targetUid);
 
   // Only set Synced when ALL listeners have reported
   useEffect(() => {

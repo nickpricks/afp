@@ -12,6 +12,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
   childId: string | null,
   subcollection: string,
   label: string,
+  targetUid?: string,
 ) {
   const { firebaseUser } = useAuth();
   const { addToast } = useToast();
@@ -19,10 +20,13 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
   const [ready, setReady] = useState(false);
   const adapterRef = useRef<StorageAdapter | null>(null);
 
-  useEffect(() => {
-    if (!firebaseUser || !childId) return;
+  const uid = targetUid ?? firebaseUser?.uid;
+  const readOnly = targetUid != null && targetUid !== firebaseUser?.uid;
 
-    const adapter = createAdapter(childPath(firebaseUser.uid, childId));
+  useEffect(() => {
+    if (!uid || !childId) return;
+
+    const adapter = createAdapter(childPath(uid, childId));
     adapterRef.current = adapter;
 
     const unsubscribe = adapter.onSnapshot<T>(
@@ -40,10 +44,11 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
       unsubscribe();
       adapterRef.current = null;
     };
-  }, [firebaseUser, childId, subcollection, label]);
+  }, [uid, childId, subcollection, label]);
 
   const log = useCallback(
     async (data: Omit<T, 'id'>) => {
+      if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter) return;
       const entry = { ...data, id: crypto.randomUUID() } as T;
@@ -60,6 +65,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
   /** Removes an entry by ID */
   const remove = useCallback(
     async (id: string) => {
+      if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter) return;
       const result = await adapter.remove(subcollection, id);

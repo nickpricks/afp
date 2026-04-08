@@ -35,6 +35,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Module system**: body, expenses, baby — all disabled by default, TheAdminNick enables per user
 - **Storage abstraction**: `StorageAdapter` interface in `src/shared/storage/`, Firebase impl + localStorage impl (dev mode). Factory: `createAdapter(basePath)` auto-selects
 - **Enums**: `ModuleId`, `SyncStatus`, `UserRole`, `AppPath`, `DbCollection`, `DbSubcollection`, `DbDoc`, `DbField`, `ThemeId`, `ActivityType` are TypeScript string enums — use enum members, not string literals
+- **Dashboard**: Role-aware home at `/`. Hooks accept optional `targetUid` — User reads own data, Viewer reads `viewerOf` user, Admin selects from `useAllUsers()`. Write callbacks no-op when `readOnly`. `DashboardCard` uses `shadow-sm` + `bg-[var(--accent-muted)]` for theme-aware styling. Baby card shows child count (option B)
 - **Auth**: Anonymous auth + Google Sign-In (account linking). `signInWithGoogle()` in `google-auth.ts`. Invite flow requires Google sign-in before redemption
 - **Body module**: Config gate (`useBodyConfig` → `BodyConfigForm` if unconfigured, tabbed `BodyPage` if configured). Floors (daily aggregate on `body/{dateKey}`) + walk/run activities (`body_activities/{id}`). Config in `body_config/main`. Scoring combines all
 - **Budget module**: Directory is `src/modules/expenses/` but `ModuleId` is `Budget`. Income tracking via `useIncome`, payment methods via `PaymentMethod` enum, summary math in `budget-math.ts`

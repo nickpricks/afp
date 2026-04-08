@@ -34,7 +34,7 @@ function recomputeSummary(record: BodyRecord, activities: BodyActivity[]): BodyR
 }
 
 /** Provides body tracking state, real-time sync, and tap/log actions */
-export function useBodyData() {
+export function useBodyData(targetUid?: string) {
   const { firebaseUser, setSyncStatus } = useAuth();
   const { addToast } = useToast();
   const [records, setRecords] = useState<Record<string, BodyRecord>>({});
@@ -42,12 +42,16 @@ export function useBodyData() {
   const activitiesRef = useRef<BodyActivity[]>([]);
   const adapterRef = useRef<StorageAdapter | null>(null);
 
-  useEffect(() => {
-    if (!firebaseUser) return;
+  const uid = targetUid ?? firebaseUser?.uid;
+  const readOnly = targetUid != null && targetUid !== firebaseUser?.uid;
+  const syncFn = readOnly ? () => {} : setSyncStatus;
 
-    const adapter = createAdapter(userPath(firebaseUser.uid));
+  useEffect(() => {
+    if (!uid) return;
+
+    const adapter = createAdapter(userPath(uid));
     adapterRef.current = adapter;
-    setSyncStatus(SyncStatus.Syncing);
+    syncFn(SyncStatus.Syncing);
 
     const unsubBody = adapter.onSnapshot<BodyRecord>(
       DbSubcollection.Body,
@@ -57,11 +61,11 @@ export function useBodyData() {
           mapped[item.dateStr] = item;
         }
         setRecords(mapped);
-        setSyncStatus(SyncStatus.Synced);
+        syncFn(SyncStatus.Synced);
       },
       (error) => {
         console.error('[AFP] Body listener error:', error);
-        setSyncStatus(SyncStatus.Error);
+        syncFn(SyncStatus.Error);
       },
     );
 
@@ -73,7 +77,7 @@ export function useBodyData() {
       },
       (error) => {
         console.error('[AFP] Body activities listener error:', error);
-        setSyncStatus(SyncStatus.Error);
+        syncFn(SyncStatus.Error);
       },
     );
 
@@ -82,7 +86,7 @@ export function useBodyData() {
       unsubActivities();
       adapterRef.current = null;
     };
-  }, [firebaseUser, setSyncStatus]);
+  }, [uid, syncFn]);
 
   const todayKey = todayStr();
 
@@ -100,6 +104,7 @@ export function useBodyData() {
   /** Taps a floor up or down */
   const tap = useCallback(
     async (type: 'up' | 'down') => {
+      if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter) return;
 
@@ -127,6 +132,7 @@ export function useBodyData() {
   /** Logs a new activity (walk, run, etc.) */
   const logActivity = useCallback(
     async (type: ActivityType, distanceMeters: number) => {
+      if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter || distanceMeters <= 0) return;
 
@@ -169,6 +175,7 @@ export function useBodyData() {
   /** Saves or updates a body record for any date (edit/backfill) */
   const saveRecord = useCallback(
     async (dateKey: string, data: Partial<Pick<BodyRecord, 'up' | 'down'>>) => {
+      if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter) return;
 
@@ -197,6 +204,7 @@ export function useBodyData() {
   /** Updates an existing activity's distance */
   const updateActivity = useCallback(
     async (id: string, data: { distance?: number }) => {
+      if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter) return;
 

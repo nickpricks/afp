@@ -26,6 +26,10 @@ Bug fixes and feature additions (TDD).
 | Budget time-range filter | `filterByDateRange()` in `budget-math.ts` — generic filter for Today/Week/Month/All using `BudgetView` enum. `ExpenseListPage` has 4-button toggle bar. Summary cards, expense list, and income list all reflect the selected range |
 | Amount presets | Quick-tap [10] [20] [50] [100] [200] buttons below amount input in `AddExpense`. Tapping fills the amount field |
 | CC Reconciliation | `ReconciliationView` component — shows CC charges, settlements, and outstanding balance. Accessible via "CC" tab on budget landing page. Respects time-range filter |
+| Universal Dashboard | Role-aware dashboard at `/` with greeting, module summary cards (Body score, Budget spend, Baby child count). Admin user selector, Viewer banner. Cards use `shadow-sm` + `--accent-muted` tint for theme-aware depth |
+| targetUid hook pattern | `useExpenses`, `useIncome`, `useBodyConfig`, `useBodyData`, `useBabyCollection`, `useChildren` accept optional `targetUid` for read-only data scoping. Write callbacks become no-ops when viewing another user's data |
+| Header logo | "AFP" text replaced with `favicon.png` image, links to Dashboard |
+| useAllUsers hook | Admin-only hook listing all profiled users from Firestore |
 
 ### Tests Added
 
@@ -51,6 +55,10 @@ Bug fixes and feature additions (TDD).
 | filterByDateRange: All/Today/Week/Month + empty | `src/modules/expenses/__tests__/summary.test.ts` (5 tests) |
 | Amount presets render, fill, replace | `src/modules/expenses/__tests__/AddExpense.test.tsx` (3 tests) |
 | ReconciliationView summary + outstanding + empty | `src/modules/expenses/__tests__/ReconciliationView.test.tsx` (3 tests) |
+| getGreeting + formatDayDate | `src/shared/utils/__tests__/date.test.ts` (4 tests) |
+| DashboardCard render + link + styling | `src/shared/components/__tests__/DashboardCard.test.tsx` (4 tests) |
+| Dashboard greeting + cards + module gating | `src/shared/components/__tests__/Dashboard.test.tsx` (8 tests) |
+| useAllUsers export | `src/admin/hooks/__tests__/useAllUsers.test.ts` (1 test) |
 
 ---
 
