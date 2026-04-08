@@ -1,12 +1,13 @@
 import { useState } from 'react';
 
 import type { BodyActivity } from '@/modules/body/types';
+import { CONFIG } from '@/constants/config';
 
 /** Formats meters into a readable distance string */
 function formatDist(meters: number | null): string {
   if (meters === null) return '--';
-  if (meters >= 1000) {
-    return `${(meters / 1000).toFixed(1)} km`;
+  if (meters >= CONFIG.METERS_PER_KM) {
+    return `${(meters / CONFIG.METERS_PER_KM).toFixed(1)} km`;
   }
   return `${meters} m`;
 }
@@ -21,13 +22,9 @@ export function ActivityLog({
   onEdit: (activity: BodyActivity) => void;
   editingId?: string | null;
 }) {
-  const [showAll, setShowAll] = useState(false);
-
-  const INITIAL_LIMIT = 7;
-  const EXPANDED_LIMIT = 30;
+  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
 
   const sorted = [...activities].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const limit = showAll ? EXPANDED_LIMIT : INITIAL_LIMIT;
   const visible = sorted.slice(0, limit);
   const hasMore = sorted.length > limit;
 
@@ -63,11 +60,16 @@ export function ActivityLog({
         hasMore && (
           <button
             type="button"
-            onClick={() => setShowAll(true)}
+            onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
             className="text-xs text-accent font-medium py-1"
           >
             Show more ({sorted.length - limit} remaining)
           </button>
+        )
+      }
+      {
+        !hasMore && sorted.length > CONFIG.PAGE_SIZE && (
+          <p className="text-xs text-fg-muted text-center py-1">That's all the activities</p>
         )
       }
     </div>

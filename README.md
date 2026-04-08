@@ -1,6 +1,6 @@
 # AFP — It Started On April Fools Day
 
-A unified personal PWA combining body/fitness tracking, expense tracking, and baby tracking. Invite-only access.
+A unified personal PWA combining body/fitness tracking, expense tracking, and baby tracking. Invite-only access via TheAdminNick admin model.
 
 ## Stack
 
@@ -14,7 +14,7 @@ bun run setup:env        # creates .env.development from .env.example
 bun run dev              # dev server on port 3000
 ```
 
-Dev mode works without Firebase — all modules enabled, localStorage adapter.
+Dev mode works without Firebase — all modules enabled, TheAdminNick role, localStorage adapter.
 
 ## Commands
 
@@ -25,8 +25,8 @@ Dev mode works without Firebase — all modules enabled, localStorage adapter.
 | `bun run lint` | Type check + ESLint |
 | `bun run typecheck` | tsc --noEmit only |
 | `bun run lint:eslint` | ESLint only |
-| `bun run test` | Vitest unit tests |
-| `bun run test:e2e` | Playwright e2e tests |
+| `bun run test` | Vitest unit tests (244) |
+| `bun run test:e2e` | Playwright E2E tests (38) |
 | `bun run test:coverage` | Unit tests with v8 coverage |
 | `bun run preview` | Preview production build |
 | `bun run clean` | Remove build artifacts |
@@ -35,46 +35,64 @@ Dev mode works without Firebase — all modules enabled, localStorage adapter.
 
 | Module | What |
 |---|---|
-| Body | Floor tracking (up/down taps), daily scoring |
-| Expenses | 15 categories with emoji labels, CRUD, soft-delete |
-| Baby | Feed, sleep, growth, diaper logs — 4 subcollections |
+| Body | Floors (up/down taps), walking, running, cycling — daily scoring, tabbed UI, config gate |
+| Budget | 15 expense categories, income tracking, payment methods, CC reconciliation, time-range filter (Today/Week/Month/All) |
+| Baby | Multi-child support. Feed, sleep, growth, diaper logs — nested subcollections per child |
 
 All modules disabled by default. TheAdminNick enables per user via invites.
+
+## Dashboard
+
+Role-aware home page at `/`. Shows module summary cards scoped to the correct user:
+- **User** — own data
+- **Viewer** — read-only view of another user's data (via `viewerOf`)
+- **Admin** — user selector dropdown to view any user
+
+Hooks accept optional `targetUid` for data scoping. Write callbacks are no-ops in read-only mode.
 
 ## Architecture
 
 ```
 src/
-  admin/          — Admin panel, invite generator
-  constants/      — config, routes (AppPath enum), db paths, messages
+  admin/          — Admin panel (tabbed Invites + Users), invite generator
+  constants/      — config (PAGE_SIZE, UNDO_DURATION_MS, METERS_PER_KM), routes, db paths, messages
   modules/
-    body/         — Body tracker (BodyTracker, useBodyData, scoring)
-    expenses/     — Expense tracker (AddExpense, ExpenseList, categories)
-    baby/         — Baby tracker (FeedLog, SleepLog, GrowthLog, DiaperLog)
+    body/         — BodyPage (tabbed), FloorsTab, Walking/Running/CyclingTab, BodyStats, scoring
+    expenses/     — Budget landing, AddExpense/AddIncome, ExpenseList, IncomeList, ReconciliationView
+    baby/         — BabyLanding, ChildDetail (tabbed), FeedLog, SleepLog, GrowthLog, DiaperLog
   shared/
     auth/         — Firebase auth, invite system, TheAdminNick model
-    components/   — Layout, TabBar, ModuleGate, AdminGate, SyncStatus
-    errors/       — ErrorBoundary, toast notifications
+    components/   — Dashboard, DashboardCard, Layout, TabBar, ModuleGate, AdminGate, DevBench
+    errors/       — ErrorBoundary, toast notifications (with undo action support)
     hooks/        — useModules, useSyncStatus
     storage/      — StorageAdapter interface + Firebase/localStorage impls
-    types.ts      — Result<T>, ModuleId, SyncStatus, UserRole enums
+    types.ts      — Result<T>, ModuleId, SyncStatus, UserRole, all enums
     utils/        — date, error, profile, validation, regex helpers
   themes/         — 7 themes (Family Blue default + 6 ported)
 ```
 
 ## Themes
 
-Family Blue (default, light+dark), Summit Instrument, Night City: Elevator, Deep: Mariana, Night City: Apartment, Industrial Furnace, Corporate Glass.
+Family Blue (default, light+dark), Summit Instrument, Corporate Glass, Night City: Elevator, Night City: Apartment, Deep: Mariana, Industrial Furnace.
+
+## Key Patterns
+
+- **Tap-to-edit** — tap a list entry to populate the form above, button becomes "Update"
+- **Undo delete** — 10s toast with "Undo" action on all deletable lists
+- **Pagination** — all lists use `CONFIG.PAGE_SIZE` (25 default), "Show more" button
+- **DevBench** — dev-only seed panel with 11 generators (Floors, Walk, Run, Cycle, Expense, Income, Settlement, Feed, Sleep, Diaper, Growth) + bulk modes (x100, x1k with day-spread)
 
 ## Docs
 
 | Doc | What |
 |---|---|
+| `CLAUDE.md` | AI assistant instructions, architecture, conventions, known issues |
+| `docs/ROADMAP.md` | Phase progress (~61%), prioritized backlog (P0-P3) |
 | `docs/firebase-setup.md` | Firebase setup guide |
-| `../docs/auth-journey.md` | Auth architecture: anonymous → Google sign-in, invite flow, lessons learned |
-| `docs/specs/2026-04-01-aprilfoolsjoke-design.md` | Original design spec |
-| `docs/plans/2026-04-01-aprilfoolsjoke-phase1.md` | Phase 1 implementation plan |
-| `docs/ROADMAP.md` | Prioritized backlog (P0-P3) |
+| `docs/getting-started.md` | Getting started guide |
+| `docs/specs/` | Design specs (Phase 1, Phase 2, Dashboard, Theme analysis) |
+| `docs/plans/` | Implementation plans (Phase 1, Phase 2 per-module, Dashboard, Admin, Viewer) |
+| `docs/revz/` | Code reviews, coverage analysis, session reviews |
 
 ## License
 

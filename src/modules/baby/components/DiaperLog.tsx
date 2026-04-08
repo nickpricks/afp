@@ -1,20 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { DiaperEntry } from '@/modules/baby/types';
 import { DiaperType } from '@/modules/baby/types';
 import { ALL_DIAPER_TYPES, DIAPER_TYPE_LABELS } from '@/modules/baby/constants';
 import { todayStr, nowTime } from '@/shared/utils/date';
+import { useToast } from '@/shared/errors/useToast';
+import { CONFIG } from '@/constants/config';
 
 /** Diaper tracking form with quick-log buttons and recent entries list */
 export function DiaperLog({ childId }: { childId?: string }) {
   const { diapers, logDiaper, updateDiaper, removeDiaper } = useBabyData(childId ?? null);
+  const { addToast } = useToast();
   const [type, setType] = useState<DiaperType>(DiaperType.Wet);
   const [date, setDate] = useState(todayStr);
   const [time, setTime] = useState(nowTime);
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [editEntry, setEditEntry] = useState<DiaperEntry | null>(null);
+  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const undoRef = useRef(false);
 
   useEffect(() => {
     if (editEntry) {
@@ -58,9 +64,24 @@ export function DiaperLog({ childId }: { childId?: string }) {
     setSaving(false);
   }
 
-  const recentDiapers = [...diapers]
-    .sort((a, b) => `${b.date}T${b.time}`.localeCompare(`${a.date}T${a.time}`))
-    .slice(0, 10);
+  const handleUndoDelete = (id: string) => {
+    undoRef.current = false;
+    setPendingDeleteId(id);
+    addToast('Diaper deleted', 'info', {
+      durationMs: CONFIG.UNDO_DURATION_MS,
+      action: { label: 'Undo', onClick: () => { undoRef.current = true; setPendingDeleteId(null); } },
+    });
+    setTimeout(() => {
+      if (!undoRef.current) removeDiaper(id);
+      setPendingDeleteId(null);
+    }, CONFIG.UNDO_DURATION_MS);
+  };
+
+  const sortedDiapers = [...diapers]
+    .filter((d) => d.id !== pendingDeleteId)
+    .sort((a, b) => `${b.date}T${b.time}`.localeCompare(`${a.date}T${a.time}`));
+  const recentDiapers = sortedDiapers.slice(0, limit);
+  const hasMore = sortedDiapers.length > limit;
 
   return (
     <div className="flex flex-col gap-6 px-4 py-6">
@@ -104,13 +125,25 @@ ALL_DIAPER_TYPES.map((dt) => (
         </button>
       </form>
 
-      <RecentDiapers entries={recentDiapers} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={removeDiaper} />
+      <RecentDiapers entries={recentDiapers} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
+      {
+        hasMore && (
+          <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">
+            Show more ({sortedDiapers.length - limit} remaining)
+          </button>
+        )
+      }
+      {
+        !hasMore && sortedDiapers.length > CONFIG.PAGE_SIZE && (
+          <p className="text-xs text-fg-muted text-center py-1">That's all the diaper entries</p>
+        )
+      }
     </div>
   );
 }
 
 /** Renders a sorted list of recent diaper entries with edit/delete actions */
-function RecentDiapers({ entries, onEdit, editingId, onRemove }: { entries: DiaperEntry[]; onEdit: (e: DiaperEntry) => void; editingId: string | null; onRemove: (id: string) => Promise<void> }) {
+function RecentDiapers({ entries, onEdit, editingId, onRemove }: { entries: DiaperEntry[]; onEdit: (e: DiaperEntry) => void; editingId: string | null; onRemove: (id: string) => void }) {
   if (entries.length === 0) return null;
 
   return (

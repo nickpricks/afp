@@ -7,6 +7,7 @@ import type { FeedEntry } from '@/modules/baby/types';
 
 const mockRemoveFeed = vi.fn();
 const mockLogFeed = vi.fn();
+const mockAddToast = vi.fn();
 
 const sampleFeed: FeedEntry = {
   id: 'feed-1',
@@ -26,18 +27,22 @@ vi.mock('@/modules/baby/hooks/useBabyData', () => ({
     growth: [],
     diapers: [],
     logFeed: mockLogFeed,
+    updateFeed: vi.fn(),
     removeFeed: mockRemoveFeed,
     logSleep: vi.fn(),
+    updateSleep: vi.fn(),
     removeSleep: vi.fn(),
     logGrowth: vi.fn(),
+    updateGrowth: vi.fn(),
     removeGrowth: vi.fn(),
     logDiaper: vi.fn(),
+    updateDiaper: vi.fn(),
     removeDiaper: vi.fn(),
   }),
 }));
 
 vi.mock('@/shared/errors/useToast', () => ({
-  useToast: () => ({ addToast: vi.fn() }),
+  useToast: () => ({ addToast: mockAddToast }),
 }));
 
 describe('FeedLog — delete action', () => {
@@ -47,10 +52,15 @@ describe('FeedLog — delete action', () => {
     expect(deleteButtons.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('calls removeFeed when delete is clicked', () => {
+  it('clicking delete shows undo toast and hides entry', () => {
     render(<FeedLog childId="child-1" />);
     const deleteBtn = screen.getAllByRole('button', { name: /delete/i })[0];
     fireEvent.click(deleteBtn!);
-    expect(mockRemoveFeed).toHaveBeenCalledWith('feed-1');
+    // Should show undo toast, not immediately call removeFeed
+    expect(mockAddToast).toHaveBeenCalledWith(
+      'Feed deleted',
+      'info',
+      expect.objectContaining({ action: expect.objectContaining({ label: 'Undo' }) }),
+    );
   });
 });

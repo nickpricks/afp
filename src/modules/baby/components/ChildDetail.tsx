@@ -105,7 +105,7 @@ visibleTabs.map((tab) => (
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'dashboard' && <DashboardTab child={child} />}
+      {activeTab === 'dashboard' && <DashboardTab child={child} onNavigate={setActiveTab} />}
       {activeTab === 'feeding' && <FeedLog childId={childId} />}
       {activeTab === 'sleep' && <SleepLog childId={childId} />}
       {activeTab === 'growth' && <GrowthLog childId={childId} />}
@@ -115,29 +115,29 @@ visibleTabs.map((tab) => (
 }
 
 /** Dashboard tab showing today's summary and quick action buttons */
-function DashboardTab({ child }: { child: Child }) {
+function DashboardTab({ child, onNavigate }: { child: Child; onNavigate: (tab: TabId) => void }) {
   return (
     <div className="flex flex-col gap-4 py-4">
       <h3 className="text-base font-medium text-fg">Today&apos;s Summary</h3>
       <div className="grid grid-cols-2 gap-3">
         {
 child.config.feeding && (
-          <SummaryCard label="Feeding" description="Log feeds" />
+          <SummaryCard label="Feeding" icon="🍼" description="Log feeds" onClick={() => onNavigate('feeding')} />
         )
 }
         {
 child.config.sleep && (
-          <SummaryCard label="Sleep" description="Log sleep" />
+          <SummaryCard label="Sleep" icon="😴" description="Log sleep" onClick={() => onNavigate('sleep')} />
         )
 }
         {
 child.config.growth && (
-          <SummaryCard label="Growth" description="Log measurements" />
+          <SummaryCard label="Growth" icon="📏" description="Log measurements" onClick={() => onNavigate('growth')} />
         )
 }
         {
 child.config.diapers && (
-          <SummaryCard label="Diapers" description="Log changes" />
+          <SummaryCard label="Diapers" icon="🧷" description="Log changes" onClick={() => onNavigate('diapers')} />
         )
 }
       </div>
@@ -145,12 +145,19 @@ child.config.diapers && (
   );
 }
 
-/** Summary card widget for the dashboard */
-function SummaryCard({ label, description }: { label: string; description: string }) {
+/** Tappable summary card that navigates to a module tab */
+function SummaryCard({ label, icon, description, onClick }: { label: string; icon: string; description: string; onClick: () => void }) {
   return (
-    <div className="rounded-lg bg-surface-card border border-line p-3">
-      <p className="text-sm font-medium text-fg">{label}</p>
-      <p className="text-xs text-fg-muted">{description}</p>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-lg bg-surface-card border border-line p-3 text-left transition-all hover:border-accent/40 hover:shadow-sm active:scale-95"
+    >
+      <div className="flex items-center gap-2">
+        <span>{icon}</span>
+        <p className="text-sm font-medium text-fg">{label}</p>
+      </div>
+      <p className="text-xs text-fg-muted mt-1">{description}</p>
+    </button>
   );
 }

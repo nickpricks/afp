@@ -3,7 +3,18 @@ import { useState, useEffect } from 'react';
 import { ACTIVITY_LABELS } from '@/modules/body/constants';
 import { ActivityType } from '@/shared/types';
 import { isValidNumber } from '@/shared/utils/validation';
+import { CONFIG } from '@/constants/config';
 import type { BodyActivity } from '@/modules/body/types';
+
+/** Converts a distance string between m and km */
+function convertDistance(value: string, from: 'm' | 'km', to: 'm' | 'km'): string {
+  if (from === to || !value) return value;
+  const num = Number(value);
+  if (!Number.isFinite(num)) return value;
+  return from === 'km'
+    ? String(num * CONFIG.METERS_PER_KM)
+    : String(num / CONFIG.METERS_PER_KM);
+}
 
 /** Available activity types for logging (yoga is coming soon) */
 const LOGGABLE_TYPES: readonly ActivityType[] = [ActivityType.Walk, ActivityType.Run, ActivityType.Cycle];
@@ -33,8 +44,8 @@ export function AddActivity({
   useEffect(() => {
     if (editEntry) {
       const dist = editEntry.distance ?? 0;
-      if (dist >= 1000) {
-        setDistance(String(dist / 1000));
+      if (dist >= CONFIG.METERS_PER_KM) {
+        setDistance(String(dist / CONFIG.METERS_PER_KM));
         setUnit('km');
       } else {
         setDistance(String(dist));
@@ -44,7 +55,7 @@ export function AddActivity({
   }, [editEntry]);
 
   const parsed = Number(distance);
-  const distanceMeters = unit === 'km' ? parsed * 1000 : parsed;
+  const distanceMeters = unit === 'km' ? parsed * CONFIG.METERS_PER_KM : parsed;
   const isDisabled = !distance || !isValidNumber(parsed) || isSaving;
 
   const handleSave = async () => {
@@ -126,7 +137,10 @@ export function AddActivity({
         <div className="flex rounded-lg border border-line overflow-hidden">
           <button
             type="button"
-            onClick={() => setUnit('m')}
+            onClick={() => {
+              if (unit === 'km') setDistance(convertDistance(distance, 'km', 'm'));
+              setUnit('m');
+            }}
             className={
               `px-3 py-2 text-sm font-medium transition ${
                 unit === 'm' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'
@@ -137,7 +151,10 @@ export function AddActivity({
           </button>
           <button
             type="button"
-            onClick={() => setUnit('km')}
+            onClick={() => {
+              if (unit === 'm') setDistance(convertDistance(distance, 'm', 'km'));
+              setUnit('km');
+            }}
             className={
               `px-3 py-2 text-sm font-medium transition ${
                 unit === 'km' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'

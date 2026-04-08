@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { FeedEntry } from '@/modules/baby/types';
 import { FeedType } from '@/modules/baby/types';
 import { ALL_FEED_TYPES, FEED_TYPE_LABELS } from '@/modules/baby/constants';
 import { todayStr, nowTime } from '@/shared/utils/date';
+import { useToast } from '@/shared/errors/useToast';
+import { CONFIG } from '@/constants/config';
 
 /** Determines whether the feed type uses amount (Bottle/Solid Food) */
 function isAmountType(type: FeedType): boolean {
@@ -14,6 +16,7 @@ function isAmountType(type: FeedType): boolean {
 /** Feed tracking form with type selection and recent entries list */
 export function FeedLog({ childId }: { childId?: string }) {
   const { feeds, logFeed, updateFeed, removeFeed } = useBabyData(childId ?? null);
+  const { addToast } = useToast();
   const [type, setType] = useState<FeedType>(FeedType.Bottle);
   const [date, setDate] = useState(todayStr);
   const [time, setTime] = useState(nowTime);
@@ -21,6 +24,9 @@ export function FeedLog({ childId }: { childId?: string }) {
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [editEntry, setEditEntry] = useState<FeedEntry | null>(null);
+  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const undoRef = useRef(false);
 
   // Populate form when editing
   useEffect(() => {
@@ -61,9 +67,24 @@ export function FeedLog({ childId }: { childId?: string }) {
     setNotes('');
   };
 
-  const recentFeeds = [...feeds]
-    .sort((a, b) => `${b.date}T${b.time}`.localeCompare(`${a.date}T${a.time}`))
-    .slice(0, 10);
+  const handleUndoDelete = (id: string) => {
+    undoRef.current = false;
+    setPendingDeleteId(id);
+    addToast('Feed deleted', 'info', {
+      durationMs: CONFIG.UNDO_DURATION_MS,
+      action: { label: 'Undo', onClick: () => { undoRef.current = true; setPendingDeleteId(null); } },
+    });
+    setTimeout(() => {
+      if (!undoRef.current) removeFeed(id);
+      setPendingDeleteId(null);
+    }, CONFIG.UNDO_DURATION_MS);
+  };
+
+  const sortedFeeds = [...feeds]
+    .filter((f) => f.id !== pendingDeleteId)
+    .sort((a, b) => `${b.date}T${b.time}`.localeCompare(`${a.date}T${a.time}`));
+  const recentFeeds = sortedFeeds.slice(0, limit);
+  const hasMore = sortedFeeds.length > limit;
 
   return (
     <div className="flex flex-col gap-6 px-4 py-6">
@@ -124,13 +145,25 @@ isAmountType(type) && (
         </button>
       </form>
 
-      <RecentFeeds entries={recentFeeds} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={removeFeed} />
+      <RecentFeeds entries={recentFeeds} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
+      {
+        hasMore && (
+          <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">
+            Show more ({sortedFeeds.length - limit} remaining)
+          </button>
+        )
+      }
+      {
+        !hasMore && sortedFeeds.length > CONFIG.PAGE_SIZE && (
+          <p className="text-xs text-fg-muted text-center py-1">That's all the feeds</p>
+        )
+      }
     </div>
   );
 }
 
 /** Renders a sorted list of recent feed entries with edit/delete actions */
-function RecentFeeds({ entries, onEdit, editingId, onRemove }: { entries: FeedEntry[]; onEdit: (e: FeedEntry) => void; editingId: string | null; onRemove: (id: string) => Promise<void> }) {
+function RecentFeeds({ entries, onEdit, editingId, onRemove }: { entries: FeedEntry[]; onEdit: (e: FeedEntry) => void; editingId: string | null; onRemove: (id: string) => void }) {
   if (entries.length === 0) return null;
 
   return (

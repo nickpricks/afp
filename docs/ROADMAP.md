@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-04-07
+Last updated: 2026-04-08
 
 ---
 
@@ -10,14 +10,14 @@ Last updated: 2026-04-07
 |-------|--------|-------|-------|
 | Phase 1 (Scaffold) | ✅ Done | — | Shipped as v0.1.0 |
 | Phase 2.0 (Foundation) | ✅ Done | 14/14 | Enums, types, Firestore rules, routes |
-| Phase 2a (Body) | ✅ Core done | 30/34 | +3: CyclingTab, gear reconfigure, ActivityLog pagination. Missing: Firestore rule verification |
-| Phase 2b (Baby) | ✅ Core done | 23/23 | +2: delete on all 4 logs. Firestore rules TBD |
-| Phase 2c (Budget) | ✅ Core done | 28/28 | +3: ReconciliationView, time-range filter, amount presets. Firestore rules TBD |
+| Phase 2a (Body) | ✅ Core done | 32/34 | +5: CyclingTab, gear reconfigure, ActivityLog pagination, FloorsTab redirect-buttons edit, m↔km unit conversion fix. Missing: Firestore rule verification |
+| Phase 2b (Baby) | ✅ Core done | 29/23 | +8: delete on all 4 logs, edit on 4 logs, undo delete on 4 logs, child creation auto-navigate, dashboard tappable cards, sleep defaults, growth validation. Firestore rules TBD |
+| Phase 2c (Budget) | ✅ Core done | 30/28 | +5: ReconciliationView, time-range filter, amount presets, expense/income pagination, undo delete. Firestore rules TBD |
 | Phase 2d (Profile) | 🚧 Partial | 6/9 | Missing: tests, negative tests, doc sweep |
-| Phase 2e (Admin+Viewer) | 🚧 In progress | 9/35 | Dashboard done. Admin pages + viewer flow planned |
+| Phase 2e (Admin+Viewer) | 🚧 In progress | 12/35 | Dashboard done. Toast action system, CONFIG.PAGE_SIZE/UNDO_DURATION_MS/METERS_PER_KM. Admin pages + viewer flow planned |
 | Phase 2f (Themes) | 📋 Analyzed | 0/18 | Theme analysis spec written, design samples exist |
 | Phase 2g (E2E + Bench) | ❌ Not started | 0/8 | Interactive E2E flows, build/bundle/test benchmarks |
-| **Total** | **~55%** | **96/178** | |
+| **Total** | **~61%** | **109/178** | |
 
 ---
 
@@ -32,7 +32,7 @@ All P0 items completed.
 | 🔨 | Firestore runtime validation — replace `as T` casts with parse/validate | — | Not started |
 | 🔨 | Firestore rules verification — manual/automated tests for all modules | 2a-2d | Not started |
 | 🔨 | Income module E2E regression test | 2c | Not started |
-| 🔨 | Unit test P0 gaps: `date.ts`, `validation.ts`, `profile.ts` (4 functions) | — | Not started |
+| ~~🔨~~ | ~~Unit test P0 gaps: `date.ts`, `validation.ts`, `profile.ts` (4 functions)~~ | — | DONE (Session 5) |
 
 ## P2 — Phase 2 Remaining Work
 
@@ -59,10 +59,10 @@ All P0 items completed.
 | 🐛 | Floors recent list flat styling | Body | Low |
 | 🐛 | Stats score lacks context (no goal) | Body | Low |
 | 🐛 | Stats "THIS WEEK" card cramped | Body | Low |
-| 🐛 | ActivityLog edit UX (inline → main-form) | Body | Low |
+| ~~🐛~~ | ~~ActivityLog edit UX (inline → main-form)~~ | Body | ~~Low~~ — DONE (tap-to-populate pattern) |
 | ~~🐛~~ | ~~Payment method bubbles don't deselect~~ | Budget | ~~Low~~ — DONE (toggle deselect) |
 | ~~🐛~~ | ~~Negative/zero amounts accepted in inputs~~ | All | ~~Low~~ — DONE (min/step attrs) |
-| 🐛 | Baby tabs need edit (tap-to-populate) | Baby | Medium |
+| ~~🐛~~ | ~~Baby tabs need edit (tap-to-populate)~~ | Baby | ~~Medium~~ — DONE (tap-to-populate on all 4 logs) |
 | ~~🐛~~ | ~~Baby tabs need delete~~ | Baby | ~~Medium~~ — DONE (x button on all 4 logs) |
 | 🐛 | Multi-baby not tested | Baby | Medium |
 | 🐛 | Budget list no summary header | Budget | Low |
@@ -110,6 +110,26 @@ All P0 items completed.
 ---
 
 ## Done
+
+### 2026-04-08 — Session 5 (Dashboard, consistency sweep, review fixes)
+
+- [x] Universal Dashboard — role-aware home at `/`, greeting, module cards, admin selector, viewer banner
+- [x] targetUid pattern — 6 hooks accept optional uid for read-only data scoping
+- [x] DashboardCard with shadow-sm + accent-muted tint (theme-aware)
+- [x] Header logo replaces AFP text, links to Dashboard
+- [x] useAllUsers admin hook
+- [x] DevBench expansion — Cycling, Income, Growth, Settlement generators + file split + error handling
+- [x] Tap-to-edit on 6 list views (FloorsTab redirect buttons, ActivityLog populate form, 4 baby logs)
+- [x] Consistent pagination (CONFIG.PAGE_SIZE = 25) on all 8 lists
+- [x] Undo delete with toast action (CONFIG.UNDO_DURATION_MS) on all 6 deletable lists
+- [x] m↔km unit conversion fix + CONFIG.METERS_PER_KM constant
+- [x] Baby: child creation auto-navigate, dashboard cards tappable, sleep defaults, growth validation
+- [x] Toast system extended with action button + custom duration
+- [x] P0 coverage gaps: profile.ts, validation.ts, error.ts, date.ts utilities
+- [x] Unit tests: 189 → 244 (+55)
+- [x] E2E tests: 38 (all passing)
+- [x] Specs: Dashboard design, Theme analysis, 3 implementation plans
+- [x] Nick's review: docs/revz/nick-review-session5.md (6/7 fixed, #1 add-missed-day deferred)
 
 ### 2026-04-07 — Session 4 (Bug fixes, Phase 2c completion, Dashboard planning)
 

@@ -2,12 +2,13 @@ import { useMemo } from 'react';
 import { ArrowUp, ArrowDown, Footprints, TrendingUp } from 'lucide-react';
 
 import type { BodyRecord } from '@/modules/body/types';
+import { CONFIG } from '@/constants/config';
 import { todayStr } from '@/shared/utils/date';
 
 /** Formats meters as a readable distance string */
 function formatDistance(meters: number): string {
-  if (meters >= 1000) {
-    return `${(meters / 1000).toFixed(1)} km`;
+  if (meters >= CONFIG.METERS_PER_KM) {
+    return `${(meters / CONFIG.METERS_PER_KM).toFixed(1)} km`;
   }
   return `${meters} m`;
 }

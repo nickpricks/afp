@@ -3,6 +3,7 @@ import { ArrowUp, ArrowDown, RotateCcw } from 'lucide-react';
 
 import type { BodyRecord } from '@/modules/body/types';
 import { BODY_DEFAULTS } from '@/modules/body/constants';
+import { CONFIG } from '@/constants/config';
 import { todayStr } from '@/shared/utils/date';
 
 /** Formats meters as a readable distance string */
@@ -27,7 +28,7 @@ export function FloorsTab({
 }) {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const height = floorHeight || BODY_DEFAULTS.FLOOR_HEIGHT_M;
-  const [expanded, setExpanded] = useState(false);
+  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
 
   const today = todayStr();
   const isEditing = editingKey !== null;
@@ -40,7 +41,7 @@ export function FloorsTab({
 
   const sortedDays = Object.entries(records)
     .sort(([a], [b]) => b.localeCompare(a));
-  const recentDays = sortedDays.slice(0, expanded ? 30 : 7);
+  const recentDays = sortedDays.slice(0, limit);
 
   /** Tap handler — redirects to editing date when in edit mode */
   const handleTap = async (type: 'up' | 'down') => {
@@ -145,25 +146,19 @@ export function FloorsTab({
               }
             </ul>
             {
-              !expanded && sortedDays.length > 7 && (
+              sortedDays.length > limit && (
                 <button
                   type="button"
-                  onClick={() => setExpanded(true)}
-                  className="text-xs text-accent hover:underline self-center mt-1"
+                  onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
+                  className="text-xs text-accent font-medium py-1 self-center"
                 >
-                  Show more
+                  Show more ({sortedDays.length - limit} remaining)
                 </button>
               )
             }
             {
-              expanded && (
-                <button
-                  type="button"
-                  onClick={() => setExpanded(false)}
-                  className="text-xs text-accent hover:underline self-center mt-1"
-                >
-                  Show less
-                </button>
+              sortedDays.length <= limit && sortedDays.length > CONFIG.PAGE_SIZE && (
+                <p className="text-xs text-fg-muted text-center py-1">That's all the days</p>
               )
             }
           </div>

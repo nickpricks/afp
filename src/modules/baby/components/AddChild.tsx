@@ -6,7 +6,7 @@ import type { ChildConfig } from '@/modules/baby/types';
 import { todayStr } from '@/shared/utils/date';
 
 /** Form for adding a new child with name, DOB, and tracking module toggles */
-export function AddChild({ onAdded }: { onAdded?: () => void }) {
+export function AddChild({ onAdded }: { onAdded?: (childId: string) => void }) {
   const { addChild } = useChildren();
   const [name, setName] = useState('');
   const [dob, setDob] = useState('');
@@ -25,7 +25,7 @@ export function AddChild({ onAdded }: { onAdded?: () => void }) {
 
     setSaving(true);
     const now = new Date().toISOString();
-    await addChild({
+    const result = await addChild({
       name: name.trim(),
       dob,
       config,
@@ -36,7 +36,9 @@ export function AddChild({ onAdded }: { onAdded?: () => void }) {
     setDob('');
     setConfig({ ...DEFAULT_CHILD_CONFIG });
     setSaving(false);
-    onAdded?.();
+    if (result.ok) {
+      onAdded?.(result.data);
+    }
   }
 
   const configOptions: { key: keyof ChildConfig; label: string }[] = [

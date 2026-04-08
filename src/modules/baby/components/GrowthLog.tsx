@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { GrowthEntry } from '@/modules/baby/types';
 import { todayStr } from '@/shared/utils/date';
+import { useToast } from '@/shared/errors/useToast';
+import { CONFIG } from '@/constants/config';
 
 /** Growth measurement form with weight, height, head circumference and recent entries */
 export function GrowthLog({ childId }: { childId?: string }) {
   const { growth, logGrowth, updateGrowth, removeGrowth } = useBabyData(childId ?? null);
+  const { addToast } = useToast();
   const [date, setDate] = useState(todayStr);
   const [weight, setWeight] = useState<number | null>(null);
   const [height, setHeight] = useState<number | null>(null);
@@ -14,6 +17,9 @@ export function GrowthLog({ childId }: { childId?: string }) {
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [editEntry, setEditEntry] = useState<GrowthEntry | null>(null);
+  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const undoRef = useRef(false);
 
   useEffect(() => {
     if (editEntry) {
@@ -53,9 +59,24 @@ export function GrowthLog({ childId }: { childId?: string }) {
     setNotes('');
   };
 
-  const recentGrowth = [...growth]
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 10);
+  const handleUndoDelete = (id: string) => {
+    undoRef.current = false;
+    setPendingDeleteId(id);
+    addToast('Growth entry deleted', 'info', {
+      durationMs: CONFIG.UNDO_DURATION_MS,
+      action: { label: 'Undo', onClick: () => { undoRef.current = true; setPendingDeleteId(null); } },
+    });
+    setTimeout(() => {
+      if (!undoRef.current) removeGrowth(id);
+      setPendingDeleteId(null);
+    }, CONFIG.UNDO_DURATION_MS);
+  };
+
+  const sortedGrowth = [...growth]
+    .filter((g) => g.id !== pendingDeleteId)
+    .sort((a, b) => b.date.localeCompare(a.date));
+  const recentGrowth = sortedGrowth.slice(0, limit);
+  const hasMore = sortedGrowth.length > limit;
 
   return (
     <div className="flex flex-col gap-6 px-4 py-6">
@@ -88,19 +109,31 @@ export function GrowthLog({ childId }: { childId?: string }) {
 
         <input type="text" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
 
-        <button type="submit" disabled={saving} className="w-full py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
+        <button type="submit" disabled={saving || (weight === null && height === null && headCircumference === null)} className="w-full py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
           {saving && 'Saving...'}
           {!saving && (editEntry ? 'Update Growth' : 'Log Growth')}
         </button>
       </form>
 
-      <RecentGrowth entries={recentGrowth} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={removeGrowth} />
+      <RecentGrowth entries={recentGrowth} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
+      {
+        hasMore && (
+          <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">
+            Show more ({sortedGrowth.length - limit} remaining)
+          </button>
+        )
+      }
+      {
+        !hasMore && sortedGrowth.length > CONFIG.PAGE_SIZE && (
+          <p className="text-xs text-fg-muted text-center py-1">That's all the growth entries</p>
+        )
+      }
     </div>
   );
 }
 
 /** Renders a sorted list of recent growth measurements with edit/delete actions */
-function RecentGrowth({ entries, onEdit, editingId, onRemove }: { entries: GrowthEntry[]; onEdit: (e: GrowthEntry) => void; editingId: string | null; onRemove: (id: string) => Promise<void> }) {
+function RecentGrowth({ entries, onEdit, editingId, onRemove }: { entries: GrowthEntry[]; onEdit: (e: GrowthEntry) => void; editingId: string | null; onRemove: (id: string) => void }) {
   if (entries.length === 0) return null;
 
   return (

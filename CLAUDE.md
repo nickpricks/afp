@@ -39,10 +39,13 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Auth**: Anonymous auth + Google Sign-In (account linking). `signInWithGoogle()` in `google-auth.ts`. Invite flow requires Google sign-in before redemption
 - **Body module**: Config gate (`useBodyConfig` → `BodyConfigForm` if unconfigured, tabbed `BodyPage` if configured). Floors (daily aggregate on `body/{dateKey}`) + walk/run activities (`body_activities/{id}`). Config in `body_config/main`. Scoring combines all
 - **Budget module**: Directory is `src/modules/expenses/` but `ModuleId` is `Budget`. Income tracking via `useIncome`, payment methods via `PaymentMethod` enum, summary math in `budget-math.ts`
-- **Baby module**: Multi-child via `children/{childId}` collection. `useBabyCollection(childId, subcollection)` for nested paths. `BabyLanding` → `ChildDetail` routing
+- **Baby module**: Multi-child via `children/{childId}` collection. `useBabyCollection(childId, subcollection, label, targetUid?)` for nested paths. `useBabyCollection` exposes `log`, `update`, `remove`. `useBabyData` exposes `updateFeed/Sleep/Growth/Diaper`. `BabyLanding` → `ChildDetail` routing
+- **DevBench split**: Generators in `src/shared/components/bench-generators.ts` (pure functions), component in `DevBench.tsx`. 11 generators with ×1/×100/×1k bulk modes + day-spread
 - **Constants**: `constants/config.ts` (app config), `constants/routes.ts` (AppPath enum + ROUTES), `constants/db.ts` (Firestore paths), `constants/messages.ts` (error/toast messages)
 - **Result types**: Every async operation returns `Result<T>`, never void. Use `ok()`, `err()`, `isOk()`, `isErr()` from `@/shared/types`
-- **Error handling**: Toast notifications via `useToast()`, `ErrorBoundary` for React crashes, `SyncStatusIndicator` in header
+- **Error handling**: Toast notifications via `useToast()`, `ErrorBoundary` for React crashes, `SyncStatusIndicator` in header. Toast actions: `addToast(message, type, { action?: { label, onClick }, durationMs? })` — undo delete uses 10s toast with "Undo" button
+- **Tap-to-edit pattern**: All list views use tap-row-to-populate-form. Body: FloorsTab redirects +/- buttons, ActivityLog populates AddActivity. Baby: all 4 logs populate their forms. Budget: edit deferred (form on separate page). Active row: `bg-[var(--accent-muted)] border-l-2 border-l-accent`
+- **List constants**: `CONFIG.PAGE_SIZE` (25) for all paginated lists, `CONFIG.UNDO_DURATION_MS` (10000) for undo delete toasts, `CONFIG.METERS_PER_KM` (1000) for distance conversion — never hardcode these values
 - **Route guards**: `ModuleGate` wraps module routes, `AdminGate` wraps admin routes — redirect to `/` if unauthorized
 - **Dev bypass**: When Firebase isn't configured (`isFirebaseConfigured = false`), auth is bypassed — all modules enabled, TheAdminNick role, localStorage adapter used instead of Firebase
 
@@ -83,6 +86,14 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Tests**: vitest in `__tests__/` dirs. `src/test-setup.ts` loads jest-dom matchers. Test files excluded from tsconfig. E2E in `e2e/` (excluded from vitest).
 - **Refs for async callbacks**: When `useCallback` needs current state in an async flow, use a ref (`fooRef.current`) alongside `useState` — avoids stale closures
 - **ESLint autofix**: `bunx eslint --fix <file>` handles `react/jsx-curly-newline` — don't manually fix these
+
+## 20-Point Audit Violations (from `docs/revz/nick-review-20-points.md`)
+
+Found via grep sweeps — fix in next code hygiene pass:
+
+- **#4 (constants)**: ~~`PAGE_SIZE` hardcoded in 6 files~~ — FIXED (`CONFIG.PAGE_SIZE`). ~~`1000` for m↔km in 6 places~~ — FIXED (`CONFIG.METERS_PER_KM`). Watch for new magic numbers.
+- **#6 (messages)**: ~15 raw toast strings (`'Expense deleted'`, `'Failed to save theme'`, `'Signed out'`, etc.) in components instead of `constants/messages.ts` enums. Hooks use message constants correctly — components don't.
+- **#19 (utils)**: Duplicated `formatDist()`/`formatDistance()` in `ActivityLog.tsx` and `BodyStats.tsx` — should be one shared utility. 8 inline `.sort((a, b) => ...)` comparators across all list views — extract `sortNewestFirst()` to `shared/utils/`.
 
 ## Known Issues (fix later)
 

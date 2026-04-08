@@ -11,11 +11,12 @@ export interface Toast {
   id: string;
   message: string;
   type: 'success' | 'error' | 'info';
+  action?: { label: string; onClick: () => void };
 }
 
 export interface ToastContextValue {
   toasts: Toast[];
-  addToast: (message: string, type: Toast['type']) => void;
+  addToast: (message: string, type: Toast['type'], options?: { action?: Toast['action']; durationMs?: number }) => void;
   removeToast: (id: string) => void;
 }
 
@@ -38,10 +39,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addToast = useCallback(
-    (message: string, type: Toast['type']) => {
+    (message: string, type: Toast['type'], options?: { action?: Toast['action']; durationMs?: number }) => {
       const id = crypto.randomUUID();
-      setToasts((prev) => [...prev, { id, message, type }]);
-      const timer = setTimeout(() => removeToast(id), AUTO_DISMISS_MS);
+      setToasts((prev) => [...prev, { id, message, type, action: options?.action }]);
+      const timer = setTimeout(() => removeToast(id), options?.durationMs ?? AUTO_DISMISS_MS);
       timers.current.set(id, timer);
     },
     [removeToast],
@@ -88,14 +89,26 @@ function ToastOverlay({
     <div className="fixed bottom-20 left-1/2 z-50 flex -translate-x-1/2 flex-col gap-2">
       {
 toasts.map((toast) => (
-        <button
+        <div
           key={toast.id}
           role="alert"
-          onClick={() => onDismiss(toast.id)}
-          className={`w-80 cursor-pointer rounded-lg px-4 py-3 text-sm shadow-lg ${toastClasses(toast.type)}`}
+          className={`w-80 rounded-lg px-4 py-3 text-sm shadow-lg flex items-center justify-between gap-2 ${toastClasses(toast.type)}`}
         >
-          {toast.message}
-        </button>
+          <button type="button" onClick={() => onDismiss(toast.id)} className="flex-1 text-left cursor-pointer">
+            {toast.message}
+          </button>
+          {
+            toast.action && (
+              <button
+                type="button"
+                onClick={() => { toast.action!.onClick(); onDismiss(toast.id); }}
+                className="font-bold underline whitespace-nowrap"
+              >
+                {toast.action.label}
+              </button>
+            )
+          }
+        </div>
       ))
 }
     </div>

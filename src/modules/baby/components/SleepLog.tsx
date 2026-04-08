@@ -1,22 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { SleepEntry } from '@/modules/baby/types';
 import { SleepType, SleepQuality } from '@/modules/baby/types';
 import { ALL_SLEEP_TYPES, ALL_SLEEP_QUALITIES, SLEEP_TYPE_LABELS, SLEEP_QUALITY_LABELS } from '@/modules/baby/constants';
-import { todayStr } from '@/shared/utils/date';
+import { todayStr, nowTime } from '@/shared/utils/date';
+import { useToast } from '@/shared/errors/useToast';
+import { CONFIG } from '@/constants/config';
+
+/** Returns current time + offset minutes as HH:MM */
+function timeOffset(minutes: number): string {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() + minutes);
+  return d.toTimeString().slice(0, 5);
+}
 
 /** Sleep tracking form with type/quality selection and recent entries list */
 export function SleepLog({ childId }: { childId?: string }) {
   const { sleeps, logSleep, updateSleep, removeSleep } = useBabyData(childId ?? null);
+  const { addToast } = useToast();
   const [type, setType] = useState<SleepType>(SleepType.Nap);
   const [quality, setQuality] = useState<SleepQuality | null>(SleepQuality.Good);
   const [date, setDate] = useState(todayStr);
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [startTime, setStartTime] = useState(nowTime);
+  const [endTime, setEndTime] = useState(() => timeOffset(15));
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [editEntry, setEditEntry] = useState<SleepEntry | null>(null);
+  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const undoRef = useRef(false);
 
   useEffect(() => {
     if (editEntry) {
@@ -41,8 +54,8 @@ export function SleepLog({ childId }: { childId?: string }) {
       await logSleep({ date, startTime, endTime, type, quality, timestamp: now, createdAt: now, notes });
     }
 
-    setStartTime('');
-    setEndTime('');
+    setStartTime(nowTime());
+    setEndTime(timeOffset(15));
     setNotes('');
     setSaving(false);
   }
@@ -52,14 +65,29 @@ export function SleepLog({ childId }: { childId?: string }) {
     setType(SleepType.Nap);
     setQuality(SleepQuality.Good);
     setDate(todayStr());
-    setStartTime('');
-    setEndTime('');
+    setStartTime(nowTime());
+    setEndTime(timeOffset(15));
     setNotes('');
   };
 
-  const recentSleeps = [...sleeps]
-    .sort((a, b) => `${b.date}T${b.startTime}`.localeCompare(`${a.date}T${a.startTime}`))
-    .slice(0, 10);
+  const handleUndoDelete = (id: string) => {
+    undoRef.current = false;
+    setPendingDeleteId(id);
+    addToast('Sleep deleted', 'info', {
+      durationMs: CONFIG.UNDO_DURATION_MS,
+      action: { label: 'Undo', onClick: () => { undoRef.current = true; setPendingDeleteId(null); } },
+    });
+    setTimeout(() => {
+      if (!undoRef.current) removeSleep(id);
+      setPendingDeleteId(null);
+    }, CONFIG.UNDO_DURATION_MS);
+  };
+
+  const sortedSleeps = [...sleeps]
+    .filter((s) => s.id !== pendingDeleteId)
+    .sort((a, b) => `${b.date}T${b.startTime}`.localeCompare(`${a.date}T${a.startTime}`));
+  const recentSleeps = sortedSleeps.slice(0, limit);
+  const hasMore = sortedSleeps.length > limit;
 
   return (
     <div className="flex flex-col gap-6 px-4 py-6">
@@ -110,13 +138,25 @@ ALL_SLEEP_QUALITIES.map((sq) => (
         </button>
       </form>
 
-      <RecentSleeps entries={recentSleeps} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={removeSleep} />
+      <RecentSleeps entries={recentSleeps} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
+      {
+        hasMore && (
+          <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">
+            Show more ({sortedSleeps.length - limit} remaining)
+          </button>
+        )
+      }
+      {
+        !hasMore && sortedSleeps.length > CONFIG.PAGE_SIZE && (
+          <p className="text-xs text-fg-muted text-center py-1">That's all the sleep entries</p>
+        )
+      }
     </div>
   );
 }
 
 /** Renders a sorted list of recent sleep entries with edit/delete actions */
-function RecentSleeps({ entries, onEdit, editingId, onRemove }: { entries: SleepEntry[]; onEdit: (e: SleepEntry) => void; editingId: string | null; onRemove: (id: string) => Promise<void> }) {
+function RecentSleeps({ entries, onEdit, editingId, onRemove }: { entries: SleepEntry[]; onEdit: (e: SleepEntry) => void; editingId: string | null; onRemove: (id: string) => void }) {
   if (entries.length === 0) return null;
 
   return (

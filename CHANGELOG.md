@@ -4,9 +4,9 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
-## [0.2.1] — 2026-04-07
+## [0.2.1] — 2026-04-08
 
-Bug fixes and feature additions (TDD).
+Bug fixes, Dashboard, consistency sweep, doc overhaul.
 
 ### Bug Fixes
 
@@ -30,6 +30,14 @@ Bug fixes and feature additions (TDD).
 | targetUid hook pattern | `useExpenses`, `useIncome`, `useBodyConfig`, `useBodyData`, `useBabyCollection`, `useChildren` accept optional `targetUid` for read-only data scoping. Write callbacks become no-ops when viewing another user's data |
 | Header logo | "AFP" text replaced with `favicon.png` image, links to Dashboard |
 | useAllUsers hook | Admin-only hook listing all profiled users from Firestore |
+| Tap-to-edit (Body) | FloorsTab: tap row → +/- buttons redirect to that date. ActivityLog: tap row → AddActivity populates, "Update" button. All 3 tabs (Walk/Run/Cycle) wired |
+| Tap-to-edit (Baby) | All 4 baby logs (Feed, Sleep, Growth, Diaper): tap entry → form populates, "Update" button, Cancel dismisses |
+| Undo delete | Toast system extended with action button + custom duration. All 6 deletable lists show 10s undo toast (`CONFIG.UNDO_DURATION_MS`) |
+| Consistent pagination | All 8 lists use `CONFIG.PAGE_SIZE` (25 default), "Show more" adds page, end-of-list message |
+| m↔km conversion | Toggling m↔km in AddActivity now converts displayed value. `CONFIG.METERS_PER_KM` constant. `convertDistance()` utility |
+| Baby child nav | Child creation auto-navigates to child detail. Dashboard cards tappable with icons → switch tab |
+| Baby defaults | SleepLog: default start=now, end=now+15min. GrowthLog: submit disabled without at least one measurement |
+| DevBench expansion | 4 new generators (Cycling, Income, Growth, Settlement). File split to bench-generators.ts. Error handling fixes. x1k day-spread (max 10/day) |
 
 ### Tests Added
 
@@ -46,19 +54,22 @@ Bug fixes and feature additions (TDD).
 | BodyPage gear button visible when configured | `src/modules/body/__tests__/BodyPage.test.tsx` |
 | Gear button opens config form | `src/modules/body/__tests__/BodyPage.test.tsx` |
 | Config form pre-filled with current config | `src/modules/body/__tests__/BodyPage.test.tsx` |
-| ActivityLog shows max 7 by default | `src/modules/body/__tests__/ActivityLog.test.tsx` |
-| "Show more" appears when >7 activities | `src/modules/body/__tests__/ActivityLog.test.tsx` |
-| No "Show more" when <=7 activities | `src/modules/body/__tests__/ActivityLog.test.tsx` |
-| "Show more" expands to 30 | `src/modules/body/__tests__/ActivityLog.test.tsx` |
+| ActivityLog shows at most PAGE_SIZE by default | `src/modules/body/__tests__/ActivityLog.test.tsx` |
+| "Show more" appears when >PAGE_SIZE activities | `src/modules/body/__tests__/ActivityLog.test.tsx` |
+| No "Show more" when <=PAGE_SIZE activities | `src/modules/body/__tests__/ActivityLog.test.tsx` |
+| "Show more" loads next page | `src/modules/body/__tests__/ActivityLog.test.tsx` |
 | FeedLog shows delete button on entries | `src/modules/baby/__tests__/BabyLogActions.test.tsx` |
 | Delete button calls removeFeed with correct ID | `src/modules/baby/__tests__/BabyLogActions.test.tsx` |
 | filterByDateRange: All/Today/Week/Month + empty | `src/modules/expenses/__tests__/summary.test.ts` (5 tests) |
 | Amount presets render, fill, replace | `src/modules/expenses/__tests__/AddExpense.test.tsx` (3 tests) |
 | ReconciliationView summary + outstanding + empty | `src/modules/expenses/__tests__/ReconciliationView.test.tsx` (3 tests) |
-| getGreeting + formatDayDate | `src/shared/utils/__tests__/date.test.ts` (4 tests) |
+| getGreeting + formatDayDate | `src/shared/utils/__tests__/utils.test.ts` (4 tests) |
 | DashboardCard render + link + styling | `src/shared/components/__tests__/DashboardCard.test.tsx` (4 tests) |
 | Dashboard greeting + cards + module gating | `src/shared/components/__tests__/Dashboard.test.tsx` (8 tests) |
 | useAllUsers export | `src/admin/hooks/__tests__/useAllUsers.test.ts` (1 test) |
+| createDefaultProfile, isValidNumber, toErrorMessage | `src/shared/utils/__tests__/utils.test.ts` (10 tests) |
+| ActivityLog pagination updated for CONFIG.PAGE_SIZE | `src/modules/body/__tests__/ActivityLog.test.tsx` |
+| FeedLog undo toast on delete | `src/modules/baby/__tests__/BabyLogActions.test.tsx` |
 
 ---
 

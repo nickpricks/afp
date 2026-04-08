@@ -50,6 +50,12 @@ export function BabyLanding() {
     );
   }
 
+  /** Navigate to the new child after creation */
+  const handleChildAdded = (childId: string) => {
+    setShowAddForm(false);
+    navigate(`/baby/${childId}`);
+  };
+
   // No children — show onboarding
   if (children.length === 0 && !showAddForm) {
     return (
@@ -58,7 +64,7 @@ export function BabyLanding() {
           <h2 className="text-xl font-semibold text-fg mb-2">Welcome to Baby Tracking</h2>
           <p className="text-fg-muted mb-6">Add your first child to get started.</p>
         </div>
-        <AddChild />
+        <AddChild onAdded={handleChildAdded} />
       </div>
     );
   }
@@ -75,7 +81,7 @@ children.map((child) => (
 
       {
 showAddForm && (
-        <AddChild onAdded={() => setShowAddForm(false)} />
+        <AddChild onAdded={handleChildAdded} />
       )
 }
 
