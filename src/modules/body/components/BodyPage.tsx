@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 import { BodyConfigForm } from '@/modules/body/components/BodyConfigForm';
 import { BodyStats } from '@/modules/body/components/BodyStats';
@@ -8,6 +8,9 @@ import { RunningTab } from '@/modules/body/components/RunningTab';
 import { CyclingTab } from '@/modules/body/components/CyclingTab';
 import { useBodyConfig } from '@/modules/body/hooks/useBodyConfig';
 import { useBodyData } from '@/modules/body/hooks/useBodyData';
+import { useToast } from '@/shared/errors/useToast';
+import { CONFIG } from '@/constants/config';
+import { todayStr } from '@/shared/utils/date';
 
 type TabId = 'stats' | 'floors' | 'walking' | 'running' | 'cycling';
 
@@ -35,8 +38,23 @@ function buildTabs(config: { floors: boolean; walking: boolean; running: boolean
 export function BodyPage() {
   const { config, isConfigured, loading, saveConfig } = useBodyConfig();
   const { records, todayRecord, activities, tap, logActivity, saveRecord, updateActivity } = useBodyData();
+  const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<TabId>('stats');
   const [showConfig, setShowConfig] = useState(false);
+
+  /** Resets today's record to zeros with undo */
+  const handleResetToday = useCallback(() => {
+    const today = todayStr();
+    const backup = { up: todayRecord.up, down: todayRecord.down };
+    saveRecord(today, { up: 0, down: 0 });
+    addToast('Today reset', 'success', {
+      action: {
+        label: 'Undo',
+        onClick: () => saveRecord(today, backup),
+      },
+      durationMs: CONFIG.UNDO_DURATION_MS,
+    });
+  }, [todayRecord, saveRecord, addToast]);
 
   if (loading) {
     return (
@@ -114,6 +132,7 @@ export function BodyPage() {
             records={records}
             config={config}
             onNavigate={handleNavigate}
+            onResetToday={handleResetToday}
           />
         )
       }

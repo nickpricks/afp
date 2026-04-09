@@ -235,10 +235,17 @@ test.describe('Baby', () => {
 });
 
 test.describe('Admin', () => {
-  test('/admin renders admin panel', async ({ page }) => {
+  test('/admin renders tabbed admin panel', async ({ page }) => {
     await page.goto('/admin');
     await expect(page.getByRole('heading', { name: 'Admin' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Invites' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Users' })).toBeVisible();
+  });
+
+  test('Invites tab shows invite generator by default', async ({ page }) => {
+    await page.goto('/admin');
     await expect(page.getByRole('heading', { name: 'Create Invite' })).toBeVisible();
+    await expect(page.locator('#invite-name')).toBeVisible();
   });
 
   test('/admin/invites renders invite generator', async ({ page }) => {
@@ -266,6 +273,25 @@ test.describe('Admin', () => {
     await page.getByRole('button', { name: 'Create Invite' }).click();
     await expect(page.getByText('Invite created')).toBeVisible();
     await expect(page.getByText('Invite Link')).toBeVisible();
+  });
+
+  test('Users tab shows on admin page', async ({ page }) => {
+    await page.goto('/admin');
+    await page.getByRole('button', { name: 'Users' }).click();
+    // In dev mode there may be no users — check for empty state
+    await expect(page.getByText(/No users|Loading/)).toBeVisible();
+  });
+
+  test('invite form shows role selector (User/Viewer)', async ({ page }) => {
+    await page.goto('/admin');
+    await expect(page.getByRole('button', { name: 'User', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Viewer', exact: true })).toBeVisible();
+  });
+
+  test('selecting Viewer role shows "View of" picker', async ({ page }) => {
+    await page.goto('/admin');
+    await page.getByRole('button', { name: 'Viewer' }).click();
+    await expect(page.getByText(/view of/i)).toBeVisible();
   });
 });
 

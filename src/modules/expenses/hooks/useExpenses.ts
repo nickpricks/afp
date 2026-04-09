@@ -20,11 +20,11 @@ export function useExpenses(targetUid?: string) {
 
   const uid = targetUid ?? firebaseUser?.uid;
   const readOnly = targetUid != null && targetUid !== firebaseUser?.uid;
-  const syncFn = readOnly ? () => {} : setSyncStatus;
 
   useEffect(() => {
     if (!uid) return;
 
+    const syncFn = readOnly ? () => {} : setSyncStatus;
     const adapter = createAdapter(userPath(uid));
     adapterRef.current = adapter;
     syncFn(SyncStatus.Syncing);
@@ -45,7 +45,7 @@ export function useExpenses(targetUid?: string) {
       unsubscribe();
       adapterRef.current = null;
     };
-  }, [uid, syncFn]);
+  }, [uid, readOnly, setSyncStatus]);
 
   /** Validates and persists a new expense, showing a toast on success or failure */
   const addExpense = useCallback(
@@ -92,7 +92,7 @@ export function useExpenses(targetUid?: string) {
       addToast(BudgetMsg.ExpenseAdded, 'success');
       return true;
     },
-    [addToast],
+    [addToast, readOnly],
   );
 
   /** Soft-deletes an expense by marking it as deleted */
@@ -115,7 +115,7 @@ export function useExpenses(targetUid?: string) {
 
       addToast(BudgetMsg.ExpenseDeleted, 'success');
     },
-    [addToast],
+    [addToast, readOnly],
   );
 
   return { expenses, addExpense, deleteExpense };

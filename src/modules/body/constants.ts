@@ -16,10 +16,12 @@ export const SCORING_WEIGHTS = {
   FLOOR_UP: 1,
   /** Points per floor down */
   FLOOR_DOWN: 0.5,
-  /** Points per 100 meters walked */
-  WALK_PER_100M: 0.5,
-  /** Points per 100 meters run */
-  RUN_PER_100M: 1,
+  /** Points per 1 km walked */
+  WALK_PER_KM: 10,
+  /** Points per 1 km run */
+  RUN_PER_KM: 20,
+  /** Points per 1 km cycled */
+  CYCLE_PER_KM: 15,
 } as const;
 
 /** Display labels for activity types */

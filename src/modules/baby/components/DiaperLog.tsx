@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 
 import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { DiaperEntry } from '@/modules/baby/types';
@@ -22,14 +22,14 @@ export function DiaperLog({ childId }: { childId?: string }) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const undoRef = useRef(false);
 
-  useEffect(() => {
-    if (editEntry) {
-      setType(editEntry.type);
-      setDate(editEntry.date);
-      setTime(editEntry.time);
-      setNotes(editEntry.notes);
-    }
-  }, [editEntry]);
+  /** Populates form fields from the selected entry for editing */
+  const startEdit = (entry: DiaperEntry) => {
+    setEditEntry(entry);
+    setType(entry.type);
+    setDate(entry.date);
+    setTime(entry.time);
+    setNotes(entry.notes);
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -125,7 +125,7 @@ ALL_DIAPER_TYPES.map((dt) => (
         </button>
       </form>
 
-      <RecentDiapers entries={recentDiapers} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
+      <RecentDiapers entries={recentDiapers} onEdit={startEdit} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
       {
         hasMore && (
           <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">

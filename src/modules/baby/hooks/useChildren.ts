@@ -62,7 +62,7 @@ export function useChildren(targetUid?: string) {
       addToast(result.error, 'error');
       return err(result.error);
     },
-    [addToast],
+    [addToast, readOnly],
   );
 
   const updateChild = useCallback(
@@ -85,7 +85,7 @@ export function useChildren(targetUid?: string) {
       addToast(result.error, 'error');
       return err(result.error);
     },
-    [addToast, children],
+    [addToast, children, readOnly],
   );
 
   return { children, addChild, updateChild, loading };

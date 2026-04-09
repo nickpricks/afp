@@ -59,7 +59,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
         addToast(result.error, 'error');
       }
     },
-    [addToast, subcollection, label],
+    [addToast, subcollection, label, readOnly],
   );
 
   /** Removes an entry by ID */
@@ -75,7 +75,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
         addToast(result.error, 'error');
       }
     },
-    [addToast, subcollection, label],
+    [addToast, subcollection, label, readOnly],
   );
 
   /** Updates an existing entry by ID */
@@ -91,7 +91,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
         addToast(result.error, 'error');
       }
     },
-    [addToast, subcollection, label],
+    [addToast, subcollection, label, readOnly],
   );
 
   return { items, ready, log, update, remove };

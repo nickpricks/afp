@@ -29,7 +29,12 @@ export function CyclingTab({
       />
       {
         cycleActivities.length > 0 && (
-          <ActivityLog activities={cycleActivities} onEdit={setEditEntry} editingId={editEntry?.id} />
+          <ActivityLog
+            activities={cycleActivities}
+            onEdit={setEditEntry}
+            onDuplicate={(a) => a.distance !== null && onLog(ActivityType.Cycle, a.distance)}
+            editingId={editEntry?.id}
+          />
         )
       }
     </div>

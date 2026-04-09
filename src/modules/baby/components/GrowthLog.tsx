@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 
 import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { GrowthEntry } from '@/modules/baby/types';
@@ -21,15 +21,15 @@ export function GrowthLog({ childId }: { childId?: string }) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const undoRef = useRef(false);
 
-  useEffect(() => {
-    if (editEntry) {
-      setDate(editEntry.date);
-      setWeight(editEntry.weight);
-      setHeight(editEntry.height);
-      setHeadCircumference(editEntry.headCircumference);
-      setNotes(editEntry.notes);
-    }
-  }, [editEntry]);
+  /** Populates form fields from the selected entry for editing */
+  const startEdit = (entry: GrowthEntry) => {
+    setEditEntry(entry);
+    setDate(entry.date);
+    setWeight(entry.weight);
+    setHeight(entry.height);
+    setHeadCircumference(entry.headCircumference);
+    setNotes(entry.notes);
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -115,7 +115,7 @@ export function GrowthLog({ childId }: { childId?: string }) {
         </button>
       </form>
 
-      <RecentGrowth entries={recentGrowth} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
+      <RecentGrowth entries={recentGrowth} onEdit={startEdit} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
       {
         hasMore && (
           <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">

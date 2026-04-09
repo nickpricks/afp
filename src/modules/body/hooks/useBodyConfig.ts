@@ -20,13 +20,13 @@ export function useBodyConfig(targetUid?: string) {
 
   const uid = targetUid ?? firebaseUser?.uid;
   const readOnly = targetUid != null && targetUid !== firebaseUser?.uid;
-  const syncFn = readOnly ? () => {} : setSyncStatus;
 
   const isConfigured = config.configuredAt !== '';
 
   useEffect(() => {
     if (!uid) return;
 
+    const syncFn = readOnly ? () => {} : setSyncStatus;
     const adapter = createAdapter(userPath(uid));
     adapterRef.current = adapter;
     syncFn(SyncStatus.Syncing);
@@ -52,7 +52,7 @@ export function useBodyConfig(targetUid?: string) {
       unsub();
       adapterRef.current = null;
     };
-  }, [uid, syncFn]);
+  }, [uid, readOnly, setSyncStatus]);
 
   /** Persists the body config */
   const saveConfig = useCallback(
@@ -78,7 +78,7 @@ export function useBodyConfig(targetUid?: string) {
         addToast(BodyMsg.ConfigSaved, 'success');
       }
     },
-    [addToast],
+    [addToast, readOnly],
   );
 
   return { config, isConfigured, loading, saveConfig };

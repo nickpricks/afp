@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 
 import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { SleepEntry } from '@/modules/baby/types';
@@ -31,16 +31,16 @@ export function SleepLog({ childId }: { childId?: string }) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const undoRef = useRef(false);
 
-  useEffect(() => {
-    if (editEntry) {
-      setType(editEntry.type);
-      setQuality(editEntry.quality);
-      setDate(editEntry.date);
-      setStartTime(editEntry.startTime);
-      setEndTime(editEntry.endTime);
-      setNotes(editEntry.notes);
-    }
-  }, [editEntry]);
+  /** Populates form fields from the selected entry for editing */
+  const startEdit = (entry: SleepEntry) => {
+    setEditEntry(entry);
+    setType(entry.type);
+    setQuality(entry.quality);
+    setDate(entry.date);
+    setStartTime(entry.startTime);
+    setEndTime(entry.endTime);
+    setNotes(entry.notes);
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -138,7 +138,7 @@ ALL_SLEEP_QUALITIES.map((sq) => (
         </button>
       </form>
 
-      <RecentSleeps entries={recentSleeps} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
+      <RecentSleeps entries={recentSleeps} onEdit={startEdit} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
       {
         hasMore && (
           <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">

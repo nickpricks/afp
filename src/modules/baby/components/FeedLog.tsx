@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 
 import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { FeedEntry } from '@/modules/baby/types';
@@ -28,16 +28,15 @@ export function FeedLog({ childId }: { childId?: string }) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const undoRef = useRef(false);
 
-  // Populate form when editing
-  useEffect(() => {
-    if (editEntry) {
-      setType(editEntry.type);
-      setDate(editEntry.date);
-      setTime(editEntry.time);
-      setAmount(editEntry.amount);
-      setNotes(editEntry.notes);
-    }
-  }, [editEntry]);
+  /** Populates form fields from the selected entry for editing */
+  const startEdit = (entry: FeedEntry) => {
+    setEditEntry(entry);
+    setType(entry.type);
+    setDate(entry.date);
+    setTime(entry.time);
+    setAmount(entry.amount);
+    setNotes(entry.notes);
+  };
 
   /** Handles form submission — create or update */
   async function handleSubmit(e: React.FormEvent) {
@@ -145,7 +144,7 @@ isAmountType(type) && (
         </button>
       </form>
 
-      <RecentFeeds entries={recentFeeds} onEdit={setEditEntry} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
+      <RecentFeeds entries={recentFeeds} onEdit={startEdit} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
       {
         hasMore && (
           <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">

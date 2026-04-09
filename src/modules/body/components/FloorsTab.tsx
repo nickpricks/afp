@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowUp, ArrowDown, RotateCcw } from 'lucide-react';
+import { ArrowUp, ArrowDown, RotateCcw, Plus } from 'lucide-react';
 
 import type { BodyRecord } from '@/modules/body/types';
 import { BODY_DEFAULTS } from '@/modules/body/constants';
@@ -121,12 +121,12 @@ export function FloorsTab({
                 recentDays.map(([dateKey, rec]) => {
                   const isActive = dateKey === activeKey;
                   return (
-                    <li key={dateKey}>
+                    <li key={dateKey} className="group relative">
                       <button
                         type="button"
                         onClick={() => handleRowTap(dateKey)}
                         className={
-                          `flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors ${
+                          `flex w-full items-center justify-between rounded-lg px-3 pr-10 py-2 text-sm transition-colors ${
                             isActive
                               ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border border-line'
                               : dateKey === today
@@ -140,6 +140,18 @@ export function FloorsTab({
                           {rec.up} up / {rec.down} down = {rec.total}
                         </span>
                       </button>
+                      {
+dateKey !== today && (
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); setEditingKey(dateKey); }}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6.5 w-6.5 items-center justify-center rounded-full bg-accent text-fg-on-accent opacity-0 scale-75 transition-all duration-150 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:opacity-100 group-hover:scale-100 active:scale-90 shadow-sm"
+                          aria-label={`Edit ${dateKey}`}
+                        >
+                          <Plus size={13} strokeWidth={2.5} />
+                        </button>
+                      )
+}
                     </li>
                   );
                 })

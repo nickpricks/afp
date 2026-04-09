@@ -29,7 +29,12 @@ export function WalkingTab({
       />
       {
         walkActivities.length > 0 && (
-          <ActivityLog activities={walkActivities} onEdit={setEditEntry} editingId={editEntry?.id} />
+          <ActivityLog
+            activities={walkActivities}
+            onEdit={setEditEntry}
+            onDuplicate={(a) => a.distance !== null && onLog(ActivityType.Walk, a.distance)}
+            editingId={editEntry?.id}
+          />
         )
       }
     </div>

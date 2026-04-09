@@ -61,6 +61,18 @@ export enum ProfileMsg {
   ProfileUpdated = 'Profile updated',
 }
 
+/** Admin panel messages */
+export enum AdminMsg {
+  InviteDeleted = 'Invite deleted',
+  InviteDeleteFailed = 'Failed to delete invite',
+  InviteLinkCopied = 'Invite link copied',
+  InviteLinkCopyFailed = 'Failed to copy invite link',
+  ModulesUpdated = 'Modules updated',
+  ModulesUpdateFailed = 'Failed to update modules',
+  RoleUpdated = 'Role updated',
+  RoleUpdateFailed = 'Failed to update role',
+}
+
 /** Context provider guard messages */
 export enum ProviderMsg {
   AuthRequired = 'useAuth must be used within an AuthProvider',

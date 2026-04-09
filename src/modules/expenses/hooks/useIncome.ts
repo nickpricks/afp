@@ -20,11 +20,11 @@ export function useIncome(targetUid?: string) {
 
   const uid = targetUid ?? firebaseUser?.uid;
   const readOnly = targetUid != null && targetUid !== firebaseUser?.uid;
-  const syncFn = readOnly ? () => {} : setSyncStatus;
 
   useEffect(() => {
     if (!uid) return;
 
+    const syncFn = readOnly ? () => {} : setSyncStatus;
     const adapter = createAdapter(userPath(uid));
     adapterRef.current = adapter;
     syncFn(SyncStatus.Syncing);
@@ -45,7 +45,7 @@ export function useIncome(targetUid?: string) {
       unsubscribe();
       adapterRef.current = null;
     };
-  }, [uid, syncFn]);
+  }, [uid, readOnly, setSyncStatus]);
 
   /** Validates and persists a new income entry, showing a toast on success or failure */
   const addIncome = useCallback(
@@ -87,7 +87,7 @@ export function useIncome(targetUid?: string) {
       addToast(BudgetMsg.IncomeAdded, 'success');
       return true;
     },
-    [addToast],
+    [addToast, readOnly],
   );
 
   /** Deletes an income entry by ID */
@@ -106,7 +106,7 @@ export function useIncome(targetUid?: string) {
 
       addToast(BudgetMsg.IncomeDeleted, 'success');
     },
-    [addToast],
+    [addToast, readOnly],
   );
 
   return { income, addIncome, deleteIncome };

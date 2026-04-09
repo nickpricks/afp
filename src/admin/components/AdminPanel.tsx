@@ -1,48 +1,41 @@
-import { InviteGenerator } from '@/admin/components/InviteGenerator';
-import { useAdmin } from '@/admin/hooks/useAdmin';
+import { useState } from 'react';
 
-/** Admin dashboard with invite management */
+import { InvitesTab } from '@/admin/components/InvitesTab';
+import { UsersTab } from '@/admin/components/UsersTab';
+
+type AdminTab = 'invites' | 'users';
+
+/** Admin dashboard with Invites and Users tabs */
 export function AdminPanel() {
-  const { invites } = useAdmin();
+  const [activeTab, setActiveTab] = useState<AdminTab>('invites');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <h1 className="text-xl font-bold text-fg">Admin</h1>
 
-      <InviteGenerator />
+      <div className="flex gap-1 rounded-lg bg-surface-card border border-line p-1">
+        <button
+          type="button"
+          onClick={() => setActiveTab('invites')}
+          className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            activeTab === 'invites' ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'
+          }`}
+        >
+          Invites
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('users')}
+          className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            activeTab === 'users' ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'
+          }`}
+        >
+          Users
+        </button>
+      </div>
 
-      <section className="rounded-xl bg-surface-card border border-line p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-fg mb-4">Invites</h2>
-
-        {
-invites.length === 0 && (
-          <p className="text-sm text-fg-muted">No invites created yet.</p>
-        )
-}
-        {
-invites.length > 0 && (
-          <ul className="divide-y divide-line">
-            {
-invites.map((invite) => {
-              const statusClass = invite.linkedUid
-                ? 'bg-success/10 text-success'
-                : 'bg-warning/10 text-warning';
-              const statusText = invite.linkedUid ? 'Redeemed' : 'Pending';
-
-              return (
-                <li key={invite.code} className="flex items-center justify-between py-3">
-                  <span className="text-sm font-medium text-fg">{invite.name}</span>
-                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusClass}`}>
-                    {statusText}
-                  </span>
-                </li>
-              );
-            })
-}
-          </ul>
-        )
-}
-      </section>
+      {activeTab === 'invites' && <InvitesTab />}
+      {activeTab === 'users' && <UsersTab />}
     </div>
   );
 }

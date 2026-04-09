@@ -24,17 +24,19 @@ describe('computeBodyScore', () => {
     expect(computeBodyScore(rec(0, 10))).toBe(5);
   });
 
-  it('includes walk distance in score (500m = 2.5 points)', () => {
-    expect(computeBodyScore(rec(0, 0, 500))).toBe(2.5);
+  it('includes walk distance in score (500m = 5 points)', () => {
+    // 0.5 km × 10 pts/km = 5
+    expect(computeBodyScore(rec(0, 0, 500))).toBe(5);
   });
 
-  it('includes run distance in score (300m = 3 points)', () => {
-    expect(computeBodyScore(rec(0, 0, 0, 300))).toBe(3);
+  it('includes run distance in score (500m = 10 points)', () => {
+    // 0.5 km × 20 pts/km = 10
+    expect(computeBodyScore(rec(0, 0, 0, 500))).toBe(10);
   });
 
   it('combines floors + walk + run', () => {
-    // 2 up (2) + 1 down (0.5) + 200m walk (1) + 100m run (1) = 4.5
-    expect(computeBodyScore(rec(2, 1, 200, 100))).toBe(4.5);
+    // 2 up (2) + 1 down (0.5) + 200m walk (2) + 100m run (2) = 6.5
+    expect(computeBodyScore(rec(2, 1, 200, 100))).toBe(6.5);
   });
 });
 

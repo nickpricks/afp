@@ -17,4 +17,6 @@ export const CONFIG = {
   PAGE_SIZE: 25 as number,
   /** Undo delete toast duration in ms */
   UNDO_DURATION_MS: 10000 as number,
+  /** Default daily score goal for the progress ring */
+  DAILY_SCORE_GOAL: 50 as number,
 } as const;

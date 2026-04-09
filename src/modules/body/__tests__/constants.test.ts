@@ -18,8 +18,8 @@ describe('SCORING_WEIGHTS', () => {
     expect(SCORING_WEIGHTS.FLOOR_UP).toBeGreaterThan(SCORING_WEIGHTS.FLOOR_DOWN);
   });
 
-  it('running scores more per 100m than walking', () => {
-    expect(SCORING_WEIGHTS.RUN_PER_100M).toBeGreaterThan(SCORING_WEIGHTS.WALK_PER_100M);
+  it('running scores more per km than walking', () => {
+    expect(SCORING_WEIGHTS.RUN_PER_KM).toBeGreaterThan(SCORING_WEIGHTS.WALK_PER_KM);
   });
 });
 

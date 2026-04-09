@@ -2,8 +2,9 @@ import { useState } from 'react';
 
 import { useAuth } from '@/shared/auth/useAuth';
 import { useToast } from '@/shared/errors/useToast';
+import { useAllUsers } from '@/admin/hooks/useAllUsers';
 import { generateInviteCode, createInvite } from '@/shared/auth/invite';
-import { ModuleId, type ModuleConfig } from '@/shared/types';
+import { ModuleId, UserRole, type ModuleConfig } from '@/shared/types';
 import { ALL_MODULES } from '@/shared/types';
 import { isOk } from '@/shared/types';
 import { InviteMsg, ValidationMsg } from '@/constants/messages';
@@ -21,6 +22,9 @@ export function InviteGenerator() {
   });
   const [inviteLink, setInviteLink] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [role, setRole] = useState<'user' | 'viewer'>('user');
+  const [viewerOf, setViewerOf] = useState('');
+  const { users } = useAllUsers();
 
   /** Toggles a module's enabled state in the local config */
   function toggleModule(id: ModuleId) {
@@ -36,13 +40,18 @@ export function InviteGenerator() {
 
     setIsCreating(true);
     const code = generateInviteCode();
-    const result = await createInvite(code, name.trim(), modules, firebaseUser.uid);
+    const result = await createInvite(code, name.trim(), modules, firebaseUser.uid, {
+      role: role === 'viewer' ? UserRole.Viewer : undefined,
+      viewerOf: role === 'viewer' ? viewerOf || undefined : undefined,
+    });
 
     if (isOk(result)) {
-      const link = `${window.location.origin}${window.location.pathname}#/invite/${code}`;
+      const link = `${window.location.origin}${import.meta.env.BASE_URL}invite/${code}`;
       setInviteLink(link);
       setName('');
       setModules({ [ModuleId.Body]: false, [ModuleId.Budget]: false, [ModuleId.Baby]: false });
+      setRole('user');
+      setViewerOf('');
       addToast(InviteMsg.Created, 'success');
     } else {
       addToast(result.error, 'error');
@@ -69,6 +78,55 @@ export function InviteGenerator() {
             className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
           />
         </div>
+
+        <div>
+          <span className="block text-sm font-medium text-fg-muted mb-2">Role</span>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => { setRole('user'); setViewerOf(''); }}
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                role === 'user' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg border border-line'
+              }`}
+            >
+              User
+            </button>
+            <button
+              type="button"
+              onClick={() => setRole('viewer')}
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                role === 'viewer' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg border border-line'
+              }`}
+            >
+              Viewer
+            </button>
+          </div>
+        </div>
+
+        {
+role === 'viewer' && (
+          <div>
+            <label htmlFor="viewer-of" className="block text-sm font-medium text-fg-muted mb-1">
+              View of
+            </label>
+            <select
+              id="viewer-of"
+              value={viewerOf}
+              onChange={(e) => setViewerOf(e.target.value)}
+              className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-fg"
+            >
+              <option value="">Select user...</option>
+              {
+users
+                .filter((u) => u.role !== UserRole.Viewer)
+                .map((u) => (
+                  <option key={u.uid} value={u.uid}>{u.name}</option>
+                ))
+}
+            </select>
+          </div>
+        )
+}
 
         <fieldset>
           <legend className="text-sm font-medium text-fg-muted mb-2">Modules</legend>

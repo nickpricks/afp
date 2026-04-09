@@ -44,11 +44,11 @@ export function useBodyData(targetUid?: string) {
 
   const uid = targetUid ?? firebaseUser?.uid;
   const readOnly = targetUid != null && targetUid !== firebaseUser?.uid;
-  const syncFn = readOnly ? () => {} : setSyncStatus;
 
   useEffect(() => {
     if (!uid) return;
 
+    const syncFn = readOnly ? () => {} : setSyncStatus;
     const adapter = createAdapter(userPath(uid));
     adapterRef.current = adapter;
     syncFn(SyncStatus.Syncing);
@@ -86,7 +86,7 @@ export function useBodyData(targetUid?: string) {
       unsubActivities();
       adapterRef.current = null;
     };
-  }, [uid, syncFn]);
+  }, [uid, readOnly, setSyncStatus]);
 
   const todayKey = todayStr();
 
@@ -126,7 +126,7 @@ export function useBodyData(targetUid?: string) {
         setRecords((prev) => ({ ...prev, [key]: current }));
       }
     },
-    [records, activities, addToast],
+    [records, activities, addToast, readOnly],
   );
 
   /** Logs a new activity (walk, run, etc.) */
@@ -169,7 +169,7 @@ export function useBodyData(targetUid?: string) {
         addToast(summaryResult.error, 'error');
       }
     },
-    [records, addToast],
+    [records, addToast, readOnly],
   );
 
   /** Saves or updates a body record for any date (edit/backfill) */
@@ -198,7 +198,7 @@ export function useBodyData(targetUid?: string) {
         addToast(BodyMsg.RecordSaved, 'success');
       }
     },
-    [records, addToast],
+    [records, addToast, readOnly],
   );
 
   /** Updates an existing activity's distance */
@@ -242,7 +242,7 @@ export function useBodyData(targetUid?: string) {
         addToast(summaryResult.error, 'error');
       }
     },
-    [records, addToast],
+    [records, addToast, readOnly],
   );
 
   return { records, todayRecord, activities, todayActivities, tap, logActivity, saveRecord, updateActivity };

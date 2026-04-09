@@ -8,6 +8,7 @@ export type BodyConfig = {
   cycling: boolean;
   yoga: boolean;
   floorHeight: number;
+  dailyGoal: number;
   configuredAt: string;
 };
 
@@ -19,6 +20,7 @@ export const DEFAULT_BODY_CONFIG: BodyConfig = {
   cycling: false,
   yoga: false,
   floorHeight: 3.0,
+  dailyGoal: 50,
   configuredAt: '',
 };
 

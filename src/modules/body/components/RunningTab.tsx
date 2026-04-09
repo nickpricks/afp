@@ -29,7 +29,12 @@ export function RunningTab({
       />
       {
         runActivities.length > 0 && (
-          <ActivityLog activities={runActivities} onEdit={setEditEntry} editingId={editEntry?.id} />
+          <ActivityLog
+            activities={runActivities}
+            onEdit={setEditEntry}
+            onDuplicate={(a) => a.distance !== null && onLog(ActivityType.Run, a.distance)}
+            editingId={editEntry?.id}
+          />
         )
       }
     </div>

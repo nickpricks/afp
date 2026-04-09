@@ -4,6 +4,48 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.2] — 2026-04-09
+
+Admin pages, viewer invite flow, body stats overhaul, scoring reweight, code quality.
+
+### New Features
+
+| Change | What |
+|---|---|
+| Tabbed Admin Panel | `AdminPanel` rewritten with Invites / Users tab switcher. Pill-style tabs with accent active state |
+| InvitesTab | Invite list with pending/redeemed badges, copy-link (clipboard) and delete (undo toast) actions on pending invites |
+| UsersTab | User list with initials avatar, role badge, color-coded module chips (Body=indigo, Budget=emerald, Baby=pink), summary stat bar (Admin/User/Viewer counts), accordion expand with role dropdown + module toggle switches |
+| Viewer invite flow | `InviteRecord` extended with `role` + `viewerOf` fields. `InviteGenerator` gets User/Viewer toggle + "View of" user picker. `redeemInvite` creates Viewer profile with `viewerOf` scoping |
+| Score ring | SVG progress ring on Body Stats replacing plain number. Zone labels (Easy Start → Beast Mode) with color transitions. Goal percentage display |
+| Weekly day bars | Vertical bar chart showing 7-day scores. Today highlighted with accent glow. Replaces flat 3-column text stats |
+| Daily goal builder | Per-activity sliders in `BodyConfigForm` — user builds a typical day, goal auto-calculates. Preset chips (🌿💪🔥⚡). Live ring + zone preview. `dailyGoal` persisted in `BodyConfig` |
+| Scoring reweight | New formula: floors_up×1, floors_down×0.5, walk_km×10, run_km×20, cycle_km×15. Default goal: 50 |
+| List hover (+) | Per-row (+) button on ActivityLog and FloorsTab rows — appears on hover, duplicates the entry (same type/distance for today) |
+| Reset today | Button below stat cards, turns red on hover, resets today's floors to zero with 10s undo toast |
+| Dynamic quick actions | Stat page action buttons driven by `STAT_CARDS` array — auto-includes cycling/yoga when configured |
+| Stat cards tappable | Whole card navigates to activity tab on tap (replaced hover-only (+) after review) |
+
+### Code Quality
+
+| Change | What |
+|---|---|
+| Prettier setup | `.prettierrc` (single quotes, semis, trailing commas, 100 char width) + `.prettierignore` + `eslint-config-prettier` integration. `bun run format` / `format:check` scripts |
+| ESLint 57→0 | Fixed 37 lint issues: `exhaustive-deps` (added `readOnly` to 14 dep arrays), `set-state-in-effect` (baby logs refactored to event handlers), `preserve-manual-memoization`, removed unused import |
+| AdminMsg constants | 8 admin toast messages moved to `constants/messages.ts` enum (code hygiene #6) |
+| `deleteInvite` | New function in `invite.ts` — localStorage + Firestore paths, `Result<void>` return |
+| `useAdminActions` | New hook — `updateUserModules` + `updateUserRole` with Firestore writes |
+
+### Tests
+
+| Metric | Before | After |
+|---|---|---|
+| Unit tests | 248 | 265 (+17) |
+| E2E tests | 38 | 42 (+4) |
+| ESLint problems | 57 | 0 |
+| Test files | 32 | 35 (+3) |
+
+---
+
 ## [0.2.1] — 2026-04-08
 
 Bug fixes, Dashboard, consistency sweep, doc overhaul.
