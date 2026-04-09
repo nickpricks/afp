@@ -7,6 +7,7 @@ import { ALL_SLEEP_TYPES, ALL_SLEEP_QUALITIES, SLEEP_TYPE_LABELS, SLEEP_QUALITY_
 import { todayStr, nowTime } from '@/shared/utils/date';
 import { useToast } from '@/shared/errors/useToast';
 import { CONFIG } from '@/constants/config';
+import { sortNewestFirst } from '@/shared/utils/sort';
 
 /** Returns current time + offset minutes as HH:MM */
 function timeOffset(minutes: number): string {
@@ -83,9 +84,10 @@ export function SleepLog({ childId }: { childId?: string }) {
     }, CONFIG.UNDO_DURATION_MS);
   };
 
-  const sortedSleeps = [...sleeps]
-    .filter((s) => s.id !== pendingDeleteId)
-    .sort((a, b) => `${b.date}T${b.startTime}`.localeCompare(`${a.date}T${a.startTime}`));
+  const sortedSleeps = sortNewestFirst(
+    [...sleeps].filter((s) => s.id !== pendingDeleteId),
+    (s) => `${s.date}T${s.startTime}`,
+  );
   const recentSleeps = sortedSleeps.slice(0, limit);
   const hasMore = sortedSleeps.length > limit;
 

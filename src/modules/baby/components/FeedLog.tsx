@@ -7,6 +7,7 @@ import { ALL_FEED_TYPES, FEED_TYPE_LABELS } from '@/modules/baby/constants';
 import { todayStr, nowTime } from '@/shared/utils/date';
 import { useToast } from '@/shared/errors/useToast';
 import { CONFIG } from '@/constants/config';
+import { sortNewestFirst } from '@/shared/utils/sort';
 
 /** Determines whether the feed type uses amount (Bottle/Solid Food) */
 function isAmountType(type: FeedType): boolean {
@@ -79,9 +80,10 @@ export function FeedLog({ childId }: { childId?: string }) {
     }, CONFIG.UNDO_DURATION_MS);
   };
 
-  const sortedFeeds = [...feeds]
-    .filter((f) => f.id !== pendingDeleteId)
-    .sort((a, b) => `${b.date}T${b.time}`.localeCompare(`${a.date}T${a.time}`));
+  const sortedFeeds = sortNewestFirst(
+    [...feeds].filter((f) => f.id !== pendingDeleteId),
+    (f) => `${f.date}T${f.time}`,
+  );
   const recentFeeds = sortedFeeds.slice(0, limit);
   const hasMore = sortedFeeds.length > limit;
 

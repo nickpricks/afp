@@ -5,6 +5,7 @@ import type { GrowthEntry } from '@/modules/baby/types';
 import { todayStr } from '@/shared/utils/date';
 import { useToast } from '@/shared/errors/useToast';
 import { CONFIG } from '@/constants/config';
+import { sortNewestFirst } from '@/shared/utils/sort';
 
 /** Growth measurement form with weight, height, head circumference and recent entries */
 export function GrowthLog({ childId }: { childId?: string }) {
@@ -72,9 +73,10 @@ export function GrowthLog({ childId }: { childId?: string }) {
     }, CONFIG.UNDO_DURATION_MS);
   };
 
-  const sortedGrowth = [...growth]
-    .filter((g) => g.id !== pendingDeleteId)
-    .sort((a, b) => b.date.localeCompare(a.date));
+  const sortedGrowth = sortNewestFirst(
+    [...growth].filter((g) => g.id !== pendingDeleteId),
+    (g) => g.date,
+  );
   const recentGrowth = sortedGrowth.slice(0, limit);
   const hasMore = sortedGrowth.length > limit;
 

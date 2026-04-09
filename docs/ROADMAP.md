@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-04-08
+Last updated: 2026-04-09
 
 ---
 
@@ -10,14 +10,14 @@ Last updated: 2026-04-08
 |-------|--------|-------|-------|
 | Phase 1 (Scaffold) | ✅ Done | — | Shipped as v0.1.0 |
 | Phase 2.0 (Foundation) | ✅ Done | 14/14 | Enums, types, Firestore rules, routes |
-| Phase 2a (Body) | ✅ Core done | 32/34 | +5: CyclingTab, gear reconfigure, ActivityLog pagination, FloorsTab redirect-buttons edit, m↔km unit conversion fix. Missing: Firestore rule verification |
-| Phase 2b (Baby) | ✅ Core done | 29/23 | +8: delete on all 4 logs, edit on 4 logs, undo delete on 4 logs, child creation auto-navigate, dashboard tappable cards, sleep defaults, growth validation. Firestore rules TBD |
-| Phase 2c (Budget) | ✅ Core done | 30/28 | +5: ReconciliationView, time-range filter, amount presets, expense/income pagination, undo delete. Firestore rules TBD |
-| Phase 2d (Profile) | 🚧 Partial | 6/9 | Missing: tests, negative tests, doc sweep |
-| Phase 2e (Admin+Viewer) | 🚧 In progress | 12/35 | Dashboard done. Toast action system, CONFIG.PAGE_SIZE/UNDO_DURATION_MS/METERS_PER_KM. Admin pages + viewer flow planned |
-| Phase 2f (Themes) | 📋 Analyzed | 0/18 | Theme analysis spec written, design samples exist |
+| Phase 2a (Body) | ✅ Core done | 32/34 | Missing: Firestore rule verification (needs deploy) |
+| Phase 2b (Baby) | ✅ Core done | 29/23 | Firestore rules TBD (needs deploy) |
+| Phase 2c (Budget) | ✅ Core done | 30/28 | Firestore rules TBD (needs deploy) |
+| Phase 2d (Profile) | 🚧 Partial | 6/9 | Missing: auth provider linking (needs Firebase), username tests, negative tests, doc sweep |
+| Phase 2e (Admin+Viewer) | 🚧 ~90% | 32/35 | Done: admin pages, viewer invite flow, role tests. Missing: admin claim flow, Firestore rules audit (needs deploy), doc sweep |
+| Phase 2f (Themes) | 📋 Designed | 0/18 | Theme roster finalized (10 themes), showcase approved. Implementation not started |
 | Phase 2g (E2E + Bench) | ❌ Not started | 0/8 | Interactive E2E flows, build/bundle/test benchmarks |
-| **Total** | **~61%** | **109/178** | |
+| **Total** | **~70%** | **129/178** | |
 
 ---
 
@@ -42,13 +42,17 @@ All P0 items completed.
 | ~~🔨~~ | ~~BudgetView time-range — Today/Week/Month/All filter~~ | 2c | DONE |
 | ~~🔨~~ | ~~Amount presets — [10] [20] [50] [100] [200] bubbles~~ | 2c | DONE |
 | ~~🔨~~ | ~~Body module reconfigure — gear icon to re-enter config~~ | 2d | DONE |
-| 🔨 | Link/unlink auth providers in profile | 2d | Not started |
+| 🔨 | Link/unlink auth providers in profile | 2d | Not started (needs Firebase Auth) |
+| 🔨 | Username uniqueness + negative tests | 2d | Not started |
 | ~~🔨~~ | ~~Universal Dashboard — role-aware home page~~ | 2e | DONE |
-| 🔨 | Admin user management — list users, toggle modules | 2e | Planned |
-| 🔨 | Viewer role UI — read-only dashboard, invite flow | 2e | Planned |
-| 🔨 | 3 new themes — Lullaby, NurseryOs, MidnightFeed CSS | 2f | Not started |
-| 🔨 | Ambient effects — per-theme animations | 2f | Not started |
-| 🔨 | Apply design samples to components | 2f | Not started |
+| ~~🔨~~ | ~~Admin user management — list users, toggle modules~~ | 2e | DONE (Session 6) |
+| ~~🔨~~ | ~~Viewer role UI — read-only dashboard, invite flow~~ | 2e | DONE (Session 6) |
+| 🔨 | Admin claim flow — fresh database first-user claim | 2e | Not started |
+| 🔨 | Firestore rules audit — verify all match blocks | 2e | Not started (needs Firebase deploy) |
+| 🔨 | Theme roster implementation — 10 themes (see below) | 2f | Not started |
+| 🔨 | Ambient effects — CRT scanlines (Deep Mariana), per-theme | 2f | Not started |
+| 🔨 | Font loading — Google Fonts for theme font pairs | 2f | Not started |
+| 🔨 | Loading screen — port stick-figure climbing animation from Floor-Tracker | 2f | Not started |
 
 ## Bugs
 
@@ -66,7 +70,7 @@ All P0 items completed.
 | ~~🐛~~ | ~~Baby tabs need delete~~ | Baby | ~~Medium~~ — DONE (x button on all 4 logs) |
 | 🐛 | Multi-baby not tested | Baby | Medium |
 | 🐛 | Budget list no summary header | Budget | Low |
-| 🐛 | Overall contrast low (Family Blue) | Theme | Low |
+| 🐛 | Overall contrast low (Family Blue) | Theme | Low — noted in theme showcase |
 | 🐛 | credential-already-in-use UID orphan | Auth | Low |
 
 ## Feature Ideas
@@ -81,7 +85,28 @@ All P0 items completed.
 | 💡 | Growth chart visualization | Baby | Medium |
 | 💡 | Expense bulk import | Budget | Medium |
 | 💡 | Dev mode enhancements — role switcher, time travel | Dev | Medium |
-| 💡 | Climbing stick-figure loading animation — port from Floor-Tracker (`LoadingScreen.tsx`). Inline SVG, CSS-only, theme-aware. Shows during Firestore cache hydration | UI | Small |
+| ~~💡~~ | ~~Climbing stick-figure loading animation~~ — moved to Phase 2f | UI | ~~Small~~ — Planned |
+
+## Phase 2f: Theme Roster (Finalized 2026-04-09)
+
+10 themes. 6 light+dark, 4 dark-only. Showcase: `SAM/design-samples/theme-showcase-all.html`
+
+| # | Theme | Light | Dark | Accent | Family | Status |
+|---|-------|-------|------|--------|--------|--------|
+| 1 | Family Blue | ✅ | ✅ | `#60a5fa` sky blue | Family | Exists |
+| 2 | Garden Path | ✅ | ✅ | `#16a34a` green | Nature | New (replaces Corporate Glass) |
+| 3 | Lullaby | ✅ | ✅ | `#e8a44a` warm gold | Nursery | New (port from BabyTracker) |
+| 4 | Rose Quartz | ✅ | ✅ | `#f472b6` pink | Soft | New |
+| 5 | Charcoal | ✅ | ✅ | `#a1a1aa` silver | Minimal | New |
+| 6 | Marauder's Map | ✅ | ✅ | `#c8a96e` parchment gold | Magic | New (HP-inspired) |
+| 7 | Neon Glow | — | ✅ | `#ffb803` neon gold | Cyberpunk | Renamed (was Night City: Apartment) |
+| 8 | Deep Mariana | — | ✅ | `#00e89a` bio-green + CRT | Deep | Exists (merged Nursery OS effects) |
+| 9 | Industrial Furnace | — | ✅ | `#ff6820` molten orange | Industrial | Exists |
+| 10 | Expecto Patronum | — | ✅ | `#b8d4e8` ghostly silver | Magic | New (HP-inspired) |
+
+**Dropped:** Summit Instrument (similar to Lullaby), Corporate Glass (similar to Family Blue), Night City: Elevator (similar to Deep Mariana/Nursery OS), Nursery OS (merged into Deep Mariana), Midnight Feed (similar to Industrial Furnace/Neon Glow)
+
+---
 
 ## P2 — Phase 2g: E2E Interaction Tests + Benchmarking
 
@@ -110,6 +135,27 @@ All P0 items completed.
 ---
 
 ## Done
+
+### 2026-04-09 — Session 6 (Admin pages, viewer flow, body stats overhaul, themes design)
+
+- [x] Tabbed AdminPanel — Invites/Users tabs with pill switcher
+- [x] InvitesTab — copy-link, delete with undo toast, pending/redeemed badges
+- [x] UsersTab — color-coded module chips (indigo/emerald/pink), stat bar, toggle switches, accordion edit
+- [x] useAdminActions hook — updateUserModules + updateUserRole
+- [x] Viewer invite flow — role/viewerOf on InviteRecord, role selector in InviteGenerator, redemption creates viewer profile
+- [x] Body Stats overhaul — SVG score ring, weekly day bars, dynamic stat cards, dynamic quick actions
+- [x] Daily goal builder — per-activity sliders in BodyConfigForm, preset chips, live ring preview, zone labels
+- [x] Scoring reweight — 1/0.5/10/20/15 (floors up/down, walk/run/cycle per km), CYCLE_PER_KM added
+- [x] List hover (+) — per-row duplicate button on ActivityLog + FloorsTab (Option C)
+- [x] Reset today — button below stat cards with undo toast
+- [x] Role tests — viewer (4), admin (5), cross-role gates (7) = 16 new tests
+- [x] Code hygiene #19 — extracted formatDistance + sortNewestFirst to shared/utils, 10 files deduplicated
+- [x] Prettier setup — .prettierrc + eslint-config-prettier + format/format:check scripts
+- [x] ESLint 57→0 — fixed exhaustive-deps, set-state-in-effect, preserve-manual-memoization
+- [x] AdminMsg enum — 8 toast messages moved to constants/messages.ts
+- [x] Theme roster finalized — 10 themes designed, showcase approved (SAM/design-samples/theme-showcase-all.html)
+- [x] Unit tests: 248 → 281 (+33)
+- [x] E2E tests: 38 → 42 (+4)
 
 ### 2026-04-08 — Session 5 (Dashboard, consistency sweep, review fixes)
 

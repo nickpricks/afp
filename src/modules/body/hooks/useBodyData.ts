@@ -10,6 +10,7 @@ import { todayStr, nowTime } from '@/shared/utils/date';
 import { ActivityType, SyncStatus, isOk } from '@/shared/types';
 import { DbSubcollection, userPath } from '@/constants/db';
 import { BodyMsg } from '@/constants/messages';
+import { sortNewestFirst } from '@/shared/utils/sort';
 
 /** Creates a zero-valued BodyRecord for the given date */
 function emptyRecord(dateStr: string): BodyRecord {
@@ -96,9 +97,10 @@ export function useBodyData(targetUid?: string) {
   }, [records, activities, todayKey]);
 
   const todayActivities = useMemo(() => {
-    return activities
-      .filter((a) => a.date === todayKey)
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return sortNewestFirst(
+      activities.filter((a) => a.date === todayKey),
+      (a) => a.createdAt,
+    );
   }, [activities, todayKey]);
 
   /** Taps a floor up or down */

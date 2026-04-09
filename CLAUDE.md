@@ -37,7 +37,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Enums**: `ModuleId`, `SyncStatus`, `UserRole`, `AppPath`, `DbCollection`, `DbSubcollection`, `DbDoc`, `DbField`, `ThemeId`, `ActivityType` are TypeScript string enums — use enum members, not string literals
 - **Dashboard**: Role-aware home at `/`. Hooks accept optional `targetUid` — User reads own data, Viewer reads `viewerOf` user, Admin selects from `useAllUsers()`. Write callbacks no-op when `readOnly`. `DashboardCard` uses `shadow-sm` + `bg-[var(--accent-muted)]` for theme-aware styling. Baby card shows child count (option B)
 - **Auth**: Anonymous auth + Google Sign-In (account linking). `signInWithGoogle()` in `google-auth.ts`. Invite flow requires Google sign-in before redemption
-- **Body module**: Config gate (`useBodyConfig` → `BodyConfigForm` if unconfigured, tabbed `BodyPage` if configured). Floors (daily aggregate on `body/{dateKey}`) + walk/run activities (`body_activities/{id}`). Config in `body_config/main`. Scoring combines all
+- **Body module**: Config gate (`useBodyConfig` → `BodyConfigForm` if unconfigured, tabbed `BodyPage` if configured). Floors (daily aggregate on `body/{dateKey}`) + walk/run/cycle activities (`body_activities/{id}`). Config in `body_config/main`. Scoring: `floors_up×1 + floors_down×0.5 + walk_km×10 + run_km×20 + cycle_km×15`. `dailyGoal` in `BodyConfig` (configurable via per-activity slider builder in config form). Score ring on Stats tab shows progress toward goal
 - **Budget module**: Directory is `src/modules/expenses/` but `ModuleId` is `Budget`. Income tracking via `useIncome`, payment methods via `PaymentMethod` enum, summary math in `budget-math.ts`
 - **Baby module**: Multi-child via `children/{childId}` collection. `useBabyCollection(childId, subcollection, label, targetUid?)` for nested paths. `useBabyCollection` exposes `log`, `update`, `remove`. `useBabyData` exposes `updateFeed/Sleep/Growth/Diaper`. `BabyLanding` → `ChildDetail` routing
 - **DevBench split**: Generators in `src/shared/components/bench-generators.ts` (pure functions), component in `DevBench.tsx`. 11 generators with ×1/×100/×1k bulk modes + day-spread
@@ -47,6 +47,8 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Tap-to-edit pattern**: All list views use tap-row-to-populate-form. Body: FloorsTab redirects +/- buttons, ActivityLog populates AddActivity. Baby: all 4 logs populate their forms. Budget: edit deferred (form on separate page). Active row: `bg-[var(--accent-muted)] border-l-2 border-l-accent`
 - **List constants**: `CONFIG.PAGE_SIZE` (25) for all paginated lists, `CONFIG.UNDO_DURATION_MS` (10000) for undo delete toasts, `CONFIG.METERS_PER_KM` (1000) for distance conversion — never hardcode these values
 - **Route guards**: `ModuleGate` wraps module routes, `AdminGate` wraps admin routes — redirect to `/` if unauthorized
+- **Admin panel**: Tabbed container (Invites | Users). `InvitesTab` has copy-link + delete actions. `UsersTab` has color-coded module chips (Body=indigo, Budget=emerald, Baby=pink), role stat bar, toggle switches, accordion expand. `useAdminActions` hook for Firestore profile writes
+- **Invite viewer flow**: `InviteRecord` has optional `role` and `viewerOf` fields. `InviteGenerator` shows User/Viewer toggle + "View of" picker. `redeemInvite` creates Viewer profile with `viewerOf` scoping when `role='viewer'`
 - **Dev bypass**: When Firebase isn't configured (`isFirebaseConfigured = false`), auth is bypassed — all modules enabled, TheAdminNick role, localStorage adapter used instead of Firebase
 
 ## File Organization
@@ -61,9 +63,9 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 
 ## Theme System
 
-7 themes in `src/themes/`. CSS custom properties per theme, mapped to Tailwind via `@theme` in `index.css`.
+10 themes planned (7 exist in code, 5 new to implement, 4 dropped). CSS custom properties per theme, mapped to Tailwind via `@theme` in `index.css`. Approved roster in `SAM/design-samples/theme-showcase-all.html` and `docs/ROADMAP.md` Phase 2f section.
 
-- **Default**: Family Blue (light + dark)
+- **Default**: Family Blue (light + dark). New themes: Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map, Neon Glow (renamed from Night City: Apartment), Expecto Patronum. Dropped: Summit Instrument, Corporate Glass, Night City: Elevator, Nursery OS, Midnight Feed
 - Theme class derived via `themeClass(id)` — never hardcode `theme-{name}` strings
 - `CONFIG.DEFAULT_THEME` is typed as `ThemeId` — compile-time checked
 - `applyTheme(themeId, colorMode)` applies to `<html>`, `useActiveThemeId()` reads it
@@ -79,13 +81,15 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Date helpers**: Import `todayStr()`, `nowTime()` from `@/shared/utils/date` — never define local copies in components
 - **Validation helpers**: Import `isValidNumber()` from `@/shared/utils/validation`
 - **Regex helpers**: Import `DATE_RE`, `INVITE_CODE_RE` from `@/shared/utils/regex`
+- **Distance formatting**: Import `formatDistance()`, `formatDistanceOrDash()` from `@/shared/utils/format` — never define local copies in components
+- **List sorting**: Import `sortNewestFirst()` from `@/shared/utils/sort` — never use inline `.sort((a, b) => ...)` comparators
 - **Naming**: Scoring/calculation functions use `compute*` prefix (e.g., `computeBodyScore`), not `calculate*` or `get*`
 - **Arrow functions**: Exported arrow functions always have explicit `return` (except tiny type helpers like `ok`/`err`)
 - **JSX ternary**: Use `cond && ...` / `!cond && ...` instead of ternary in JSX (className ternaries are acceptable)
-- **JSX curly newlines**: `react/jsx-curly-newline: require` enforced via ESLint — multiline expressions get `{` and `}` on their own lines
+- **JSX curly newlines**: Prettier handles formatting — multiline expressions get `{` and `}` on their own lines automatically
 - **Tests**: vitest in `__tests__/` dirs. `src/test-setup.ts` loads jest-dom matchers. Test files excluded from tsconfig. E2E in `e2e/` (excluded from vitest).
 - **Refs for async callbacks**: When `useCallback` needs current state in an async flow, use a ref (`fooRef.current`) alongside `useState` — avoids stale closures
-- **ESLint autofix**: `bunx eslint --fix <file>` handles `react/jsx-curly-newline` — don't manually fix these
+- **Prettier**: Formatting owned by Prettier (`.prettierrc`). `bun run format` to format all, `bun run format:check` for CI. ESLint via `eslint-config-prettier` — no formatting rules in ESLint
 
 ## 20-Point Audit Violations (from `docs/revz/nick-review-20-points.md`)
 
@@ -93,7 +97,7 @@ Found via grep sweeps — fix in next code hygiene pass:
 
 - **#4 (constants)**: ~~`PAGE_SIZE` hardcoded in 6 files~~ — FIXED (`CONFIG.PAGE_SIZE`). ~~`1000` for m↔km in 6 places~~ — FIXED (`CONFIG.METERS_PER_KM`). Watch for new magic numbers.
 - **#6 (messages)**: ~15 raw toast strings (`'Expense deleted'`, `'Failed to save theme'`, `'Signed out'`, etc.) in components instead of `constants/messages.ts` enums. Hooks use message constants correctly — components don't.
-- **#19 (utils)**: Duplicated `formatDist()`/`formatDistance()` in `ActivityLog.tsx` and `BodyStats.tsx` — should be one shared utility. 8 inline `.sort((a, b) => ...)` comparators across all list views — extract `sortNewestFirst()` to `shared/utils/`.
+- **#19 (utils)**: ~~Duplicated `formatDist()`/`formatDistance()`~~ — FIXED: shared `formatDistance()` in `utils/format.ts`. ~~8 inline `.sort()` comparators~~ — FIXED: `sortNewestFirst()` in `utils/sort.ts`
 
 ## Known Issues (fix later)
 
@@ -101,7 +105,7 @@ Found via grep sweeps — fix in next code hygiene pass:
 - **ActivityLog edit UX**: Currently uses inline edit per row. Better approach: tap a row → populate the main form at top (distance pre-filled, button text changes to "Update", Cancel to dismiss). Same pattern for FloorsTab. Inline edit works but main-form edit is better mobile UX.
 - ~~**Expense FAB uses `bg-primary`**~~ — DONE: Changed to `bg-accent text-fg-on-accent`.
 - ~~**No way to reconfigure Body module**~~ — DONE: ⚙ gear button in tab bar opens `BodyConfigForm` pre-filled with current config.
-- ~~**BodyStats quick action buttons are hardcoded**~~ — DONE: Now reads config, only shows enabled activity buttons.
+- ~~**BodyStats quick action buttons are hardcoded**~~ — DONE: Dynamic via `STAT_CARDS` array, includes cycling. Score ring + day bars + reset today added (Session 6).
 - ~~**RunningTab shows no activity list**~~ — DONE: BodyPage now passes all activities (not just today's).
 - ~~**Cycling tab not implemented**~~ — DONE: `CyclingTab` component added, wired into `BodyPage`, config form checkbox enabled.
 - **Yoga tab not implemented (coming soon)**: Duration-based, not distance. UI: duration input (minutes) + select dropdown of known yoga asanas. `BodyActivity` already supports `duration: number | null` with `distance: null`. Config toggle exists in `BodyConfig.yoga`.
@@ -114,8 +118,8 @@ Found via grep sweeps — fix in next code hygiene pass:
 - **Dev user mode possibilities**: Dev mode currently gives TheAdminNick role with all modules. Consider: (1) role switcher (test as User/Viewer), (2) module toggle (test with specific modules disabled), (3) simulate multiple users, (4) time travel (test with different "today" dates).
 
 ### Design Observations (from 2026-04-06 review)
-- **Stats score lacks context**: "45.4" has no goal/target reference. Consider progress ring, color gradient (green/amber/red), or daily goal indicator.
-- **Stats "THIS WEEK" card cramped**: 3 stats (Avg, Total, Streak) crammed in one row. Consider separate cards like Floors Up/Down.
+- ~~**Stats score lacks context**~~ — DONE: Score ring with daily goal percentage + zone labels (Session 6)
+- ~~**Stats "THIS WEEK" card cramped**~~ — DONE: Replaced with weekly day bar chart + summary row below (Session 6)
 - ~~**Stats missing Run distance card**~~ — DONE: Run card now shows when `config.running` enabled or `runMeters > 0`.
 - **Floors recent list is flat**: All rows identical styling. Highlight today's row, dim older, consider subtle bar visualization.
 - **Walking/Running list no date grouping**: Activities dump in flat list. Group by date with sticky headers ("Today", "Yesterday", "Apr 4").
@@ -123,12 +127,9 @@ Found via grep sweeps — fix in next code hygiene pass:
 - **Budget list has no summary header**: No daily/weekly total at top of expense list.
 - **Overall contrast low**: Family Blue theme (`#60a5fa` accent on white) feels washed out. Needs stronger card shadows or darker text contrast.
 
-### Stats Dashboard Design Samples (SAM/design-samples/)
-Three HTML mockups for the Body Stats dashboard — each maps to a theme family:
-- **stats-A-warm-instrument.html** → Family Blue / Summit Instrument — progress ring, warm terracotta, DM Serif Display, weekly bar chart
-- **stats-B-dense-editorial.html** → Corporate Glass — big bold score, data table with mini-bars, Fraunces serif, newspaper hierarchy
-- **stats-C-playful-streak.html** → Night City / Deep Mariana (dark) — streak banner with fire, XP progress bar, GitHub heatmap, Bricolage Grotesque
-All three to be implemented as theme-aware variants in Phase 2f. Can mix elements across samples.
+### Design Samples (SAM/design-samples/)
+- **theme-showcase-all.html** — approved 10-theme gallery with mini dashboard mockups (committed to git)
+- Other samples (admin, daily-goal, list-hover, stats-hover) — local reference only, gitignored via `SAM/.gitignore`
 
 ## Gotchas
 

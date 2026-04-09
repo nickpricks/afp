@@ -34,15 +34,19 @@ Admin pages, viewer invite flow, body stats overhaul, scoring reweight, code qua
 | AdminMsg constants | 8 admin toast messages moved to `constants/messages.ts` enum (code hygiene #6) |
 | `deleteInvite` | New function in `invite.ts` — localStorage + Firestore paths, `Result<void>` return |
 | `useAdminActions` | New hook — `updateUserModules` + `updateUserRole` with Firestore writes |
+| Shared `formatDistance` | Deduplicated from ActivityLog + BodyStats into `shared/utils/format.ts` (code hygiene #19) |
+| Shared `sortNewestFirst` | Extracted 8 inline sort comparators into `shared/utils/sort.ts` (code hygiene #19) |
+| Role tests (2e.7-2e.9) | Viewer data scoping (4), admin user selector (5), cross-role gate/negative tests (7) |
+| Theme roster finalized | 10 themes designed — 5 dropped (color overlap), 5 new added. Showcase: `SAM/design-samples/theme-showcase-all.html` |
 
 ### Tests
 
 | Metric | Before | After |
 |---|---|---|
-| Unit tests | 248 | 265 (+17) |
+| Unit tests | 248 | 281 (+33) |
 | E2E tests | 38 | 42 (+4) |
 | ESLint problems | 57 | 0 |
-| Test files | 32 | 35 (+3) |
+| Test files | 32 | 38 (+6) |
 
 ---
 

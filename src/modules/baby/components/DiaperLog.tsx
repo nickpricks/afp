@@ -7,6 +7,7 @@ import { ALL_DIAPER_TYPES, DIAPER_TYPE_LABELS } from '@/modules/baby/constants';
 import { todayStr, nowTime } from '@/shared/utils/date';
 import { useToast } from '@/shared/errors/useToast';
 import { CONFIG } from '@/constants/config';
+import { sortNewestFirst } from '@/shared/utils/sort';
 
 /** Diaper tracking form with quick-log buttons and recent entries list */
 export function DiaperLog({ childId }: { childId?: string }) {
@@ -77,9 +78,10 @@ export function DiaperLog({ childId }: { childId?: string }) {
     }, CONFIG.UNDO_DURATION_MS);
   };
 
-  const sortedDiapers = [...diapers]
-    .filter((d) => d.id !== pendingDeleteId)
-    .sort((a, b) => `${b.date}T${b.time}`.localeCompare(`${a.date}T${a.time}`));
+  const sortedDiapers = sortNewestFirst(
+    [...diapers].filter((d) => d.id !== pendingDeleteId),
+    (d) => `${d.date}T${d.time}`,
+  );
   const recentDiapers = sortedDiapers.slice(0, limit);
   const hasMore = sortedDiapers.length > limit;
 

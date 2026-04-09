@@ -3,15 +3,8 @@ import { Plus } from 'lucide-react';
 
 import type { BodyActivity } from '@/modules/body/types';
 import { CONFIG } from '@/constants/config';
-
-/** Formats meters into a readable distance string */
-function formatDist(meters: number | null): string {
-  if (meters === null) return '--';
-  if (meters >= CONFIG.METERS_PER_KM) {
-    return `${(meters / CONFIG.METERS_PER_KM).toFixed(1)} km`;
-  }
-  return `${meters} m`;
-}
+import { formatDistanceOrDash } from '@/shared/utils/format';
+import { sortNewestFirst } from '@/shared/utils/sort';
 
 /** Displays logged activities sorted newest-first — tap a row to edit, (+) to duplicate */
 export function ActivityLog({
@@ -27,7 +20,7 @@ export function ActivityLog({
 }) {
   const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
 
-  const sorted = [...activities].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const sorted = sortNewestFirst(activities, (a) => a.createdAt);
   const visible = sorted.slice(0, limit);
   const hasMore = sorted.length > limit;
 
@@ -52,7 +45,7 @@ export function ActivityLog({
                   }
                 >
                   <span className={isActive ? 'text-accent font-medium' : 'font-medium text-fg'}>{a.date}</span>
-                  <span className="text-fg-muted">{formatDist(a.distance)}</span>
+                  <span className="text-fg-muted">{formatDistanceOrDash(a.distance)}</span>
                 </button>
                 {
 onDuplicate && (

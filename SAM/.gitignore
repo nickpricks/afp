@@ -1,0 +1,3 @@
+# Only commit approved design samples — everything else stays local
+design-samples/*
+!design-samples/theme-showcase-all.html

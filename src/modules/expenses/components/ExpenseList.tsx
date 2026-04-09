@@ -3,6 +3,7 @@ import { Trash2 } from 'lucide-react';
 
 import { CATEGORIES, PAYMENT_METHOD_LABELS } from '@/modules/expenses/categories';
 import type { Expense } from '@/modules/expenses/types';
+import { sortNewestFirst } from '@/shared/utils/sort';
 import { CONFIG } from '@/constants/config';
 import type { ExpenseCategory } from '@/shared/types';
 import { useToast } from '@/shared/errors/useToast';
@@ -26,9 +27,10 @@ export function ExpenseList({
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const undoRef = useRef(false);
 
-  const sorted = [...expenses]
-    .filter((e) => e.id !== pendingDeleteId)
-    .sort((a, b) => b.date.localeCompare(a.date));
+  const sorted = sortNewestFirst(
+    expenses.filter((e) => e.id !== pendingDeleteId),
+    (e) => e.date,
+  );
   const visible = sorted.slice(0, limit);
   const hasMore = sorted.length > limit;
 

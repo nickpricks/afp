@@ -25,8 +25,10 @@ Dev mode works without Firebase — all modules enabled, TheAdminNick role, loca
 | `bun run lint` | Type check + ESLint |
 | `bun run typecheck` | tsc --noEmit only |
 | `bun run lint:eslint` | ESLint only |
-| `bun run test` | Vitest unit tests (244) |
-| `bun run test:e2e` | Playwright E2E tests (38) |
+| `bun run test` | Vitest unit tests (281) |
+| `bun run test:e2e` | Playwright E2E tests (42) |
+| `bun run format` | Prettier format all source files |
+| `bun run format:check` | Prettier check (CI-friendly, no writes) |
 | `bun run test:coverage` | Unit tests with v8 coverage |
 | `bun run preview` | Preview production build |
 | `bun run clean` | Remove build artifacts |
@@ -67,19 +69,22 @@ src/
     hooks/        — useModules, useSyncStatus
     storage/      — StorageAdapter interface + Firebase/localStorage impls
     types.ts      — Result<T>, ModuleId, SyncStatus, UserRole, all enums
-    utils/        — date, error, profile, validation, regex helpers
-  themes/         — 7 themes (Family Blue default + 6 ported)
+    utils/        — date, error, profile, validation, regex, format, sort helpers
+  themes/         — 7 themes (10 planned — see ROADMAP Phase 2f)
 ```
 
 ## Themes
 
-Family Blue (default, light+dark), Summit Instrument, Corporate Glass, Night City: Elevator, Night City: Apartment, Deep: Mariana, Industrial Furnace.
+7 exist, 10 planned. Family Blue (default), Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map (light+dark). Neon Glow, Deep Mariana, Industrial Furnace, Expecto Patronum (dark-only). See `docs/ROADMAP.md` Phase 2f for full roster.
 
 ## Key Patterns
 
 - **Tap-to-edit** — tap a list entry to populate the form above, button becomes "Update"
 - **Undo delete** — 10s toast with "Undo" action on all deletable lists
 - **Pagination** — all lists use `CONFIG.PAGE_SIZE` (25 default), "Show more" button
+- **List hover (+)** — per-row duplicate button on activity/floor lists, appears on hover
+- **Score ring** — SVG progress ring with daily goal, zone labels (Easy Start → Beast Mode)
+- **Daily goal builder** — per-activity sliders in config form, presets (🌿💪🔥⚡)
 - **DevBench** — dev-only seed panel with 11 generators (Floors, Walk, Run, Cycle, Expense, Income, Settlement, Feed, Sleep, Diaper, Growth) + bulk modes (x100, x1k with day-spread)
 
 ## Docs
@@ -87,7 +92,7 @@ Family Blue (default, light+dark), Summit Instrument, Corporate Glass, Night Cit
 | Doc | What |
 |---|---|
 | `CLAUDE.md` | AI assistant instructions, architecture, conventions, known issues |
-| `docs/ROADMAP.md` | Phase progress (~61%), prioritized backlog (P0-P3) |
+| `docs/ROADMAP.md` | Phase progress (~70%), prioritized backlog (P0-P3), theme roster |
 | `docs/firebase-setup.md` | Firebase setup guide |
 | `docs/getting-started.md` | Getting started guide |
 | `docs/specs/` | Design specs (Phase 1, Phase 2, Dashboard, Theme analysis) |

@@ -3,6 +3,7 @@ import { Trash2 } from 'lucide-react';
 
 import { INCOME_SOURCE_LABELS } from '@/modules/expenses/categories';
 import type { Income } from '@/modules/expenses/types';
+import { sortNewestFirst } from '@/shared/utils/sort';
 import { CONFIG } from '@/constants/config';
 import { useToast } from '@/shared/errors/useToast';
 
@@ -19,9 +20,10 @@ export function IncomeList({
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const undoRef = useRef(false);
 
-  const sorted = [...income]
-    .filter((e) => e.id !== pendingDeleteId)
-    .sort((a, b) => b.date.localeCompare(a.date));
+  const sorted = sortNewestFirst(
+    income.filter((e) => e.id !== pendingDeleteId),
+    (e) => e.date,
+  );
   const visible = sorted.slice(0, limit);
   const hasMore = sorted.length > limit;
 

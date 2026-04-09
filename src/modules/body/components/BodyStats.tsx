@@ -4,14 +4,7 @@ import { ArrowUp, ArrowDown, Footprints, TrendingUp, Bike, RotateCcw } from 'luc
 import type { BodyConfig, BodyRecord } from '@/modules/body/types';
 import { CONFIG } from '@/constants/config';
 import { todayStr } from '@/shared/utils/date';
-
-/** Formats meters as a readable distance string */
-function formatDistance(meters: number): string {
-  if (meters >= CONFIG.METERS_PER_KM) {
-    return `${(meters / CONFIG.METERS_PER_KM).toFixed(1)} km`;
-  }
-  return `${meters} m`;
-}
+import { formatDistance } from '@/shared/utils/format';
 
 /** Returns the past N day keys as YYYY-MM-DD strings */
 function pastDays(count: number): string[] {
