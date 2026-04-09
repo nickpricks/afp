@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useAuth } from '@/shared/auth/useAuth';
+import { AdminClaim } from '@/shared/components/AdminClaim';
 import { DashboardCard } from '@/shared/components/DashboardCard';
+import { isAppClaimed } from '@/shared/auth/the-admin-nick';
+import { isFirebaseConfigured } from '@/shared/auth/firebase-config';
 import { useBodyData } from '@/modules/body/hooks/useBodyData';
 import { useBodyConfig } from '@/modules/body/hooks/useBodyConfig';
 import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
@@ -19,6 +22,12 @@ export function Dashboard() {
   const { firebaseUser, profile, isTheAdminNick } = useAuth();
   const { users } = useAllUsers();
   const [selectedUid, setSelectedUid] = useState<string | null>(null);
+  const [appClaimed, setAppClaimed] = useState<boolean | null>(isFirebaseConfigured ? null : true);
+
+  useEffect(() => {
+    if (!isFirebaseConfigured) return;
+    isAppClaimed().then(setAppClaimed);
+  }, [profile]);
 
   const ownUid = firebaseUser?.uid ?? '';
 
@@ -43,6 +52,11 @@ export function Dashboard() {
   const { children } = useChildren(targetUid);
 
   const modules = profile?.modules;
+
+  // Fresh database — no admin claimed yet
+  if (appClaimed === false) {
+    return <AdminClaim />;
+  }
 
   if (!profile || !modules) {
     return (

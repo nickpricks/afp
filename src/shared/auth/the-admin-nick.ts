@@ -7,6 +7,16 @@ import { err, ok, type Result } from '@/shared/types';
 import { toErrorMessage } from '@/shared/utils/error';
 import { createDefaultProfile } from '@/shared/utils/profile';
 
+/** Checks whether app/config exists (i.e., admin has been claimed) */
+export async function isAppClaimed(): Promise<boolean> {
+  try {
+    const snap = await getDoc(doc(db, DbCollection.App, DbDoc.Config));
+    return snap.exists();
+  } catch {
+    return false;
+  }
+}
+
 /** Checks whether the given UID matches the admin UID in app/config */
 export async function isCurrentUserAdmin(uid: string): Promise<boolean> {
   try {
