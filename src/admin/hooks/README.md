@@ -2,11 +2,15 @@
 
 Data hooks for admin functionality. Real-time Firestore listeners for invite and user management.
 
-## Key Files
+## Files
 
-- `useAdmin.ts` -- Listens to the invites collection, provides invite CRUD operations
-- `useAllUsers.ts` -- Fetches all user profiles for admin user listing
-- `__tests__/` -- Unit tests for admin hooks
+- **useAdmin.ts** — Subscribes to the invites collection, returns all `InviteRecord` entries in real-time. Falls back to localStorage in dev mode
+- **useAdminActions.ts** — Provides `updateUserModules` and `updateUserRole` callbacks for Firestore profile writes. Returns `Result<T>`
+- **useAllUsers.ts** — Lists all user profiles via `StorageAdapter.onSnapshot`. Exports `UserEntry` type (UserProfile + uid)
+
+## Tests
+
+- `__tests__/useAllUsers.test.ts` — Unit tests for user listing hook
 
 ## Conventions
 

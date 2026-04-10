@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-04-09
+Last updated: 2026-04-10
 
 ---
 
@@ -15,9 +15,9 @@ Last updated: 2026-04-09
 | Phase 2c (Budget) | ✅ Core done | 30/28 | Firestore rules TBD (needs deploy) |
 | Phase 2d (Profile) | 🚧 Partial | 6/9 | Missing: auth provider linking (needs Firebase), username tests, negative tests, doc sweep |
 | Phase 2e (Admin+Viewer) | 🚧 ~90% | 32/35 | Done: admin pages, viewer invite flow, role tests. Missing: admin claim flow, Firestore rules audit (needs deploy), doc sweep |
-| Phase 2f (Themes) | 📋 Designed | 0/18 | Theme roster finalized (10 themes), showcase approved. Implementation not started |
+| Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
 | Phase 2g (E2E + Bench) | ❌ Not started | 0/8 | Interactive E2E flows, build/bundle/test benchmarks |
-| **Total** | **~70%** | **129/178** | |
+| **Total** | **~83%** | **147/178** | |
 
 ---
 
@@ -49,10 +49,10 @@ All P0 items completed.
 | ~~🔨~~ | ~~Viewer role UI — read-only dashboard, invite flow~~ | 2e | DONE (Session 6) |
 | 🔨 | Admin claim flow — fresh database first-user claim | 2e | Not started |
 | 🔨 | Firestore rules audit — verify all match blocks | 2e | Not started (needs Firebase deploy) |
-| 🔨 | Theme roster implementation — 10 themes (see below) | 2f | Not started |
-| 🔨 | Ambient effects — CRT scanlines (Deep Mariana), per-theme | 2f | Not started |
-| 🔨 | Font loading — Google Fonts for theme font pairs | 2f | Not started |
-| 🔨 | Loading screen — port stick-figure climbing animation from Floor-Tracker | 2f | Not started |
+| ~~🔨~~ | ~~Theme roster implementation — 10 themes~~ | 2f | DONE (Session 7) |
+| ~~🔨~~ | ~~Ambient effects — 9 per-theme effects~~ | 2f | DONE (Session 7) |
+| ~~🔨~~ | ~~Font loading — 8 Google Font families~~ | 2f | DONE (Session 7) |
+| ~~🔨~~ | ~~Loading screen — 3 SVG stick-figure scenes~~ | 2f | DONE (Session 7) |
 
 ## Bugs
 
@@ -61,8 +61,8 @@ All P0 items completed.
 | ~~🐛~~ | ~~Walking/Running list no pagination~~ | Body | ~~Medium~~ — DONE (ActivityLog 7→30) |
 | 🐛 | Walking/Running list no date grouping | Body | Medium |
 | 🐛 | Floors recent list flat styling | Body | Low |
-| 🐛 | Stats score lacks context (no goal) | Body | Low |
-| 🐛 | Stats "THIS WEEK" card cramped | Body | Low |
+| ~~🐛~~ | ~~Stats score lacks context (no goal)~~ | Body | ~~Low~~ — DONE (SVG score ring, Session 6) |
+| ~~🐛~~ | ~~Stats "THIS WEEK" card cramped~~ | Body | ~~Low~~ — DONE (weekly bar chart, Session 6) |
 | ~~🐛~~ | ~~ActivityLog edit UX (inline → main-form)~~ | Body | ~~Low~~ — DONE (tap-to-populate pattern) |
 | ~~🐛~~ | ~~Payment method bubbles don't deselect~~ | Budget | ~~Low~~ — DONE (toggle deselect) |
 | ~~🐛~~ | ~~Negative/zero amounts accepted in inputs~~ | All | ~~Low~~ — DONE (min/step attrs) |
@@ -85,7 +85,7 @@ All P0 items completed.
 | 💡 | Growth chart visualization | Baby | Medium |
 | 💡 | Expense bulk import | Budget | Medium |
 | 💡 | Dev mode enhancements — role switcher, time travel | Dev | Medium |
-| ~~💡~~ | ~~Climbing stick-figure loading animation~~ — moved to Phase 2f | UI | ~~Small~~ — Planned |
+| ~~💡~~ | ~~Climbing stick-figure loading animation~~ | UI | ~~Small~~ — DONE (Session 7, 3 SVG scenes) |
 
 ## Phase 2f: Theme Roster (Finalized 2026-04-09)
 
@@ -135,6 +135,25 @@ All P0 items completed.
 ---
 
 ## Done
+
+### 2026-04-10 — Session 7 (Loading screen, Phase 2f themes)
+
+- [x] Loading screen — 3 SVG stick-figure scenes (Climber, Athlete, Reader) randomly selected per mount
+- [x] Brand text — "IT STARTED ON APRIL FOOLS DAY" with staggered letter reveal animation
+- [x] useMinDelay hook — 1s prod, 0 dev (prevents flash on fast loads)
+- [x] AnimationViewer — preview page at /animations with pill tab switcher + text toggle
+- [x] Code splitting — React.lazy + Suspense for all routes, per-route Vite chunks
+- [x] 10 themes implemented — 6 light+dark, 4 dark-only (dropped 3 old, renamed 1, added 6 new)
+- [x] 8 Google Font families — distinct pairings per theme via --font-display/--font-body CSS variables
+- [x] 9 ambient effects — snowflakes, leaves, stars, hearts, ink, scanline, CRT+bubbles, embers, wisps
+- [x] Expandable theme picker in Profile — 2-col showcase grid with font/effect info
+- [x] Theme migration — resolveThemeId() maps dropped/renamed theme IDs to current themes
+- [x] fx-ambient container + effects.css animations
+- [x] 15 theme system tests + circular dependency fix
+- [x] Multi-agent README sweep — all 29 per-directory READMEs updated
+- [x] Unit tests: 281 → 320 (+39)
+- [x] E2E tests: 42 (unchanged)
+- [x] Test files: 38 → 42 (+4)
 
 ### 2026-04-09 — Session 6 (Admin pages, viewer flow, body stats overhaul, themes design)
 

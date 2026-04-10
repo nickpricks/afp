@@ -2,10 +2,12 @@
 
 Admin-only UI components gated behind `AdminGate`.
 
-## Key Files
+## Files
 
-- `AdminPanel.tsx` -- Tabbed panel with Invites and Users management tabs
-- `InviteGenerator.tsx` -- Form to create invite codes for new users
+- **AdminPanel.tsx** — Tabbed panel with Invites and Users tabs. Entry point for the admin section
+- **InvitesTab.tsx** — Invite list with copy-link and delete actions, embeds `InviteGenerator` for creating new invites
+- **InviteGenerator.tsx** — Form for creating invite codes with per-module toggles, User/Viewer role switch, and viewer-of user picker
+- **UsersTab.tsx** — User list with color-coded module chips (Body=indigo, Budget=emerald, Baby=pink), role stat bar, toggle switches, and accordion expand for inline editing
 
 ## Conventions
 

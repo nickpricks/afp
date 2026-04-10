@@ -4,6 +4,55 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.3] — 2026-04-10
+
+Phase 2f themes implementation, loading screen, code splitting.
+
+### Theme System (Phase 2f)
+
+| Change | What |
+|---|---|
+| 10 themes | 6 light+dark (Family Blue, Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map) + 4 dark-only (Neon Glow, Deep Mariana, Industrial Furnace, Expecto Patronum). Dropped 3 (Summit, Corporate Glass, Night City Elevator), renamed 1 (Night City Apartment -> Neon Glow), added 6 new |
+| 8 Google Font families | DM Serif Display (Garden Path), Quicksand/Nunito (Lullaby), Playfair Display (Rose Quartz), Cinzel (Marauder's Map, Expecto Patronum), Orbitron (Neon Glow), Syne (Family Blue, Charcoal), JetBrains Mono (monospace accents). Applied via `--font-display`/`--font-body` CSS variables |
+| 9 ambient effects | snowflakes (Family Blue), leaves (Garden Path), stars (Lullaby), hearts (Rose Quartz), ink/footprints (Marauder's Map), scanline (Neon Glow), CRT+bubbles (Deep Mariana), embers (Industrial Furnace), wisps (Expecto Patronum). Charcoal has none (minimal by design) |
+| Theme picker | Expandable inline section in Profile -- "Customize Theme" button expands to 2-col mini showcase grid with font family info and effect summary per theme |
+| Theme migration | `resolveThemeId()` maps dropped/renamed IDs to current themes. Users with old theme IDs auto-migrate to valid themes |
+| fx-ambient container | `<div id="fx-ambient">` in Layout for ambient effect animations. CSS keyframes in `effects.css` |
+| Effect profile fields | `effectCount` (0-10) and `effectSize` (small/medium/large) on `UserProfile` for per-user configuration |
+
+### Loading Screen
+
+| Change | What |
+|---|---|
+| 3 SVG scenes | `SceneClimber` (5-step staircase), `SceneAthlete` (run/box poses), `SceneReader` (spectacles comparing papers). Random selection per mount |
+| Brand text | "IT STARTED ON APRIL FOOLS DAY" with staggered letter reveal CSS animation |
+| `useMinDelay` hook | Holds loading screen for minimum duration (1s prod, 0 dev). Prevents flash on fast loads. Dev mode returns `false` synchronously to not block E2E |
+| `AnimationViewer` | Preview page at `/animations` with pill tab switcher for each scene + text checkbox |
+
+### Code Splitting
+
+| Change | What |
+|---|---|
+| `React.lazy` + `Suspense` | All route components lazy-loaded. Each route emits its own Vite chunk |
+| `LoadingScreen` as fallback | Suspense wrapper in Layout shows loading screen during chunk load |
+
+### Documentation
+
+| Change | What |
+|---|---|
+| README sweep | All 29 per-directory READMEs updated to reflect current state |
+| Themes README | Full roster with fonts, effects, and individual CSS file listing |
+
+### Tests
+
+| Metric | Before | After |
+|---|---|---|
+| Unit tests | 281 | 320 (+39) |
+| E2E tests | 42 | 42 |
+| Test files | 38 | 42 (+4) |
+
+---
+
 ## [0.2.2] — 2026-04-09
 
 Admin pages, viewer invite flow, body stats overhaul, scoring reweight, code quality.

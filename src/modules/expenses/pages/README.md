@@ -2,10 +2,10 @@
 
 Route-level page components for the Budget module.
 
-## Key Files
+## Files
 
-- `ExpenseListPage.tsx` -- Budget landing page, renders expense list and summary
-- `AddExpensePage.tsx` -- Standalone page for adding a new expense entry
+- **ExpenseListPage.tsx** — Budget landing page with 3 tabs (Expenses, Income, CC). Time-range filter via `BudgetView`, uses `filterByDateRange` from budget-math
+- **AddExpensePage.tsx** — Standalone page for adding entries with Expense/Income toggle tabs
 
 ## Conventions
 

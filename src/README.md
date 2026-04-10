@@ -5,7 +5,7 @@ App entry point and global setup.
 ## Files
 
 - **main.tsx** — React root render
-- **App.tsx** — Provider tree, route definitions (uses `ROUTES` constants + `ModuleGate`/`AdminGate` guards)
+- **App.tsx** — Provider tree, route definitions. Uses `React.lazy` + `Suspense` for code splitting, `ROUTES` constants, and `ModuleGate`/`AdminGate` guards
 - **index.css** — Tailwind v4 directives + theme CSS imports via `@theme`
 - **test-setup.ts** — Vitest global test configuration (jest-dom matchers)
 - **pwa.d.ts** — Type declarations for vite-plugin-pwa
@@ -17,4 +17,4 @@ App entry point and global setup.
 - `modules/` — Feature modules (body, expenses, baby)
 - `admin/` — TheAdminNick admin panel + invite management
 - `constants/` — App config, routes (AppPath enum), DB paths, error messages
-- `themes/` — 7 CSS theme files + theme definitions
+- `themes/` — 10 CSS theme files, ambient effects CSS, theme definitions (`themes.ts`), and utility styles (buttons, loading)

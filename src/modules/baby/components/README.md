@@ -2,18 +2,18 @@
 
 UI components for the Baby module. Multi-child tracking with nested subcollections.
 
-## Key Files
+## Files
 
-- `BabyLanding.tsx` -- Landing page listing all children, entry point to child detail
-- `ChildDetail.tsx` -- Tabbed detail view for a single child (feeds, sleep, growth, diapers)
-- `AddChild.tsx` -- Form to add a new child profile
-- `FeedLog.tsx` -- Feed tracking log with add/delete
-- `SleepLog.tsx` -- Sleep tracking log with add/delete
-- `GrowthLog.tsx` -- Growth measurement log with add/delete
-- `DiaperLog.tsx` -- Diaper change log with add/delete
+- **BabyLanding.tsx** — Landing page listing all children, entry point to child detail
+- **ChildDetail.tsx** — Tabbed detail view for a single child (feeds, sleep, growth, diapers). Tabs gated by `ChildConfig`
+- **AddChild.tsx** — Form to add a new child profile, auto-navigates to detail on creation
+- **FeedLog.tsx** — Feed tracking log with add/edit/delete and type-dependent quantity/duration fields
+- **SleepLog.tsx** — Sleep tracking log with add/edit/delete, default times
+- **GrowthLog.tsx** — Growth measurement log with add/edit/delete, requires at least one measurement
+- **DiaperLog.tsx** — Diaper change log with add/edit/delete and quick-log buttons
 
 ## Conventions
 
 - Routing: `BabyLanding` -> `ChildDetail` (parameterized by `childId`)
-- All four log components follow the same pattern: list + inline add form + delete button
-- Delete implemented via `useBabyCollection.remove`; edit (tap-to-populate-form) is still TODO
+- All four log components use tap-to-populate-form pattern for editing
+- Delete implemented via `useBabyCollection.remove` with undo toast

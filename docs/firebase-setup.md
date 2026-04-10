@@ -2,81 +2,130 @@
 
 Quick guide to set up Firebase for AFP. ~10 minutes.
 
-## 1. Create Project ✅
+## 1. Create Project
 
 1. Go to [console.firebase.google.com](https://console.firebase.google.com)
 2. Click **Add project**
-3. Name: `it-started-on-april-fools-day` (or whatever you like) - It Started On April Fools Day
-4. Disable Google Analytics (not needed) - i kept it
+3. Name: `it-started-on-april-fools-day`
+4. Disable Google Analytics (optional — not needed)
 5. Click **Create project**
 
-## 2. Add Web App ✅
+## 2. Add Web App
 
-1. In project dashboard, Add app +, then click the **web icon** (`</>`)
-2. Nickname: `afp` - why web - we only building for web - right
-3. Skip Firebase Hosting checkbox - yes we dont need it - btw is it in free tier - lets explore -later
+1. In project dashboard, click **Add app** (+), then the **web icon** (`</>`)
+2. Nickname: `afp`
+3. Skip Firebase Hosting checkbox (we deploy to GitHub Pages)
 4. Click **Register app**
 5. Copy the config object — paste values into `.env.production` (see step 6)
 
-## 3. Enable Anonymous Auth ✅
+## 3. Enable Auth
 
-0. Do we really need it ?
-1. Left sidebar → **Build** → **Authentication**
-2. Click **Get started**
-3. Go to **Sign-in method** tab
-4. Click **Anonymous**
-5. Toggle **Enable** → **Save**
+1. Left sidebar: **Build** > **Authentication** > **Get started**
+2. **Sign-in method** tab: enable **Anonymous** and **Google**
+3. For Google: set a project support email, then **Save**
 
-## 4. Create Firestore Database ✅
+## 4. Create Firestore Database
 
-1. Left sidebar → **Build** → **Firestore Database**
+1. Left sidebar: **Build** > **Firestore Database**
 2. Click **Create database**
 3. Location: pick nearest (e.g., `asia-south1` for India)
-4. Start in **production mode** (we have our own rules)
+4. Start in **production mode** (we deploy our own rules)
 5. Click **Create**
 
-## 5. Deploy Security Rules ✅
+## 5. Deploy Security Rules
 
-1. In Firestore dashboard, click **Rules** tab
-2. Replace the default rules with contents of `firestore.rules` from the repo
-3. Click **Publish**
+Rules auto-deploy on push to master via `.github/workflows/firebase-rules.yml` (requires service account — see step 9).
 
-## 6. Fill In .env Files 
+To deploy manually:
 
 ```bash
-bun run setup:env
+firebase deploy --only firestore:rules
 ```
 
-Edit `.env.development` (and `.env.production` when ready):
+Or paste `firestore.rules` contents in the Firestore Console **Rules** tab.
+
+## 6. Fill In .env Files
+
+```bash
+bun run setup:env        # .env.development only
+bun run setup:env:all    # both .env.development and .env.production
+```
+
+Edit the generated file(s):
 
 ```
 VITE_FIREBASE_API_KEY=AIza...
-VITE_FIREBASE_AUTH_DOMAIN=afp-XXXXX.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=afp-XXXXX
-VITE_FIREBASE_STORAGE_BUCKET=afp-XXXXX.firebasestorage.app
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
 VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
 VITE_FIREBASE_APP_ID=1:123456789:web:abc123
-VITE_APP_VERSION=0.1.0
+VITE_APP_VERSION=0.2.3
 ```
 
-## 7. Initialize Headminick
+These files are gitignored. CI uses GitHub Secrets (see step 8).
 
-After first login (app auto-signs in anonymously), open browser console and run:
+## 7. Initialize TheAdminNick
 
-```js
-// Get your UID
-firebase.auth().currentUser.uid
+The first user to claim admin gets TheAdminNick role. In dev mode (`isFirebaseConfigured = false`), you automatically get admin access with localStorage.
 
-// Then call initializeHeadminick from the console or a temp dev button
+For production with real Firebase:
+
+1. Run `bun run dev` with real Firebase config
+2. Sign in with Google
+3. The app shows the "Claim this app" screen for the first user
+4. Click claim — your UID is written to `app/config` as admin
+
+## 8. GitHub Secrets (CI)
+
+Add these in repo **Settings** > **Secrets and variables** > **Actions**:
+
+| Secret | Value |
+|--------|-------|
+| `VITE_FIREBASE_API_KEY` | From step 2 config |
+| `VITE_FIREBASE_AUTH_DOMAIN` | From step 2 config |
+| `VITE_FIREBASE_PROJECT_ID` | From step 2 config |
+| `VITE_FIREBASE_STORAGE_BUCKET` | From step 2 config |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | From step 2 config |
+| `VITE_FIREBASE_APP_ID` | From step 2 config |
+| `FIREBASE_SERVICE_ACCOUNT` | GCP service account JSON key (see step 9) |
+
+## 9. Service Account (for Firestore Rules CI)
+
+The `firebase-rules.yml` workflow needs a GCP service account to deploy rules.
+
+1. Go to [GCP Console](https://console.cloud.google.com) > **IAM & Admin** > **Service Accounts**
+2. Select your Firebase project
+3. Click **Create Service Account**
+   - Name: `github-actions`
+   - Role: **Cloud Datastore User** (minimum for rules deploy)
+4. Click the new account > **Keys** tab > **Add Key** > **Create new key** > **JSON**
+5. Download the JSON file
+6. In GitHub repo: **Settings** > **Secrets** > **New secret**
+   - Name: `FIREBASE_SERVICE_ACCOUNT`
+   - Value: paste the entire JSON file contents
+7. Delete the local JSON file (don't commit it)
+
+## 10. Verify .firebaserc
+
+`.firebaserc` must contain your actual Firebase project ID:
+
+```json
+{
+  "projects": {
+    "default": "your-project-id"
+  }
+}
 ```
 
-We'll add a proper first-run setup flow later. For now, the dev bypass (`isFirebaseConfigured = false`) gives you Headminick access automatically.
+Find your project ID in the Firebase Console URL: `console.firebase.google.com/project/<PROJECT_ID>/...`
 
-## 8. Verify
+## CI Workflows
 
-1. `bun run dev`
-2. App should load with your profile
-3. Check Firestore console — you should see `app/config` doc with your UID
+| Workflow | Trigger | What |
+|----------|---------|------|
+| `deploy.yml` | Push/PR to master | lint + test + build + deploy to GitHub Pages |
+| `firebase-rules.yml` | `firestore.rules` changes on master | Deploy Firestore security rules |
 
 ## Optional: Restrict API Key
 

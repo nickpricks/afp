@@ -25,7 +25,7 @@ Dev mode works without Firebase — all modules enabled, TheAdminNick role, loca
 | `bun run lint` | Type check + ESLint |
 | `bun run typecheck` | tsc --noEmit only |
 | `bun run lint:eslint` | ESLint only |
-| `bun run test` | Vitest unit tests (281) |
+| `bun run test` | Vitest unit tests (320) |
 | `bun run test:e2e` | Playwright E2E tests (42) |
 | `bun run format` | Prettier format all source files |
 | `bun run format:check` | Prettier check (CI-friendly, no writes) |
@@ -64,18 +64,18 @@ src/
     baby/         — BabyLanding, ChildDetail (tabbed), FeedLog, SleepLog, GrowthLog, DiaperLog
   shared/
     auth/         — Firebase auth, invite system, TheAdminNick model
-    components/   — Dashboard, DashboardCard, Layout, TabBar, ModuleGate, AdminGate, DevBench
+    components/   — Dashboard, DashboardCard, Layout, TabBar, ModuleGate, AdminGate, DevBench, loading/
     errors/       — ErrorBoundary, toast notifications (with undo action support)
-    hooks/        — useModules, useSyncStatus
+    hooks/        — useModules, useSyncStatus, useMinDelay
     storage/      — StorageAdapter interface + Firebase/localStorage impls
     types.ts      — Result<T>, ModuleId, SyncStatus, UserRole, all enums
     utils/        — date, error, profile, validation, regex, format, sort helpers
-  themes/         — 7 themes (10 planned — see ROADMAP Phase 2f)
+  themes/         — 10 CSS themes, ambient effects, theme definitions + migration
 ```
 
 ## Themes
 
-7 exist, 10 planned. Family Blue (default), Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map (light+dark). Neon Glow, Deep Mariana, Industrial Furnace, Expecto Patronum (dark-only). See `docs/ROADMAP.md` Phase 2f for full roster.
+10 themes with distinct font pairings and ambient effects. Family Blue (default), Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map (light+dark). Neon Glow, Deep Mariana, Industrial Furnace, Expecto Patronum (dark-only). 8 Google Font families. 9 ambient effects (Charcoal has none). Expandable theme picker in Profile with effect configuration.
 
 ## Key Patterns
 
@@ -85,6 +85,8 @@ src/
 - **List hover (+)** — per-row duplicate button on activity/floor lists, appears on hover
 - **Score ring** — SVG progress ring with daily goal, zone labels (Easy Start → Beast Mode)
 - **Daily goal builder** — per-activity sliders in config form, presets (🌿💪🔥⚡)
+- **Loading screen** — 3 SVG stick-figure scenes (Climber, Athlete, Reader), random per mount, with brand text reveal
+- **Code splitting** — React.lazy + Suspense on all routes, LoadingScreen as fallback
 - **DevBench** — dev-only seed panel with 11 generators (Floors, Walk, Run, Cycle, Expense, Income, Settlement, Feed, Sleep, Diaper, Growth) + bulk modes (x100, x1k with day-spread)
 
 ## Docs
@@ -92,11 +94,11 @@ src/
 | Doc | What |
 |---|---|
 | `CLAUDE.md` | AI assistant instructions, architecture, conventions, known issues |
-| `docs/ROADMAP.md` | Phase progress (~70%), prioritized backlog (P0-P3), theme roster |
+| `docs/ROADMAP.md` | Phase progress (~83%), prioritized backlog (P0-P3), theme roster |
 | `docs/firebase-setup.md` | Firebase setup guide |
 | `docs/getting-started.md` | Getting started guide |
-| `docs/specs/` | Design specs (Phase 1, Phase 2, Dashboard, Theme analysis) |
-| `docs/plans/` | Implementation plans (Phase 1, Phase 2 per-module, Dashboard, Admin, Viewer) |
+| `docs/specs/` | Design specs (Phase 1, Phase 2, Dashboard, Theme analysis, Loading screen, Themes) |
+| `docs/plans/` | Implementation plans (Phase 1, Phase 2 per-module, Dashboard, Admin, Viewer, Loading screen, Themes) |
 | `docs/revz/` | Code reviews, coverage analysis, session reviews |
 
 ## License

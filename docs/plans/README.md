@@ -16,6 +16,8 @@ Implementation plans for AFP. One file per phase or feature.
 - `2026-04-07-universal-dashboard.md` -- Universal Dashboard implementation plan
 - `2026-04-07-admin-pages.md` -- Admin pages implementation plan
 - `2026-04-07-viewer-invite-flow.md` -- Viewer invite flow implementation plan
+- `2026-04-10-loading-screen.md` -- Loading screen implementation plan (stick-figure SVG animations)
+- `2026-04-10-themes.md` -- Theme system overhaul plan (10 themes, fonts, ambient effects)
 
 ## Conventions
 
