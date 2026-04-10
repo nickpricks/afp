@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react';
 import { useMinDelay } from '@/shared/hooks/useMinDelay';
 
@@ -36,6 +36,7 @@ describe('useMinDelay', () => {
 import { SceneClimber } from '../SceneClimber';
 import { SceneAthlete } from '../SceneAthlete';
 import { SceneReader } from '../SceneReader';
+import { LoadingScreen } from '../LoadingScreen';
 
 describe('SceneClimber', () => {
   it('renders an SVG with the staircase', () => {
@@ -63,5 +64,23 @@ describe('SceneReader', () => {
     expect(svg).toBeInTheDocument();
     expect(container.querySelector('.loading-reader-head')).toBeInTheDocument();
     expect(container.querySelector('.loading-paper-left')).toBeInTheDocument();
+  });
+});
+
+describe('LoadingScreen', () => {
+  it('renders one of the three scenes', () => {
+    const { container } = render(<LoadingScreen />);
+    const svg = container.querySelector('svg');
+    expect(svg).toBeInTheDocument();
+  });
+
+  it('shows brand text by default', () => {
+    render(<LoadingScreen />);
+    expect(screen.getByLabelText('It Started On April Fools Day')).toBeInTheDocument();
+  });
+
+  it('hides brand text when showText is false', () => {
+    render(<LoadingScreen showText={false} />);
+    expect(screen.queryByLabelText('It Started On April Fools Day')).not.toBeInTheDocument();
   });
 });
