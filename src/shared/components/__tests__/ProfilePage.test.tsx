@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import { ProfilePage } from '@/shared/components/ProfilePage';
@@ -49,7 +49,7 @@ const mockProfile: UserProfile = {
   role: UserRole.User,
   modules: {
     [ModuleId.Body]: true,
-    [ModuleId.Expenses]: false,
+    [ModuleId.Budget]: false,
     [ModuleId.Baby]: true,
   },
   theme: 'family-blue',
@@ -104,15 +104,17 @@ describe('ProfilePage', () => {
     expect(img).toBeInTheDocument();
   });
 
-  it('renders all 7 theme swatches', () => {
+  it('renders all 10 theme swatches after expanding', () => {
     renderWithRouter(<ProfilePage />);
+    fireEvent.click(screen.getByText('Customize'));
     const themeGrid = screen.getByTestId('theme-grid');
     const buttons = themeGrid.querySelectorAll('button');
     expect(buttons).toHaveLength(Object.keys(THEME_DEFINITIONS).length);
   });
 
-  it('renders color mode picker with three options', () => {
+  it('renders color mode picker with three options after expanding', () => {
     renderWithRouter(<ProfilePage />);
+    fireEvent.click(screen.getByText('Customize'));
     const picker = screen.getByTestId('color-mode-picker');
     const buttons = picker.querySelectorAll('button');
     expect(buttons).toHaveLength(3);
