@@ -13,6 +13,7 @@ export enum AppPath {
   AdminUsers = '/admin/users',
   Invite = '/invite/:code',
   Debug = '/debug',
+  Animations = '/animations',
 }
 
 /** Route lookup object for ROUTES.BODY style access */
@@ -30,6 +31,7 @@ export const ROUTES = {
   ADMIN_USERS: AppPath.AdminUsers,
   INVITE: AppPath.Invite,
   DEBUG: AppPath.Debug,
+  ANIMATIONS: AppPath.Animations,
 } as const;
 
 /** Union type of all route path values */

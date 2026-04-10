@@ -84,3 +84,18 @@ describe('LoadingScreen', () => {
     expect(screen.queryByLabelText('It Started On April Fools Day')).not.toBeInTheDocument();
   });
 });
+
+import { AnimationViewer } from '../../AnimationViewer';
+
+describe('AnimationViewer', () => {
+  it('renders all three scenes when All is selected', () => {
+    const { container } = render(<AnimationViewer />);
+    const svgs = container.querySelectorAll('svg');
+    expect(svgs.length).toBe(3);
+  });
+
+  it('renders the text toggle checkbox', () => {
+    render(<AnimationViewer />);
+    expect(screen.getByLabelText('Show text')).toBeInTheDocument();
+  });
+});
