@@ -38,6 +38,7 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-surface text-fg">
+      <div className="fx-ambient" aria-hidden="true" />
       <header className="flex items-center justify-between px-4 py-3 bg-surface-card border-b border-line">
         <Link to="/" className="flex items-center">
           <img src="/favicon.png" alt="AFP" className="h-6 w-6" />
