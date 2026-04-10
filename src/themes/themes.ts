@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 
-import { CONFIG } from '@/constants/config';
-
 export enum ThemeId {
   FamilyBlue = 'family-blue',
   GardenPath = 'garden-path',
@@ -181,7 +179,7 @@ const THEME_MIGRATIONS: Record<string, ThemeId> = {
 /** Resolves a stored theme ID, migrating old values to current ones */
 export function resolveThemeId(value: string): ThemeId {
   if (isValidThemeId(value)) return value;
-  return THEME_MIGRATIONS[value] ?? CONFIG.DEFAULT_THEME;
+  return THEME_MIGRATIONS[value] ?? ThemeId.FamilyBlue;
 }
 
 /** Reads the currently active ThemeId from the DOM */
@@ -190,7 +188,7 @@ function detectActiveThemeId(): ThemeId {
   for (const theme of THEME_LIST) {
     if (root.classList.contains(themeClass(theme.id))) return theme.id;
   }
-  return CONFIG.DEFAULT_THEME;
+  return ThemeId.FamilyBlue;
 }
 
 let currentThemeClass: string | undefined;
