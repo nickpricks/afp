@@ -79,18 +79,18 @@ export function AddChild({ onAdded }: { onAdded?: (childId: string) => void }) {
         <fieldset className="flex flex-col gap-2">
           <legend className="text-sm text-fg-muted mb-1">Tracking Modules</legend>
           {
-configOptions.map((opt) => (
-            <label key={opt.key} className="flex items-center gap-2 text-sm text-fg">
-              <input
-                type="checkbox"
-                checked={config[opt.key]}
-                onChange={() => toggleConfig(opt.key)}
-                className="rounded border-line"
-              />
-              {opt.label}
-            </label>
-          ))
-}
+            configOptions.map((opt) => (
+              <label key={opt.key} className="flex items-center gap-2 text-sm text-fg">
+                <input
+                  type="checkbox"
+                  checked={config[opt.key]}
+                  onChange={() => toggleConfig(opt.key)}
+                  className="rounded border-line"
+                />
+                {opt.label}
+              </label>
+            ))
+          }
         </fieldset>
 
         <button

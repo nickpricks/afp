@@ -4,6 +4,34 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.4] — 2026-04-10
+
+E2E regression fixes, code hygiene sweep, admin claim transaction safety.
+
+### Fixes
+
+| Change | What |
+|---|---|
+| E2E regression | Fixed all 10 failing E2E tests — `isVisible()` doesn't wait in Playwright 1.59, strict mode violations from UI changes, expandable theme picker |
+| `initializeAdmin` atomicity | Wrapped app/config + admin profile writes in `runTransaction` — prevents race conditions and orphan state |
+
+### Code Hygiene
+
+| Change | What |
+|---|---|
+| `ToastType` enum | Created `ToastType.Success/Error/Info` enum, replaced 62 raw string literals across 20 files |
+| Message enum sweep | Moved 18 raw toast strings to `ProfileMsg`, `AdminMsg`, `BodyMsg`, `BabyMsg`, `BudgetMsg` enums across 8 files |
+| Zero raw toast strings | All `addToast` calls now use message enums + `ToastType` enum — no string literals in production code |
+
+### Tests
+
+| Metric | Before | After |
+|---|---|---|
+| Unit tests | 320 | 320 |
+| E2E tests | 32 passing (10 failing) | 42 passing (0 failing) |
+
+---
+
 ## [0.2.3] — 2026-04-10
 
 Phase 2f themes implementation, loading screen, code splitting.

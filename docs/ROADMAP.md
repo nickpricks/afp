@@ -14,10 +14,10 @@ Last updated: 2026-04-10
 | Phase 2b (Baby) | ✅ Core done | 29/23 | Firestore rules TBD (needs deploy) |
 | Phase 2c (Budget) | ✅ Core done | 30/28 | Firestore rules TBD (needs deploy) |
 | Phase 2d (Profile) | 🚧 Partial | 6/9 | Missing: auth provider linking (needs Firebase), username tests, negative tests, doc sweep |
-| Phase 2e (Admin+Viewer) | 🚧 ~90% | 32/35 | Done: admin pages, viewer invite flow, role tests. Missing: admin claim flow, Firestore rules audit (needs deploy), doc sweep |
+| Phase 2e (Admin+Viewer) | 🚧 ~95% | 33/35 | Done: admin pages, viewer invite flow, role tests, admin claim flow. Missing: Firestore rules audit (needs deploy), doc sweep |
 | Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
 | Phase 2g (E2E + Bench) | ❌ Not started | 0/8 | Interactive E2E flows, build/bundle/test benchmarks |
-| **Total** | **~83%** | **147/178** | |
+| **Total** | **~84%** | **148/178** | |
 
 ---
 
@@ -47,7 +47,7 @@ All P0 items completed.
 | ~~🔨~~ | ~~Universal Dashboard — role-aware home page~~ | 2e | DONE |
 | ~~🔨~~ | ~~Admin user management — list users, toggle modules~~ | 2e | DONE (Session 6) |
 | ~~🔨~~ | ~~Viewer role UI — read-only dashboard, invite flow~~ | 2e | DONE (Session 6) |
-| 🔨 | Admin claim flow — fresh database first-user claim | 2e | Not started |
+| ~~🔨~~ | ~~Admin claim flow — fresh database first-user claim~~ | 2e | DONE (existed since Session 3, transaction-safe in Session 8) |
 | 🔨 | Firestore rules audit — verify all match blocks | 2e | Not started (needs Firebase deploy) |
 | ~~🔨~~ | ~~Theme roster implementation — 10 themes~~ | 2f | DONE (Session 7) |
 | ~~🔨~~ | ~~Ambient effects — 9 per-theme effects~~ | 2f | DONE (Session 7) |
@@ -135,6 +135,16 @@ All P0 items completed.
 ---
 
 ## Done
+
+### 2026-04-10 — Session 8 (E2E regression, code hygiene, ToastType enum)
+
+- [x] Fixed 10 failing E2E tests — `isVisible()` wait bug, strict mode violations, expandable theme picker
+- [x] `initializeAdmin` wrapped in `runTransaction` (atomic app/config + profile creation)
+- [x] Admin claim flow confirmed already implemented — marked done in ROADMAP
+- [x] `ToastType` enum — replaced 62 raw string literals across 20 files
+- [x] Message enum sweep — 18 raw toast strings moved to enums across 8 files
+- [x] CLAUDE.md updated with dynamic message template note
+- [x] E2E tests: 32 passing → 42 passing (0 failing)
 
 ### 2026-04-10 — Session 7 (Loading screen, Phase 2f themes)
 

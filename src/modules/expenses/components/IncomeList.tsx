@@ -6,6 +6,8 @@ import type { Income } from '@/modules/expenses/types';
 import { sortNewestFirst } from '@/shared/utils/sort';
 import { CONFIG } from '@/constants/config';
 import { useToast } from '@/shared/errors/useToast';
+import { BudgetMsg } from '@/constants/messages';
+import { ToastType } from '@/shared/types';
 
 /** Displays a paginated list of income entries with undo-able delete */
 export function IncomeList({
@@ -30,7 +32,7 @@ export function IncomeList({
   const handleDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);
-    addToast('Income deleted', 'info', {
+    addToast(BudgetMsg.IncomeDeleted, ToastType.Info, {
       durationMs: CONFIG.UNDO_DURATION_MS,
       action: {
         label: 'Undo',

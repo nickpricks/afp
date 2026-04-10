@@ -7,7 +7,7 @@ import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { BodyActivity, BodyRecord } from '@/modules/body/types';
 import { computeBodyScore } from '@/modules/body/scoring';
 import { todayStr, nowTime } from '@/shared/utils/date';
-import { ActivityType, SyncStatus, isOk } from '@/shared/types';
+import { ActivityType, SyncStatus, ToastType, isOk } from '@/shared/types';
 import { DbSubcollection, userPath } from '@/constants/db';
 import { BodyMsg } from '@/constants/messages';
 import { sortNewestFirst } from '@/shared/utils/sort';
@@ -124,7 +124,7 @@ export function useBodyData(targetUid?: string) {
 
       const result = await adapter.save(DbSubcollection.Body, { ...withActivities, id: key });
       if (!isOk(result)) {
-        addToast(result.error, 'error');
+        addToast(result.error, ToastType.Error);
         setRecords((prev) => ({ ...prev, [key]: current }));
       }
     },
@@ -155,7 +155,7 @@ export function useBodyData(targetUid?: string) {
 
       const result = await adapter.save(DbSubcollection.BodyActivities, entry);
       if (!isOk(result)) {
-        addToast(result.error, 'error');
+        addToast(result.error, ToastType.Error);
         const rolled = activitiesRef.current.filter((a) => a.id !== entry.id);
         activitiesRef.current = rolled;
         setActivities(rolled);
@@ -168,7 +168,7 @@ export function useBodyData(targetUid?: string) {
       const updated = recomputeSummary(base, activitiesRef.current);
       const summaryResult = await adapter.save(DbSubcollection.Body, { ...updated, id: key });
       if (!isOk(summaryResult)) {
-        addToast(summaryResult.error, 'error');
+        addToast(summaryResult.error, ToastType.Error);
       }
     },
     [records, addToast, readOnly],
@@ -194,10 +194,10 @@ export function useBodyData(targetUid?: string) {
 
       const result = await adapter.save(DbSubcollection.Body, { ...withActivities, id: dateKey });
       if (!isOk(result)) {
-        addToast(BodyMsg.RecordFailed, 'error');
+        addToast(BodyMsg.RecordFailed, ToastType.Error);
         setRecords((prev) => ({ ...prev, [dateKey]: current }));
       } else {
-        addToast(BodyMsg.RecordSaved, 'success');
+        addToast(BodyMsg.RecordSaved, ToastType.Success);
       }
     },
     [records, addToast, readOnly],
@@ -226,14 +226,14 @@ export function useBodyData(targetUid?: string) {
 
       const result = await adapter.save(DbSubcollection.BodyActivities, updated);
       if (!isOk(result)) {
-        addToast(BodyMsg.ActivityUpdateFailed, 'error');
+        addToast(BodyMsg.ActivityUpdateFailed, ToastType.Error);
         const rolled = activitiesRef.current.map((a) => (a.id === id ? current : a));
         activitiesRef.current = rolled;
         setActivities(rolled);
         return;
       }
 
-      addToast(BodyMsg.ActivityUpdated, 'success');
+      addToast(BodyMsg.ActivityUpdated, ToastType.Success);
 
       // Recompute daily summary
       const key = current.date;
@@ -241,7 +241,7 @@ export function useBodyData(targetUid?: string) {
       const recomputed = recomputeSummary(base, activitiesRef.current);
       const summaryResult = await adapter.save(DbSubcollection.Body, { ...recomputed, id: key });
       if (!isOk(summaryResult)) {
-        addToast(summaryResult.error, 'error');
+        addToast(summaryResult.error, ToastType.Error);
       }
     },
     [records, addToast, readOnly],

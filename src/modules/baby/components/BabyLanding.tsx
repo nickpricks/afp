@@ -74,28 +74,28 @@ export function BabyLanding() {
       <h2 className="text-lg font-semibold text-fg">Your Children</h2>
 
       {
-children.map((child) => (
-        <ChildCard key={child.id} child={child} onView={handleViewChild} />
-      ))
-}
+        children.map((child) => (
+          <ChildCard key={child.id} child={child} onView={handleViewChild} />
+        ))
+      }
 
       {
-showAddForm && (
-        <AddChild onAdded={handleChildAdded} />
-      )
-}
+        showAddForm && (
+          <AddChild onAdded={handleChildAdded} />
+        )
+      }
 
       {
-!showAddForm && (
-        <button
-          type="button"
-          onClick={() => setShowAddForm(true)}
-          className="w-full py-3 rounded-lg border-2 border-dashed border-line text-fg-muted font-medium hover:border-accent hover:text-accent transition-colors"
-        >
-          + Add Child
-        </button>
-      )
-}
+        !showAddForm && (
+          <button
+            type="button"
+            onClick={() => setShowAddForm(true)}
+            className="w-full py-3 rounded-lg border-2 border-dashed border-line text-fg-muted font-medium hover:border-accent hover:text-accent transition-colors"
+          >
+            + Add Child
+          </button>
+        )
+      }
     </div>
   );
 }

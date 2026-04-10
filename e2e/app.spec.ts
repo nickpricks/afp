@@ -8,12 +8,13 @@ import { test, expect, type Page } from '@playwright/test';
  */
 async function ensureBodyConfigured(page: Page) {
   await page.goto('/body');
-  // If config form is showing, save it
-  const configHeading = page.getByText('Configure Body Tracking');
-  if (await configHeading.isVisible({ timeout: 2000 }).catch(() => false)) {
-    // Floors, Walking, Running checkboxes are on by default (DEFAULT_BODY_CONFIG)
-    await page.getByRole('button', { name: 'Save Configuration' }).click();
-    // Wait for tabbed view to appear
+  // Wait for lazy-loaded route to render — either config form or tabbed interface
+  const configOrTabs = page.getByText(/Configure Body Tracking|Stats/);
+  await expect(configOrTabs.first()).toBeVisible({ timeout: 10000 });
+  // If config form is showing, save it (fresh localStorage = always first visit)
+  const saveBtn = page.getByRole('button', { name: 'Save Configuration' });
+  if (await saveBtn.isVisible()) {
+    await saveBtn.click();
     await expect(page.getByRole('button', { name: 'Stats' })).toBeVisible();
   }
 }
@@ -61,10 +62,11 @@ test.describe('App shell', () => {
 test.describe('Body — Config gate', () => {
   test('shows config form on first visit', async ({ page }) => {
     await page.goto('/body');
-    await expect(page.getByText('Configure Body Tracking')).toBeVisible();
-    await expect(page.getByText('Floors')).toBeVisible();
-    await expect(page.getByText('Walking')).toBeVisible();
-    await expect(page.getByText('Running')).toBeVisible();
+    await expect(page.getByText('Configure Body Tracking')).toBeVisible({ timeout: 10000 });
+    // Use exact match — daily goal builder sliders also contain "Floors Up"/"Floors Down"
+    await expect(page.getByText('Floors', { exact: true })).toBeVisible();
+    await expect(page.getByText('Walking', { exact: true })).toBeVisible();
+    await expect(page.getByText('Running', { exact: true })).toBeVisible();
     await expect(page.getByLabel('Cycling')).toBeVisible();
     await expect(page.getByText('Yoga (coming soon)')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Save Configuration' })).toBeVisible();
@@ -93,7 +95,8 @@ test.describe('Body — Stats tab', () => {
   });
 
   test('shows score and metric cards', async ({ page }) => {
-    await expect(page.getByText("Today's Score")).toBeVisible();
+    // Score ring shows "Score" label (redesigned in Session 6)
+    await expect(page.getByText('Score', { exact: true })).toBeVisible();
     await expect(page.getByText('Floors Up')).toBeVisible();
     await expect(page.getByText('Floors Down')).toBeVisible();
     await expect(page.getByText('This Week')).toBeVisible();
@@ -101,8 +104,9 @@ test.describe('Body — Stats tab', () => {
 
   test('shows quick action buttons matching config', async ({ page }) => {
     // Default config: floors=true, walking=true, running=false
-    await expect(page.getByRole('button', { name: '+ Log Floors' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '+ Walk' })).toBeVisible();
+    // Quick action text is "+" + capitalized tab name (e.g. "+ Floors", "+ Walking")
+    await expect(page.getByRole('button', { name: '+ Floors' })).toBeVisible();
+    await expect(page.getByRole('button', { name: '+ Walking' })).toBeVisible();
   });
 });
 
@@ -142,7 +146,7 @@ test.describe('Body — Floors tab', () => {
 test.describe('Body — Walking tab', () => {
   test.beforeEach(async ({ page }) => {
     await ensureBodyConfigured(page);
-    await page.getByRole('button', { name: 'Walking' }).click();
+    await page.getByRole('button', { name: 'Walking', exact: true }).click();
   });
 
   test('has distance input and unit toggle', async ({ page }) => {
@@ -305,12 +309,16 @@ test.describe('Profile', () => {
   test('theme picker and color mode buttons visible', async ({ page }) => {
     await page.goto('/profile');
     await expect(page.getByText('Appearance')).toBeVisible();
+    // Theme grid is collapsed by default — expand via "Customize" button
+    await page.getByRole('button', { name: 'Customize' }).click();
     await expect(page.getByText('Theme')).toBeVisible();
     await expect(page.getByTestId('theme-grid')).toBeVisible();
     await expect(page.getByText('Color Mode')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Light' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Dark' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'System' })).toBeVisible();
+    // Scope to color-mode-picker to avoid matching dark-only theme buttons
+    const colorPicker = page.getByTestId('color-mode-picker');
+    await expect(colorPicker.getByRole('button', { name: 'Light' })).toBeVisible();
+    await expect(colorPicker.getByRole('button', { name: 'Dark' })).toBeVisible();
+    await expect(colorPicker.getByRole('button', { name: 'System' })).toBeVisible();
   });
 
   test('about section with changelog (i) button', async ({ page }) => {

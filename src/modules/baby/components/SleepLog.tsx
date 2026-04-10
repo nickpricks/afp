@@ -6,8 +6,10 @@ import { SleepType, SleepQuality } from '@/modules/baby/types';
 import { ALL_SLEEP_TYPES, ALL_SLEEP_QUALITIES, SLEEP_TYPE_LABELS, SLEEP_QUALITY_LABELS } from '@/modules/baby/constants';
 import { todayStr, nowTime } from '@/shared/utils/date';
 import { useToast } from '@/shared/errors/useToast';
+import { BabyMsg } from '@/constants/messages';
 import { CONFIG } from '@/constants/config';
 import { sortNewestFirst } from '@/shared/utils/sort';
+import { ToastType } from '@/shared/types';
 
 /** Returns current time + offset minutes as HH:MM */
 function timeOffset(minutes: number): string {
@@ -74,7 +76,7 @@ export function SleepLog({ childId }: { childId?: string }) {
   const handleUndoDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);
-    addToast('Sleep deleted', 'info', {
+    addToast(BabyMsg.SleepDeleted, ToastType.Info, {
       durationMs: CONFIG.UNDO_DURATION_MS,
       action: { label: 'Undo', onClick: () => { undoRef.current = true; setPendingDeleteId(null); } },
     });

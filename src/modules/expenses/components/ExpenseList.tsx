@@ -5,8 +5,10 @@ import { CATEGORIES, PAYMENT_METHOD_LABELS } from '@/modules/expenses/categories
 import type { Expense } from '@/modules/expenses/types';
 import { sortNewestFirst } from '@/shared/utils/sort';
 import { CONFIG } from '@/constants/config';
+import { ToastType } from '@/shared/types';
 import type { ExpenseCategory } from '@/shared/types';
 import { useToast } from '@/shared/errors/useToast';
+import { BudgetMsg } from '@/constants/messages';
 
 /** Formats a category ID and subcategory into a readable label */
 function formatCategory(category: ExpenseCategory, subCat: string): string {
@@ -38,7 +40,7 @@ export function ExpenseList({
   const handleDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);
-    addToast('Expense deleted', 'info', {
+    addToast(BudgetMsg.ExpenseDeleted, ToastType.Info, {
       durationMs: CONFIG.UNDO_DURATION_MS,
       action: {
         label: 'Undo',

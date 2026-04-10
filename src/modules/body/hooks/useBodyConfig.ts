@@ -6,7 +6,7 @@ import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { BodyConfig } from '@/modules/body/types';
 import { DEFAULT_BODY_CONFIG } from '@/modules/body/types';
-import { SyncStatus, isOk } from '@/shared/types';
+import { SyncStatus, ToastType, isOk } from '@/shared/types';
 import { DbSubcollection, DbDoc, userPath } from '@/constants/db';
 import { BodyMsg } from '@/constants/messages';
 
@@ -73,9 +73,9 @@ export function useBodyConfig(targetUid?: string) {
         id: DbDoc.Main,
       });
       if (!isOk(result)) {
-        addToast(BodyMsg.ConfigFailed, 'error');
+        addToast(BodyMsg.ConfigFailed, ToastType.Error);
       } else {
-        addToast(BodyMsg.ConfigSaved, 'success');
+        addToast(BodyMsg.ConfigSaved, ToastType.Success);
       }
     },
     [addToast, readOnly],

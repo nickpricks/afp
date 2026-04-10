@@ -4,7 +4,7 @@ import { InviteGenerator } from '@/admin/components/InviteGenerator';
 import { useAdmin } from '@/admin/hooks/useAdmin';
 import { useToast } from '@/shared/errors/useToast';
 import { deleteInvite, createInvite } from '@/shared/auth/invite';
-import { isOk } from '@/shared/types';
+import { isOk, ToastType } from '@/shared/types';
 import { AdminMsg } from '@/constants/messages';
 import { CONFIG } from '@/constants/config';
 import type { InviteRecord } from '@/shared/auth/invite';
@@ -20,9 +20,9 @@ export function InvitesTab() {
       const link = `${window.location.origin}${import.meta.env.BASE_URL}invite/${code}`;
       try {
         await navigator.clipboard.writeText(link);
-        addToast(AdminMsg.InviteLinkCopied, 'success');
+        addToast(AdminMsg.InviteLinkCopied, ToastType.Success);
       } catch {
-        addToast(AdminMsg.InviteLinkCopyFailed, 'error');
+        addToast(AdminMsg.InviteLinkCopyFailed, ToastType.Error);
       }
     },
     [addToast],
@@ -33,7 +33,7 @@ export function InvitesTab() {
     async (invite: InviteRecord) => {
       const result = await deleteInvite(invite.code);
       if (isOk(result)) {
-        addToast(AdminMsg.InviteDeleted, 'success', {
+        addToast(AdminMsg.InviteDeleted, ToastType.Success, {
           action: {
             label: 'Undo',
             onClick: () => {
@@ -43,7 +43,7 @@ export function InvitesTab() {
           durationMs: CONFIG.UNDO_DURATION_MS,
         });
       } else {
-        addToast(AdminMsg.InviteDeleteFailed, 'error');
+        addToast(AdminMsg.InviteDeleteFailed, ToastType.Error);
       }
     },
     [addToast],

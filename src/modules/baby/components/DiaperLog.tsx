@@ -6,8 +6,10 @@ import { DiaperType } from '@/modules/baby/types';
 import { ALL_DIAPER_TYPES, DIAPER_TYPE_LABELS } from '@/modules/baby/constants';
 import { todayStr, nowTime } from '@/shared/utils/date';
 import { useToast } from '@/shared/errors/useToast';
+import { BabyMsg } from '@/constants/messages';
 import { CONFIG } from '@/constants/config';
 import { sortNewestFirst } from '@/shared/utils/sort';
+import { ToastType } from '@/shared/types';
 
 /** Diaper tracking form with quick-log buttons and recent entries list */
 export function DiaperLog({ childId }: { childId?: string }) {
@@ -68,7 +70,7 @@ export function DiaperLog({ childId }: { childId?: string }) {
   const handleUndoDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);
-    addToast('Diaper deleted', 'info', {
+    addToast(BabyMsg.DiaperDeleted, ToastType.Info, {
       durationMs: CONFIG.UNDO_DURATION_MS,
       action: { label: 'Undo', onClick: () => { undoRef.current = true; setPendingDeleteId(null); } },
     });

@@ -91,6 +91,8 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Regex helpers**: Import `DATE_RE`, `INVITE_CODE_RE` from `@/shared/utils/regex`
 - **Distance formatting**: Import `formatDistance()`, `formatDistanceOrDash()` from `@/shared/utils/format` — never define local copies in components
 - **List sorting**: Import `sortNewestFirst()` from `@/shared/utils/sort` — never use inline `.sort((a, b) => ...)` comparators
+- **Toast types**: Use `ToastType.Success`, `ToastType.Error`, `ToastType.Info` from `@/shared/types` — never raw `'success'`/`'error'`/`'info'` strings
+- **Toast messages**: All user-facing toast strings must be in enum classes in `constants/messages.ts` (BodyMsg, BabyMsg, BudgetMsg, ProfileMsg, AdminMsg, InviteMsg, ValidationMsg). Dynamic templates (e.g. `` `${label} logged` ``) are the exception — see Known Issues
 - **Naming**: Scoring/calculation functions use `compute*` prefix (e.g., `computeBodyScore`), not `calculate*` or `get*`
 - **Arrow functions**: Exported arrow functions always have explicit `return` (except tiny type helpers like `ok`/`err`)
 - **JSX ternary**: Use `cond && ...` / `!cond && ...` instead of ternary in JSX (className ternaries are acceptable)
@@ -104,7 +106,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 Found via grep sweeps — fix in next code hygiene pass:
 
 - **#4 (constants)**: ~~`PAGE_SIZE` hardcoded in 6 files~~ — FIXED (`CONFIG.PAGE_SIZE`). ~~`1000` for m↔km in 6 places~~ — FIXED (`CONFIG.METERS_PER_KM`). Watch for new magic numbers.
-- **#6 (messages)**: ~15 raw toast strings (`'Expense deleted'`, `'Failed to save theme'`, `'Signed out'`, etc.) in components instead of `constants/messages.ts` enums. Hooks use message constants correctly — components don't.
+- ~~**#6 (messages)**: ~15 raw toast strings in components instead of `constants/messages.ts` enums~~ — FIXED: All 18 raw strings moved to enums, `ToastType` enum added for type literals. Only exception: `useBabyCollection` dynamic templates (see Known Issues)
 - **#19 (utils)**: ~~Duplicated `formatDist()`/`formatDistance()`~~ — FIXED: shared `formatDistance()` in `utils/format.ts`. ~~8 inline `.sort()` comparators~~ — FIXED: `sortNewestFirst()` in `utils/sort.ts`
 
 ## Known Issues (fix later)
@@ -134,6 +136,7 @@ Found via grep sweeps — fix in next code hygiene pass:
 - ~~**Walking tab shows redundant "Walk" label**~~ — DONE: Shows date instead of type label.
 - **Budget list has no summary header**: No daily/weekly total at top of expense list.
 - **Overall contrast low**: Family Blue theme (`#60a5fa` accent on white) feels washed out. Needs stronger card shadows or darker text contrast.
+- **Dynamic toast message templates**: `useBabyCollection` uses `` `${label} logged/deleted/updated` `` template literals. Consider replacing with a message template system (e.g. `toastMsg(label, action)` or parameterized enum pattern) so all user-facing strings live in `constants/messages.ts`. Static messages and toast types are already enum-based.
 
 ### Design Samples (SAM/design-samples/)
 - **theme-showcase-all.html** — approved 10-theme gallery with mini dashboard mockups (committed to git)
@@ -160,9 +163,11 @@ Found via grep sweeps — fix in next code hygiene pass:
 - Firestore `collection()` requires odd segment count (1, 3, 5...). Baby subcollections are flat: `baby_feeds`, not `baby/feeds`. New subcollections must follow this pattern
 - `react-hooks/set-state-in-effect` — no synchronous `setState` in `useEffect` body. Use refs, derived state via `useMemo`, or move to initial `useState` value
 - `scripts/*.ts` run in Bun (not Vite) — no `@/` path aliases. Use relative imports or document enum value mappings in comments
+- **Playwright `isVisible()` returns immediately** — does NOT wait, even with `{ timeout }` parameter. For waiting, use `expect(locator).toBeVisible({ timeout })` or `locator.waitFor()`. This caused 8 false-negative E2E tests when lazy-loaded routes hadn't rendered yet
 
 ## Security (Firestore Rules)
 
+- Admin claim: `initializeAdmin` uses `runTransaction` — atomically writes `app/config` + admin profile. Transaction checks `app/config` doesn't already exist (prevents double-claim race)
 - Invites: TheAdminNick has full write. Any authenticated user can redeem an unclaimed invite (update `linkedUid` + `usedAt` only, all other fields immutable)
 - Profiles: TheAdminNick has full write. Owner can create (non-admin role only) and update (only `theme`, `colorMode`, `name` — `role` and `modules` locked server-side)
 - Module data: Owner + module enabled, or TheAdminNick. Enforced per-collection in rules

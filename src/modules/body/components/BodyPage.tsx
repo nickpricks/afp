@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { ToastType } from '@/shared/types';
 
 import { BodyConfigForm } from '@/modules/body/components/BodyConfigForm';
 import { BodyStats } from '@/modules/body/components/BodyStats';
@@ -10,6 +11,7 @@ import { useBodyConfig } from '@/modules/body/hooks/useBodyConfig';
 import { useBodyData } from '@/modules/body/hooks/useBodyData';
 import { useToast } from '@/shared/errors/useToast';
 import { CONFIG } from '@/constants/config';
+import { BodyMsg } from '@/constants/messages';
 import { todayStr } from '@/shared/utils/date';
 
 type TabId = 'stats' | 'floors' | 'walking' | 'running' | 'cycling';
@@ -47,7 +49,7 @@ export function BodyPage() {
     const today = todayStr();
     const backup = { up: todayRecord.up, down: todayRecord.down };
     saveRecord(today, { up: 0, down: 0 });
-    addToast('Today reset', 'success', {
+    addToast(BodyMsg.TodayReset, ToastType.Success, {
       action: {
         label: 'Undo',
         onClick: () => saveRecord(today, backup),

@@ -4,8 +4,10 @@ import { useBabyData } from '@/modules/baby/hooks/useBabyData';
 import type { GrowthEntry } from '@/modules/baby/types';
 import { todayStr } from '@/shared/utils/date';
 import { useToast } from '@/shared/errors/useToast';
+import { BabyMsg } from '@/constants/messages';
 import { CONFIG } from '@/constants/config';
 import { sortNewestFirst } from '@/shared/utils/sort';
+import { ToastType } from '@/shared/types';
 
 /** Growth measurement form with weight, height, head circumference and recent entries */
 export function GrowthLog({ childId }: { childId?: string }) {
@@ -63,7 +65,7 @@ export function GrowthLog({ childId }: { childId?: string }) {
   const handleUndoDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);
-    addToast('Growth entry deleted', 'info', {
+    addToast(BabyMsg.GrowthDeleted, ToastType.Info, {
       durationMs: CONFIG.UNDO_DURATION_MS,
       action: { label: 'Undo', onClick: () => { undoRef.current = true; setPendingDeleteId(null); } },
     });

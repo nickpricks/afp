@@ -19,7 +19,7 @@ import {
   type ColorMode,
   type ThemeId,
 } from '@/themes/themes';
-import { ModuleId, isErr } from '@/shared/types';
+import { ModuleId, ToastType, isErr } from '@/shared/types';
 import { CONFIG } from '@/constants/config';
 import { AppPath } from '@/constants/routes';
 import { ProfileMsg, ValidationMsg } from '@/constants/messages';
@@ -96,10 +96,10 @@ export function ProfilePage() {
       applyTheme(themeId, colorMode);
       if (uid) {
         saveAppearance(uid, themeId, colorMode).catch(() => {
-          addToast('Failed to save theme', 'error');
+          addToast(ProfileMsg.ThemeSaveFailed, ToastType.Error);
         });
       }
-      addToast(ProfileMsg.ThemeSaved, 'success');
+      addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
     [colorMode, uid, addToast],
   );
@@ -110,10 +110,10 @@ export function ProfilePage() {
       applyTheme(activeThemeId, mode);
       if (uid) {
         saveAppearance(uid, activeThemeId, mode).catch(() => {
-          addToast('Failed to save color mode', 'error');
+          addToast(ProfileMsg.ColorModeSaveFailed, ToastType.Error);
         });
       }
-      addToast(ProfileMsg.ThemeSaved, 'success');
+      addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
     [activeThemeId, uid, addToast],
   );
@@ -161,7 +161,7 @@ export function ProfilePage() {
     }
 
     await saveUsernameToProfile(uid, trimmed);
-    addToast(ProfileMsg.UsernameClaimed, 'success');
+    addToast(ProfileMsg.UsernameClaimed, ToastType.Success);
     setIsEditingUsername(false);
     setUsernameInput('');
     setIsSavingUsername(false);
@@ -175,10 +175,10 @@ export function ProfilePage() {
 
     const result = await releaseUsername(profile.username, uid);
     if (isErr(result)) {
-      addToast('Failed to release username', 'error');
+      addToast(ProfileMsg.UsernameReleaseFailed, ToastType.Error);
     } else {
       await saveUsernameToProfile(uid, undefined);
-      addToast(ProfileMsg.UsernameReleased, 'success');
+      addToast(ProfileMsg.UsernameReleased, ToastType.Success);
     }
 
     setIsSavingUsername(false);
@@ -188,9 +188,9 @@ export function ProfilePage() {
   const handleSignOut = useCallback(async () => {
     try {
       await signOut(auth);
-      addToast('Signed out', 'success');
+      addToast(ProfileMsg.SignedOut, ToastType.Success);
     } catch {
-      addToast('Sign out failed', 'error');
+      addToast(ProfileMsg.SignOutFailed, ToastType.Error);
     }
   }, [addToast]);
 

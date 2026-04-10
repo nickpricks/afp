@@ -68,6 +68,15 @@ export interface UserProfile {
   updatedAt: string;
 }
 
+// ─── Toast Types ────────────────────────────────────────────────────────────
+
+/** Severity level for toast notifications */
+export enum ToastType {
+  Success = 'success',
+  Error = 'error',
+  Info = 'info',
+}
+
 // ─── Sync Types ──────────────────────────────────────────────────────────────
 
 /** Current state of data synchronisation with the backend */

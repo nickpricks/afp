@@ -4,9 +4,8 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { useToast } from '@/shared/errors/useToast';
 import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
-import { isOk } from '@/shared/types';
+import { isOk, ok, err, ToastType } from '@/shared/types';
 import type { Result } from '@/shared/types';
-import { ok, err } from '@/shared/types';
 import { userPath, DbSubcollection } from '@/constants/db';
 import { BabyMsg } from '@/constants/messages';
 import type { Child } from '@/modules/baby/types';
@@ -56,10 +55,10 @@ export function useChildren(targetUid?: string) {
       const entry = { ...child, id } as Child & { id: string };
       const result = await adapter.save(DbSubcollection.Children, entry);
       if (isOk(result)) {
-        addToast(BabyMsg.ChildAdded, 'success');
+        addToast(BabyMsg.ChildAdded, ToastType.Success);
         return ok(id);
       }
-      addToast(result.error, 'error');
+      addToast(result.error, ToastType.Error);
       return err(result.error);
     },
     [addToast, readOnly],
@@ -79,10 +78,10 @@ export function useChildren(targetUid?: string) {
       const updated = { ...existing, ...data, id: childId };
       const result = await adapter.save(DbSubcollection.Children, updated);
       if (isOk(result)) {
-        addToast(BabyMsg.ChildUpdated, 'success');
+        addToast(BabyMsg.ChildUpdated, ToastType.Success);
         return ok(undefined);
       }
-      addToast(result.error, 'error');
+      addToast(result.error, ToastType.Error);
       return err(result.error);
     },
     [addToast, children, readOnly],

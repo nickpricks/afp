@@ -5,7 +5,7 @@ import { db, isFirebaseConfigured } from '@/shared/auth/firebase-config';
 import { useToast } from '@/shared/errors/useToast';
 import { DbCollection, DbSubcollection, DbDoc } from '@/constants/db';
 import { AdminMsg } from '@/constants/messages';
-import { isOk, ok, err, type Result, type ModuleConfig, type UserRole } from '@/shared/types';
+import { isOk, ok, err, ToastType, type Result, type ModuleConfig, type UserRole } from '@/shared/types';
 import { toErrorMessage } from '@/shared/utils/error';
 
 /** Updates a user's profile field in Firestore or localStorage */
@@ -42,9 +42,9 @@ export function useAdminActions() {
     async (uid: string, modules: ModuleConfig) => {
       const result = await updateProfileField(uid, 'modules', modules);
       if (isOk(result)) {
-        addToast(AdminMsg.ModulesUpdated, 'success');
+        addToast(AdminMsg.ModulesUpdated, ToastType.Success);
       } else {
-        addToast(AdminMsg.ModulesUpdateFailed, 'error');
+        addToast(AdminMsg.ModulesUpdateFailed, ToastType.Error);
       }
       return result;
     },
@@ -56,9 +56,9 @@ export function useAdminActions() {
     async (uid: string, role: UserRole) => {
       const result = await updateProfileField(uid, 'role', role);
       if (isOk(result)) {
-        addToast(AdminMsg.RoleUpdated, 'success');
+        addToast(AdminMsg.RoleUpdated, ToastType.Success);
       } else {
-        addToast(AdminMsg.RoleUpdateFailed, 'error');
+        addToast(AdminMsg.RoleUpdateFailed, ToastType.Error);
       }
       return result;
     },

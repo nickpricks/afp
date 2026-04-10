@@ -6,8 +6,10 @@ import { FeedType } from '@/modules/baby/types';
 import { ALL_FEED_TYPES, FEED_TYPE_LABELS } from '@/modules/baby/constants';
 import { todayStr, nowTime } from '@/shared/utils/date';
 import { useToast } from '@/shared/errors/useToast';
+import { BabyMsg } from '@/constants/messages';
 import { CONFIG } from '@/constants/config';
 import { sortNewestFirst } from '@/shared/utils/sort';
+import { ToastType } from '@/shared/types';
 
 /** Determines whether the feed type uses amount (Bottle/Solid Food) */
 function isAmountType(type: FeedType): boolean {
@@ -70,7 +72,7 @@ export function FeedLog({ childId }: { childId?: string }) {
   const handleUndoDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);
-    addToast('Feed deleted', 'info', {
+    addToast(BabyMsg.FeedDeleted, ToastType.Info, {
       durationMs: CONFIG.UNDO_DURATION_MS,
       action: { label: 'Undo', onClick: () => { undoRef.current = true; setPendingDeleteId(null); } },
     });

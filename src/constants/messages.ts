@@ -40,14 +40,19 @@ export enum BodyMsg {
   ActivityUpdated = 'Activity updated',
   ActivityUpdateFailed = 'Failed to update activity',
   AtLeastOneActivity = 'Enable at least one activity',
+  TodayReset = 'Today reset',
 }
 
 /** Baby module messages */
 export enum BabyMsg {
   FeedAdded = 'Feed logged',
+  FeedDeleted = 'Feed deleted',
   SleepAdded = 'Sleep logged',
+  SleepDeleted = 'Sleep deleted',
   GrowthAdded = 'Growth recorded',
+  GrowthDeleted = 'Growth entry deleted',
   DiaperAdded = 'Diaper logged',
+  DiaperDeleted = 'Diaper deleted',
   ChildAdded = 'Child added',
   ChildUpdated = 'Child updated',
 }
@@ -57,12 +62,19 @@ export enum ProfileMsg {
   UsernameClaimed = 'Username claimed',
   UsernameReleased = 'Username released',
   UsernameTaken = 'Username is already taken',
+  UsernameClaimFailed = 'Failed to claim username',
+  UsernameReleaseFailed = 'Failed to release username',
   ThemeSaved = 'Theme updated',
+  ThemeSaveFailed = 'Failed to save theme',
+  ColorModeSaveFailed = 'Failed to save color mode',
   ProfileUpdated = 'Profile updated',
+  SignedOut = 'Signed out',
+  SignOutFailed = 'Sign out failed',
 }
 
 /** Admin panel messages */
 export enum AdminMsg {
+  AdminClaimed = 'Welcome, Admin! You now control this app.',
   InviteDeleted = 'Invite deleted',
   InviteDeleteFailed = 'Failed to delete invite',
   InviteLinkCopied = 'Invite link copied',

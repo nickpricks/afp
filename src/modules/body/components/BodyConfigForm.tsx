@@ -5,6 +5,7 @@ import { DEFAULT_BODY_CONFIG } from '@/modules/body/types';
 import { FLOOR_HEIGHT_OPTIONS, SCORING_WEIGHTS } from '@/modules/body/constants';
 import { BodyMsg } from '@/constants/messages';
 import { useToast } from '@/shared/errors/useToast';
+import { ToastType } from '@/shared/types';
 
 type ActivityToggle = { key: keyof Pick<BodyConfig, 'floors' | 'walking' | 'running' | 'cycling' | 'yoga'>; label: string; disabled: boolean };
 
@@ -101,7 +102,7 @@ export function BodyConfigForm({
   const handleSave = async () => {
     const hasAny = config.floors || config.walking || config.running || config.cycling || config.yoga;
     if (!hasAny) {
-      addToast(BodyMsg.AtLeastOneActivity, 'error');
+      addToast(BodyMsg.AtLeastOneActivity, ToastType.Error);
       return;
     }
     setSaving(true);

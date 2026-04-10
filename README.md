@@ -68,7 +68,7 @@ src/
     errors/       — ErrorBoundary, toast notifications (with undo action support)
     hooks/        — useModules, useSyncStatus, useMinDelay
     storage/      — StorageAdapter interface + Firebase/localStorage impls
-    types.ts      — Result<T>, ModuleId, SyncStatus, UserRole, all enums
+    types.ts      — Result<T>, ModuleId, SyncStatus, UserRole, ToastType, all enums
     utils/        — date, error, profile, validation, regex, format, sort helpers
   themes/         — 10 CSS themes, ambient effects, theme definitions + migration
 ```
@@ -87,6 +87,7 @@ src/
 - **Daily goal builder** — per-activity sliders in config form, presets (🌿💪🔥⚡)
 - **Loading screen** — 3 SVG stick-figure scenes (Climber, Athlete, Reader), random per mount, with brand text reveal
 - **Code splitting** — React.lazy + Suspense on all routes, LoadingScreen as fallback
+- **Message enums** — all toast messages in `constants/messages.ts` enums (BodyMsg, BabyMsg, BudgetMsg, ProfileMsg, AdminMsg), toast types via `ToastType` enum — zero raw strings
 - **DevBench** — dev-only seed panel with 11 generators (Floors, Walk, Run, Cycle, Expense, Income, Settlement, Feed, Sleep, Diaper, Growth) + bulk modes (x100, x1k with day-spread)
 
 ## Docs
@@ -94,7 +95,7 @@ src/
 | Doc | What |
 |---|---|
 | `CLAUDE.md` | AI assistant instructions, architecture, conventions, known issues |
-| `docs/ROADMAP.md` | Phase progress (~83%), prioritized backlog (P0-P3), theme roster |
+| `docs/ROADMAP.md` | Phase progress (~84%), prioritized backlog (P0-P3), theme roster |
 | `docs/firebase-setup.md` | Firebase setup guide |
 | `docs/getting-started.md` | Getting started guide |
 | `docs/specs/` | Design specs (Phase 1, Phase 2, Dashboard, Theme analysis, Loading screen, Themes) |

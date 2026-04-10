@@ -4,8 +4,9 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { useToast } from '@/shared/errors/useToast';
 import { initializeAdmin } from '@/shared/auth/the-admin-nick';
 import { signInWithGoogle } from '@/shared/auth/google-auth';
-import { isOk } from '@/shared/types';
+import { isOk, ToastType } from '@/shared/types';
 import { CONFIG } from '@/constants/config';
+import { AdminMsg } from '@/constants/messages';
 
 /** First-run screen — lets the first authenticated user claim admin role */
 export function AdminClaim() {
@@ -23,7 +24,7 @@ export function AdminClaim() {
     if (isOk(result)) {
       setNeedsGoogle(false);
     } else {
-      addToast(result.error, 'error');
+      addToast(result.error, ToastType.Error);
     }
     setClaiming(false);
   };
@@ -41,10 +42,10 @@ export function AdminClaim() {
     const name = firebaseUser.displayName ?? 'Admin';
     const result = await initializeAdmin(firebaseUser.uid, name);
     if (isOk(result)) {
-      addToast('Welcome, Admin! You now control this app.', 'success');
+      addToast(AdminMsg.AdminClaimed, ToastType.Success);
       // AuthProvider will pick up the new profile via onSnapshot
     } else {
-      addToast(result.error, 'error');
+      addToast(result.error, ToastType.Error);
     }
     setClaiming(false);
   };

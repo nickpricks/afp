@@ -4,9 +4,7 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { useToast } from '@/shared/errors/useToast';
 import { useAllUsers } from '@/admin/hooks/useAllUsers';
 import { generateInviteCode, createInvite } from '@/shared/auth/invite';
-import { ModuleId, UserRole, type ModuleConfig } from '@/shared/types';
-import { ALL_MODULES } from '@/shared/types';
-import { isOk } from '@/shared/types';
+import { ModuleId, UserRole, ToastType, isOk, ALL_MODULES, type ModuleConfig } from '@/shared/types';
 import { InviteMsg, ValidationMsg } from '@/constants/messages';
 
 /** Form for generating invite links with module selection */
@@ -34,7 +32,7 @@ export function InviteGenerator() {
   /** Generates a new invite code and persists it to Firestore */
   async function handleCreate() {
     if (!firebaseUser || !name.trim()) {
-      addToast(ValidationMsg.InviteNameRequired, 'error');
+      addToast(ValidationMsg.InviteNameRequired, ToastType.Error);
       return;
     }
 
@@ -52,9 +50,9 @@ export function InviteGenerator() {
       setModules({ [ModuleId.Body]: false, [ModuleId.Budget]: false, [ModuleId.Baby]: false });
       setRole('user');
       setViewerOf('');
-      addToast(InviteMsg.Created, 'success');
+      addToast(InviteMsg.Created, ToastType.Success);
     } else {
-      addToast(result.error, 'error');
+      addToast(result.error, ToastType.Error);
     }
 
     setIsCreating(false);

@@ -7,16 +7,18 @@ import {
   type ReactNode,
 } from 'react';
 
+import { ToastType } from '@/shared/types';
+
 export interface Toast {
   id: string;
   message: string;
-  type: 'success' | 'error' | 'info';
+  type: ToastType;
   action?: { label: string; onClick: () => void };
 }
 
 export interface ToastContextValue {
   toasts: Toast[];
-  addToast: (message: string, type: Toast['type'], options?: { action?: Toast['action']; durationMs?: number }) => void;
+  addToast: (message: string, type: ToastType, options?: { action?: Toast['action']; durationMs?: number }) => void;
   removeToast: (id: string) => void;
 }
 
@@ -64,13 +66,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 }
 
 /** Resolves Tailwind classes for a given toast type */
-function toastClasses(type: Toast['type']): string {
+function toastClasses(type: ToastType): string {
   switch (type) {
-    case 'success':
+    case ToastType.Success:
       return 'bg-success text-white';
-    case 'error':
+    case ToastType.Error:
       return 'bg-error text-white';
-    case 'info':
+    case ToastType.Info:
       return 'bg-surface-card text-fg border border-line';
   }
 }

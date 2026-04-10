@@ -6,7 +6,7 @@ import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { Income } from '@/modules/expenses/types';
 import { validateIncome } from '@/modules/expenses/validation';
-import { SyncStatus, isOk } from '@/shared/types';
+import { SyncStatus, isOk, ToastType } from '@/shared/types';
 import type { IncomeSource, PaymentMethod } from '@/shared/types';
 import { BudgetMsg } from '@/constants/messages';
 import { DbSubcollection, userPath } from '@/constants/db';
@@ -59,7 +59,7 @@ export function useIncome(targetUid?: string) {
       if (readOnly) return false;
       const validation = validateIncome(input);
       if (!isOk(validation)) {
-        addToast(validation.error, 'error');
+        addToast(validation.error, ToastType.Error);
         return false;
       }
 
@@ -80,11 +80,11 @@ export function useIncome(targetUid?: string) {
 
       const result = await adapter.save(DbSubcollection.Income, { ...entry });
       if (!isOk(result)) {
-        addToast(result.error, 'error');
+        addToast(result.error, ToastType.Error);
         return false;
       }
 
-      addToast(BudgetMsg.IncomeAdded, 'success');
+      addToast(BudgetMsg.IncomeAdded, ToastType.Success);
       return true;
     },
     [addToast, readOnly],
@@ -100,11 +100,11 @@ export function useIncome(targetUid?: string) {
       const result = await adapter.remove(DbSubcollection.Income, id);
 
       if (!isOk(result)) {
-        addToast(result.error, 'error');
+        addToast(result.error, ToastType.Error);
         return;
       }
 
-      addToast(BudgetMsg.IncomeDeleted, 'success');
+      addToast(BudgetMsg.IncomeDeleted, ToastType.Success);
     },
     [addToast, readOnly],
   );
