@@ -6,20 +6,21 @@ import type { FeedEntry, SleepEntry, GrowthEntry, DiaperEntry } from '@/modules/
 import { SyncStatus } from '@/shared/types';
 import { DbSubcollection } from '@/constants/db';
 
-/** Provides baby tracking state, real-time sync, and log actions for all subcollections */
-export function useBabyData() {
+/** Provides baby tracking state, real-time sync, and log actions for all subcollections of a child */
+export function useBabyData(childId: string | null, targetUid?: string) {
   const { setSyncStatus } = useAuth();
 
-  const feedCol = useBabyCollection<FeedEntry>(DbSubcollection.BabyFeeds, 'Feed');
-  const sleepCol = useBabyCollection<SleepEntry>(DbSubcollection.BabySleep, 'Sleep');
-  const growthCol = useBabyCollection<GrowthEntry>(DbSubcollection.BabyGrowth, 'Growth');
-  const diaperCol = useBabyCollection<DiaperEntry>(DbSubcollection.BabyDiapers, 'Diaper');
+  const feedCol = useBabyCollection<FeedEntry>(childId, DbSubcollection.Feeds, 'Feed', targetUid);
+  const sleepCol = useBabyCollection<SleepEntry>(childId, DbSubcollection.Sleep, 'Sleep', targetUid);
+  const growthCol = useBabyCollection<GrowthEntry>(childId, DbSubcollection.Growth, 'Growth', targetUid);
+  const diaperCol = useBabyCollection<DiaperEntry>(childId, DbSubcollection.Diapers, 'Diaper', targetUid);
 
   // Only set Synced when ALL listeners have reported
   useEffect(() => {
+    if (!childId) return;
     const allReady = feedCol.ready && sleepCol.ready && growthCol.ready && diaperCol.ready;
     setSyncStatus(allReady ? SyncStatus.Synced : SyncStatus.Syncing);
-  }, [feedCol.ready, sleepCol.ready, growthCol.ready, diaperCol.ready, setSyncStatus]);
+  }, [childId, feedCol.ready, sleepCol.ready, growthCol.ready, diaperCol.ready, setSyncStatus]);
 
   return {
     feeds: feedCol.items,
@@ -30,5 +31,13 @@ export function useBabyData() {
     logSleep: sleepCol.log,
     logGrowth: growthCol.log,
     logDiaper: diaperCol.log,
+    updateFeed: feedCol.update,
+    updateSleep: sleepCol.update,
+    updateGrowth: growthCol.update,
+    updateDiaper: diaperCol.update,
+    removeFeed: feedCol.remove,
+    removeSleep: sleepCol.remove,
+    removeGrowth: growthCol.remove,
+    removeDiaper: diaperCol.remove,
   };
 }

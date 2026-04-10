@@ -1,0 +1,39 @@
+/* Garden Path — organic green, nature-inspired */
+
+.theme-garden-path {
+  --bg-primary: #f4f9f4;
+  --bg-secondary: #e8f2e8;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f4f9f4;
+  --accent: #16a34a;
+  --accent-hover: #15803d;
+  --accent-muted: rgba(22, 163, 74, 0.15);
+  --text-primary: #1a2e1a;
+  --text-secondary: #3a5a3a;
+  --text-muted: #6b8a6b;
+  --text-on-accent: #ffffff;
+  --border: #d4e5d4;
+  --border-light: #e8f2e8;
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+}
+
+.theme-garden-path.dark {
+  --bg-primary: #0a150a;
+  --bg-secondary: #132013;
+  --bg-card: #132013;
+  --bg-card-hover: #1a2d1a;
+  --accent: #22c55e;
+  --accent-hover: #16a34a;
+  --accent-muted: rgba(34, 197, 94, 0.2);
+  --text-primary: #d0e8d0;
+  --text-secondary: #80a880;
+  --text-muted: #4a6a4a;
+  --text-on-accent: #0a150a;
+  --border: #1a301a;
+  --border-light: #132013;
+  --success: #4ade80;
+  --error: #f87171;
+  --warning: #fbbf24;
+}

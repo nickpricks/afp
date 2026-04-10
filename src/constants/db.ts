@@ -3,6 +3,7 @@ export enum DbCollection {
   Users = 'users',
   Invites = 'invites',
   App = 'app',
+  Usernames = 'usernames',
 }
 
 /** Firestore subcollection names within a user document */
@@ -10,11 +11,15 @@ export enum DbSubcollection {
   Profile = 'profile',
   Body = 'body',
   BodyActivities = 'body_activities',
+  BodyConfig = 'body_config',
+  BudgetConfig = 'budget_config',
   Expenses = 'expenses',
-  BabyFeeds = 'baby_feeds',
-  BabySleep = 'baby_sleep',
-  BabyGrowth = 'baby_growth',
-  BabyDiapers = 'baby_diapers',
+  Income = 'income',
+  Children = 'children',
+  Feeds = 'feeds',
+  Sleep = 'sleep',
+  Growth = 'growth',
+  Diapers = 'diapers',
 }
 
 /** Firestore document names */
@@ -35,3 +40,6 @@ export enum DbField {
 export const userPath = (uid: string): string =>
   `${DbCollection.Users}/${uid}`;
 
+/** Builds child base path: `users/{uid}/children/{childId}` */
+export const childPath = (uid: string, childId: string): string =>
+  `${DbCollection.Users}/${uid}/${DbSubcollection.Children}/${childId}`;

@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 
-import { CONFIG } from '@/constants/config';
-
 export enum ThemeId {
   FamilyBlue = 'family-blue',
-  SummitInstrument = 'summit-instrument',
-  NightCityElevator = 'night-city-elevator',
+  GardenPath = 'garden-path',
+  Lullaby = 'lullaby',
+  RoseQuartz = 'rose-quartz',
+  Charcoal = 'charcoal',
+  MaraudersMap = 'marauders-map',
+  NeonGlow = 'neon-glow',
   DeepMariana = 'deep-mariana',
-  NightCityApartment = 'night-city-apartment',
   IndustrialFurnace = 'industrial-furnace',
-  CorporateGlass = 'corporate-glass',
+  ExpectoPatronum = 'expecto-patronum',
 }
 
 export type ColorMode = 'light' | 'dark' | 'system';
@@ -20,6 +21,14 @@ type FontPair = { display: string; body: string };
 const FONTS_DEFAULT: FontPair = { display: 'Syne', body: 'system-ui' };
 const FONTS_CYBERPUNK: FontPair = { display: 'Orbitron', body: 'JetBrains Mono' };
 const FONTS_MONO: FontPair = { display: 'Syne', body: 'JetBrains Mono' };
+const FONTS_NURSERY: FontPair = { display: 'Quicksand', body: 'Nunito' };
+const FONTS_GARDEN: FontPair = { display: 'DM Serif Display', body: 'system-ui' };
+const FONTS_ELEGANT: FontPair = { display: 'Playfair Display', body: 'system-ui' };
+const FONTS_MAGIC: FontPair = { display: 'Cinzel', body: 'JetBrains Mono' };
+
+export type ThemeEffect = 'snowflakes' | 'leaves' | 'stars' | 'hearts' | 'ink' | 'scanline' | 'crt' | 'bubbles' | 'embers' | 'wisps';
+
+const ALL_EFFECTS: ThemeEffect[] = ['snowflakes', 'leaves', 'stars', 'hearts', 'ink', 'scanline', 'crt', 'bubbles', 'embers', 'wisps'];
 
 export type ThemeDefinition = {
   id: ThemeId;
@@ -27,6 +36,9 @@ export type ThemeDefinition = {
   family: string;
   darkOnly: boolean;
   fonts: FontPair;
+  effects: ThemeEffect[];
+  defaultParticleCount: number;
+  defaultParticleSize: 'small' | 'medium' | 'large';
   previewColors: { bg: string; accent: string; text: string };
 };
 
@@ -42,39 +54,87 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Family',
     darkOnly: false,
     fonts: FONTS_DEFAULT,
+    effects: ['snowflakes'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
     previewColors: { bg: '#f0f7ff', accent: '#60a5fa', text: '#1e293b' },
   },
-  [ThemeId.SummitInstrument]: {
-    id: ThemeId.SummitInstrument,
-    name: 'Summit Instrument',
-    family: 'Summit',
+  [ThemeId.GardenPath]: {
+    id: ThemeId.GardenPath,
+    name: 'Garden Path',
+    family: 'Nature',
     darkOnly: false,
-    fonts: FONTS_DEFAULT,
-    previewColors: { bg: '#faf7f2', accent: '#f59e0b', text: '#1a1613' },
+    fonts: FONTS_GARDEN,
+    effects: ['leaves'],
+    defaultParticleCount: 4,
+    defaultParticleSize: 'medium',
+    previewColors: { bg: '#f4f9f4', accent: '#16a34a', text: '#1a2e1a' },
   },
-  [ThemeId.NightCityElevator]: {
-    id: ThemeId.NightCityElevator,
-    name: 'Night City: Elevator',
+  [ThemeId.Lullaby]: {
+    id: ThemeId.Lullaby,
+    name: 'Lullaby',
+    family: 'Nursery',
+    darkOnly: false,
+    fonts: FONTS_NURSERY,
+    effects: ['stars'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
+    previewColors: { bg: '#faf6ef', accent: '#e8a44a', text: '#3d3529' },
+  },
+  [ThemeId.RoseQuartz]: {
+    id: ThemeId.RoseQuartz,
+    name: 'Rose Quartz',
+    family: 'Soft',
+    darkOnly: false,
+    fonts: FONTS_ELEGANT,
+    effects: ['hearts'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
+    previewColors: { bg: '#fdf2f8', accent: '#f472b6', text: '#2e1a24' },
+  },
+  [ThemeId.Charcoal]: {
+    id: ThemeId.Charcoal,
+    name: 'Charcoal',
+    family: 'Minimal',
+    darkOnly: false,
+    fonts: FONTS_MONO,
+    effects: [],
+    defaultParticleCount: 0,
+    defaultParticleSize: 'medium',
+    previewColors: { bg: '#fafafa', accent: '#71717a', text: '#18181b' },
+  },
+  [ThemeId.MaraudersMap]: {
+    id: ThemeId.MaraudersMap,
+    name: "Marauder's Map",
+    family: 'Magic',
+    darkOnly: false,
+    fonts: FONTS_MAGIC,
+    effects: ['ink'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
+    previewColors: { bg: '#f5f0e0', accent: '#c8a96e', text: '#3a2e1a' },
+  },
+  [ThemeId.NeonGlow]: {
+    id: ThemeId.NeonGlow,
+    name: 'Neon Glow',
     family: 'Cyberpunk',
     darkOnly: true,
     fonts: FONTS_CYBERPUNK,
-    previewColors: { bg: '#0a0a0f', accent: '#00f0ff', text: '#c0c0c8' },
+    effects: ['scanline'],
+    defaultParticleCount: 1,
+    defaultParticleSize: 'large',
+    previewColors: { bg: '#0d0505', accent: '#ffb803', text: '#d0d0d0' },
   },
   [ThemeId.DeepMariana]: {
     id: ThemeId.DeepMariana,
-    name: 'Deep: Mariana',
+    name: 'Deep Mariana',
     family: 'Deep',
     darkOnly: true,
     fonts: FONTS_MONO,
+    effects: ['crt', 'bubbles'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
     previewColors: { bg: '#030b12', accent: '#00e89a', text: '#8cb4c8' },
-  },
-  [ThemeId.NightCityApartment]: {
-    id: ThemeId.NightCityApartment,
-    name: 'Night City: Apartment',
-    family: 'Cyberpunk',
-    darkOnly: true,
-    fonts: FONTS_CYBERPUNK,
-    previewColors: { bg: '#0d0505', accent: '#ffb803', text: '#d0d0d0' },
   },
   [ThemeId.IndustrialFurnace]: {
     id: ThemeId.IndustrialFurnace,
@@ -82,15 +142,21 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Industrial',
     darkOnly: true,
     fonts: FONTS_MONO,
+    effects: ['embers'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
     previewColors: { bg: '#100804', accent: '#ff6820', text: '#c8a888' },
   },
-  [ThemeId.CorporateGlass]: {
-    id: ThemeId.CorporateGlass,
-    name: 'Corporate Glass',
-    family: 'Corporate',
-    darkOnly: false,
-    fonts: FONTS_DEFAULT,
-    previewColors: { bg: '#f0f4f8', accent: '#0070c0', text: '#1a2836' },
+  [ThemeId.ExpectoPatronum]: {
+    id: ThemeId.ExpectoPatronum,
+    name: 'Expecto Patronum',
+    family: 'Magic',
+    darkOnly: true,
+    fonts: FONTS_MAGIC,
+    effects: ['wisps'],
+    defaultParticleCount: 4,
+    defaultParticleSize: 'large',
+    previewColors: { bg: '#080a10', accent: '#b8d4e8', text: '#90a8b8' },
   },
 };
 
@@ -102,13 +168,27 @@ export function isValidThemeId(value: string): value is ThemeId {
   return value in THEME_DEFINITIONS;
 }
 
+/** Migration map for renamed/dropped themes */
+const THEME_MIGRATIONS: Record<string, ThemeId> = {
+  'night-city-apartment': ThemeId.NeonGlow,
+  'summit-instrument': ThemeId.FamilyBlue,
+  'corporate-glass': ThemeId.FamilyBlue,
+  'night-city-elevator': ThemeId.FamilyBlue,
+};
+
+/** Resolves a stored theme ID, migrating old values to current ones */
+export function resolveThemeId(value: string): ThemeId {
+  if (isValidThemeId(value)) return value;
+  return THEME_MIGRATIONS[value] ?? ThemeId.FamilyBlue;
+}
+
 /** Reads the currently active ThemeId from the DOM */
 function detectActiveThemeId(): ThemeId {
   const root = document.documentElement;
   for (const theme of THEME_LIST) {
     if (root.classList.contains(themeClass(theme.id))) return theme.id;
   }
-  return CONFIG.DEFAULT_THEME;
+  return ThemeId.FamilyBlue;
 }
 
 let currentThemeClass: string | undefined;
@@ -123,6 +203,20 @@ export function applyTheme(themeId: ThemeId, colorMode: ColorMode): void {
   root.classList.add(newClass);
   currentThemeClass = newClass;
 
+  // Apply fonts
+  root.style.setProperty('--font-display', `'${theme.fonts.display}', sans-serif`);
+  root.style.setProperty('--font-body', `'${theme.fonts.body}', sans-serif`);
+  root.style.fontFamily = `'${theme.fonts.body}', sans-serif`;
+
+  // Apply effects
+  for (const effect of ALL_EFFECTS) {
+    root.classList.remove(`effect-${effect}`);
+  }
+  for (const effect of theme.effects) {
+    root.classList.add(`effect-${effect}`);
+  }
+
+  // Apply color mode
   if (theme.darkOnly || colorMode === 'dark') {
     root.classList.add('dark');
   } else if (colorMode === 'light') {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { signInWithGoogle } from '@/shared/auth/google-auth';
 import { useToast } from '@/shared/errors/useToast';
-import { isErr } from '@/shared/types';
+import { isErr, ToastType } from '@/shared/types';
 
 /** Google sign-in button that handles linking and error display */
 export function GoogleSignInButton({ compact = false }: { compact?: boolean }) {
@@ -18,7 +18,7 @@ export function GoogleSignInButton({ compact = false }: { compact?: boolean }) {
 
     if (isErr(result) && result.error !== 'cancelled') {
       if (compact) {
-        addToast(result.error, 'error');
+        addToast(result.error, ToastType.Error);
       } else {
         setError(result.error);
       }

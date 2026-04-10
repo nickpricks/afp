@@ -1,13 +1,24 @@
 # e2e/
 
-Playwright end-to-end tests (future).
+Playwright end-to-end tests for AFP.
 
 ## Structure
 
-- **screenshots/** -- Visual regression screenshot storage
+- `app.spec.ts` -- 42 tests across 11 describe blocks
+
+## Test Areas
+
+- App shell (header, navigation, routing)
+- Body module (config gate, floors, stats, walking, running, cycling)
+- Budget module (expenses, income, payment methods)
+- Baby module (child creation, feeds, sleep, growth, diaper)
+- Admin panel (invites, user management)
+- Profile page (theme selection, settings)
+- Route guards (module gates, admin gates)
+- Themes (application, persistence)
 
 ## Conventions
 
-- Tests will use Playwright for browser automation
-- Screenshots directory is used for visual regression comparisons
-- This directory is a placeholder for upcoming E2E test coverage
+- Run with `bun run test:e2e`
+- Tests use Playwright browser automation against the dev server
+- Dev mode bypass (no Firebase) enables full test coverage without auth

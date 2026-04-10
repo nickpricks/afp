@@ -4,28 +4,29 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { useToast } from '@/shared/errors/useToast';
 import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
-import type { ActivityEntry, BodyRecord } from '@/modules/body/types';
-import { ActivityType } from '@/modules/body/types';
+import type { BodyActivity, BodyRecord } from '@/modules/body/types';
 import { computeBodyScore } from '@/modules/body/scoring';
 import { todayStr, nowTime } from '@/shared/utils/date';
-import { SyncStatus, isOk } from '@/shared/types';
+import { ActivityType, SyncStatus, ToastType, isOk } from '@/shared/types';
 import { DbSubcollection, userPath } from '@/constants/db';
+import { BodyMsg } from '@/constants/messages';
+import { sortNewestFirst } from '@/shared/utils/sort';
 
 /** Creates a zero-valued BodyRecord for the given date */
 function emptyRecord(dateStr: string): BodyRecord {
-  return { id: dateStr, dateStr, floors: { up: 0, down: 0 }, walkMeters: 0, runMeters: 0, total: 0 };
+  return { dateStr, up: 0, down: 0, walkMeters: 0, runMeters: 0, total: 0, updatedAt: '' };
 }
 
 /** Recomputes the daily summary from activities + existing floors */
-function recomputeSummary(record: BodyRecord, activities: ActivityEntry[]): BodyRecord {
-  const todayActivities = activities.filter((a) => a.dateStr === record.dateStr);
+function recomputeSummary(record: BodyRecord, activities: BodyActivity[]): BodyRecord {
+  const dayActivities = activities.filter((a) => a.date === record.dateStr);
   let walkMeters = 0;
   let runMeters = 0;
-  for (const a of todayActivities) {
+  for (const a of dayActivities) {
     if (a.type === ActivityType.Walk) {
-      walkMeters += a.distanceMeters;
+      walkMeters += a.distance ?? 0;
     } else if (a.type === ActivityType.Run) {
-      runMeters += a.distanceMeters;
+      runMeters += a.distance ?? 0;
     }
   }
   const updated = { ...record, walkMeters, runMeters };
@@ -34,20 +35,24 @@ function recomputeSummary(record: BodyRecord, activities: ActivityEntry[]): Body
 }
 
 /** Provides body tracking state, real-time sync, and tap/log actions */
-export function useBodyData() {
+export function useBodyData(targetUid?: string) {
   const { firebaseUser, setSyncStatus } = useAuth();
   const { addToast } = useToast();
   const [records, setRecords] = useState<Record<string, BodyRecord>>({});
-  const [activities, setActivities] = useState<ActivityEntry[]>([]);
-  const activitiesRef = useRef<ActivityEntry[]>([]);
+  const [activities, setActivities] = useState<BodyActivity[]>([]);
+  const activitiesRef = useRef<BodyActivity[]>([]);
   const adapterRef = useRef<StorageAdapter | null>(null);
 
-  useEffect(() => {
-    if (!firebaseUser) return;
+  const uid = targetUid ?? firebaseUser?.uid;
+  const readOnly = targetUid != null && targetUid !== firebaseUser?.uid;
 
-    const adapter = createAdapter(userPath(firebaseUser.uid));
+  useEffect(() => {
+    if (!uid) return;
+
+    const syncFn = readOnly ? () => {} : setSyncStatus;
+    const adapter = createAdapter(userPath(uid));
     adapterRef.current = adapter;
-    setSyncStatus(SyncStatus.Syncing);
+    syncFn(SyncStatus.Syncing);
 
     const unsubBody = adapter.onSnapshot<BodyRecord>(
       DbSubcollection.Body,
@@ -57,15 +62,15 @@ export function useBodyData() {
           mapped[item.dateStr] = item;
         }
         setRecords(mapped);
-        setSyncStatus(SyncStatus.Synced);
+        syncFn(SyncStatus.Synced);
       },
       (error) => {
         console.error('[AFP] Body listener error:', error);
-        setSyncStatus(SyncStatus.Error);
+        syncFn(SyncStatus.Error);
       },
     );
 
-    const unsubActivities = adapter.onSnapshot<ActivityEntry>(
+    const unsubActivities = adapter.onSnapshot<BodyActivity>(
       DbSubcollection.BodyActivities,
       (items) => {
         setActivities(items);
@@ -73,7 +78,7 @@ export function useBodyData() {
       },
       (error) => {
         console.error('[AFP] Body activities listener error:', error);
-        setSyncStatus(SyncStatus.Error);
+        syncFn(SyncStatus.Error);
       },
     );
 
@@ -82,7 +87,7 @@ export function useBodyData() {
       unsubActivities();
       adapterRef.current = null;
     };
-  }, [firebaseUser, setSyncStatus]);
+  }, [uid, readOnly, setSyncStatus]);
 
   const todayKey = todayStr();
 
@@ -92,14 +97,16 @@ export function useBodyData() {
   }, [records, activities, todayKey]);
 
   const todayActivities = useMemo(() => {
-    return activities
-      .filter((a) => a.dateStr === todayKey)
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return sortNewestFirst(
+      activities.filter((a) => a.date === todayKey),
+      (a) => a.createdAt,
+    );
   }, [activities, todayKey]);
 
   /** Taps a floor up or down */
   const tap = useCallback(
     async (type: 'up' | 'down') => {
+      if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter) return;
 
@@ -107,36 +114,37 @@ export function useBodyData() {
       const current = records[key] ?? emptyRecord(key);
       const updated: BodyRecord = {
         ...current,
-        floors: {
-          up: current.floors.up + (type === 'up' ? 1 : 0),
-          down: current.floors.down + (type === 'down' ? 1 : 0),
-        },
+        up: current.up + (type === 'up' ? 1 : 0),
+        down: current.down + (type === 'down' ? 1 : 0),
+        updatedAt: new Date().toISOString(),
       };
-      // Recompute with current activity totals
       const withActivities = recomputeSummary(updated, activities);
 
       setRecords((prev) => ({ ...prev, [key]: withActivities }));
 
       const result = await adapter.save(DbSubcollection.Body, { ...withActivities, id: key });
       if (!isOk(result)) {
-        addToast(result.error, 'error');
+        addToast(result.error, ToastType.Error);
         setRecords((prev) => ({ ...prev, [key]: current }));
       }
     },
-    [records, activities, addToast],
+    [records, activities, addToast, readOnly],
   );
 
-  /** Logs a new walk or run activity */
+  /** Logs a new activity (walk, run, etc.) */
   const logActivity = useCallback(
     async (type: ActivityType, distanceMeters: number) => {
+      if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter || distanceMeters <= 0) return;
 
-      const entry: ActivityEntry = {
+      const entry: BodyActivity = {
         id: crypto.randomUUID(),
         type,
-        distanceMeters,
-        dateStr: todayStr(),
+        distance: distanceMeters,
+        duration: null,
+        date: todayStr(),
+        timestamp: new Date().toISOString(),
         createdAt: nowTime(),
       };
 
@@ -147,7 +155,7 @@ export function useBodyData() {
 
       const result = await adapter.save(DbSubcollection.BodyActivities, entry);
       if (!isOk(result)) {
-        addToast(result.error, 'error');
+        addToast(result.error, ToastType.Error);
         const rolled = activitiesRef.current.filter((a) => a.id !== entry.id);
         activitiesRef.current = rolled;
         setActivities(rolled);
@@ -155,16 +163,89 @@ export function useBodyData() {
       }
 
       // Persist updated daily summary using current ref (not stale closure)
-      const key = entry.dateStr;
+      const key = entry.date;
       const base = records[key] ?? emptyRecord(key);
       const updated = recomputeSummary(base, activitiesRef.current);
       const summaryResult = await adapter.save(DbSubcollection.Body, { ...updated, id: key });
       if (!isOk(summaryResult)) {
-        addToast(summaryResult.error, 'error');
+        addToast(summaryResult.error, ToastType.Error);
       }
     },
-    [records, addToast],
+    [records, addToast, readOnly],
   );
 
-  return { records, todayRecord, todayActivities, tap, logActivity };
+  /** Saves or updates a body record for any date (edit/backfill) */
+  const saveRecord = useCallback(
+    async (dateKey: string, data: Partial<Pick<BodyRecord, 'up' | 'down'>>) => {
+      if (readOnly) return;
+      const adapter = adapterRef.current;
+      if (!adapter) return;
+
+      const current = records[dateKey] ?? emptyRecord(dateKey);
+      const merged: BodyRecord = {
+        ...current,
+        up: data.up ?? current.up,
+        down: data.down ?? current.down,
+        updatedAt: new Date().toISOString(),
+      };
+      const withActivities = recomputeSummary(merged, activitiesRef.current);
+
+      setRecords((prev) => ({ ...prev, [dateKey]: withActivities }));
+
+      const result = await adapter.save(DbSubcollection.Body, { ...withActivities, id: dateKey });
+      if (!isOk(result)) {
+        addToast(BodyMsg.RecordFailed, ToastType.Error);
+        setRecords((prev) => ({ ...prev, [dateKey]: current }));
+      } else {
+        addToast(BodyMsg.RecordSaved, ToastType.Success);
+      }
+    },
+    [records, addToast, readOnly],
+  );
+
+  /** Updates an existing activity's distance */
+  const updateActivity = useCallback(
+    async (id: string, data: { distance?: number }) => {
+      if (readOnly) return;
+      const adapter = adapterRef.current;
+      if (!adapter) return;
+
+      const current = activitiesRef.current.find((a) => a.id === id);
+      if (!current) return;
+
+      const updated: BodyActivity = {
+        ...current,
+        distance: data.distance ?? current.distance,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Optimistic update
+      const optimistic = activitiesRef.current.map((a) => (a.id === id ? updated : a));
+      activitiesRef.current = optimistic;
+      setActivities(optimistic);
+
+      const result = await adapter.save(DbSubcollection.BodyActivities, updated);
+      if (!isOk(result)) {
+        addToast(BodyMsg.ActivityUpdateFailed, ToastType.Error);
+        const rolled = activitiesRef.current.map((a) => (a.id === id ? current : a));
+        activitiesRef.current = rolled;
+        setActivities(rolled);
+        return;
+      }
+
+      addToast(BodyMsg.ActivityUpdated, ToastType.Success);
+
+      // Recompute daily summary
+      const key = current.date;
+      const base = records[key] ?? emptyRecord(key);
+      const recomputed = recomputeSummary(base, activitiesRef.current);
+      const summaryResult = await adapter.save(DbSubcollection.Body, { ...recomputed, id: key });
+      if (!isOk(summaryResult)) {
+        addToast(summaryResult.error, ToastType.Error);
+      }
+    },
+    [records, addToast, readOnly],
+  );
+
+  return { records, todayRecord, activities, todayActivities, tap, logActivity, saveRecord, updateActivity };
 }

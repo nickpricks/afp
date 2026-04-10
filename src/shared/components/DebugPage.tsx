@@ -1,6 +1,10 @@
+import { Link } from 'react-router-dom';
+
 import { isFirebaseConfigured, auth } from '@/shared/auth/firebase-config';
 import { useAuth } from '@/shared/auth/useAuth';
 import { CONFIG } from '@/constants/config';
+import { ROUTES } from '@/constants/routes';
+import { DevBench } from '@/shared/components/DevBench';
 
 /** Formats a ModuleConfig record into a readable string */
 function formatModules(modules: Record<string, boolean> | undefined): string {
@@ -65,6 +69,19 @@ export function DebugPage() {
       <p className="mt-4 text-xs text-gray-400">
         Navigate to /debug to view this page.
       </p>
+
+      <div className="mt-6">
+        <DevBench />
+      </div>
+
+      <div className="mt-6">
+        <Link
+          to={ROUTES.ANIMATIONS}
+          className="text-sm text-accent hover:underline"
+        >
+          Animation Viewer →
+        </Link>
+      </div>
     </div>
   );
 }

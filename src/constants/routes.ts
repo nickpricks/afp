@@ -1,35 +1,37 @@
 /** All application route path values */
 export enum AppPath {
   Home = '/',
-  Invite = '/invite/:code',
+  Dashboard = '/dashboard',
   Body = '/body',
-  Expenses = '/expenses',
-  ExpensesAdd = '/expenses/add',
+  Budget = '/budget',
+  BudgetAdd = '/budget/add',
   Baby = '/baby',
-  BabyFeed = '/baby/feed',
-  BabySleep = '/baby/sleep',
-  BabyGrowth = '/baby/growth',
-  BabyDiaper = '/baby/diaper',
+  BabyChild = '/baby/:childId',
+  Profile = '/profile',
   Admin = '/admin',
-  AdminInvite = '/admin/invite',
+  AdminInvites = '/admin/invites',
+  AdminUsers = '/admin/users',
+  Invite = '/invite/:code',
   Debug = '/debug',
+  Animations = '/animations',
 }
 
-/** Route lookup object — preserves backwards compat with ROUTES.BODY style access */
+/** Route lookup object for ROUTES.BODY style access */
 export const ROUTES = {
   HOME: AppPath.Home,
-  INVITE: AppPath.Invite,
+  DASHBOARD: AppPath.Dashboard,
   BODY: AppPath.Body,
-  EXPENSES: AppPath.Expenses,
-  EXPENSES_ADD: AppPath.ExpensesAdd,
+  BUDGET: AppPath.Budget,
+  BUDGET_ADD: AppPath.BudgetAdd,
   BABY: AppPath.Baby,
-  BABY_FEED: AppPath.BabyFeed,
-  BABY_SLEEP: AppPath.BabySleep,
-  BABY_GROWTH: AppPath.BabyGrowth,
-  BABY_DIAPER: AppPath.BabyDiaper,
+  BABY_CHILD: AppPath.BabyChild,
+  PROFILE: AppPath.Profile,
   ADMIN: AppPath.Admin,
-  ADMIN_INVITE: AppPath.AdminInvite,
+  ADMIN_INVITES: AppPath.AdminInvites,
+  ADMIN_USERS: AppPath.AdminUsers,
+  INVITE: AppPath.Invite,
   DEBUG: AppPath.Debug,
+  ANIMATIONS: AppPath.Animations,
 } as const;
 
 /** Union type of all route path values */

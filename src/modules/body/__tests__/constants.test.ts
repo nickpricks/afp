@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { BODY_DEFAULTS, SCORING_WEIGHTS, ACTIVITY_LABELS } from '@/modules/body/constants';
-import { ActivityType } from '@/modules/body/types';
+import { BODY_DEFAULTS, SCORING_WEIGHTS, ACTIVITY_LABELS, FLOOR_HEIGHT_OPTIONS } from '@/modules/body/constants';
+import { ActivityType } from '@/shared/types';
 
 describe('BODY_DEFAULTS', () => {
   it('has positive floor height', () => {
@@ -18,8 +18,8 @@ describe('SCORING_WEIGHTS', () => {
     expect(SCORING_WEIGHTS.FLOOR_UP).toBeGreaterThan(SCORING_WEIGHTS.FLOOR_DOWN);
   });
 
-  it('running scores more per 100m than walking', () => {
-    expect(SCORING_WEIGHTS.RUN_PER_100M).toBeGreaterThan(SCORING_WEIGHTS.WALK_PER_100M);
+  it('running scores more per km than walking', () => {
+    expect(SCORING_WEIGHTS.RUN_PER_KM).toBeGreaterThan(SCORING_WEIGHTS.WALK_PER_KM);
   });
 });
 
@@ -27,5 +27,15 @@ describe('ACTIVITY_LABELS', () => {
   it('has labels for all activity types', () => {
     expect(ACTIVITY_LABELS[ActivityType.Walk]).toBe('Walk');
     expect(ACTIVITY_LABELS[ActivityType.Run]).toBe('Run');
+    expect(ACTIVITY_LABELS[ActivityType.Cycle]).toBe('Cycle');
+    expect(ACTIVITY_LABELS[ActivityType.Yoga]).toBe('Yoga');
+  });
+});
+
+describe('FLOOR_HEIGHT_OPTIONS', () => {
+  it('includes 2.5, 3.0, and 3.5', () => {
+    expect(FLOOR_HEIGHT_OPTIONS).toContain(2.5);
+    expect(FLOOR_HEIGHT_OPTIONS).toContain(3.0);
+    expect(FLOOR_HEIGHT_OPTIONS).toContain(3.5);
   });
 });

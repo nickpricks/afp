@@ -5,48 +5,51 @@ import {
   validateSleepEntry,
   validateGrowthEntry,
   validateDiaperEntry,
+  validateChild,
 } from '@/modules/baby/validation';
+import { FeedType, SleepType, SleepQuality, DiaperType } from '@/modules/baby/types';
 import { isOk, isErr } from '@/shared/types';
 
 describe('validateFeedEntry', () => {
   it('accepts valid feed entry', () => {
-    expect(isOk(validateFeedEntry({ date: '2026-04-04', type: 'Bottle' }))).toBe(true);
+    expect(isOk(validateFeedEntry({ date: '2026-04-04', type: FeedType.Bottle }))).toBe(true);
   });
 
   it('rejects empty date', () => {
-    expect(isErr(validateFeedEntry({ date: '', type: 'Bottle' }))).toBe(true);
+    expect(isErr(validateFeedEntry({ date: '', type: FeedType.Bottle }))).toBe(true);
   });
 
   it('rejects invalid date format', () => {
-    expect(isErr(validateFeedEntry({ date: '04-04-2026', type: 'Bottle' }))).toBe(true);
+    expect(isErr(validateFeedEntry({ date: '04-04-2026', type: FeedType.Bottle }))).toBe(true);
   });
 
-  it('rejects invalid feed type', () => {
-    expect(isErr(validateFeedEntry({ date: '2026-04-04', type: 'Juice' }))).toBe(true);
+  it('accepts all feed types', () => {
+    expect(isOk(validateFeedEntry({ date: '2026-04-04', type: FeedType.BreastLeft }))).toBe(true);
+    expect(isOk(validateFeedEntry({ date: '2026-04-04', type: FeedType.SolidFood }))).toBe(true);
   });
 });
 
 describe('validateSleepEntry', () => {
   it('accepts valid sleep entry', () => {
-    expect(isOk(validateSleepEntry({ date: '2026-04-04', type: 'Nap', quality: 'Good' }))).toBe(true);
+    expect(isOk(validateSleepEntry({ date: '2026-04-04', type: SleepType.Nap, quality: SleepQuality.Good }))).toBe(true);
   });
 
-  it('accepts empty quality', () => {
-    expect(isOk(validateSleepEntry({ date: '2026-04-04', type: 'Night', quality: '' }))).toBe(true);
+  it('accepts null quality', () => {
+    expect(isOk(validateSleepEntry({ date: '2026-04-04', type: SleepType.Night, quality: null }))).toBe(true);
   });
 
-  it('rejects invalid sleep type', () => {
-    expect(isErr(validateSleepEntry({ date: '2026-04-04', type: 'Siesta', quality: '' }))).toBe(true);
-  });
-
-  it('rejects invalid quality', () => {
-    expect(isErr(validateSleepEntry({ date: '2026-04-04', type: 'Nap', quality: 'Excellent' }))).toBe(true);
+  it('rejects invalid date', () => {
+    expect(isErr(validateSleepEntry({ date: '', type: SleepType.Nap, quality: null }))).toBe(true);
   });
 });
 
 describe('validateGrowthEntry', () => {
   it('accepts valid growth entry', () => {
     expect(isOk(validateGrowthEntry({ date: '2026-04-04', weight: 5.5 }))).toBe(true);
+  });
+
+  it('accepts null weight', () => {
+    expect(isOk(validateGrowthEntry({ date: '2026-04-04', weight: null }))).toBe(true);
   });
 
   it('rejects zero weight', () => {
@@ -60,15 +63,37 @@ describe('validateGrowthEntry', () => {
 
 describe('validateDiaperEntry', () => {
   it('accepts valid diaper entry', () => {
-    expect(isOk(validateDiaperEntry({ date: '2026-04-04', type: 'Wet' }))).toBe(true);
+    expect(isOk(validateDiaperEntry({ date: '2026-04-04', type: DiaperType.Wet }))).toBe(true);
   });
 
   it('accepts all diaper types', () => {
-    expect(isOk(validateDiaperEntry({ date: '2026-04-04', type: 'Dirty' }))).toBe(true);
-    expect(isOk(validateDiaperEntry({ date: '2026-04-04', type: 'Mixed' }))).toBe(true);
+    expect(isOk(validateDiaperEntry({ date: '2026-04-04', type: DiaperType.Dirty }))).toBe(true);
+    expect(isOk(validateDiaperEntry({ date: '2026-04-04', type: DiaperType.Mixed }))).toBe(true);
   });
 
-  it('rejects invalid diaper type', () => {
-    expect(isErr(validateDiaperEntry({ date: '2026-04-04', type: 'Clean' }))).toBe(true);
+  it('rejects invalid date', () => {
+    expect(isErr(validateDiaperEntry({ date: '', type: DiaperType.Wet }))).toBe(true);
+  });
+});
+
+describe('validateChild', () => {
+  it('accepts valid child input', () => {
+    expect(isOk(validateChild({ name: 'Baby', dob: '2026-01-15' }))).toBe(true);
+  });
+
+  it('rejects empty name', () => {
+    expect(isErr(validateChild({ name: '', dob: '2026-01-15' }))).toBe(true);
+  });
+
+  it('rejects whitespace-only name', () => {
+    expect(isErr(validateChild({ name: '   ', dob: '2026-01-15' }))).toBe(true);
+  });
+
+  it('rejects empty dob', () => {
+    expect(isErr(validateChild({ name: 'Baby', dob: '' }))).toBe(true);
+  });
+
+  it('rejects invalid dob format', () => {
+    expect(isErr(validateChild({ name: 'Baby', dob: '01-15-2026' }))).toBe(true);
   });
 });

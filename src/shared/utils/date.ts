@@ -8,3 +8,18 @@ export const todayStr = (): string => {
 export const nowTime = (): string => {
   return new Date().toTimeString().slice(0, 5);
 };
+
+/** Returns a time-of-day greeting */
+export const getGreeting = (): string => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+};
+
+/** Formats a YYYY-MM-DD string as "Wednesday, April 7" */
+export const formatDayDate = (dateStr: string): string => {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+};
+

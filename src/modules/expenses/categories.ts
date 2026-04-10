@@ -1,90 +1,111 @@
-import type { CategoryDefinition } from '@/modules/expenses/types';
+import { ExpenseCategory, IncomeSource, PaymentMethod } from '@/shared/types';
+import type { CategoryDefinition, LabelDefinition } from '@/modules/expenses/types';
 
-/** All spending categories with their subcategories */
-export const CATEGORIES: Record<string, CategoryDefinition> = {
-  food: {
-    id: 'food',
+/** All spending categories keyed by ExpenseCategory enum */
+export const CATEGORIES: Partial<Record<ExpenseCategory, CategoryDefinition>> = {
+  [ExpenseCategory.Housing]: {
+    id: ExpenseCategory.Housing,
+    label: '🏠 Housing',
+    subCategories: ['Rent', 'Society', 'Maintenance'],
+  },
+  [ExpenseCategory.Food]: {
+    id: ExpenseCategory.Food,
     label: '🍽️ Food',
     subCategories: ['Milk', 'Snacks', 'Groceries', 'Healthy', 'Orders', 'Beverages'],
   },
-  shopping: {
-    id: 'shopping',
+  [ExpenseCategory.Shopping]: {
+    id: ExpenseCategory.Shopping,
     label: '🛒 Shopping',
     subCategories: ['Veggies', 'Fruits', 'Fashion', 'Ration', 'Electronics', 'Home Items'],
   },
-  travel: {
-    id: 'travel',
+  [ExpenseCategory.Travel]: {
+    id: ExpenseCategory.Travel,
     label: '✈️ Travel',
     subCategories: ['Air', 'Train', 'Bus', 'Cab/Auto', 'Road Toll'],
   },
-  vehicle: {
-    id: 'vehicle',
+  [ExpenseCategory.Vehicle]: {
+    id: ExpenseCategory.Vehicle,
     label: '🚗 Vehicle',
     subCategories: ['Fuel', 'Maintenance', 'Washing', 'Parking', 'Insurance'],
   },
-  bills: {
-    id: 'bills',
+  [ExpenseCategory.Bills]: {
+    id: ExpenseCategory.Bills,
     label: '🧾 Bills',
     subCategories: ['Phone', 'Internet', 'Subscriptions', 'Electricity', 'Rent', 'Society', 'Gas', 'Water', 'Tax', 'Maintenance'],
   },
-  medical: {
-    id: 'medical',
+  [ExpenseCategory.Medical]: {
+    id: ExpenseCategory.Medical,
     label: '🏥 Medical',
     subCategories: ['Doctor/Consultation', 'Medicines', 'Tests', 'Emergency'],
   },
-  care: {
-    id: 'care',
+  [ExpenseCategory.Care]: {
+    id: ExpenseCategory.Care,
     label: '💆 Personal Care',
     subCategories: ['Grooming', 'Massage', 'Personal'],
   },
-  gifts: {
-    id: 'gifts',
+  [ExpenseCategory.Gifts]: {
+    id: ExpenseCategory.Gifts,
     label: '🎁 Gifts',
     subCategories: ['Ceremonies', 'Charity', 'Donations', 'Family', 'Friends'],
   },
-  education: {
-    id: 'education',
+  [ExpenseCategory.Education]: {
+    id: ExpenseCategory.Education,
     label: '📚 Education',
     subCategories: ['Courses', 'Books', 'Software/Tools'],
   },
-  household: {
-    id: 'household',
+  [ExpenseCategory.Household]: {
+    id: ExpenseCategory.Household,
     label: '🏠 Household',
     subCategories: ['Cleaning', 'Repairs'],
   },
-  finance: {
-    id: 'finance',
+  [ExpenseCategory.Finance]: {
+    id: ExpenseCategory.Finance,
     label: '💰 Finance',
     subCategories: ['Borrowed Given', 'Borrowed Taken', 'Loan EMI', 'Credit Card Payment', 'Investment'],
   },
-  entertainment: {
-    id: 'entertainment',
+  [ExpenseCategory.Entertainment]: {
+    id: ExpenseCategory.Entertainment,
     label: '🎬 Entertainment',
     subCategories: ['Movies', 'Outings'],
   },
-  income: {
-    id: 'income',
-    label: '💵 Income',
-    subCategories: ['Salary', 'Business', 'Interest', 'Refund', 'Other Income'],
-  },
-  transfer: {
-    id: 'transfer',
+  [ExpenseCategory.Transfer]: {
+    id: ExpenseCategory.Transfer,
     label: '🔄 Transfer',
     subCategories: ['Self Account', 'Wallet Transfer'],
   },
-  misc: {
-    id: 'misc',
+  [ExpenseCategory.Misc]: {
+    id: ExpenseCategory.Misc,
     label: '📦 Misc',
     subCategories: ['Misc'],
   },
 };
 
 /** Returns all valid category IDs */
-export function getAllCategoryIds(): string[] {
-  return Object.keys(CATEGORIES);
+export function getAllCategoryIds(): ExpenseCategory[] {
+  return Object.keys(CATEGORIES).map(Number) as ExpenseCategory[];
 }
 
 /** Returns subcategories for a given category, or empty array if unknown */
-export function getSubCategories(categoryId: string): string[] {
+export function getSubCategories(categoryId: ExpenseCategory): string[] {
   return CATEGORIES[categoryId]?.subCategories ?? [];
 }
+
+/** Human-readable labels for each payment method */
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, LabelDefinition> = {
+  [PaymentMethod.Cash]: { emoji: '💵', label: 'Cash', shortLabel: 'Cash' },
+  [PaymentMethod.BankAccountImps]: { emoji: '🏦', label: 'Bank — IMPS', shortLabel: 'IMPS' },
+  [PaymentMethod.BankAccountRtgs]: { emoji: '🏦', label: 'Bank — RTGS', shortLabel: 'RTGS' },
+  [PaymentMethod.BankAccountNeft]: { emoji: '🏦', label: 'Bank — NEFT', shortLabel: 'NEFT' },
+  [PaymentMethod.UpiBankAccount]: { emoji: '📲', label: 'UPI', shortLabel: 'UPI' },
+  [PaymentMethod.UpiCreditCard]: { emoji: '📲', label: 'UPI + Credit Card', shortLabel: 'UPI+CC' },
+  [PaymentMethod.CreditCard]: { emoji: '💳', label: 'Credit Card', shortLabel: 'CC' },
+};
+
+/** Human-readable labels for each income source */
+export const INCOME_SOURCE_LABELS: Record<IncomeSource, LabelDefinition> = {
+  [IncomeSource.Salary]: { emoji: '💼', label: 'Salary', shortLabel: 'Salary' },
+  [IncomeSource.Business]: { emoji: '🏢', label: 'Business', shortLabel: 'Biz' },
+  [IncomeSource.Interest]: { emoji: '📈', label: 'Interest', shortLabel: 'Interest' },
+  [IncomeSource.Refund]: { emoji: '↩️', label: 'Refund', shortLabel: 'Refund' },
+  [IncomeSource.Other]: { emoji: '💰', label: 'Other', shortLabel: 'Other' },
+};

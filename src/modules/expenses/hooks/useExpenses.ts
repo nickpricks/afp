@@ -6,33 +6,38 @@ import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { Expense } from '@/modules/expenses/types';
 import { validateExpense } from '@/modules/expenses/validation';
-import { SyncStatus, isOk } from '@/shared/types';
-import { ExpenseMsg } from '@/constants/messages';
+import { SyncStatus, isOk, ToastType, PaymentMethod } from '@/shared/types';
+import type { ExpenseCategory } from '@/shared/types';
+import { BudgetMsg } from '@/constants/messages';
 import { DbSubcollection, userPath } from '@/constants/db';
 
 /** Provides expense CRUD operations with real-time sync and soft-delete */
-export function useExpenses() {
+export function useExpenses(targetUid?: string) {
   const { firebaseUser, setSyncStatus } = useAuth();
   const { addToast } = useToast();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const adapterRef = useRef<StorageAdapter | null>(null);
 
-  useEffect(() => {
-    if (!firebaseUser) return;
+  const uid = targetUid ?? firebaseUser?.uid;
+  const readOnly = targetUid != null && targetUid !== firebaseUser?.uid;
 
-    const adapter = createAdapter(userPath(firebaseUser.uid));
+  useEffect(() => {
+    if (!uid) return;
+
+    const syncFn = readOnly ? () => {} : setSyncStatus;
+    const adapter = createAdapter(userPath(uid));
     adapterRef.current = adapter;
-    setSyncStatus(SyncStatus.Syncing);
+    syncFn(SyncStatus.Syncing);
 
     const unsubscribe = adapter.onSnapshot<Expense>(
       DbSubcollection.Expenses,
       (items) => {
         setExpenses(items.filter((e) => !e.isDeleted));
-        setSyncStatus(SyncStatus.Synced);
+        syncFn(SyncStatus.Synced);
       },
       (error) => {
         console.error('[AFP] Expenses listener error:', error);
-        setSyncStatus(SyncStatus.Error);
+        syncFn(SyncStatus.Error);
       },
     );
 
@@ -40,20 +45,23 @@ export function useExpenses() {
       unsubscribe();
       adapterRef.current = null;
     };
-  }, [firebaseUser, setSyncStatus]);
+  }, [uid, readOnly, setSyncStatus]);
 
   /** Validates and persists a new expense, showing a toast on success or failure */
   const addExpense = useCallback(
     async (input: {
       date: string;
-      category: string;
+      category: ExpenseCategory;
       subCat: string;
       amount: number;
+      paymentMethod?: PaymentMethod;
+      isSettlement?: boolean;
       note: string;
     }) => {
+      if (readOnly) return false;
       const validation = validateExpense(input);
       if (!isOk(validation)) {
-        addToast(validation.error, 'error');
+        addToast(validation.error, ToastType.Error);
         return false;
       }
 
@@ -67,6 +75,8 @@ export function useExpenses() {
         category: input.category,
         subCat: input.subCat,
         amount: input.amount,
+        paymentMethod: input.paymentMethod ?? PaymentMethod.UpiBankAccount,
+        isSettlement: input.isSettlement ?? false,
         note: input.note,
         isDeleted: false,
         createdAt: now,
@@ -75,19 +85,20 @@ export function useExpenses() {
 
       const result = await adapter.save(DbSubcollection.Expenses, { ...expense });
       if (!isOk(result)) {
-        addToast(result.error, 'error');
+        addToast(result.error, ToastType.Error);
         return false;
       }
 
-      addToast(ExpenseMsg.Added, 'success');
+      addToast(BudgetMsg.ExpenseAdded, ToastType.Success);
       return true;
     },
-    [addToast],
+    [addToast, readOnly],
   );
 
   /** Soft-deletes an expense by marking it as deleted */
   const deleteExpense = useCallback(
     async (id: string) => {
+      if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter) return;
 
@@ -98,13 +109,13 @@ export function useExpenses() {
       });
 
       if (!isOk(result)) {
-        addToast(result.error, 'error');
+        addToast(result.error, ToastType.Error);
         return;
       }
 
-      addToast(ExpenseMsg.Deleted, 'success');
+      addToast(BudgetMsg.ExpenseDeleted, ToastType.Success);
     },
-    [addToast],
+    [addToast, readOnly],
   );
 
   return { expenses, addExpense, deleteExpense };

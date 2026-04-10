@@ -2,14 +2,18 @@
 
 /* Theme CSS files */
 @import './themes/family-blue.css';
-@import './themes/summit-instrument.css';
-@import './themes/corporate-glass.css';
-@import './themes/night-city-elevator.css';
-@import './themes/night-city-apartment.css';
+@import './themes/garden-path.css';
+@import './themes/lullaby.css';
+@import './themes/rose-quartz.css';
+@import './themes/charcoal.css';
+@import './themes/marauders-map.css';
+@import './themes/neon-glow.css';
 @import './themes/deep-mariana.css';
 @import './themes/industrial-furnace.css';
+@import './themes/expecto-patronum.css';
 @import './themes/buttons.css';
 @import './themes/effects.css';
+@import './themes/loading.css';
 
 /* Map CSS custom properties to Tailwind semantic tokens */
 @theme {
@@ -26,10 +30,17 @@
   --color-success: var(--success);
   --color-error: var(--error);
   --color-warning: var(--warning);
+  --font-family-display: var(--font-display, 'Syne', sans-serif);
+  --font-family-body: var(--font-body, system-ui, sans-serif);
 }
 
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
+  font-family: var(--font-body, system-ui, sans-serif);
   transition: background-color 0.2s, color 0.2s;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display, 'Syne', sans-serif);
 }

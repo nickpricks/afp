@@ -1,4 +1,4 @@
-import { ActivityType } from '@/modules/body/types';
+import { ActivityType } from '@/shared/types';
 
 /** Default physical constants for distance-to-step approximation */
 export const BODY_DEFAULTS = {
@@ -16,14 +16,21 @@ export const SCORING_WEIGHTS = {
   FLOOR_UP: 1,
   /** Points per floor down */
   FLOOR_DOWN: 0.5,
-  /** Points per 100 meters walked */
-  WALK_PER_100M: 0.5,
-  /** Points per 100 meters run */
-  RUN_PER_100M: 1,
+  /** Points per 1 km walked */
+  WALK_PER_KM: 10,
+  /** Points per 1 km run */
+  RUN_PER_KM: 20,
+  /** Points per 1 km cycled */
+  CYCLE_PER_KM: 15,
 } as const;
 
 /** Display labels for activity types */
 export const ACTIVITY_LABELS: Record<ActivityType, string> = {
   [ActivityType.Walk]: 'Walk',
   [ActivityType.Run]: 'Run',
+  [ActivityType.Cycle]: 'Cycle',
+  [ActivityType.Yoga]: 'Yoga',
 };
+
+/** Floor height options for config */
+export const FLOOR_HEIGHT_OPTIONS = [2.5, 3.0, 3.5] as const;

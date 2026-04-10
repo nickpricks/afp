@@ -1,0 +1,142 @@
+/* src/themes/loading.css */
+
+/* ── Loading Screen Animations ──────────────────────────────── */
+
+/* Staircase draws itself via stroke-dashoffset */
+.loading-stairs {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: loading-draw 0.8s ease-out forwards;
+}
+
+/* Step flash — each step lights up when climber arrives */
+.loading-step {
+  opacity: 0;
+  animation: loading-step-flash 3s ease infinite;
+}
+
+/* Climber translates across 5 steps */
+.loading-climber {
+  will-change: transform;
+  animation: loading-climb 3s ease infinite;
+}
+
+/* Accent glow halo on all figures */
+.loading-glow {
+  animation: loading-glow-pulse 2s ease-in-out infinite;
+}
+
+/* Two-frame walk cycle — frame A (stride: arms/legs spread) */
+.loading-frame-a {
+  animation: loading-frame-toggle 0.6s step-end infinite;
+}
+
+/* Two-frame walk cycle — frame B (gather: arms/legs compact) */
+.loading-frame-b {
+  animation: loading-frame-toggle 0.6s step-end infinite;
+  animation-direction: reverse;
+}
+
+/* Athlete running phase */
+.loading-athlete {
+  will-change: transform;
+  animation: loading-athlete-bounce 3s ease infinite;
+}
+
+/* Athlete punch combo */
+.loading-punch-a {
+  animation: loading-frame-toggle 0.4s step-end infinite;
+}
+
+.loading-punch-b {
+  animation: loading-frame-toggle 0.4s step-end infinite;
+  animation-direction: reverse;
+}
+
+/* Reader head tilt */
+.loading-reader-head {
+  animation: loading-reader-tilt 3s ease infinite;
+}
+
+/* Reader paper shuffle */
+.loading-paper-left {
+  animation: loading-paper-left-move 3s ease infinite;
+}
+
+.loading-paper-right {
+  animation: loading-paper-right-move 3s ease infinite;
+}
+
+/* Brand text letter fade-up */
+.loading-letter {
+  display: inline-block;
+  opacity: 0;
+  animation: loading-letter-in 0.4s ease forwards;
+}
+
+/* ── Keyframes ──────────────────────────────────────────────── */
+
+@keyframes loading-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes loading-step-flash {
+  0% { opacity: 0; }
+  4% { opacity: 0.9; }
+  20% { opacity: 0; }
+}
+
+/* Climber feet-on-step positions: figure origin at feet */
+@keyframes loading-climb {
+  0%, 8%   { transform: translate(22px, 98px); }
+  16%, 24% { transform: translate(46px, 81px); }
+  32%, 40% { transform: translate(70px, 64px); }
+  48%, 56% { transform: translate(94px, 47px); }
+  64%, 80% { transform: translate(118px, 30px); }
+  90%, 100% { transform: translate(22px, 98px); }
+}
+
+@keyframes loading-frame-toggle {
+  0%  { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes loading-glow-pulse {
+  0%, 100% { opacity: 0.08; }
+  50% { opacity: 0.25; }
+}
+
+@keyframes loading-letter-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Athlete: subtle vertical bounce while running/boxing */
+@keyframes loading-athlete-bounce {
+  0%, 100% { transform: translateY(0); }
+  25%      { transform: translateY(-2px); }
+  50%      { transform: translateY(0); }
+  75%      { transform: translateY(-2px); }
+}
+
+/* Reader: head tilts left then right */
+@keyframes loading-reader-tilt {
+  0%, 20%  { transform: rotate(0deg); }
+  30%, 50% { transform: rotate(-6deg); }
+  60%, 80% { transform: rotate(6deg); }
+  90%, 100% { transform: rotate(0deg); }
+}
+
+/* Reader: left paper shifts up when being read */
+@keyframes loading-paper-left-move {
+  0%, 20%  { transform: translateY(0); }
+  30%, 50% { transform: translateY(-3px); }
+  60%, 100% { transform: translateY(0); }
+}
+
+/* Reader: right paper shifts up when being read */
+@keyframes loading-paper-right-move {
+  0%, 50%  { transform: translateY(0); }
+  60%, 80% { transform: translateY(-3px); }
+  90%, 100% { transform: translateY(0); }
+}

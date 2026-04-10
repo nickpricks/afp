@@ -13,7 +13,7 @@ type TabDefinition = { icon: typeof Activity; label: string; route: string };
 
 const MODULE_TABS: Record<ModuleId, TabDefinition> = {
   [ModuleId.Body]:     { icon: Activity, label: 'Body',     route: ROUTES.BODY },
-  [ModuleId.Expenses]: { icon: Receipt,  label: 'Expenses', route: ROUTES.EXPENSES },
+  [ModuleId.Budget]:   { icon: Receipt,  label: 'Budget',   route: ROUTES.BUDGET },
   [ModuleId.Baby]:     { icon: Baby,     label: 'Baby',     route: ROUTES.BABY },
 };
 

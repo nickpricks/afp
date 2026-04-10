@@ -1,4 +1,4 @@
-import { doc, runTransaction, setDoc } from 'firebase/firestore';
+import { deleteDoc, doc, runTransaction, setDoc } from 'firebase/firestore';
 
 import { db, isFirebaseConfigured } from '@/shared/auth/firebase-config';
 import { DbCollection, DbSubcollection, DbDoc, DbField } from '@/constants/db';
@@ -18,6 +18,10 @@ export interface InviteRecord {
   linkedUid: string | null;
   createdAt: string;
   usedAt: string | null;
+  /** 'user' | 'viewer' — undefined defaults to 'user' */
+  role?: string;
+  /** uid of user to view — only set when role='viewer' */
+  viewerOf?: string;
 }
 
 /** Generates a lowercase alphanumeric invite code using crypto.getRandomValues */
@@ -37,6 +41,7 @@ export async function createInvite(
   name: string,
   modules: ModuleConfig,
   createdByUid: string,
+  options?: { role?: string; viewerOf?: string },
 ): Promise<Result<InviteRecord>> {
   const record: InviteRecord = {
     code,
@@ -46,6 +51,8 @@ export async function createInvite(
     linkedUid: null,
     createdAt: new Date().toISOString(),
     usedAt: null,
+    role: options?.role,
+    viewerOf: options?.viewerOf,
   };
 
   if (!isFirebaseConfigured) {
@@ -64,6 +71,27 @@ export async function createInvite(
     return ok(record);
   } catch (e) {
     return err(`Failed to create invite: ${toErrorMessage(e)}`);
+  }
+}
+
+/** Deletes an invite by code */
+export async function deleteInvite(code: string): Promise<Result<void>> {
+  if (!isFirebaseConfigured) {
+    try {
+      const stored = JSON.parse(localStorage.getItem(CONFIG.DEV_INVITES_KEY) ?? '[]') as InviteRecord[];
+      const filtered = stored.filter((inv) => inv.code !== code);
+      localStorage.setItem(CONFIG.DEV_INVITES_KEY, JSON.stringify(filtered));
+      return ok(undefined);
+    } catch (e) {
+      return err(`Failed to delete invite (dev): ${toErrorMessage(e)}`);
+    }
+  }
+
+  try {
+    await deleteDoc(doc(db, DbCollection.Invites, code));
+    return ok(undefined);
+  } catch (e) {
+    return err(`Failed to delete invite: ${toErrorMessage(e)}`);
   }
 }
 
@@ -97,7 +125,13 @@ export async function redeemInvite(
       const updated: InviteRecord = { ...record, linkedUid: uid, usedAt: now };
 
       transaction.update(inviteRef, { [DbField.LinkedUid]: uid, [DbField.UsedAt]: now });
-      transaction.set(profileRef, createDefaultProfile(record.name, UserRole.User, record.modules));
+
+      const profileRole = record.role === UserRole.Viewer ? UserRole.Viewer : UserRole.User;
+      const profile = createDefaultProfile(record.name, profileRole, record.modules);
+      if (record.viewerOf) {
+        profile.viewerOf = record.viewerOf;
+      }
+      transaction.set(profileRef, profile);
 
       return updated;
     });

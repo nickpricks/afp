@@ -1,0 +1,39 @@
+/* Lullaby — warm gold, nursery-inspired (ported from BabyTracker) */
+
+.theme-lullaby {
+  --bg-primary: #faf6ef;
+  --bg-secondary: #f2ece0;
+  --bg-card: #ffffff;
+  --bg-card-hover: #faf6ef;
+  --accent: #e8a44a;
+  --accent-hover: #d09030;
+  --accent-muted: rgba(232, 164, 74, 0.15);
+  --text-primary: #3d3529;
+  --text-secondary: #5a5040;
+  --text-muted: #8a7e6e;
+  --text-on-accent: #ffffff;
+  --border: #e8dfd2;
+  --border-light: #f2ece0;
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+}
+
+.theme-lullaby.dark {
+  --bg-primary: #221c0e;
+  --bg-secondary: #2c2416;
+  --bg-card: #2c2416;
+  --bg-card-hover: #36301e;
+  --accent: #ebb244;
+  --accent-hover: #d09a30;
+  --accent-muted: rgba(235, 178, 68, 0.2);
+  --text-primary: #e4d8c0;
+  --text-secondary: #b0a488;
+  --text-muted: #8a7c58;
+  --text-on-accent: #221c0e;
+  --border: #3a3020;
+  --border-light: #2c2416;
+  --success: #4ade80;
+  --error: #f87171;
+  --warning: #fbbf24;
+}

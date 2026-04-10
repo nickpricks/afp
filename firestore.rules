@@ -6,80 +6,138 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isHeadminick() {
-      return isAuthenticated()
-        && get(/databases/$(database)/documents/app/config).data.headminickUid == request.auth.uid;
-    }
-
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    function hasModule(userId, moduleId) {
-      return get(/databases/$(database)/documents/users/$(userId)/profile/main).data.modules[moduleId] == true;
+    function isHeadminick() {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/app/config)
+        && get(/databases/$(database)/documents/app/config).data.headminickUid == request.auth.uid;
     }
 
-    match /app/config {
+    function getProfile(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)/profile/main).data;
+    }
+
+    function isViewer() {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid)/profile/main)
+        && getProfile(request.auth.uid).role == 'viewer';
+    }
+
+    function isViewerOf(userId) {
+      return isViewer() && getProfile(request.auth.uid).viewerOf == userId;
+    }
+
+    function hasModule(userId, moduleId) {
+      return getProfile(userId).modules[moduleId] == true;
+    }
+
+    // App config
+    match /app/{document=**} {
       allow read: if isAuthenticated();
       allow write: if isHeadminick();
     }
 
+    // Invites
     match /invites/{inviteCode} {
       allow read: if isAuthenticated();
-      // Headminick: full write (create, delete, etc.)
-      allow write: if isHeadminick();
-      // Any authenticated user: can redeem an unclaimed invite
-      // Only linkedUid and usedAt may be set, and only if currently unclaimed
-      allow update: if isAuthenticated()
-        && resource.data.linkedUid == null
-        && request.resource.data.linkedUid == request.auth.uid
-        && request.resource.data.usedAt is string
-        && request.resource.data.code == resource.data.code
-        && request.resource.data.name == resource.data.name
-        && request.resource.data.modules == resource.data.modules
-        && request.resource.data.createdBy == resource.data.createdBy
-        && request.resource.data.createdAt == resource.data.createdAt;
+      allow create: if isHeadminick();
+      allow update: if isHeadminick()
+        || (isAuthenticated()
+            && resource.data.linkedUid == null
+            && request.resource.data.linkedUid == request.auth.uid
+            && request.resource.data.code == resource.data.code
+            && request.resource.data.name == resource.data.name
+            && request.resource.data.role == resource.data.role
+            && request.resource.data.viewerOf == resource.data.viewerOf
+            && request.resource.data.modules == resource.data.modules
+            && request.resource.data.createdBy == resource.data.createdBy
+            && request.resource.data.createdAt == resource.data.createdAt);
+      allow delete: if isHeadminick();
     }
 
+    // User profiles
     match /users/{userId}/profile/{document=**} {
-      allow read: if isOwner(userId) || isHeadminick();
-      // Headminick: unrestricted profile writes (manage any user)
-      allow write: if isHeadminick();
-      // Owner: can create profile (invite redemption) but not as admin
+      allow read: if isOwner(userId) || isViewerOf(userId) || isHeadminick();
       allow create: if isOwner(userId)
         && request.resource.data.role != 'theAdminNick';
-      // Owner: can update theme/colorMode/name — not role or modules
-      allow update: if isOwner(userId)
-        && request.resource.data.role == resource.data.role
-        && request.resource.data.modules == resource.data.modules;
+      allow update: if isHeadminick()
+        || (isOwner(userId)
+            && request.resource.data.role == resource.data.role
+            && request.resource.data.modules == resource.data.modules
+            && request.resource.data.viewerOf == resource.data.viewerOf);
+      allow delete: if isHeadminick();
     }
 
+    // Body config
+    match /users/{userId}/body_config/{document=**} {
+      allow read: if isOwner(userId) || isViewerOf(userId) || isHeadminick();
+      allow write: if isOwner(userId) || isHeadminick();
+    }
+
+    // Body data
     match /users/{userId}/body/{docId} {
-      allow read, write: if (isOwner(userId) && hasModule(userId, 'body')) || isHeadminick();
+      allow read: if (isOwner(userId) && hasModule(userId, 'body'))
+        || isViewerOf(userId) || isHeadminick();
+      allow write: if (isOwner(userId) && hasModule(userId, 'body'))
+        || isHeadminick();
     }
 
+    // Body activities
     match /users/{userId}/body_activities/{docId} {
-      allow read, write: if (isOwner(userId) && hasModule(userId, 'body')) || isHeadminick();
+      allow read: if (isOwner(userId) && hasModule(userId, 'body'))
+        || isViewerOf(userId) || isHeadminick();
+      allow write: if (isOwner(userId) && hasModule(userId, 'body'))
+        || isHeadminick();
     }
 
+    // Budget config
+    match /users/{userId}/budget_config/{document=**} {
+      allow read: if isOwner(userId) || isViewerOf(userId) || isHeadminick();
+      allow write: if isOwner(userId) || isHeadminick();
+    }
+
+    // Expenses
     match /users/{userId}/expenses/{docId} {
-      allow read, write: if (isOwner(userId) && hasModule(userId, 'expenses')) || isHeadminick();
+      allow read: if (isOwner(userId) && hasModule(userId, 'budget'))
+        || isViewerOf(userId) || isHeadminick();
+      allow write: if (isOwner(userId) && hasModule(userId, 'budget'))
+        || isHeadminick();
     }
 
-    match /users/{userId}/baby_feeds/{docId} {
-      allow read, write: if (isOwner(userId) && hasModule(userId, 'baby')) || isHeadminick();
+    // Income
+    match /users/{userId}/income/{docId} {
+      allow read: if (isOwner(userId) && hasModule(userId, 'budget'))
+        || isViewerOf(userId) || isHeadminick();
+      allow write: if (isOwner(userId) && hasModule(userId, 'budget'))
+        || isHeadminick();
     }
 
-    match /users/{userId}/baby_sleep/{docId} {
-      allow read, write: if (isOwner(userId) && hasModule(userId, 'baby')) || isHeadminick();
+    // Children (baby module parent docs)
+    match /users/{userId}/children/{childId} {
+      allow read: if (isOwner(userId) && hasModule(userId, 'baby'))
+        || isViewerOf(userId) || isHeadminick();
+      allow write: if (isOwner(userId) && hasModule(userId, 'baby'))
+        || isHeadminick();
+
+      // Child subcollections (feeds, sleep, growth, diapers)
+      match /{sub}/{docId} {
+        allow read: if (isOwner(userId) && hasModule(userId, 'baby'))
+          || isViewerOf(userId) || isHeadminick();
+        allow write: if (isOwner(userId) && hasModule(userId, 'baby'))
+          || isHeadminick();
+      }
     }
 
-    match /users/{userId}/baby_growth/{docId} {
-      allow read, write: if (isOwner(userId) && hasModule(userId, 'baby')) || isHeadminick();
-    }
-
-    match /users/{userId}/baby_diapers/{docId} {
-      allow read, write: if (isOwner(userId) && hasModule(userId, 'baby')) || isHeadminick();
+    // Usernames (global uniqueness)
+    match /usernames/{username} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if isAuthenticated()
+        && resource.data.uid == request.auth.uid;
     }
   }
 }

@@ -1,6 +1,23 @@
 # AFP Roadmap
 
-Last updated: 2026-04-04
+Last updated: 2026-04-10
+
+---
+
+## Phase Progress
+
+| Phase | Status | Steps | Notes |
+|-------|--------|-------|-------|
+| Phase 1 (Scaffold) | ✅ Done | — | Shipped as v0.1.0 |
+| Phase 2.0 (Foundation) | ✅ Done | 14/14 | Enums, types, Firestore rules, routes |
+| Phase 2a (Body) | ✅ Core done | 32/34 | Missing: Firestore rule verification (needs deploy) |
+| Phase 2b (Baby) | ✅ Core done | 29/23 | Firestore rules TBD (needs deploy) |
+| Phase 2c (Budget) | ✅ Core done | 30/28 | Firestore rules TBD (needs deploy) |
+| Phase 2d (Profile) | 🚧 Partial | 6/9 | Missing: auth provider linking (needs Firebase), username tests, negative tests, doc sweep |
+| Phase 2e (Admin+Viewer) | 🚧 ~95% | 33/35 | Done: admin pages, viewer invite flow, role tests, admin claim flow. Missing: Firestore rules audit (needs deploy), doc sweep |
+| Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
+| Phase 2g (E2E + Bench) | ❌ Not started | 0/8 | Interactive E2E flows, build/bundle/test benchmarks |
+| **Total** | **~84%** | **148/178** | |
 
 ---
 
@@ -8,87 +25,238 @@ Last updated: 2026-04-04
 
 All P0 items completed.
 
-## P1 — Important (quality + correctness)
+## P1 — Quality & Correctness
 
-- [ ] **Firestore runtime validation** — replace `as T` casts in adapters with parse/validate functions at the Firestore boundary.
+| | Item | Phase | Status |
+|---|------|-------|--------|
+| 🔨 | Firestore runtime validation — replace `as T` casts with parse/validate | — | Not started |
+| 🔨 | Firestore rules verification — manual/automated tests for all modules | 2a-2d | Not started |
+| 🔨 | Income module E2E regression test | 2c | Not started |
+| ~~🔨~~ | ~~Unit test P0 gaps: `date.ts`, `validation.ts`, `profile.ts` (4 functions)~~ | — | DONE (Session 5) |
 
-## P2 — Enhancement (better UX)
+## P2 — Phase 2 Remaining Work
 
-- [ ] **`credential-already-in-use` UID orphan** — admin clear or auto-clear policy for orphaned anonymous profiles. Low risk for personal app.
-- [ ] **Theme selector in app** — users can pick from 7 themes.
-- [ ] **Profile/settings page** — theme, color mode, display name.
-- [ ] **Admin: user management** — list users, toggle modules, revoke access.
-- [ ] **Expense bulk import** — mentioned in design spec.
-- [ ] **Expense soft-delete** — type has `isDeleted`, UI hard-deletes.
-- [ ] **Body: exercise/yoga tracker** — predefined exercise selector, reps, duration, calorie calc.
-- [ ] **Body: daily challenge / streak** — mentioned in design spec.
-- [ ] **Baby: growth chart visualization** — component exists as log, no chart.
-- [ ] **Body: health API sync** — sync with phone health APIs for actual step/distance data.
-- [ ] **Body: configurable scoring** — user-adjustable weights, stride length, pace defaults.
+| | Item | Phase | Status |
+|---|------|-------|--------|
+| ~~🔨~~ | ~~ReconciliationView — CC charges vs settlements UI~~ | 2c | DONE |
+| ~~🔨~~ | ~~BudgetView time-range — Today/Week/Month/All filter~~ | 2c | DONE |
+| ~~🔨~~ | ~~Amount presets — [10] [20] [50] [100] [200] bubbles~~ | 2c | DONE |
+| ~~🔨~~ | ~~Body module reconfigure — gear icon to re-enter config~~ | 2d | DONE |
+| 🔨 | Link/unlink auth providers in profile | 2d | Not started (needs Firebase Auth) |
+| 🔨 | Username uniqueness + negative tests | 2d | Not started |
+| ~~🔨~~ | ~~Universal Dashboard — role-aware home page~~ | 2e | DONE |
+| ~~🔨~~ | ~~Admin user management — list users, toggle modules~~ | 2e | DONE (Session 6) |
+| ~~🔨~~ | ~~Viewer role UI — read-only dashboard, invite flow~~ | 2e | DONE (Session 6) |
+| ~~🔨~~ | ~~Admin claim flow — fresh database first-user claim~~ | 2e | DONE (existed since Session 3, transaction-safe in Session 8) |
+| 🔨 | Firestore rules audit — verify all match blocks | 2e | Not started (needs Firebase deploy) |
+| ~~🔨~~ | ~~Theme roster implementation — 10 themes~~ | 2f | DONE (Session 7) |
+| ~~🔨~~ | ~~Ambient effects — 9 per-theme effects~~ | 2f | DONE (Session 7) |
+| ~~🔨~~ | ~~Font loading — 8 Google Font families~~ | 2f | DONE (Session 7) |
+| ~~🔨~~ | ~~Loading screen — 3 SVG stick-figure scenes~~ | 2f | DONE (Session 7) |
 
-## P3 — Future (design spec, not started)
+## Bugs
 
-- [ ] **Go API gateway** — second `StorageAdapter` impl calling Go backend.
-- [ ] **S3 + CloudFront deployment** — post-Phase 1.
-- [ ] **E2E visual regression** — 7 themes x 3 modules screenshot baselines.
-- [ ] **More themes** — Warm Nursery, Nursery_OS.
-- [ ] **Proper auth providers** — email link, Apple sign-in.
-- [ ] **Offline-first UX** — retry messaging, explicit queue.
+| | Bug | Module | Severity |
+|---|-----|--------|----------|
+| ~~🐛~~ | ~~Walking/Running list no pagination~~ | Body | ~~Medium~~ — DONE (ActivityLog 7→30) |
+| 🐛 | Walking/Running list no date grouping | Body | Medium |
+| 🐛 | Floors recent list flat styling | Body | Low |
+| ~~🐛~~ | ~~Stats score lacks context (no goal)~~ | Body | ~~Low~~ — DONE (SVG score ring, Session 6) |
+| ~~🐛~~ | ~~Stats "THIS WEEK" card cramped~~ | Body | ~~Low~~ — DONE (weekly bar chart, Session 6) |
+| ~~🐛~~ | ~~ActivityLog edit UX (inline → main-form)~~ | Body | ~~Low~~ — DONE (tap-to-populate pattern) |
+| ~~🐛~~ | ~~Payment method bubbles don't deselect~~ | Budget | ~~Low~~ — DONE (toggle deselect) |
+| ~~🐛~~ | ~~Negative/zero amounts accepted in inputs~~ | All | ~~Low~~ — DONE (min/step attrs) |
+| ~~🐛~~ | ~~Baby tabs need edit (tap-to-populate)~~ | Baby | ~~Medium~~ — DONE (tap-to-populate on all 4 logs) |
+| ~~🐛~~ | ~~Baby tabs need delete~~ | Baby | ~~Medium~~ — DONE (x button on all 4 logs) |
+| 🐛 | Multi-baby not tested | Baby | Medium |
+| 🐛 | Budget list no summary header | Budget | Low |
+| 🐛 | Overall contrast low (Family Blue) | Theme | Low — noted in theme showcase |
+| 🐛 | credential-already-in-use UID orphan | Auth | Low |
+
+## Feature Ideas
+
+| | Feature | Module | Effort |
+|---|---------|--------|--------|
+| ~~💡~~ | ~~Cycling tab — clone WalkingTab, swap enum~~ | Body | ~~Small~~ — DONE |
+| 💡 | Yoga tab — duration + asana select | Body | Medium |
+| 💡 | Daily challenge / streak | Body | Medium |
+| 💡 | Configurable scoring weights | Body | Small |
+| 💡 | Health API sync (phone steps/distance) | Body | Large |
+| 💡 | Growth chart visualization | Baby | Medium |
+| 💡 | Expense bulk import | Budget | Medium |
+| 💡 | Dev mode enhancements — role switcher, time travel | Dev | Medium |
+| ~~💡~~ | ~~Climbing stick-figure loading animation~~ | UI | ~~Small~~ — DONE (Session 7, 3 SVG scenes) |
+
+## Phase 2f: Theme Roster (Finalized 2026-04-09)
+
+10 themes. 6 light+dark, 4 dark-only. Showcase: `SAM/design-samples/theme-showcase-all.html`
+
+| # | Theme | Light | Dark | Accent | Family | Status |
+|---|-------|-------|------|--------|--------|--------|
+| 1 | Family Blue | ✅ | ✅ | `#60a5fa` sky blue | Family | Exists |
+| 2 | Garden Path | ✅ | ✅ | `#16a34a` green | Nature | New (replaces Corporate Glass) |
+| 3 | Lullaby | ✅ | ✅ | `#e8a44a` warm gold | Nursery | New (port from BabyTracker) |
+| 4 | Rose Quartz | ✅ | ✅ | `#f472b6` pink | Soft | New |
+| 5 | Charcoal | ✅ | ✅ | `#a1a1aa` silver | Minimal | New |
+| 6 | Marauder's Map | ✅ | ✅ | `#c8a96e` parchment gold | Magic | New (HP-inspired) |
+| 7 | Neon Glow | — | ✅ | `#ffb803` neon gold | Cyberpunk | Renamed (was Night City: Apartment) |
+| 8 | Deep Mariana | — | ✅ | `#00e89a` bio-green + CRT | Deep | Exists (merged Nursery OS effects) |
+| 9 | Industrial Furnace | — | ✅ | `#ff6820` molten orange | Industrial | Exists |
+| 10 | Expecto Patronum | — | ✅ | `#b8d4e8` ghostly silver | Magic | New (HP-inspired) |
+
+**Dropped:** Summit Instrument (similar to Lullaby), Corporate Glass (similar to Family Blue), Night City: Elevator (similar to Deep Mariana/Nursery OS), Nursery OS (merged into Deep Mariana), Midnight Feed (similar to Industrial Furnace/Neon Glow)
 
 ---
+
+## P2 — Phase 2g: E2E Interaction Tests + Benchmarking
+
+| | Item | Phase | Status |
+|---|------|-------|--------|
+| 🔨 | E2E: Budget full expense flow (fill form → submit → verify in list) | 2g | Not started |
+| 🔨 | E2E: Body configure → log floors → switch tab → log walk → verify | 2g | Not started |
+| 🔨 | E2E: Payment bubble toggle (select → deselect → verify styling) | 2g | Not started |
+| 🔨 | E2E: Body gear reconfigure (click gear → enable running → save → verify tab) | 2g | Not started |
+| 🔨 | E2E: Baby add child → navigate to child → log feed → verify in recent | 2g | Not started |
+| 🔨 | Bench: build time measurement (vite build with timing) | 2g | Not started |
+| 🔨 | Bench: bundle size report from dist/ | 2g | Not started |
+| 🔨 | Bench: test suite duration tracking (unit + E2E) | 2g | Not started |
+
+## P3 — Future
+
+| | Item | Effort |
+|---|------|--------|
+| 🔮 | Go API gateway — second StorageAdapter impl | Large |
+| 🔮 | S3 + CloudFront deployment | Medium |
+| 🔮 | E2E visual regression — themes x modules screenshots | Medium |
+| 🔮 | Playwright V8 coverage for E2E | Small |
+| 🔮 | Proper auth providers — email link, Apple | Medium |
+| 🔮 | Offline-first UX — retry, queue | Large |
 
 ---
 
 ## Done
 
+### 2026-04-10 — Session 8 (E2E regression, code hygiene, ToastType enum)
+
+- [x] Fixed 10 failing E2E tests — `isVisible()` wait bug, strict mode violations, expandable theme picker
+- [x] `initializeAdmin` wrapped in `runTransaction` (atomic app/config + profile creation)
+- [x] Admin claim flow confirmed already implemented — marked done in ROADMAP
+- [x] `ToastType` enum — replaced 62 raw string literals across 20 files
+- [x] Message enum sweep — 18 raw toast strings moved to enums across 8 files
+- [x] CLAUDE.md updated with dynamic message template note
+- [x] E2E tests: 32 passing → 42 passing (0 failing)
+
+### 2026-04-10 — Session 7 (Loading screen, Phase 2f themes)
+
+- [x] Loading screen — 3 SVG stick-figure scenes (Climber, Athlete, Reader) randomly selected per mount
+- [x] Brand text — "IT STARTED ON APRIL FOOLS DAY" with staggered letter reveal animation
+- [x] useMinDelay hook — 1s prod, 0 dev (prevents flash on fast loads)
+- [x] AnimationViewer — preview page at /animations with pill tab switcher + text toggle
+- [x] Code splitting — React.lazy + Suspense for all routes, per-route Vite chunks
+- [x] 10 themes implemented — 6 light+dark, 4 dark-only (dropped 3 old, renamed 1, added 6 new)
+- [x] 8 Google Font families — distinct pairings per theme via --font-display/--font-body CSS variables
+- [x] 9 ambient effects — snowflakes, leaves, stars, hearts, ink, scanline, CRT+bubbles, embers, wisps
+- [x] Expandable theme picker in Profile — 2-col showcase grid with font/effect info
+- [x] Theme migration — resolveThemeId() maps dropped/renamed theme IDs to current themes
+- [x] fx-ambient container + effects.css animations
+- [x] 15 theme system tests + circular dependency fix
+- [x] Multi-agent README sweep — all 29 per-directory READMEs updated
+- [x] Unit tests: 281 → 320 (+39)
+- [x] E2E tests: 42 (unchanged)
+- [x] Test files: 38 → 42 (+4)
+
+### 2026-04-09 — Session 6 (Admin pages, viewer flow, body stats overhaul, themes design)
+
+- [x] Tabbed AdminPanel — Invites/Users tabs with pill switcher
+- [x] InvitesTab — copy-link, delete with undo toast, pending/redeemed badges
+- [x] UsersTab — color-coded module chips (indigo/emerald/pink), stat bar, toggle switches, accordion edit
+- [x] useAdminActions hook — updateUserModules + updateUserRole
+- [x] Viewer invite flow — role/viewerOf on InviteRecord, role selector in InviteGenerator, redemption creates viewer profile
+- [x] Body Stats overhaul — SVG score ring, weekly day bars, dynamic stat cards, dynamic quick actions
+- [x] Daily goal builder — per-activity sliders in BodyConfigForm, preset chips, live ring preview, zone labels
+- [x] Scoring reweight — 1/0.5/10/20/15 (floors up/down, walk/run/cycle per km), CYCLE_PER_KM added
+- [x] List hover (+) — per-row duplicate button on ActivityLog + FloorsTab (Option C)
+- [x] Reset today — button below stat cards with undo toast
+- [x] Role tests — viewer (4), admin (5), cross-role gates (7) = 16 new tests
+- [x] Code hygiene #19 — extracted formatDistance + sortNewestFirst to shared/utils, 10 files deduplicated
+- [x] Prettier setup — .prettierrc + eslint-config-prettier + format/format:check scripts
+- [x] ESLint 57→0 — fixed exhaustive-deps, set-state-in-effect, preserve-manual-memoization
+- [x] AdminMsg enum — 8 toast messages moved to constants/messages.ts
+- [x] Theme roster finalized — 10 themes designed, showcase approved (SAM/design-samples/theme-showcase-all.html)
+- [x] Unit tests: 248 → 281 (+33)
+- [x] E2E tests: 38 → 42 (+4)
+
+### 2026-04-08 — Session 5 (Dashboard, consistency sweep, review fixes)
+
+- [x] Universal Dashboard — role-aware home at `/`, greeting, module cards, admin selector, viewer banner
+- [x] targetUid pattern — 6 hooks accept optional uid for read-only data scoping
+- [x] DashboardCard with shadow-sm + accent-muted tint (theme-aware)
+- [x] Header logo replaces AFP text, links to Dashboard
+- [x] useAllUsers admin hook
+- [x] DevBench expansion — Cycling, Income, Growth, Settlement generators + file split + error handling
+- [x] Tap-to-edit on 6 list views (FloorsTab redirect buttons, ActivityLog populate form, 4 baby logs)
+- [x] Consistent pagination (CONFIG.PAGE_SIZE = 25) on all 8 lists
+- [x] Undo delete with toast action (CONFIG.UNDO_DURATION_MS) on all 6 deletable lists
+- [x] m↔km unit conversion fix + CONFIG.METERS_PER_KM constant
+- [x] Baby: child creation auto-navigate, dashboard cards tappable, sleep defaults, growth validation
+- [x] Toast system extended with action button + custom duration
+- [x] P0 coverage gaps: profile.ts, validation.ts, error.ts, date.ts utilities
+- [x] Unit tests: 189 → 244 (+55)
+- [x] E2E tests: 38 (all passing)
+- [x] Specs: Dashboard design, Theme analysis, 3 implementation plans
+- [x] Nick's review: docs/revz/nick-review-session5.md (6/7 fixed, #1 add-missed-day deferred)
+
+### 2026-04-07 — Session 4 (Bug fixes, Phase 2c completion, Dashboard planning)
+
+- [x] Bug fix: payment bubble toggle deselect
+- [x] Bug fix: number input min/step constraints (all modules)
+- [x] Bug fix: ActivityLog pagination 7→30 (Walking/Running/Cycling)
+- [x] Bug fix: baby entry delete on all 4 log components
+- [x] Feature: CyclingTab + config form enabled
+- [x] Feature: body reconfigure via gear button
+- [x] Feature: budget time-range filter (Today/Week/Month/All)
+- [x] Feature: amount presets [10][20][50][100][200]
+- [x] Feature: ReconciliationView (CC charges vs settlements)
+- [x] E2E fix: Cycling config label updated
+- [x] Specs: Universal Dashboard design + Theme system analysis
+- [x] Plan: Universal Dashboard implementation (9 tasks)
+- [x] Unit tests: 189 → 217 (+28)
+- [x] E2E tests: 38 (all passing)
+
+### 2026-04-07 — Session 3 (Phase 2 sprint)
+
+- [x] Phase 2.0: Shared foundation — all enums, types, Firestore rules, routes
+- [x] Phase 2a: Body module redesign — config gate, tabbed UI, stats dashboard, edit/backfill
+- [x] Phase 2b: Baby module redesign — multi-child, nested collections, BabyLanding, ChildDetail
+- [x] Phase 2c: Budget module — income tracking, payment methods, summary cards, budget-math
+- [x] Phase 2d: Profile page — theme picker, color mode, username, changelog viewer
+- [x] 7 bug fixes: stats buttons, running tab empty, activity sort/edit, floor pagination, FAB color, income crash, profile nav
+- [x] DevBench: dev-only seed panel with ×100/×1k bulk, nuke localStorage
+- [x] 3 design samples: warm-instrument, dense-editorial, playful-streak
+- [x] E2E rewrite: 38 tests for Phase 2 UI (was 41, 33 failing)
+- [x] Coverage analysis: `docs/revz/2026-04-07-coverage-analysis.md`
+- [x] Unit tests: 60 → 189 (+129)
+- [x] E2E tests: 41 → 38 (rewritten for Phase 2, all passing)
+
 ### 2026-04-04 — Session 2 (P0/P1/P2 sprint)
 
-- [x] **Hash → BrowserRouter** — `BrowserRouter` with `basename={import.meta.env.BASE_URL}`, `public/404.html` for GitHub Pages SPA
-- [x] **Body module: walk/run tracking** — `ActivityType` enum, `ActivityEntry` type, `body_activities` subcollection, `BODY_DEFAULTS` constants, `computeBodyScore` updated for floors + walk + run
-- [x] **Body module: activity input UI** — `AddActivity` (bubble selector, distance input, m/km toggle), `ActivityLog` (today's entries), integrated into `BodyTracker`
-- [x] **Baby module refactor** — generic `useBabyCollection<T>` hook, `useBabyData` now composes 4 hooks with proper sync tracking (all listeners must report before `Synced`)
-- [x] **Baby validation** — `validateFeedEntry`, `validateSleepEntry`, `validateGrowthEntry`, `validateDiaperEntry`
-- [x] **ThemeId → enum** — string union converted to TypeScript string enum, `CONFIG.DEFAULT_THEME` uses `ThemeId.FamilyBlue`
-- [x] **DebugPage `isOk` rename** → `isPassing` to avoid shadowing canonical helper
-- [x] **init-admin.ts** — documented string literal → enum mapping
-- [x] **Firestore rules** — added `body_activities` rule
-- [x] **E2e tests updated** — all `/#/` paths → `/` for BrowserRouter, added 6 body activity tests
-- [x] **Unit tests** — 60 tests (was 32): body scoring, types, constants, baby validation
-- [x] **Docs updated** — CLAUDE.md, ROADMAP.md, CHANGELOG.md
+- [x] Hash → BrowserRouter migration
+- [x] Body module: walk/run tracking with scoring
+- [x] Baby module refactor with generic hooks
+- [x] ThemeId → enum
+- [x] E2E tests updated for BrowserRouter
+- [x] Unit tests: 32 → 60
 
 ### 2026-04-04 — Session 1 (Firebase + auth)
 
-- [x] Debug page (`/debug`) — Firebase config, auth state, storage mode, version, email
-- [x] Google Sign-In — anonymous account linking, compact header button, full button on invite/landing
-- [x] Admin bootstrap — `scripts/init-admin.ts` via Firebase Admin SDK
-- [x] Baby Firestore path fix — flattened to `baby_feeds`/`baby_sleep`/`baby_growth`/`baby_diapers`
-- [x] Firestore rules deployed — 4 flat baby subcollection rules
-- [x] Invite flow requires Google sign-in before redeeming
-- [x] Profile photo in header when signed in with Google
-- [x] Expense FAB (+) button on list page
-- [x] No-profile wall explains invite-only, Google sign-in for returning users
-- [x] Popup cancel handled gracefully, compact mode uses toast
-- [x] InviteRedeem "Try Again" on failure
-- [x] Rename headminick → TheAdminNick in codebase
-- [x] GitHub secrets configured (6 Firebase env vars)
-- [x] Google auth provider enabled + authorized domain
-- [x] TheAdminNick bootstrapped and Google-linked
+- [x] Google Sign-In with anonymous account linking
+- [x] Admin bootstrap via Firebase Admin SDK
+- [x] Firestore rules deployed
+- [x] Debug page, profile photo, no-profile wall
+- [x] GitHub secrets + CI/CD
 
-### pre-0.0.5 (initial commit session)
+### pre-0.0.5 (initial commit)
 
-- [x] Phase 1 full scaffold — React 19 + Vite 8 + TypeScript + Tailwind v4 + Firebase
-- [x] 7 themes with CSS custom properties
-- [x] Anonymous auth + invite-only model
-- [x] StorageAdapter abstraction (Firebase + localStorage)
-- [x] Body module (floor tracking with scoring)
-- [x] Expenses module (CRUD, categories, validation)
-- [x] Baby module (feed, sleep, growth, diaper)
-- [x] Admin panel + invite generator
-- [x] Route guards (ModuleGate, AdminGate)
-- [x] Error handling (ErrorBoundary, toast, sync status)
-- [x] PWA with service worker + update prompt
-- [x] 32 unit tests + 35 e2e tests
-- [x] GitHub Actions CI/CD → GitHub Pages
-- [x] Firestore security rules
-- [x] Dev bypass mode
-- [x] Code quality: string enums, Result types, DRY utils, ESLint strict
+- [x] Phase 1 full scaffold — React 19 + Vite 8 + TS + Tailwind v4 + Firebase
+- [x] 7 themes, auth, storage adapter, 3 modules, admin, PWA
+- [x] 32 unit tests + 35 E2E tests
