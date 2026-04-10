@@ -135,3 +135,11 @@ Each mount gets an independent random pick. No persistence — refreshing or nav
 - Auth gate: minimum 1s display, loops until auth resolves
 - Page transitions: shows for the duration of the lazy load (typically <1s in dev, variable in prod)
 - Animation viewer: loops indefinitely
+
+## Polish (post-implementation review, 2026-04-10)
+
+1. **Brand text wraps mid-word** — "APRIL F / OOLS DAY" in 3-col grid. Fix: `whitespace-nowrap` or smaller text in "All" view
+2. **Visual weight inconsistency** — Climber viewBox 140×110, Athlete 80×80, Reader 80×70. All get `w-48` but Climber figure appears smaller. Normalize visual weight
+3. **Athlete scene sparse** — Climber has staircase, Reader has desk+papers, Athlete just a ground line. Add environmental detail (bag outline, track marks)
+4. **"All" grid cards clinical** — plain `border border-line`. Use `bg-[var(--accent-muted)]` tint like DashboardCards
+5. **Single scene view wastes space** — full-width card with empty space. Center vertically or make card more substantial

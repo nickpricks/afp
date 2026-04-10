@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AFP Theme Gallery — Final 10</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Orbitron:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Quicksand:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Orbitron:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Quicksand:wght@400;600;700&family=Nunito:wght@400;600;700&family=DM+Serif+Display&family=Playfair+Display:wght@400;600;700&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -364,6 +364,336 @@
     border-radius: 16px;
   }
 
+  /* ── Ambient Effects ─────────────────────────────────────── */
+
+  .fx-container {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 16px;
+  }
+
+  /* Deep Mariana: Rising bubbles */
+  @keyframes bubble-rise {
+    0%   { transform: translateY(0) translateX(0); opacity: 0; }
+    8%   { opacity: 0.6; }
+    85%  { opacity: 0.3; }
+    100% { transform: translateY(-500px) translateX(25px); opacity: 0; }
+  }
+
+  @keyframes bubble-rise-drift {
+    0%   { transform: translateY(0) translateX(0); opacity: 0; }
+    10%  { opacity: 0.5; }
+    80%  { opacity: 0.2; }
+    100% { transform: translateY(-500px) translateX(-18px); opacity: 0; }
+  }
+
+  .fx-bubble {
+    position: absolute;
+    bottom: -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,232,154,0.35) 0%, transparent 70%);
+  }
+
+  .fx-bubble-1 {
+    width: 7px; height: 7px;
+    left: 15%;
+    animation: bubble-rise 4.5s ease-in infinite;
+  }
+
+  .fx-bubble-2 {
+    width: 4px; height: 4px;
+    left: 40%;
+    animation: bubble-rise-drift 5.5s ease-in 1s infinite;
+  }
+
+  .fx-bubble-3 {
+    width: 5px; height: 5px;
+    left: 65%;
+    animation: bubble-rise 4s ease-in 2.5s infinite;
+  }
+
+  .fx-bubble-4 {
+    width: 3px; height: 3px;
+    left: 85%;
+    animation: bubble-rise-drift 5s ease-in 0.5s infinite;
+  }
+
+  .fx-bubble-5 {
+    width: 6px; height: 6px;
+    left: 50%;
+    animation: bubble-rise 6s ease-in 3.5s infinite;
+  }
+
+  /* Industrial Furnace: Rising embers */
+  @keyframes ember-rise {
+    0%   { transform: translateY(0) translateX(0); opacity: 0; }
+    12%  { opacity: 0.9; }
+    45%  { opacity: 0.6; }
+    100% { transform: translateY(-500px) translateX(-18px); opacity: 0; }
+  }
+
+  @keyframes ember-rise-drift {
+    0%   { transform: translateY(0) translateX(0); opacity: 0; }
+    10%  { opacity: 0.8; }
+    50%  { opacity: 0.4; }
+    100% { transform: translateY(-500px) translateX(12px); opacity: 0; }
+  }
+
+  .fx-ember {
+    position: absolute;
+    bottom: -5px;
+    border-radius: 50%;
+  }
+
+  .fx-ember-1 {
+    width: 3.5px; height: 3.5px;
+    left: 12%;
+    background: #ff6820;
+    animation: ember-rise 3.5s ease-out infinite;
+  }
+
+  .fx-ember-2 {
+    width: 2px; height: 2px;
+    left: 35%;
+    background: #ffaa30;
+    animation: ember-rise-drift 4.5s ease-out 0.8s infinite;
+  }
+
+  .fx-ember-3 {
+    width: 3px; height: 3px;
+    left: 58%;
+    background: #ff8830;
+    animation: ember-rise 4s ease-out 2s infinite;
+  }
+
+  .fx-ember-4 {
+    width: 2.5px; height: 2.5px;
+    left: 78%;
+    background: #ff6820;
+    animation: ember-rise-drift 3.8s ease-out 1.2s infinite;
+  }
+
+  .fx-ember-5 {
+    width: 1.5px; height: 1.5px;
+    left: 92%;
+    background: #ffcc40;
+    animation: ember-rise 5s ease-out 3s infinite;
+  }
+
+  /* Neon Glow: Scanline sweep */
+  @keyframes scanline-sweep {
+    0%   { top: -2px; opacity: 0; }
+    5%   { opacity: 0.2; }
+    95%  { opacity: 0.06; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  .fx-scanline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,184,3,0.4), transparent);
+    animation: scanline-sweep 3.5s linear infinite;
+  }
+
+  /* Family Blue: Snowflakes — soft gray-blue flakes drifting down */
+  @keyframes snowflake-fall {
+    0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    8% { opacity: 0.7; }
+    80% { opacity: 0.4; }
+    100% { transform: translateY(500px) translateX(20px) rotate(360deg); opacity: 0; }
+  }
+
+  @keyframes snowflake-fall-drift {
+    0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.6; }
+    75% { opacity: 0.3; }
+    100% { transform: translateY(500px) translateX(-25px) rotate(-270deg); opacity: 0; }
+  }
+
+  .fx-snowflake {
+    position: absolute;
+    top: -10px;
+    color: rgba(96,165,250,0.5);
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .fx-snowflake-1 { left: 12%; font-size: 16px; animation: snowflake-fall 5s ease-in infinite; }
+  .fx-snowflake-2 { left: 38%; font-size: 12px; color: rgba(148,163,184,0.5); animation: snowflake-fall-drift 7s ease-in 1.5s infinite; }
+  .fx-snowflake-3 { left: 62%; font-size: 14px; animation: snowflake-fall 6s ease-in 3s infinite; }
+  .fx-snowflake-4 { left: 85%; font-size: 10px; color: rgba(148,163,184,0.4); animation: snowflake-fall-drift 5.5s ease-in 0.5s infinite; }
+  .fx-snowflake-5 { left: 50%; font-size: 13px; animation: snowflake-fall 8s ease-in 4s infinite; }
+
+  /* Garden Path: Leaves — leaf emoji drifting down with rotation */
+  @keyframes leaf-fall {
+    0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    8% { opacity: 0.8; }
+    75% { opacity: 0.5; }
+    100% { transform: translateY(500px) translateX(35px) rotate(200deg); opacity: 0; }
+  }
+
+  @keyframes leaf-fall-drift {
+    0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.7; }
+    80% { opacity: 0.4; }
+    100% { transform: translateY(500px) translateX(-25px) rotate(-160deg); opacity: 0; }
+  }
+
+  .fx-leaf {
+    position: absolute;
+    top: -14px;
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0;
+  }
+
+  .fx-leaf-1 { left: 15%; font-size: 16px; animation: leaf-fall 5.5s ease-in infinite; }
+  .fx-leaf-2 { left: 45%; font-size: 12px; animation: leaf-fall-drift 7s ease-in 2s infinite; }
+  .fx-leaf-3 { left: 75%; font-size: 15px; animation: leaf-fall 6s ease-in 3.5s infinite; }
+  .fx-leaf-4 { left: 30%; font-size: 11px; animation: leaf-fall-drift 5s ease-in 1s infinite; }
+  .fx-leaf-5 { left: 60%; font-size: 13px; animation: leaf-fall 7.5s ease-in 5s infinite; }
+
+  /* Lullaby: Stars — soft golden stars twinkling and floating */
+  @keyframes star-twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+    30% { opacity: 0.8; transform: scale(1) rotate(20deg); }
+    70% { opacity: 0.6; transform: scale(0.9) rotate(-10deg); }
+  }
+
+  @keyframes star-drift {
+    0%, 100% { opacity: 0; transform: translateY(0) scale(0.4); }
+    20% { opacity: 0.7; transform: translateY(-10px) scale(1.1); }
+    60% { opacity: 0.5; transform: translateY(-25px) scale(0.8); }
+  }
+
+  .fx-star {
+    position: absolute;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .fx-star-1 { top: 18%; left: 20%; font-size: 16px; animation: star-twinkle 3.5s ease infinite; }
+  .fx-star-2 { top: 45%; left: 65%; font-size: 12px; animation: star-drift 4.5s ease 1s infinite; }
+  .fx-star-3 { top: 70%; left: 35%; font-size: 14px; animation: star-twinkle 4s ease 2s infinite; }
+  .fx-star-4 { top: 30%; left: 82%; font-size: 11px; animation: star-drift 3.5s ease 0.5s infinite; }
+  .fx-star-5 { top: 58%; left: 12%; font-size: 13px; animation: star-twinkle 5s ease 3s infinite; }
+
+  /* Rose Quartz: Hearts & Stars — pink hearts and sparkle stars */
+  @keyframes heart-float {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    15% { opacity: 0.7; transform: translateY(-10px) scale(1); }
+    60% { opacity: 0.5; transform: translateY(-60px) scale(0.9); }
+    100% { opacity: 0; transform: translateY(-120px) scale(0.6); }
+  }
+
+  @keyframes star-sparkle-rq {
+    0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+    40% { opacity: 0.8; transform: scale(1.2) rotate(30deg); }
+    70% { opacity: 0.5; transform: scale(0.8) rotate(-15deg); }
+  }
+
+  .fx-heart {
+    position: absolute;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .fx-heart-1 { bottom: 20%; left: 18%; font-size: 16px; animation: heart-float 4s ease infinite; }
+  .fx-heart-2 { bottom: 30%; left: 55%; font-size: 12px; animation: heart-float 5s ease 1.5s infinite; }
+  .fx-heart-3 { bottom: 15%; left: 80%; font-size: 14px; animation: heart-float 4.5s ease 3s infinite; }
+  .fx-heart-4 { bottom: 40%; left: 35%; font-size: 11px; animation: heart-float 5.5s ease 0.8s infinite; }
+
+  .fx-rq-star {
+    position: absolute;
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .fx-rq-star-1 { top: 15%; left: 25%; font-size: 14px; animation: star-sparkle-rq 3s ease infinite; }
+  .fx-rq-star-2 { top: 55%; left: 72%; font-size: 10px; animation: star-sparkle-rq 4s ease 2s infinite; }
+  .fx-rq-star-3 { top: 35%; left: 88%; font-size: 12px; animation: star-sparkle-rq 3.5s ease 1s infinite; }
+
+  /* Marauder's Map: Footprints — ink footstep pairs appearing/fading */
+  @keyframes ink-appear {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    12% { opacity: 0.7; transform: scale(1); }
+    55% { opacity: 0.5; transform: scale(1); }
+    85% { opacity: 0; transform: scale(0.7); }
+  }
+
+  .fx-ink {
+    position: absolute;
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .fx-ink-1 { top: 20%; left: 25%; font-size: 14px; animation: ink-appear 3s ease infinite; }
+  .fx-ink-2 { top: 38%; left: 58%; font-size: 11px; transform: rotate(30deg); animation: ink-appear 3.5s ease 0.8s infinite; }
+  .fx-ink-3 { top: 55%; left: 18%; font-size: 13px; transform: rotate(-20deg); animation: ink-appear 4s ease 1.8s infinite; }
+  .fx-ink-4 { top: 32%; left: 78%; font-size: 10px; transform: rotate(45deg); animation: ink-appear 3s ease 2.5s infinite; }
+  .fx-ink-5 { top: 72%; left: 45%; font-size: 12px; transform: rotate(-10deg); animation: ink-appear 3.5s ease 0.3s infinite; }
+  .fx-ink-6 { top: 48%; left: 38%; font-size: 11px; transform: rotate(60deg); animation: ink-appear 4.5s ease 1.2s infinite; }
+
+  /* Expecto Patronum: Wisps — silvery mist + ghostly sparkle */
+  @keyframes wisp-rise {
+    0% { transform: translateY(0) translateX(0) scaleX(1); opacity: 0; }
+    12% { opacity: 0.45; }
+    50% { transform: translateY(-150px) translateX(18px) scaleX(1.8); opacity: 0.3; }
+    100% { transform: translateY(-400px) translateX(-10px) scaleX(2.5); opacity: 0; }
+  }
+
+  @keyframes wisp-rise-slow {
+    0% { transform: translateY(0) translateX(0) scaleX(1); opacity: 0; }
+    10% { opacity: 0.4; }
+    55% { transform: translateY(-180px) translateX(-15px) scaleX(1.5); opacity: 0.25; }
+    100% { transform: translateY(-450px) translateX(10px) scaleX(2); opacity: 0; }
+  }
+
+  @keyframes ghost-sparkle {
+    0%, 100% { opacity: 0; transform: scale(0.3); }
+    40% { opacity: 0.6; transform: scale(1.1); }
+    70% { opacity: 0.3; transform: scale(0.8); }
+  }
+
+  .fx-wisp {
+    position: absolute;
+    bottom: 5%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(184,212,232,0.35) 0%, transparent 70%);
+  }
+
+  .fx-wisp-1 { width: 30px; height: 12px; left: 10%; animation: wisp-rise 5.5s ease infinite; }
+  .fx-wisp-2 { width: 22px; height: 9px; left: 40%; animation: wisp-rise-slow 7s ease 1.5s infinite; }
+  .fx-wisp-3 { width: 28px; height: 10px; left: 65%; animation: wisp-rise 6s ease 3s infinite; }
+  .fx-wisp-4 { width: 18px; height: 8px; left: 25%; animation: wisp-rise-slow 5s ease 0.5s infinite; }
+
+  .fx-ghost-star {
+    position: absolute;
+    font-size: 12px;
+    line-height: 1;
+    color: rgba(184,212,232,0.5);
+  }
+
+  .fx-ghost-star-1 { top: 20%; left: 22%; font-size: 14px; animation: ghost-sparkle 3.5s ease infinite; }
+  .fx-ghost-star-2 { top: 45%; left: 70%; font-size: 10px; animation: ghost-sparkle 4s ease 1.5s infinite; }
+  .fx-ghost-star-3 { top: 65%; left: 40%; font-size: 12px; animation: ghost-sparkle 3s ease 2.5s infinite; }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .fx-bubble, .fx-ember, .fx-scanline,
+    .fx-snowflake, .fx-leaf, .fx-star,
+    .fx-heart, .fx-rq-star, .fx-ink,
+    .fx-wisp, .fx-ghost-star {
+      animation: none !important;
+      display: none;
+    }
+  }
+
   /* Footer */
   .showcase-footer {
     text-align: center;
@@ -377,8 +707,8 @@
 <body>
 
 <div class="page-wrap">
-  <h1 class="page-title">AFP Theme Gallery &mdash; Final 10</h1>
-  <p class="page-subtitle">Each card is a mini Body Stats dashboard rendered in its theme's exact colors, fonts, and personality.</p>
+  <h1 class="page-title">AFP Theme Gallery &mdash; Final 10 (16 variants)</h1>
+  <p class="page-subtitle">Each card is a mini Body Stats dashboard rendered in its theme's exact colors, fonts, and personality. Light themes show both light and dark variants.</p>
 
   <div class="section-header">
     <span class="section-dot" style="background: #60a5fa"></span>
@@ -392,7 +722,7 @@
   <div class="page-wrap-inner">
     <div class="section-header dark-section">
       <span class="section-dot" style="background: #ff6820"></span>
-      Dark Themes <span class="section-count">(4)</span>
+      Dark Themes <span class="section-count">(10)</span>
     </div>
 
     <div class="theme-grid" id="dark-grid"></div>
@@ -423,7 +753,8 @@
       border: '#cbd5e1',
       headingFont: 'Syne',
       bodyFont: 'system-ui',
-      badges: []
+      badges: [],
+      effects: ['snowflakes']
     },
     {
       name: 'Garden Path',
@@ -435,9 +766,10 @@
       text: '#1a2e1a',
       muted: '#6b8a6b',
       border: '#d4e5d4',
-      headingFont: 'Syne',
+      headingFont: 'DM Serif Display',
       bodyFont: 'system-ui',
-      badges: ['new']
+      badges: ['new'],
+      effects: ['leaves']
     },
     {
       name: 'Lullaby',
@@ -451,7 +783,8 @@
       border: '#e8dfd2',
       headingFont: 'Quicksand',
       bodyFont: 'Nunito',
-      badges: ['new']
+      badges: ['new'],
+      effects: ['stars']
     },
     {
       name: 'Rose Quartz',
@@ -463,9 +796,10 @@
       text: '#2e1a24',
       muted: '#8a6a7a',
       border: '#e8d0dc',
-      headingFont: 'Syne',
+      headingFont: 'Playfair Display',
       bodyFont: 'system-ui',
-      badges: ['new']
+      badges: ['new'],
+      effects: ['hearts']
     },
     {
       name: 'Charcoal',
@@ -491,10 +825,102 @@
       text: '#3a2e1a',
       muted: '#8a7a5a',
       border: '#ddd0b0',
+      headingFont: 'Cinzel',
+      bodyFont: 'JetBrains Mono',
+      badges: ['new'],
+      effects: ['ink']
+    },
+    // ── Dark variants of light themes ──
+    {
+      name: 'Family Blue (Dark)',
+      family: 'Family',
+      group: 'dark',
+      bg: '#0f172a',
+      card: '#1e293b',
+      accent: '#60a5fa',
+      text: '#e2e8f0',
+      muted: '#64748b',
+      border: '#334155',
+      headingFont: 'Syne',
+      bodyFont: 'system-ui',
+      badges: [],
+      effects: ['snowflakes']
+    },
+    {
+      name: 'Garden Path (Dark)',
+      family: 'Nature',
+      group: 'dark',
+      bg: '#0a150a',
+      card: '#132013',
+      accent: '#22c55e',
+      text: '#d0e8d0',
+      muted: '#4a6a4a',
+      border: '#1a301a',
+      headingFont: 'DM Serif Display',
+      bodyFont: 'system-ui',
+      badges: ['new'],
+      effects: ['leaves']
+    },
+    {
+      name: 'Lullaby (Dark)',
+      family: 'Nursery',
+      group: 'dark',
+      bg: '#221c0e',
+      card: '#2c2416',
+      accent: '#ebb244',
+      text: '#e4d8c0',
+      muted: '#8a7c58',
+      border: '#3a3020',
+      headingFont: 'Quicksand',
+      bodyFont: 'Nunito',
+      badges: ['new'],
+      effects: ['stars']
+    },
+    {
+      name: 'Rose Quartz (Dark)',
+      family: 'Soft',
+      group: 'dark',
+      bg: '#261a28',
+      card: '#322434',
+      accent: '#f472b6',
+      text: '#ecdee4',
+      muted: '#907080',
+      border: '#443040',
+      headingFont: 'Playfair Display',
+      bodyFont: 'system-ui',
+      badges: ['new'],
+      effects: ['hearts']
+    },
+    {
+      name: 'Charcoal (Dark)',
+      family: 'Minimal',
+      group: 'dark',
+      bg: '#0c0c0e',
+      card: '#18181b',
+      accent: '#a1a1aa',
+      text: '#e4e4e7',
+      muted: '#52525b',
+      border: '#27272a',
       headingFont: 'Syne',
       bodyFont: 'JetBrains Mono',
       badges: ['new']
     },
+    {
+      name: "Marauder's Map (Dark)",
+      family: 'Magic',
+      group: 'dark',
+      bg: '#100e08',
+      card: '#1a1610',
+      accent: '#c8a96e',
+      text: '#d0c4a8',
+      muted: '#5a5038',
+      border: '#2a2418',
+      headingFont: 'Cinzel',
+      bodyFont: 'JetBrains Mono',
+      badges: ['new'],
+      effects: ['ink']
+    },
+    // ── Dark-only themes ──
     {
       name: 'Neon Glow',
       family: 'Cyberpunk',
@@ -507,7 +933,8 @@
       border: '#2a2020',
       headingFont: 'Orbitron',
       bodyFont: 'JetBrains Mono',
-      badges: ['dark']
+      badges: ['dark'],
+      effects: ['scanline']
     },
     {
       name: 'Deep Mariana',
@@ -522,7 +949,8 @@
       headingFont: 'Syne',
       bodyFont: 'JetBrains Mono',
       badges: ['dark'],
-      crt: true
+      crt: true,
+      effects: ['bubbles']
     },
     {
       name: 'Industrial Furnace',
@@ -536,7 +964,8 @@
       border: '#2a1a10',
       headingFont: 'Syne',
       bodyFont: 'JetBrains Mono',
-      badges: ['dark']
+      badges: ['dark'],
+      effects: ['embers']
     },
     {
       name: 'Expecto Patronum',
@@ -548,9 +977,10 @@
       text: '#90a8b8',
       muted: '#4a5a68',
       border: '#182028',
-      headingFont: 'Syne',
+      headingFont: 'Cinzel',
       bodyFont: 'JetBrains Mono',
-      badges: ['dark', 'new']
+      badges: ['dark', 'new'],
+      effects: ['wisps']
     }
   ];
 
@@ -832,6 +1262,71 @@
     if (t.crt) {
       var crt = el('div', 'crt-overlay');
       card.appendChild(crt);
+    }
+
+    // Ambient effects
+    if (t.effects && t.effects.length > 0) {
+      var fxContainer = el('div', 'fx-container');
+      for (var e = 0; e < t.effects.length; e++) {
+        var effect = t.effects[e];
+        if (effect === 'bubbles') {
+          for (var b = 1; b <= 5; b++) fxContainer.appendChild(el('div', 'fx-bubble fx-bubble-' + b));
+        } else if (effect === 'embers') {
+          for (var m = 1; m <= 5; m++) fxContainer.appendChild(el('div', 'fx-ember fx-ember-' + m));
+        } else if (effect === 'scanline') {
+          fxContainer.appendChild(el('div', 'fx-scanline'));
+        } else if (effect === 'snowflakes') {
+          var flakes = ['\u2744', '\u2022', '\u2744', '\u2022', '\u2744'];
+          for (var s = 0; s < 5; s++) {
+            var sf = el('div', 'fx-snowflake fx-snowflake-' + (s + 1));
+            sf.appendChild(txt(flakes[s]));
+            fxContainer.appendChild(sf);
+          }
+        } else if (effect === 'leaves') {
+          var leafChars = ['\uD83C\uDF42', '\uD83C\uDF43', '\uD83C\uDF41', '\uD83C\uDF43', '\uD83C\uDF42'];
+          for (var l = 0; l < 5; l++) {
+            var lf = el('div', 'fx-leaf fx-leaf-' + (l + 1));
+            lf.appendChild(txt(leafChars[l]));
+            fxContainer.appendChild(lf);
+          }
+        } else if (effect === 'stars') {
+          var starChars = ['\u2B50', '\u2728', '\u2B50', '\u2728', '\u2B50'];
+          for (var d = 0; d < 5; d++) {
+            var st = el('div', 'fx-star fx-star-' + (d + 1));
+            st.appendChild(txt(starChars[d]));
+            fxContainer.appendChild(st);
+          }
+        } else if (effect === 'hearts') {
+          var heartChars = ['\uD83D\uDC96', '\u2764', '\uD83D\uDC95', '\u2764'];
+          for (var h = 0; h < 4; h++) {
+            var hf = el('div', 'fx-heart fx-heart-' + (h + 1));
+            hf.appendChild(txt(heartChars[h]));
+            fxContainer.appendChild(hf);
+          }
+          var rqStarChars = ['\u2728', '\u2B50', '\u2728'];
+          for (var rs = 0; rs < 3; rs++) {
+            var rss = el('div', 'fx-rq-star fx-rq-star-' + (rs + 1));
+            rss.appendChild(txt(rqStarChars[rs]));
+            fxContainer.appendChild(rss);
+          }
+        } else if (effect === 'ink') {
+          var inkChars = ['\uD83D\uDC63', '\uD83D\uDC63', '\uD83D\uDC63', '\uD83D\uDC63', '\uD83D\uDC63', '\uD83D\uDC63'];
+          for (var k = 0; k < 6; k++) {
+            var kf = el('div', 'fx-ink fx-ink-' + (k + 1));
+            kf.appendChild(txt(inkChars[k]));
+            fxContainer.appendChild(kf);
+          }
+        } else if (effect === 'wisps') {
+          for (var w = 1; w <= 4; w++) fxContainer.appendChild(el('div', 'fx-wisp fx-wisp-' + w));
+          var ghostChars = ['\u2728', '\u2B50', '\u2728'];
+          for (var g = 0; g < 3; g++) {
+            var gf = el('div', 'fx-ghost-star fx-ghost-star-' + (g + 1));
+            gf.appendChild(txt(ghostChars[g]));
+            fxContainer.appendChild(gf);
+          }
+        }
+      }
+      card.appendChild(fxContainer);
     }
 
     // Inner container

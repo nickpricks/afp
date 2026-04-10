@@ -63,13 +63,21 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 
 ## Theme System
 
-10 themes planned (7 exist in code, 5 new to implement, 4 dropped). CSS custom properties per theme, mapped to Tailwind via `@theme` in `index.css`. Approved roster in `SAM/design-samples/theme-showcase-all.html` and `docs/ROADMAP.md` Phase 2f section.
+10 themes (6 light+dark, 4 dark-only). CSS custom properties per theme, mapped to Tailwind via `@theme` in `index.css`. Approved showcase: `SAM/design-samples/theme-showcase-all.html` (16 variant cards). Design spec: `docs/specs/2026-04-10-themes-design.md`.
 
-- **Default**: Family Blue (light + dark). New themes: Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map, Neon Glow (renamed from Night City: Apartment), Expecto Patronum. Dropped: Summit Instrument, Corporate Glass, Night City: Elevator, Nursery OS, Midnight Feed
+- **Roster (10)**: Family Blue (default), Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map (light+dark) | Neon Glow, Deep Mariana, Industrial Furnace, Expecto Patronum (dark-only)
+- **Dropped**: Summit Instrument, Corporate Glass, Night City: Elevator, Nursery OS, Midnight Feed
+- **Renamed**: Night City: Apartment → Neon Glow
+- **Fonts (8 families)**: Syne, Orbitron, JetBrains Mono, Quicksand, Nunito, DM Serif Display, Playfair Display, Cinzel — loaded via Google Fonts `<link>` in `index.html`
+- **Font application**: `applyTheme()` sets `--font-display` and `--font-body` CSS variables on `<html>` from `THEME_DEFINITIONS.fonts`
+- **Ambient effects (9 types)**: snowflakes (Family Blue), leaves (Garden Path), stars (Lullaby), hearts (Rose Quartz), ink/footprints (Marauder's Map), scanline (Neon Glow), crt+bubbles (Deep Mariana), embers (Industrial Furnace), wisps (Expecto Patronum). Charcoal has none (minimal by design)
+- **Effect configuration**: Per-theme defaults in `THEME_DEFINITIONS.effects`. User can override particle count (0-10) and size (small/medium/large) in Profile. Stored in `UserProfile`
+- **Theme picker UX**: Inline expandable section in Profile — "Customize Theme" button expands to 2-col mini showcase grid + effect sliders
 - Theme class derived via `themeClass(id)` — never hardcode `theme-{name}` strings
 - `CONFIG.DEFAULT_THEME` is typed as `ThemeId` — compile-time checked
 - `applyTheme(themeId, colorMode)` applies to `<html>`, `useActiveThemeId()` reads it
 - Adding a theme: (1) new CSS file in `src/themes/`, (2) import in `index.css`, (3) entry in `THEME_DEFINITIONS`
+- **Migration**: Users with dropped theme IDs fall back to `family-blue`. `night-city-apartment` auto-migrates to `neon-glow`
 
 ## Key Conventions
 

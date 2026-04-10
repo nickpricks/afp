@@ -4,12 +4,9 @@ import { CONFIG } from '@/constants/config';
 
 export enum ThemeId {
   FamilyBlue = 'family-blue',
-  SummitInstrument = 'summit-instrument',
-  NightCityElevator = 'night-city-elevator',
+  NeonGlow = 'neon-glow',
   DeepMariana = 'deep-mariana',
-  NightCityApartment = 'night-city-apartment',
   IndustrialFurnace = 'industrial-furnace',
-  CorporateGlass = 'corporate-glass',
 }
 
 export type ColorMode = 'light' | 'dark' | 'system';
@@ -44,37 +41,21 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     fonts: FONTS_DEFAULT,
     previewColors: { bg: '#f0f7ff', accent: '#60a5fa', text: '#1e293b' },
   },
-  [ThemeId.SummitInstrument]: {
-    id: ThemeId.SummitInstrument,
-    name: 'Summit Instrument',
-    family: 'Summit',
-    darkOnly: false,
-    fonts: FONTS_DEFAULT,
-    previewColors: { bg: '#faf7f2', accent: '#f59e0b', text: '#1a1613' },
-  },
-  [ThemeId.NightCityElevator]: {
-    id: ThemeId.NightCityElevator,
-    name: 'Night City: Elevator',
-    family: 'Cyberpunk',
-    darkOnly: true,
-    fonts: FONTS_CYBERPUNK,
-    previewColors: { bg: '#0a0a0f', accent: '#00f0ff', text: '#c0c0c8' },
-  },
-  [ThemeId.DeepMariana]: {
-    id: ThemeId.DeepMariana,
-    name: 'Deep: Mariana',
-    family: 'Deep',
-    darkOnly: true,
-    fonts: FONTS_MONO,
-    previewColors: { bg: '#030b12', accent: '#00e89a', text: '#8cb4c8' },
-  },
-  [ThemeId.NightCityApartment]: {
-    id: ThemeId.NightCityApartment,
-    name: 'Night City: Apartment',
+  [ThemeId.NeonGlow]: {
+    id: ThemeId.NeonGlow,
+    name: 'Neon Glow',
     family: 'Cyberpunk',
     darkOnly: true,
     fonts: FONTS_CYBERPUNK,
     previewColors: { bg: '#0d0505', accent: '#ffb803', text: '#d0d0d0' },
+  },
+  [ThemeId.DeepMariana]: {
+    id: ThemeId.DeepMariana,
+    name: 'Deep Mariana',
+    family: 'Deep',
+    darkOnly: true,
+    fonts: FONTS_MONO,
+    previewColors: { bg: '#030b12', accent: '#00e89a', text: '#8cb4c8' },
   },
   [ThemeId.IndustrialFurnace]: {
     id: ThemeId.IndustrialFurnace,
@@ -83,14 +64,6 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     darkOnly: true,
     fonts: FONTS_MONO,
     previewColors: { bg: '#100804', accent: '#ff6820', text: '#c8a888' },
-  },
-  [ThemeId.CorporateGlass]: {
-    id: ThemeId.CorporateGlass,
-    name: 'Corporate Glass',
-    family: 'Corporate',
-    darkOnly: false,
-    fonts: FONTS_DEFAULT,
-    previewColors: { bg: '#f0f4f8', accent: '#0070c0', text: '#1a2836' },
   },
 };
 
