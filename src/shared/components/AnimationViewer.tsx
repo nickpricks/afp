@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { SceneClimber } from '@/shared/components/loading/SceneClimber';
 import { SceneAthlete } from '@/shared/components/loading/SceneAthlete';
 import { SceneReader } from '@/shared/components/loading/SceneReader';
-import { BRAND_TEXT } from '@/shared/components/loading/LoadingScreen';
+import { BRAND_TEXT } from '@/shared/components/loading/constants';
 
 const TABS = ['All', 'Climber', 'Athlete', 'Reader'] as const;
 type Tab = (typeof TABS)[number];

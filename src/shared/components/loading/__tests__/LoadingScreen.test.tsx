@@ -25,7 +25,7 @@ describe('useMinDelay', () => {
   it('cleans up the timer on unmount', () => {
     vi.useFakeTimers();
     const clearSpy = vi.spyOn(globalThis, 'clearTimeout');
-    const { result: _result, unmount } = renderHook(() => useMinDelay(500));
+    const { unmount } = renderHook(() => useMinDelay(500));
 
     unmount();
     expect(clearSpy).toHaveBeenCalled();

@@ -5,6 +5,7 @@ import { TabBar } from '@/shared/components/TabBar';
 import { UpdatePrompt } from '@/shared/components/UpdatePrompt';
 import { GoogleSignInButton } from '@/shared/components/GoogleSignInButton';
 import { useAuth } from '@/shared/auth/useAuth';
+import { isFirebaseConfigured } from '@/shared/auth/firebase-config';
 import { ROUTES } from '@/constants/routes';
 import { LoadingScreen } from '@/shared/components/loading/LoadingScreen';
 import { useMinDelay } from '@/shared/hooks/useMinDelay';
@@ -14,7 +15,7 @@ export function Layout() {
   const navigate = useNavigate();
   const { isLoading, profile, firebaseUser } = useAuth();
   const isAnonymous = firebaseUser?.isAnonymous ?? true;
-  const minDelayActive = useMinDelay(1000);
+  const minDelayActive = useMinDelay(isFirebaseConfigured ? 1000 : 0);
 
   if (isLoading || minDelayActive) {
     return <LoadingScreen />;

@@ -19,8 +19,8 @@ describe('AppPath', () => {
     expect(AppPath.Debug).toBe('/debug');
   });
 
-  it('has exactly 13 routes', () => {
-    expect(Object.keys(AppPath)).toHaveLength(13);
+  it('has exactly 14 routes', () => {
+    expect(Object.keys(AppPath)).toHaveLength(14);
   });
 
   it('no longer has old Expenses or baby sub-routes', () => {
