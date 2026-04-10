@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
+import type React from 'react';
 
 import { SceneClimber } from '@/shared/components/loading/SceneClimber';
 import { SceneAthlete } from '@/shared/components/loading/SceneAthlete';
 import { SceneReader } from '@/shared/components/loading/SceneReader';
 
-const SCENES = [SceneClimber, SceneAthlete, SceneReader] as const;
+type SceneComponent = React.FC;
+const SCENES: SceneComponent[] = [SceneClimber, SceneAthlete, SceneReader];
 
 export const BRAND_TEXT = 'IT STARTED ON APRIL FOOLS DAY';
 
@@ -14,7 +16,7 @@ interface LoadingScreenProps {
 
 /** Full-screen loading overlay with a randomly selected stick-figure animation */
 export function LoadingScreen({ showText = true }: LoadingScreenProps) {
-  const Scene = useMemo(() => SCENES[Math.floor(Math.random() * SCENES.length)], []);
+  const Scene = useMemo(() => SCENES[Math.floor(Math.random() * SCENES.length)]!, []);
 
   return (
     <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-8">

@@ -6,19 +6,18 @@ import { UpdatePrompt } from '@/shared/components/UpdatePrompt';
 import { GoogleSignInButton } from '@/shared/components/GoogleSignInButton';
 import { useAuth } from '@/shared/auth/useAuth';
 import { ROUTES } from '@/constants/routes';
+import { LoadingScreen } from '@/shared/components/loading/LoadingScreen';
+import { useMinDelay } from '@/shared/hooks/useMinDelay';
 
 /** Root app shell with header, routed content area, tab bar, and PWA update prompt */
 export function Layout() {
   const navigate = useNavigate();
   const { isLoading, profile, firebaseUser } = useAuth();
   const isAnonymous = firebaseUser?.isAnonymous ?? true;
+  const minDelayActive = useMinDelay(1000);
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-surface">
-        <p className="text-fg-muted">Loading...</p>
-      </div>
-    );
+  if (isLoading || minDelayActive) {
+    return <LoadingScreen />;
   }
 
   if (!profile) {
