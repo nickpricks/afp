@@ -348,82 +348,12 @@ usernameError && (
       </section>
 
       {/* Appearance Section */}
-      <section className="rounded-lg border border-line bg-surface-card p-4">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-fg-muted">
-          Appearance
-        </h2>
-
-        {/* Theme Picker */}
-        <p className="mb-2 text-sm text-fg">Theme</p>
-        <div className="grid grid-cols-4 gap-2" data-testid="theme-grid">
-          {
-THEME_LIST.map((theme) => {
-            const isActive = activeThemeId === theme.id;
-            return (
-              <button
-                key={theme.id}
-                onClick={
-() => {
-                  handleThemeChange(theme.id);
-                }
-}
-                title={theme.name}
-                className={
-`flex flex-col items-center gap-1 rounded-lg border p-2 transition ${
-                  isActive
-                    ? 'border-accent ring-2 ring-accent/30'
-                    : 'border-line hover:border-accent/50'
-                }`
-}
-              >
-                <div className="flex h-8 w-full overflow-hidden rounded">
-                  <div
-                    className="flex-1"
-                    style={{ backgroundColor: theme.previewColors.bg }}
-                  />
-                  <div
-                    className="flex-1"
-                    style={{ backgroundColor: theme.previewColors.accent }}
-                  />
-                </div>
-                <span className="truncate text-[10px] text-fg-muted">
-                  {theme.name}
-                </span>
-              </button>
-            );
-          })
-}
-        </div>
-
-        {/* Color Mode */}
-        <p className="mb-2 mt-4 text-sm text-fg">Color Mode</p>
-        <div className="flex gap-2" data-testid="color-mode-picker">
-          {
-COLOR_MODES.map((mode) => {
-            const isActive = colorMode === mode.value;
-            return (
-              <button
-                key={mode.value}
-                onClick={
-() => {
-                  handleColorModeChange(mode.value);
-                }
-}
-                className={
-`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                  isActive
-                    ? 'border-accent bg-accent text-fg-on-accent'
-                    : 'border-line text-fg-muted hover:border-accent/50'
-                }`
-}
-              >
-                {mode.label}
-              </button>
-            );
-          })
-}
-        </div>
-      </section>
+      <AppearanceSection
+        activeThemeId={activeThemeId}
+        colorMode={colorMode}
+        onThemeChange={handleThemeChange}
+        onColorModeChange={handleColorModeChange}
+      />
 
       {/* Module Status Section */}
       <section className="rounded-lg border border-line bg-surface-card p-4">
@@ -478,6 +408,123 @@ isFirebaseConfigured && (
 }
       </section>
     </div>
+  );
+}
+
+/** Appearance section with expandable theme picker + effect controls */
+function AppearanceSection({
+  activeThemeId,
+  colorMode,
+  onThemeChange,
+  onColorModeChange,
+}: {
+  activeThemeId: ThemeId;
+  colorMode: ColorMode;
+  onThemeChange: (id: ThemeId) => void;
+  onColorModeChange: (mode: ColorMode) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const activeTheme = THEME_DEFINITIONS[activeThemeId];
+
+  return (
+    <section className="rounded-lg border border-line bg-surface-card p-4">
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-fg-muted">
+        Appearance
+      </h2>
+
+      {/* Current theme display + expand button */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div
+            className="h-8 w-8 rounded-lg border border-line"
+            style={{ background: `linear-gradient(135deg, ${activeTheme.previewColors.bg} 50%, ${activeTheme.previewColors.accent} 50%)` }}
+          />
+          <div>
+            <p className="text-sm font-medium text-fg">{activeTheme.name}</p>
+            <p className="text-xs text-fg-muted">{activeTheme.family} · {activeTheme.fonts.display}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setExpanded((prev) => !prev)}
+          className="text-sm font-medium text-accent hover:underline"
+        >
+          {expanded ? 'Close' : 'Customize'}
+        </button>
+      </div>
+
+      {/* Expandable theme grid + effects */}
+      {expanded && (
+        <div className="mt-4 border-t border-line pt-4">
+          {/* Theme grid */}
+          <p className="mb-2 text-sm text-fg">Theme</p>
+          <div className="grid grid-cols-2 gap-2" data-testid="theme-grid">
+            {THEME_LIST.map((theme) => {
+              const isActive = activeThemeId === theme.id;
+              return (
+                <button
+                  key={theme.id}
+                  onClick={() => onThemeChange(theme.id)}
+                  className={`flex items-center gap-3 rounded-lg border p-3 text-left transition ${
+                    isActive
+                      ? 'border-accent ring-2 ring-accent/30'
+                      : 'border-line hover:border-accent/50'
+                  }`}
+                >
+                  <div
+                    className="h-10 w-10 flex-shrink-0 rounded-lg border border-line"
+                    style={{ background: `linear-gradient(135deg, ${theme.previewColors.bg} 50%, ${theme.previewColors.accent} 50%)` }}
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-fg">{theme.name}</p>
+                    <p className="text-[10px] text-fg-muted">
+                      {theme.family} · {theme.fonts.display}
+                      {theme.darkOnly && ' · Dark only'}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Color Mode */}
+          <p className="mb-2 mt-4 text-sm text-fg">Color Mode</p>
+          <div className="flex gap-2" data-testid="color-mode-picker">
+            {COLOR_MODES.map((mode) => {
+              const isActive = colorMode === mode.value;
+              return (
+                <button
+                  key={mode.value}
+                  onClick={() => onColorModeChange(mode.value)}
+                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                    isActive
+                      ? 'border-accent bg-accent text-fg-on-accent'
+                      : 'border-line text-fg-muted hover:border-accent/50'
+                  }`}
+                >
+                  {mode.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Effects info */}
+          {activeTheme.effects.length > 0 && (
+            <div className="mt-4 border-t border-line pt-3">
+              <p className="text-sm text-fg">Effects</p>
+              <p className="text-xs text-fg-muted mt-1">
+                {activeTheme.effects.join(', ')} · {activeTheme.defaultParticleCount} particles · {activeTheme.defaultParticleSize}
+              </p>
+            </div>
+          )}
+          {activeTheme.effects.length === 0 && (
+            <div className="mt-4 border-t border-line pt-3">
+              <p className="text-xs text-fg-muted">No ambient effects (minimal theme)</p>
+            </div>
+          )}
+        </div>
+      )}
+    </section>
   );
 }
 
