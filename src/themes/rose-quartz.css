@@ -1,0 +1,39 @@
+/* Rose Quartz — soft pink, elegant */
+
+.theme-rose-quartz {
+  --bg-primary: #fdf2f8;
+  --bg-secondary: #fce7f3;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fdf2f8;
+  --accent: #f472b6;
+  --accent-hover: #ec4899;
+  --accent-muted: rgba(244, 114, 182, 0.15);
+  --text-primary: #2e1a24;
+  --text-secondary: #5a3a4a;
+  --text-muted: #8a6a7a;
+  --text-on-accent: #ffffff;
+  --border: #e8d0dc;
+  --border-light: #fce7f3;
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+}
+
+.theme-rose-quartz.dark {
+  --bg-primary: #261a28;
+  --bg-secondary: #322434;
+  --bg-card: #322434;
+  --bg-card-hover: #3e2e40;
+  --accent: #f472b6;
+  --accent-hover: #ec4899;
+  --accent-muted: rgba(244, 114, 182, 0.2);
+  --text-primary: #ecdee4;
+  --text-secondary: #b898a8;
+  --text-muted: #907080;
+  --text-on-accent: #261a28;
+  --border: #443040;
+  --border-light: #322434;
+  --success: #4ade80;
+  --error: #f87171;
+  --warning: #fbbf24;
+}

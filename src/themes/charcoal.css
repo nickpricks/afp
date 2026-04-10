@@ -1,0 +1,39 @@
+/* Charcoal — minimal silver/zinc, monochrome */
+
+.theme-charcoal {
+  --bg-primary: #fafafa;
+  --bg-secondary: #f4f4f5;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fafafa;
+  --accent: #71717a;
+  --accent-hover: #52525b;
+  --accent-muted: rgba(113, 113, 122, 0.15);
+  --text-primary: #18181b;
+  --text-secondary: #3f3f46;
+  --text-muted: #a1a1aa;
+  --text-on-accent: #ffffff;
+  --border: #e4e4e7;
+  --border-light: #f4f4f5;
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+}
+
+.theme-charcoal.dark {
+  --bg-primary: #0c0c0e;
+  --bg-secondary: #18181b;
+  --bg-card: #18181b;
+  --bg-card-hover: #27272a;
+  --accent: #a1a1aa;
+  --accent-hover: #d4d4d8;
+  --accent-muted: rgba(161, 161, 170, 0.2);
+  --text-primary: #e4e4e7;
+  --text-secondary: #a1a1aa;
+  --text-muted: #52525b;
+  --text-on-accent: #0c0c0e;
+  --border: #27272a;
+  --border-light: #18181b;
+  --success: #4ade80;
+  --error: #f87171;
+  --warning: #fbbf24;
+}

@@ -1,0 +1,20 @@
+/* Expecto Patronum — ghostly silver, HP-inspired, dark-only */
+
+.theme-expecto-patronum {
+  --bg-primary: #080a10;
+  --bg-secondary: #0e1218;
+  --bg-card: #0e1218;
+  --bg-card-hover: #161c24;
+  --accent: #b8d4e8;
+  --accent-hover: #90b8d0;
+  --accent-muted: rgba(184, 212, 232, 0.15);
+  --text-primary: #90a8b8;
+  --text-secondary: #6a8098;
+  --text-muted: #4a5a68;
+  --text-on-accent: #080a10;
+  --border: #182028;
+  --border-light: #0e1218;
+  --success: #4ade80;
+  --error: #f87171;
+  --warning: #fbbf24;
+}

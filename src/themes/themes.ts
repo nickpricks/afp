@@ -4,9 +4,15 @@ import { CONFIG } from '@/constants/config';
 
 export enum ThemeId {
   FamilyBlue = 'family-blue',
+  GardenPath = 'garden-path',
+  Lullaby = 'lullaby',
+  RoseQuartz = 'rose-quartz',
+  Charcoal = 'charcoal',
+  MaraudersMap = 'marauders-map',
   NeonGlow = 'neon-glow',
   DeepMariana = 'deep-mariana',
   IndustrialFurnace = 'industrial-furnace',
+  ExpectoPatronum = 'expecto-patronum',
 }
 
 export type ColorMode = 'light' | 'dark' | 'system';
@@ -17,6 +23,14 @@ type FontPair = { display: string; body: string };
 const FONTS_DEFAULT: FontPair = { display: 'Syne', body: 'system-ui' };
 const FONTS_CYBERPUNK: FontPair = { display: 'Orbitron', body: 'JetBrains Mono' };
 const FONTS_MONO: FontPair = { display: 'Syne', body: 'JetBrains Mono' };
+const FONTS_NURSERY: FontPair = { display: 'Quicksand', body: 'Nunito' };
+const FONTS_GARDEN: FontPair = { display: 'DM Serif Display', body: 'system-ui' };
+const FONTS_ELEGANT: FontPair = { display: 'Playfair Display', body: 'system-ui' };
+const FONTS_MAGIC: FontPair = { display: 'Cinzel', body: 'JetBrains Mono' };
+
+export type ThemeEffect = 'snowflakes' | 'leaves' | 'stars' | 'hearts' | 'ink' | 'scanline' | 'crt' | 'bubbles' | 'embers' | 'wisps';
+
+const ALL_EFFECTS: ThemeEffect[] = ['snowflakes', 'leaves', 'stars', 'hearts', 'ink', 'scanline', 'crt', 'bubbles', 'embers', 'wisps'];
 
 export type ThemeDefinition = {
   id: ThemeId;
@@ -24,6 +38,9 @@ export type ThemeDefinition = {
   family: string;
   darkOnly: boolean;
   fonts: FontPair;
+  effects: ThemeEffect[];
+  defaultParticleCount: number;
+  defaultParticleSize: 'small' | 'medium' | 'large';
   previewColors: { bg: string; accent: string; text: string };
 };
 
@@ -39,7 +56,65 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Family',
     darkOnly: false,
     fonts: FONTS_DEFAULT,
+    effects: ['snowflakes'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
     previewColors: { bg: '#f0f7ff', accent: '#60a5fa', text: '#1e293b' },
+  },
+  [ThemeId.GardenPath]: {
+    id: ThemeId.GardenPath,
+    name: 'Garden Path',
+    family: 'Nature',
+    darkOnly: false,
+    fonts: FONTS_GARDEN,
+    effects: ['leaves'],
+    defaultParticleCount: 4,
+    defaultParticleSize: 'medium',
+    previewColors: { bg: '#f4f9f4', accent: '#16a34a', text: '#1a2e1a' },
+  },
+  [ThemeId.Lullaby]: {
+    id: ThemeId.Lullaby,
+    name: 'Lullaby',
+    family: 'Nursery',
+    darkOnly: false,
+    fonts: FONTS_NURSERY,
+    effects: ['stars'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
+    previewColors: { bg: '#faf6ef', accent: '#e8a44a', text: '#3d3529' },
+  },
+  [ThemeId.RoseQuartz]: {
+    id: ThemeId.RoseQuartz,
+    name: 'Rose Quartz',
+    family: 'Soft',
+    darkOnly: false,
+    fonts: FONTS_ELEGANT,
+    effects: ['hearts'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
+    previewColors: { bg: '#fdf2f8', accent: '#f472b6', text: '#2e1a24' },
+  },
+  [ThemeId.Charcoal]: {
+    id: ThemeId.Charcoal,
+    name: 'Charcoal',
+    family: 'Minimal',
+    darkOnly: false,
+    fonts: FONTS_MONO,
+    effects: [],
+    defaultParticleCount: 0,
+    defaultParticleSize: 'medium',
+    previewColors: { bg: '#fafafa', accent: '#71717a', text: '#18181b' },
+  },
+  [ThemeId.MaraudersMap]: {
+    id: ThemeId.MaraudersMap,
+    name: "Marauder's Map",
+    family: 'Magic',
+    darkOnly: false,
+    fonts: FONTS_MAGIC,
+    effects: ['ink'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
+    previewColors: { bg: '#f5f0e0', accent: '#c8a96e', text: '#3a2e1a' },
   },
   [ThemeId.NeonGlow]: {
     id: ThemeId.NeonGlow,
@@ -47,6 +122,9 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Cyberpunk',
     darkOnly: true,
     fonts: FONTS_CYBERPUNK,
+    effects: ['scanline'],
+    defaultParticleCount: 1,
+    defaultParticleSize: 'large',
     previewColors: { bg: '#0d0505', accent: '#ffb803', text: '#d0d0d0' },
   },
   [ThemeId.DeepMariana]: {
@@ -55,6 +133,9 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Deep',
     darkOnly: true,
     fonts: FONTS_MONO,
+    effects: ['crt', 'bubbles'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
     previewColors: { bg: '#030b12', accent: '#00e89a', text: '#8cb4c8' },
   },
   [ThemeId.IndustrialFurnace]: {
@@ -63,7 +144,21 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Industrial',
     darkOnly: true,
     fonts: FONTS_MONO,
+    effects: ['embers'],
+    defaultParticleCount: 5,
+    defaultParticleSize: 'medium',
     previewColors: { bg: '#100804', accent: '#ff6820', text: '#c8a888' },
+  },
+  [ThemeId.ExpectoPatronum]: {
+    id: ThemeId.ExpectoPatronum,
+    name: 'Expecto Patronum',
+    family: 'Magic',
+    darkOnly: true,
+    fonts: FONTS_MAGIC,
+    effects: ['wisps'],
+    defaultParticleCount: 4,
+    defaultParticleSize: 'large',
+    previewColors: { bg: '#080a10', accent: '#b8d4e8', text: '#90a8b8' },
   },
 };
 
@@ -73,6 +168,20 @@ const THEME_LIST = Object.values(THEME_DEFINITIONS);
 /** Checks whether a string is a valid ThemeId */
 export function isValidThemeId(value: string): value is ThemeId {
   return value in THEME_DEFINITIONS;
+}
+
+/** Migration map for renamed/dropped themes */
+const THEME_MIGRATIONS: Record<string, ThemeId> = {
+  'night-city-apartment': ThemeId.NeonGlow,
+  'summit-instrument': ThemeId.FamilyBlue,
+  'corporate-glass': ThemeId.FamilyBlue,
+  'night-city-elevator': ThemeId.FamilyBlue,
+};
+
+/** Resolves a stored theme ID, migrating old values to current ones */
+export function resolveThemeId(value: string): ThemeId {
+  if (isValidThemeId(value)) return value;
+  return THEME_MIGRATIONS[value] ?? CONFIG.DEFAULT_THEME;
 }
 
 /** Reads the currently active ThemeId from the DOM */
@@ -96,6 +205,20 @@ export function applyTheme(themeId: ThemeId, colorMode: ColorMode): void {
   root.classList.add(newClass);
   currentThemeClass = newClass;
 
+  // Apply fonts
+  root.style.setProperty('--font-display', `'${theme.fonts.display}', sans-serif`);
+  root.style.setProperty('--font-body', `'${theme.fonts.body}', sans-serif`);
+  root.style.fontFamily = `'${theme.fonts.body}', sans-serif`;
+
+  // Apply effects
+  for (const effect of ALL_EFFECTS) {
+    root.classList.remove(`effect-${effect}`);
+  }
+  for (const effect of theme.effects) {
+    root.classList.add(`effect-${effect}`);
+  }
+
+  // Apply color mode
   if (theme.darkOnly || colorMode === 'dark') {
     root.classList.add('dark');
   } else if (colorMode === 'light') {

@@ -1,0 +1,39 @@
+/* Marauder's Map — parchment gold, HP-inspired */
+
+.theme-marauders-map {
+  --bg-primary: #f5f0e0;
+  --bg-secondary: #ede6d0;
+  --bg-card: #fffdf5;
+  --bg-card-hover: #f5f0e0;
+  --accent: #c8a96e;
+  --accent-hover: #b09050;
+  --accent-muted: rgba(200, 169, 110, 0.15);
+  --text-primary: #3a2e1a;
+  --text-secondary: #5a4e3a;
+  --text-muted: #8a7a5a;
+  --text-on-accent: #ffffff;
+  --border: #ddd0b0;
+  --border-light: #ede6d0;
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+}
+
+.theme-marauders-map.dark {
+  --bg-primary: #100e08;
+  --bg-secondary: #1a1610;
+  --bg-card: #1a1610;
+  --bg-card-hover: #242018;
+  --accent: #c8a96e;
+  --accent-hover: #dabb80;
+  --accent-muted: rgba(200, 169, 110, 0.2);
+  --text-primary: #d0c4a8;
+  --text-secondary: #a09478;
+  --text-muted: #5a5038;
+  --text-on-accent: #100e08;
+  --border: #2a2418;
+  --border-light: #1a1610;
+  --success: #4ade80;
+  --error: #f87171;
+  --warning: #fbbf24;
+}
