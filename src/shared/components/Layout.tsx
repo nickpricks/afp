@@ -41,7 +41,7 @@ export function Layout() {
       <div className="fx-ambient" aria-hidden="true" />
       <header className="flex items-center justify-between px-4 py-3 bg-surface-card border-b border-line">
         <Link to="/" className="flex items-center">
-          <img src="/favicon.png" alt="AFP" className="h-6 w-6" />
+          <img src={`${import.meta.env.BASE_URL}favicon.png`} alt="AFP" className="h-6 w-6" />
         </Link>
         <div className="flex items-center gap-3">
           {isAnonymous && <GoogleSignInButton compact />}

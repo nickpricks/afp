@@ -29,26 +29,26 @@ export function SceneReader() {
       {/* Torso */}
       <line x1="40" y1="23" x2="40" y2="42" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" />
 
-      {/* Left arm + paper */}
+      {/* Left arm + paper — raised higher toward face */}
       <g className="loading-paper-left">
-        <line x1="40" y1="30" x2="28" y2="38" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" />
-        {/* Paper — angled rectangle */}
-        <rect x="20" y="36" width="10" height="14" rx="1"
+        <line x1="40" y1="30" x2="28" y2="34" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" />
+        {/* Paper — angled rectangle, raised */}
+        <rect x="20" y="30" width="10" height="14" rx="1"
           fill="none" stroke="var(--accent)" strokeWidth="1"
-          transform="rotate(-5 25 43)" />
-        <line x1="22" y1="40" x2="28" y2="40" stroke="var(--accent)" strokeWidth="0.5" opacity="0.5" transform="rotate(-5 25 43)" />
-        <line x1="22" y1="43" x2="27" y2="43" stroke="var(--accent)" strokeWidth="0.5" opacity="0.5" transform="rotate(-5 25 43)" />
+          transform="rotate(-5 25 37)" />
+        <line x1="22" y1="34" x2="28" y2="34" stroke="var(--accent)" strokeWidth="0.5" opacity="0.5" transform="rotate(-5 25 37)" />
+        <line x1="22" y1="37" x2="27" y2="37" stroke="var(--accent)" strokeWidth="0.5" opacity="0.5" transform="rotate(-5 25 37)" />
       </g>
 
-      {/* Right arm + paper */}
+      {/* Right arm + paper — raised higher toward face */}
       <g className="loading-paper-right">
-        <line x1="40" y1="30" x2="52" y2="38" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" />
-        {/* Paper — angled rectangle */}
-        <rect x="50" y="36" width="10" height="14" rx="1"
+        <line x1="40" y1="30" x2="52" y2="34" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" />
+        {/* Paper — angled rectangle, raised */}
+        <rect x="50" y="30" width="10" height="14" rx="1"
           fill="none" stroke="var(--accent)" strokeWidth="1"
-          transform="rotate(5 55 43)" />
-        <line x1="52" y1="40" x2="58" y2="40" stroke="var(--accent)" strokeWidth="0.5" opacity="0.5" transform="rotate(5 55 43)" />
-        <line x1="52" y1="43" x2="57" y2="43" stroke="var(--accent)" strokeWidth="0.5" opacity="0.5" transform="rotate(5 55 43)" />
+          transform="rotate(5 55 37)" />
+        <line x1="52" y1="34" x2="58" y2="34" stroke="var(--accent)" strokeWidth="0.5" opacity="0.5" transform="rotate(5 55 37)" />
+        <line x1="52" y1="37" x2="57" y2="37" stroke="var(--accent)" strokeWidth="0.5" opacity="0.5" transform="rotate(5 55 37)" />
       </g>
     </svg>
   );

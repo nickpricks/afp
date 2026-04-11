@@ -35,26 +35,26 @@ export function SceneClimber() {
         );
       })}
 
-      {/* Climbing stick figure — origin at feet */}
+      {/* Climbing stick figure — origin at feet, scaled up ~30% */}
       <g className="loading-climber">
-        <circle cx="0" cy="-10" r="12" fill="var(--accent)" className="loading-glow" />
-        <circle cx="0" cy="-18" r="3.5" fill="var(--accent)" />
-        <line x1="0" y1="-14.5" x2="0" y2="-6" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" />
+        <circle cx="0" cy="-14" r="16" fill="var(--accent)" className="loading-glow" />
+        <circle cx="0" cy="-24" r="4.5" fill="var(--accent)" />
+        <line x1="0" y1="-19.5" x2="0" y2="-8" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" />
 
         {/* Frame A: stride */}
         <g className="loading-frame-a">
-          <line x1="0" y1="-12" x2="-4" y2="-8" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="0" y1="-12" x2="4.5" y2="-9" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="0" y1="-6" x2="3.5" y2="-0.5" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" />
-          <line x1="0" y1="-6" x2="-3" y2="1" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" />
+          <line x1="0" y1="-16" x2="-5" y2="-10.5" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" />
+          <line x1="0" y1="-16" x2="6" y2="-12" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" />
+          <line x1="0" y1="-8" x2="4.5" y2="-0.5" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="0" y1="-8" x2="-4" y2="1" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" />
         </g>
 
         {/* Frame B: gather */}
         <g className="loading-frame-b">
-          <line x1="0" y1="-12" x2="-2" y2="-8" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="0" y1="-12" x2="2.5" y2="-8.5" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="0" y1="-6" x2="1.5" y2="0.5" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" />
-          <line x1="0" y1="-6" x2="-1" y2="0.5" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" />
+          <line x1="0" y1="-16" x2="-2.5" y2="-10.5" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" />
+          <line x1="0" y1="-16" x2="3" y2="-11" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" />
+          <line x1="0" y1="-8" x2="2" y2="0.5" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="0" y1="-8" x2="-1.5" y2="0.5" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" />
         </g>
       </g>
     </svg>

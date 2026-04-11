@@ -4,6 +4,34 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.5] — 2026-04-11
+
+Production auth fixes, logo path fix, loading animation polish.
+
+### Auth
+
+| Change | What |
+|---|---|
+| Google Sign-In robustness | `credential-already-in-use` now uses `signInWithCredential` instead of opening a second popup (blocked by browsers). Added `signInWithRedirect`/`linkWithRedirect` fallback for mobile popup-blocked scenarios |
+| Redirect result handling | `auth-context.tsx` calls `getRedirectResult` on load to complete mobile redirect flows and recover from `credential-already-in-use` during redirects |
+| Actionable error messages | `auth/unauthorized-domain` and `auth/invalid-api-key` now return specific fix instructions instead of generic "sign-in failed" |
+
+### Fixes
+
+| Change | What |
+|---|---|
+| Logo 404 on GitHub Pages | `Layout.tsx` logo `src` now uses `import.meta.env.BASE_URL` prefix — was resolving to `/favicon.png` instead of `/afp/favicon.png` |
+
+### Loading Animations
+
+| Change | What |
+|---|---|
+| Boxer (SceneAthlete) | Redesigned as side-pose boxer — angled torso, bent-elbow guard, staggered stance, jab with weight shift. Uses faster 0.4s punch toggle with bob-and-weave sway |
+| Climber (SceneClimber) | Stick figure scaled up ~30% (bigger head, thicker limbs, larger glow) for better visual presence on staircase |
+| Reader (SceneReader) | Papers raised higher toward face (y=30 vs y=36), animation lift doubled to 6px for clearer reading gesture |
+
+---
+
 ## [0.2.4] — 2026-04-10
 
 E2E regression fixes, code hygiene sweep, admin claim transaction safety.
