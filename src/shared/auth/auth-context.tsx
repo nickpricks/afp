@@ -4,7 +4,14 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { onAuthStateChanged, signInAnonymously, type User } from 'firebase/auth';
+import {
+  getRedirectResult,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInAnonymously,
+  signInWithCredential,
+  type User,
+} from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 
 import { ModuleId, SyncStatus, UserRole, type UserProfile } from '@/shared/types';
@@ -46,6 +53,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.info('[AFP] Dev mode — Firebase not configured, using local dev profile');
       return;
     }
+
+    // Handle redirect result (mobile fallback from signInWithRedirect/linkWithRedirect)
+    getRedirectResult(auth).catch(async (error) => {
+      if (error?.code === 'auth/credential-already-in-use') {
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        if (credential) {
+          await signInWithCredential(auth, credential);
+        }
+      }
+    });
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {

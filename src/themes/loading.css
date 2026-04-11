@@ -37,13 +37,13 @@
   animation-direction: reverse;
 }
 
-/* Athlete running phase */
+/* Athlete: boxer bob-and-weave */
 .loading-athlete {
   will-change: transform;
   animation: loading-athlete-bounce 3s ease infinite;
 }
 
-/* Athlete punch combo */
+/* Athlete: fast punch combo toggle */
 .loading-punch-a {
   animation: loading-frame-toggle 0.4s step-end infinite;
 }
@@ -111,12 +111,12 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Athlete: subtle vertical bounce while running/boxing */
+/* Athlete: boxer bob-and-weave — vertical bounce with lateral sway */
 @keyframes loading-athlete-bounce {
-  0%, 100% { transform: translateY(0); }
-  25%      { transform: translateY(-2px); }
-  50%      { transform: translateY(0); }
-  75%      { transform: translateY(-2px); }
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25%      { transform: translateY(-3px) translateX(1px); }
+  50%      { transform: translateY(0) translateX(0); }
+  75%      { transform: translateY(-2px) translateX(-1px); }
 }
 
 /* Reader: head tilts left then right */
@@ -127,16 +127,16 @@
   90%, 100% { transform: rotate(0deg); }
 }
 
-/* Reader: left paper shifts up when being read */
+/* Reader: left paper lifts toward face */
 @keyframes loading-paper-left-move {
   0%, 20%  { transform: translateY(0); }
-  30%, 50% { transform: translateY(-3px); }
+  30%, 50% { transform: translateY(-6px); }
   60%, 100% { transform: translateY(0); }
 }
 
-/* Reader: right paper shifts up when being read */
+/* Reader: right paper lifts toward face */
 @keyframes loading-paper-right-move {
   0%, 50%  { transform: translateY(0); }
-  60%, 80% { transform: translateY(-3px); }
+  60%, 80% { transform: translateY(-6px); }
   90%, 100% { transform: translateY(0); }
 }
