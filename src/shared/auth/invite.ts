@@ -9,6 +9,7 @@ import { createDefaultProfile } from '@/shared/utils/profile';
 import { CONFIG } from '@/constants/config';
 import { InviteMsg } from '@/constants/messages';
 import { INVITE_CODE_RE } from '@/shared/utils/regex';
+import { vlog, vwarn, verr } from '@/shared/utils/verbose';
 
 export interface InviteRecord {
   code: string;
@@ -55,27 +56,34 @@ export async function createInvite(
     viewerOf: options?.viewerOf ?? null,
   };
 
+  vlog('[AFP:invite] createInvite', { code, name, modules, role: record.role, viewerOf: record.viewerOf });
+
   if (!isFirebaseConfigured) {
     try {
       const stored = JSON.parse(localStorage.getItem(CONFIG.DEV_INVITES_KEY) ?? '[]') as InviteRecord[];
       stored.push(record);
       localStorage.setItem(CONFIG.DEV_INVITES_KEY, JSON.stringify(stored));
+      vlog('[AFP:invite] Created (dev localStorage)');
       return ok(record);
     } catch (e) {
+      verr('[AFP:invite] createInvite dev error:', e);
       return err(`Failed to create invite (dev): ${toErrorMessage(e)}`);
     }
   }
 
   try {
     await setDoc(doc(db, DbCollection.Invites, code), record);
+    vlog('[AFP:invite] Created in Firestore:', code);
     return ok(record);
   } catch (e) {
+    verr('[AFP:invite] createInvite Firestore error:', e);
     return err(`Failed to create invite: ${toErrorMessage(e)}`);
   }
 }
 
 /** Deletes an invite by code */
 export async function deleteInvite(code: string): Promise<Result<void>> {
+  vlog('[AFP:invite] deleteInvite', { code });
   if (!isFirebaseConfigured) {
     try {
       const stored = JSON.parse(localStorage.getItem(CONFIG.DEV_INVITES_KEY) ?? '[]') as InviteRecord[];
@@ -83,14 +91,17 @@ export async function deleteInvite(code: string): Promise<Result<void>> {
       localStorage.setItem(CONFIG.DEV_INVITES_KEY, JSON.stringify(filtered));
       return ok(undefined);
     } catch (e) {
+      verr('[AFP:invite] deleteInvite dev error:', e);
       return err(`Failed to delete invite (dev): ${toErrorMessage(e)}`);
     }
   }
 
   try {
     await deleteDoc(doc(db, DbCollection.Invites, code));
+    vlog('[AFP:invite] Deleted from Firestore:', code);
     return ok(undefined);
   } catch (e) {
+    verr('[AFP:invite] deleteInvite Firestore error:', e);
     return err(`Failed to delete invite: ${toErrorMessage(e)}`);
   }
 }
@@ -100,6 +111,8 @@ export async function redeemInvite(
   code: string,
   uid: string,
 ): Promise<Result<InviteRecord>> {
+  vlog('[AFP:invite] redeemInvite start', { code, uid });
+
   if (!isFirebaseConfigured) {
     return err(InviteMsg.DevModeUnsupported);
   }
@@ -112,12 +125,15 @@ export async function redeemInvite(
       const snap = await transaction.get(inviteRef);
 
       if (!snap.exists()) {
+        vwarn('[AFP:invite] Invite not found:', code);
         throw new Error(InviteMsg.NotFound);
       }
 
       const record = snap.data() as InviteRecord;
+      vlog('[AFP:invite] Invite found', { name: record.name, role: record.role, linkedUid: record.linkedUid });
 
       if (record.linkedUid !== null) {
+        vwarn('[AFP:invite] Already redeemed:', code);
         throw new Error(InviteMsg.AlreadyUsed);
       }
 
@@ -131,13 +147,16 @@ export async function redeemInvite(
       if (record.viewerOf) {
         profile.viewerOf = record.viewerOf;
       }
+      vlog('[AFP:invite] Creating profile', { role: profileRole, modules: record.modules });
       transaction.set(profileRef, profile);
 
       return updated;
     });
 
+    vlog('[AFP:invite] redeemInvite success', { name: updatedRecord.name });
     return ok(updatedRecord);
   } catch (e) {
+    verr('[AFP:invite] redeemInvite failed:', e);
     return err(`Failed to redeem invite: ${toErrorMessage(e)}`);
   }
 }

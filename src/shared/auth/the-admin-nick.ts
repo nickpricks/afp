@@ -6,13 +6,17 @@ import { ModuleId, UserRole, type ModuleConfig } from '@/shared/types';
 import { err, ok, type Result } from '@/shared/types';
 import { toErrorMessage } from '@/shared/utils/error';
 import { createDefaultProfile } from '@/shared/utils/profile';
+import { vlog, verr } from '@/shared/utils/verbose';
 
 /** Checks whether app/config exists (i.e., admin has been claimed) */
 export async function isAppClaimed(): Promise<boolean> {
   try {
     const snap = await getDoc(doc(db, DbCollection.App, DbDoc.Config));
-    return snap.exists();
-  } catch {
+    const claimed = snap.exists();
+    vlog('[AFP:admin] isAppClaimed:', claimed);
+    return claimed;
+  } catch (e) {
+    verr('[AFP:admin] isAppClaimed error:', e);
     return false;
   }
 }
@@ -22,8 +26,11 @@ export async function isCurrentUserAdmin(uid: string): Promise<boolean> {
   try {
     const snap = await getDoc(doc(db, DbCollection.App, DbDoc.Config));
     if (!snap.exists()) return false;
-    return snap.data()[DbField.AdminUid] === uid;
-  } catch {
+    const isAdmin = snap.data()[DbField.AdminUid] === uid;
+    vlog('[AFP:admin] isCurrentUserAdmin:', { uid, isAdmin });
+    return isAdmin;
+  } catch (e) {
+    verr('[AFP:admin] isCurrentUserAdmin error:', e);
     return false;
   }
 }
@@ -33,6 +40,7 @@ export async function initializeAdmin(
   uid: string,
   name: string,
 ): Promise<Result<void>> {
+  vlog('[AFP:admin] initializeAdmin start', { uid, name });
   try {
     const configRef = doc(db, DbCollection.App, DbDoc.Config);
     const profileRef = doc(db, DbCollection.Users, uid, DbSubcollection.Profile, DbDoc.Main);
@@ -43,6 +51,7 @@ export async function initializeAdmin(
       [ModuleId.Baby]: true,
     };
     const profile = createDefaultProfile(name, UserRole.TheAdminNick, allEnabled);
+    vlog('[AFP:admin] Writing app/config + profile in transaction');
 
     await runTransaction(db, async (tx) => {
       const snap = await tx.get(configRef);
@@ -53,8 +62,10 @@ export async function initializeAdmin(
       tx.set(profileRef, profile);
     });
 
+    vlog('[AFP:admin] initializeAdmin success');
     return ok(undefined);
   } catch (e) {
+    verr('[AFP:admin] initializeAdmin failed:', e);
     return err(`Failed to initialize admin: ${toErrorMessage(e)}`);
   }
 }
@@ -64,10 +75,13 @@ export async function updateUserModules(
   uid: string,
   modules: ModuleConfig,
 ): Promise<Result<void>> {
+  vlog('[AFP:admin] updateUserModules', { uid, modules });
   try {
     await updateDoc(doc(db, DbCollection.Users, uid, DbSubcollection.Profile, DbDoc.Main), { [DbField.Modules]: modules });
+    vlog('[AFP:admin] updateUserModules success');
     return ok(undefined);
   } catch (e) {
+    verr('[AFP:admin] updateUserModules failed:', e);
     return err(`Failed to update modules: ${toErrorMessage(e)}`);
   }
 }

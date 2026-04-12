@@ -60,6 +60,20 @@ Production auth fixes, Firestore rules, debug tools, baby sibling features, touc
 | Climber (SceneClimber) | Stick figure scaled up ~30% (bigger head, thicker limbs, larger glow) for better visual presence on staircase |
 | Reader (SceneReader) | Papers raised higher toward face (y=30 vs y=36), animation lift doubled to 6px for clearer reading gesture |
 
+### Bugfixes
+
+| Change | What |
+|---|---|
+| Invite creation `undefined` fields | `InviteRecord.role` and `viewerOf` changed from optional (`undefined`) to nullable (`string \| null`). Firestore rejects `undefined` — was causing silent invite creation failure |
+
+### Verbose Logging
+
+| Change | What |
+|---|---|
+| `verbose.ts` utility | `vlog`/`vwarn`/`verr` — only output when "Verbose logs" checkbox is enabled on Debug page. Persisted in localStorage (`afp-verbose-logs`) |
+| Auth, admin, invite flows | All key operations instrumented with `[AFP:auth]`, `[AFP:admin]`, `[AFP:invite]` prefixed logs. Errors always log, info/warn only when verbose is on |
+| Debug page toggle | Checkbox to enable/disable verbose mode — visible in `>_` console overlay on all pages |
+
 ---
 
 ## [0.2.4] — 2026-04-10

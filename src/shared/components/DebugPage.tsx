@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { isFirebaseConfigured, auth } from '@/shared/auth/firebase-config';
@@ -6,6 +7,7 @@ import { useToast } from '@/shared/errors/useToast';
 import { CONFIG } from '@/constants/config';
 import { ROUTES } from '@/constants/routes';
 import { DevBench } from '@/shared/components/DevBench';
+import { isVerbose, setVerbose } from '@/shared/utils/verbose';
 
 /** Formats a ModuleConfig record into a readable string */
 function formatModules(modules: Record<string, boolean> | undefined): string {
@@ -20,6 +22,7 @@ function formatModules(modules: Record<string, boolean> | undefined): string {
 export function DebugPage() {
   const authCtxDump = useAuth();
   const toastCtxDump = useToast();
+  const [verbose, setVerboseState] = useState(isVerbose);
   const { firebaseUser, profile } = authCtxDump;
   const currentUser = auth.currentUser ?? firebaseUser;
 
@@ -83,7 +86,17 @@ export function DebugPage() {
         </pre>
       </details>
 
-      <p className="mt-4 text-xs text-gray-400 italic">Console output available via the {'>'}_  pill at bottom-right</p>
+      <label className="mt-4 flex items-center gap-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={verbose}
+          onChange={(e) => { setVerbose(e.target.checked); setVerboseState(e.target.checked); }}
+          className="rounded border-line accent-accent"
+        />
+        <span className="text-xs text-fg-muted">Verbose logs (auth, invites, admin)</span>
+      </label>
+
+      <p className="mt-2 text-xs text-gray-400 italic">Console output available via the {'>'}_  pill at bottom-right</p>
 
       <p className="mt-2 text-xs text-gray-400">
         Navigate to /debug to view this page.
