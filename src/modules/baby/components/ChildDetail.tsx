@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, generatePath } from 'react-router-dom';
 
 import { FeedLog } from '@/modules/baby/components/FeedLog';
 import { SleepLog } from '@/modules/baby/components/SleepLog';
 import { GrowthLog } from '@/modules/baby/components/GrowthLog';
 import { DiaperLog } from '@/modules/baby/components/DiaperLog';
 import { useChildren } from '@/modules/baby/hooks/useChildren';
+import { useAuth } from '@/shared/auth/useAuth';
 import type { Child } from '@/modules/baby/types';
 import { computeAge } from '@/modules/baby/utils';
 import { ROUTES } from '@/constants/routes';
@@ -21,8 +22,11 @@ export function ChildDetail() {
   const { childId } = useParams<{ childId: string }>();
   const navigate = useNavigate();
   const { children, loading } = useChildren();
+  const { firebaseUser } = useAuth();
 
   const child = children.find((c) => c.id === childId) ?? null;
+  const siblings = children.filter((c) => c.id !== childId);
+  const uid = firebaseUser?.uid ?? '';
 
   if (loading) {
     return (
@@ -47,11 +51,12 @@ export function ChildDetail() {
     );
   }
 
-  return <ChildDetailInner child={child} onBack={() => navigate(ROUTES.BABY)} />;
+  return <ChildDetailInner child={child} siblings={siblings} uid={uid} onBack={() => navigate(ROUTES.BABY)} />;
 }
 
 /** Inner component that renders tabs once the child is resolved */
-function ChildDetailInner({ child, onBack }: { child: Child; onBack: () => void }) {
+function ChildDetailInner({ child, siblings, uid, onBack }: { child: Child; siblings: Child[]; uid: string; onBack: () => void }) {
+  const navigate = useNavigate();
   const tabs: TabDef[] = [
     { id: 'dashboard', label: 'Dashboard', visible: true },
     { id: 'feeding', label: 'Feeding', visible: child.config.feeding },
@@ -64,6 +69,7 @@ function ChildDetailInner({ child, onBack }: { child: Child; onBack: () => void 
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
 
   const childId = child.id ?? '';
+  const siblingIds = siblings.map((s) => s.id).filter(Boolean) as string[];
 
   return (
     <div className="flex flex-col gap-4 px-4 py-6">
@@ -81,6 +87,27 @@ function ChildDetailInner({ child, onBack }: { child: Child; onBack: () => void 
           <p className="text-sm text-fg-muted">{computeAge(child.dob)} old</p>
         </div>
       </div>
+
+      {/* Sibling quick-nav — jump to same tab on another child */}
+      {
+        siblings.length > 0 && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-fg-muted">Switch:</span>
+            {
+              siblings.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => navigate(generatePath(ROUTES.BABY_CHILD, { childId: s.id! }))}
+                  className="rounded-full bg-surface-card border border-line px-3 py-1 text-xs font-medium text-fg-muted hover:border-accent hover:text-accent transition-colors active:scale-95"
+                >
+                  {s.name}
+                </button>
+              ))
+            }
+          </div>
+        )
+      }
 
       {/* Tabs */}
       <div className="flex gap-1 overflow-x-auto border-b border-line">
@@ -105,10 +132,10 @@ function ChildDetailInner({ child, onBack }: { child: Child; onBack: () => void 
 
       {/* Tab Content */}
       {activeTab === 'dashboard' && <DashboardTab child={child} onNavigate={setActiveTab} />}
-      {activeTab === 'feeding' && <FeedLog childId={childId} />}
-      {activeTab === 'sleep' && <SleepLog childId={childId} />}
-      {activeTab === 'growth' && <GrowthLog childId={childId} />}
-      {activeTab === 'diapers' && <DiaperLog childId={childId} />}
+      {activeTab === 'feeding' && <FeedLog childId={childId} siblingIds={siblingIds} uid={uid} />}
+      {activeTab === 'sleep' && <SleepLog childId={childId} siblingIds={siblingIds} uid={uid} />}
+      {activeTab === 'growth' && <GrowthLog childId={childId} siblingIds={siblingIds} uid={uid} />}
+      {activeTab === 'diapers' && <DiaperLog childId={childId} siblingIds={siblingIds} uid={uid} />}
     </div>
   );
 }

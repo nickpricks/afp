@@ -4,9 +4,9 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
-## [0.2.5] — 2026-04-11
+## [0.2.5] — 2026-04-12
 
-Production auth fixes, logo path fix, loading animation polish.
+Production auth fixes, Firestore rules, debug tools, baby sibling features, touch UX, loading animation polish.
 
 ### Auth
 
@@ -16,11 +16,41 @@ Production auth fixes, logo path fix, loading animation polish.
 | Redirect result handling | `auth-context.tsx` calls `getRedirectResult` on load to complete mobile redirect flows and recover from `credential-already-in-use` during redirects |
 | Actionable error messages | `auth/unauthorized-domain` and `auth/invalid-api-key` now return specific fix instructions instead of generic "sign-in failed" |
 
+### Firestore Rules
+
+| Change | What |
+|---|---|
+| Admin claim on fresh DB | `app/config` create allowed when doc doesn't exist (fixes chicken-and-egg: `isHeadminick()` required config to exist but config required `isHeadminick()` to create) |
+| Admin profile creation | Profile create allowed with any role when `app/config` doesn't exist (first-time claim), plus existing rules for normal users and admin writes |
+
 ### Fixes
 
 | Change | What |
 |---|---|
 | Logo 404 on GitHub Pages | `Layout.tsx` logo `src` now uses `import.meta.env.BASE_URL` prefix — was resolving to `/favicon.png` instead of `/afp/favicon.png` |
+| Theme restore on load | `ThemeInitializer` reads `profile.theme` and `profile.colorMode` from Firestore — previously always reset to Family Blue on refresh |
+
+### Baby Module
+
+| Change | What |
+|---|---|
+| "All" sibling logging | Toggle button next to Save on all 4 log forms (Feed, Sleep, Growth, Diaper). When active, copies the entry to all sibling children via `logToSiblings` utility |
+| Sibling quick-nav | Pills in ChildDetail header to jump to the same tab on another child |
+| Tappable child cards | BabyLanding cards are fully clickable — removed separate "View" button, added chevron |
+
+### Debug Tools
+
+| Change | What |
+|---|---|
+| AuthContext dump | Collapsible JSON view of full auth context on Debug page |
+| ToastContext dump | Collapsible JSON view of toast state on Debug page |
+| Console overlay | Floating `>_` pill on all pages — captures all 20 console methods, persists toggle in localStorage. Color-coded by level, auto-scroll, clear button |
+
+### Touch UX
+
+| Change | What |
+|---|---|
+| `btn-row-action` | Row action (+) buttons use corner-notch positioning — separate tap target from row. Desktop: hover reveal. Mobile (`@media (hover: none)`): always visible at 50% opacity. 44px WCAG touch target via `::before` pseudo-element |
 
 ### Loading Animations
 

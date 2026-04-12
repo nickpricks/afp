@@ -10,6 +10,8 @@ import { BabyMsg } from '@/constants/messages';
 import { CONFIG } from '@/constants/config';
 import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
+import { DbSubcollection } from '@/constants/db';
+import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
 
 /** Determines whether the feed type uses amount (Bottle/Solid Food) */
 function isAmountType(type: FeedType): boolean {
@@ -17,7 +19,7 @@ function isAmountType(type: FeedType): boolean {
 }
 
 /** Feed tracking form with type selection and recent entries list */
-export function FeedLog({ childId }: { childId?: string }) {
+export function FeedLog({ childId, siblingIds = [], uid = '' }: { childId?: string; siblingIds?: string[]; uid?: string }) {
   const { feeds, logFeed, updateFeed, removeFeed } = useBabyData(childId ?? null);
   const { addToast } = useToast();
   const [type, setType] = useState<FeedType>(FeedType.Bottle);
@@ -29,7 +31,9 @@ export function FeedLog({ childId }: { childId?: string }) {
   const [editEntry, setEditEntry] = useState<FeedEntry | null>(null);
   const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [logToAll, setLogToAll] = useState(false);
   const undoRef = useRef(false);
+  const hasSiblings = siblingIds.length > 0;
 
   /** Populates form fields from the selected entry for editing */
   const startEdit = (entry: FeedEntry) => {
@@ -46,12 +50,17 @@ export function FeedLog({ childId }: { childId?: string }) {
     e.preventDefault();
     setSaving(true);
     const now = new Date().toISOString();
+    const entryData = { date, time, type, amount: isAmountType(type) ? amount : null, timestamp: now, createdAt: now, notes };
 
     if (editEntry) {
       await updateFeed({ ...editEntry, date, time, type, amount: isAmountType(type) ? amount : null, notes });
       setEditEntry(null);
     } else {
-      await logFeed({ date, time, type, amount: isAmountType(type) ? amount : null, timestamp: now, createdAt: now, notes });
+      await logFeed(entryData);
+      if (logToAll && hasSiblings && uid) {
+        const count = await logToSiblings(uid, siblingIds, DbSubcollection.Feeds, entryData);
+        if (count > 0) addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+      }
     }
 
     setAmount(null);
@@ -142,10 +151,17 @@ isAmountType(type) && (
 
         <input type="text" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
 
-        <button type="submit" disabled={saving} className="w-full py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
-          {saving && 'Saving...'}
-          {!saving && (editEntry ? 'Update Feed' : 'Log Feed')}
-        </button>
+        <div className="flex gap-2">
+          <button type="submit" disabled={saving} className="flex-1 py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
+            {saving && 'Saving...'}
+            {!saving && (editEntry ? 'Update Feed' : 'Log Feed')}
+          </button>
+          {
+            hasSiblings && !editEntry && (
+              <button type="button" onClick={() => setLogToAll((v) => !v)} className={`px-3 py-3 rounded-lg border text-xs font-medium transition-colors ${logToAll ? 'bg-accent/10 border-accent text-accent' : 'bg-surface-card border-line text-fg-muted'}`} title="Log to all children">All</button>
+            )
+          }
+        </div>
       </form>
 
       <RecentFeeds entries={recentFeeds} onEdit={startEdit} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />

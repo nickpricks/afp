@@ -8,10 +8,11 @@ import { Layout } from '@/shared/components/Layout';
 import { ModuleGate } from '@/shared/components/ModuleGate';
 import { AdminGate } from '@/shared/components/AdminGate';
 import { LoadingScreen } from '@/shared/components/loading/LoadingScreen';
+import { useAuth } from '@/shared/auth/useAuth';
 import { ModuleId } from '@/shared/types';
 import { ROUTES } from '@/constants/routes';
 import { CONFIG } from '@/constants/config';
-import { applyTheme } from '@/themes/themes';
+import { applyTheme, resolveThemeId } from '@/themes/themes';
 
 const InviteRedeem = lazy(() => import('@/shared/auth/InviteRedeem').then(m => ({ default: m.InviteRedeem })));
 const AdminPanel = lazy(() => import('@/admin/components/AdminPanel').then(m => ({ default: m.AdminPanel })));
@@ -26,11 +27,15 @@ const ChildDetail = lazy(() => import('@/modules/baby/components/ChildDetail').t
 const Dashboard = lazy(() => import('@/shared/components/Dashboard').then(m => ({ default: m.Dashboard })));
 const AnimationViewer = lazy(() => import('@/shared/components/AnimationViewer').then(m => ({ default: m.AnimationViewer })));
 
-/** Applies the default theme on mount */
+/** Applies saved theme from profile, or default on first mount */
 function ThemeInitializer() {
+  const { profile } = useAuth();
+
   useEffect(() => {
-    applyTheme(CONFIG.DEFAULT_THEME, 'system');
-  }, []);
+    const themeId = profile?.theme ? resolveThemeId(profile.theme) : CONFIG.DEFAULT_THEME;
+    const colorMode = profile?.colorMode ?? 'system';
+    applyTheme(themeId, colorMode);
+  }, [profile?.theme, profile?.colorMode]);
 
   return null;
 }

@@ -6,10 +6,14 @@ import { AddChild } from '@/modules/baby/components/AddChild';
 import type { Child } from '@/modules/baby/types';
 import { computeAge } from '@/modules/baby/utils';
 
-/** Card displaying a single child's summary with a View button */
+/** Card displaying a single child's summary — tap anywhere to navigate */
 function ChildCard({ child, onView }: { child: Child; onView: (id: string) => void }) {
   return (
-    <div className="rounded-xl bg-surface-card border border-line p-4 flex items-center justify-between">
+    <button
+      type="button"
+      onClick={() => onView(child.id ?? '')}
+      className="w-full rounded-xl bg-surface-card border border-line p-4 flex items-center justify-between text-left transition-colors hover:border-accent active:scale-[0.98]"
+    >
       <div>
         <h3 className="text-base font-semibold text-fg">{child.name}</h3>
         <p className="text-sm text-fg-muted">{computeAge(child.dob)} old</p>
@@ -20,14 +24,8 @@ function ChildCard({ child, onView }: { child: Child; onView: (id: string) => vo
           {child.config.diapers && <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">Diapers</span>}
         </div>
       </div>
-      <button
-        type="button"
-        onClick={() => onView(child.id ?? '')}
-        className="px-4 py-2 rounded-lg bg-accent text-fg-on-accent text-sm font-medium"
-      >
-        View
-      </button>
-    </div>
+      <span className="text-accent text-sm font-medium">{'>'}</span>
+    </button>
   );
 }
 
