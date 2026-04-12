@@ -18,10 +18,10 @@ export interface InviteRecord {
   linkedUid: string | null;
   createdAt: string;
   usedAt: string | null;
-  /** 'user' | 'viewer' — undefined defaults to 'user' */
-  role?: string;
+  /** 'user' | 'viewer' — null defaults to 'user' */
+  role: string | null;
   /** uid of user to view — only set when role='viewer' */
-  viewerOf?: string;
+  viewerOf: string | null;
 }
 
 /** Generates a lowercase alphanumeric invite code using crypto.getRandomValues */
@@ -51,8 +51,8 @@ export async function createInvite(
     linkedUid: null,
     createdAt: new Date().toISOString(),
     usedAt: null,
-    role: options?.role,
-    viewerOf: options?.viewerOf,
+    role: options?.role ?? null,
+    viewerOf: options?.viewerOf ?? null,
   };
 
   if (!isFirebaseConfigured) {
