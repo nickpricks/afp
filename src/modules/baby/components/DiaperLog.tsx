@@ -10,9 +10,11 @@ import { BabyMsg } from '@/constants/messages';
 import { CONFIG } from '@/constants/config';
 import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
+import { DbSubcollection } from '@/constants/db';
+import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
 
 /** Diaper tracking form with quick-log buttons and recent entries list */
-export function DiaperLog({ childId }: { childId?: string }) {
+export function DiaperLog({ childId, siblingIds = [], uid = '' }: { childId?: string; siblingIds?: string[]; uid?: string }) {
   const { diapers, logDiaper, updateDiaper, removeDiaper } = useBabyData(childId ?? null);
   const { addToast } = useToast();
   const [type, setType] = useState<DiaperType>(DiaperType.Wet);
@@ -23,7 +25,9 @@ export function DiaperLog({ childId }: { childId?: string }) {
   const [editEntry, setEditEntry] = useState<DiaperEntry | null>(null);
   const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [logToAll, setLogToAll] = useState(false);
   const undoRef = useRef(false);
+  const hasSiblings = siblingIds.length > 0;
 
   /** Populates form fields from the selected entry for editing */
   const startEdit = (entry: DiaperEntry) => {
@@ -38,12 +42,17 @@ export function DiaperLog({ childId }: { childId?: string }) {
     e.preventDefault();
     setSaving(true);
     const now = new Date().toISOString();
+    const entryData = { date, time, type, timestamp: now, createdAt: now, notes };
 
     if (editEntry) {
       await updateDiaper({ ...editEntry, date, time, type, notes });
       setEditEntry(null);
     } else {
-      await logDiaper({ date, time, type, timestamp: now, createdAt: now, notes });
+      await logDiaper(entryData);
+      if (logToAll && hasSiblings && uid) {
+        const count = await logToSiblings(uid, siblingIds, DbSubcollection.Diapers, entryData);
+        if (count > 0) addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+      }
     }
 
     setNotes('');
@@ -123,10 +132,24 @@ ALL_DIAPER_TYPES.map((dt) => (
 
         <input type="text" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
 
-        <button type="submit" disabled={saving} className="w-full py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
-          {saving && 'Saving...'}
-          {!saving && (editEntry ? 'Update Diaper' : 'Log Diaper')}
-        </button>
+        <div className="flex gap-2">
+          <button type="submit" disabled={saving} className="flex-1 py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
+            {saving && 'Saving...'}
+            {!saving && (editEntry ? 'Update Diaper' : 'Log Diaper')}
+          </button>
+          {
+            hasSiblings && !editEntry && (
+              <button
+                type="button"
+                onClick={() => setLogToAll((v) => !v)}
+                className={`px-3 py-3 rounded-lg border text-xs font-medium transition-colors ${logToAll ? 'bg-accent/10 border-accent text-accent' : 'bg-surface-card border-line text-fg-muted'}`}
+                title="Log to all children"
+              >
+                All
+              </button>
+            )
+          }
+        </div>
       </form>
 
       <RecentDiapers entries={recentDiapers} onEdit={startEdit} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />

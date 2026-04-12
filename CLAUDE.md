@@ -176,3 +176,10 @@ Found via grep sweeps — fix in next code hygiene pass:
 ## Remaining Backlog
 
 See `docs/ROADMAP.md` for full prioritized backlog (P0-P3).
+
+### Phase 3 Brainstorm (next session)
+
+Scan source repos (BabyTracker, Floor-Tracker, Finularity) for feature ideas to port into AFP. Key directions:
+- **Baby → Toddler/Kid**: milestones, meals (not feeds), potty training, vaccinations, activities. Age-aware UI that evolves
+- **Budget → Investment**: savings goals, recurring expenses, net worth tracking, financial insights
+- **Body → Gamification**: motivational messages, daily challenges, milestone badges, streaks with rewards

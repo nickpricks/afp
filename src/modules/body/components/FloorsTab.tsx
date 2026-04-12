@@ -145,10 +145,10 @@ dateKey !== today && (
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); setEditingKey(dateKey); }}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6.5 w-6.5 items-center justify-center rounded-full bg-accent text-fg-on-accent opacity-0 scale-75 transition-all duration-150 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:opacity-100 group-hover:scale-100 active:scale-90 shadow-sm"
+                          className="btn-row-action"
                           aria-label={`Edit ${dateKey}`}
                         >
-                          <Plus size={13} strokeWidth={2.5} />
+                          <Plus size={10} strokeWidth={2.5} />
                         </button>
                       )
 }

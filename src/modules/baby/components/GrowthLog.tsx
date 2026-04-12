@@ -8,9 +8,11 @@ import { BabyMsg } from '@/constants/messages';
 import { CONFIG } from '@/constants/config';
 import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
+import { DbSubcollection } from '@/constants/db';
+import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
 
 /** Growth measurement form with weight, height, head circumference and recent entries */
-export function GrowthLog({ childId }: { childId?: string }) {
+export function GrowthLog({ childId, siblingIds = [], uid = '' }: { childId?: string; siblingIds?: string[]; uid?: string }) {
   const { growth, logGrowth, updateGrowth, removeGrowth } = useBabyData(childId ?? null);
   const { addToast } = useToast();
   const [date, setDate] = useState(todayStr);
@@ -22,7 +24,9 @@ export function GrowthLog({ childId }: { childId?: string }) {
   const [editEntry, setEditEntry] = useState<GrowthEntry | null>(null);
   const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [logToAll, setLogToAll] = useState(false);
   const undoRef = useRef(false);
+  const hasSiblings = siblingIds.length > 0;
 
   /** Populates form fields from the selected entry for editing */
   const startEdit = (entry: GrowthEntry) => {
@@ -38,12 +42,17 @@ export function GrowthLog({ childId }: { childId?: string }) {
     e.preventDefault();
     setSaving(true);
     const now = new Date().toISOString();
+    const entryData = { date, weight, height, headCircumference, createdAt: now, notes };
 
     if (editEntry) {
       await updateGrowth({ ...editEntry, date, weight, height, headCircumference, notes });
       setEditEntry(null);
     } else {
-      await logGrowth({ date, weight, height, headCircumference, createdAt: now, notes });
+      await logGrowth(entryData);
+      if (logToAll && hasSiblings && uid) {
+        const count = await logToSiblings(uid, siblingIds, DbSubcollection.Growth, entryData);
+        if (count > 0) addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+      }
     }
 
     setWeight(null);
@@ -113,10 +122,17 @@ export function GrowthLog({ childId }: { childId?: string }) {
 
         <input type="text" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
 
-        <button type="submit" disabled={saving || (weight === null && height === null && headCircumference === null)} className="w-full py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
-          {saving && 'Saving...'}
-          {!saving && (editEntry ? 'Update Growth' : 'Log Growth')}
-        </button>
+        <div className="flex gap-2">
+          <button type="submit" disabled={saving || (weight === null && height === null && headCircumference === null)} className="flex-1 py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
+            {saving && 'Saving...'}
+            {!saving && (editEntry ? 'Update Growth' : 'Log Growth')}
+          </button>
+          {
+            hasSiblings && !editEntry && (
+              <button type="button" onClick={() => setLogToAll((v) => !v)} className={`px-3 py-3 rounded-lg border text-xs font-medium transition-colors ${logToAll ? 'bg-accent/10 border-accent text-accent' : 'bg-surface-card border-line text-fg-muted'}`} title="Log to all children">All</button>
+            )
+          }
+        </div>
       </form>
 
       <RecentGrowth entries={recentGrowth} onEdit={startEdit} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />

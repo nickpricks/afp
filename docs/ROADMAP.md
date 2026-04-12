@@ -123,6 +123,18 @@ All P0 items completed.
 
 ## P3 — Future
 
+> **Next session:** Brainstorm Phase 3 features (needed → desired). Scan source repos (BabyTracker, Floor-Tracker, Finularity) for feature ideas to port. See CLAUDE.md and per-repo roadmaps.
+
+### Module Evolution
+
+| | Item | Module | Notes |
+|---|------|--------|-------|
+| 🔮 | Toddler/kid tracking — milestones, meals, potty training, vaccinations, activities | Baby | Current logs are infant-focused. Needs age-aware UI that evolves as child grows |
+| 🔮 | Investment planning — savings goals, recurring expenses, net worth, financial insights | Budget | Current module is expense-only. Scan Finularity for planned features |
+| 🔮 | Motivational messages, challenges, milestones, streaks | Body | Module is already wholesome. Add gamification layer on top of existing scoring |
+
+### Infrastructure
+
 | | Item | Effort |
 |---|------|--------|
 | 🔮 | Go API gateway — second StorageAdapter impl | Large |

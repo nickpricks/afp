@@ -34,10 +34,12 @@ service cloud.firestore {
       return getProfile(userId).modules[moduleId] == true;
     }
 
-    // App config
+    // App config — create allowed once (fresh DB), updates only by admin
     match /app/{document=**} {
       allow read: if isAuthenticated();
-      allow write: if isHeadminick();
+      allow create: if isAuthenticated()
+        && !exists(/databases/$(database)/documents/app/config);
+      allow update, delete: if isHeadminick();
     }
 
     // Invites
@@ -61,8 +63,9 @@ service cloud.firestore {
     // User profiles
     match /users/{userId}/profile/{document=**} {
       allow read: if isOwner(userId) || isViewerOf(userId) || isHeadminick();
-      allow create: if isOwner(userId)
-        && request.resource.data.role != 'theAdminNick';
+      allow create: if isHeadminick()
+        || (isOwner(userId) && request.resource.data.role != 'theAdminNick')
+        || (isOwner(userId) && !exists(/databases/$(database)/documents/app/config));
       allow update: if isHeadminick()
         || (isOwner(userId)
             && request.resource.data.role == resource.data.role

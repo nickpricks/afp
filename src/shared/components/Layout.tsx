@@ -9,6 +9,8 @@ import { isFirebaseConfigured } from '@/shared/auth/firebase-config';
 import { ROUTES } from '@/constants/routes';
 import { LoadingScreen } from '@/shared/components/loading/LoadingScreen';
 import { useMinDelay } from '@/shared/hooks/useMinDelay';
+import { ConsoleOverlay } from '@/shared/components/ConsoleViewer';
+import { useConsoleCapture } from '@/shared/hooks/useConsoleCapture';
 
 /** Root app shell with header, routed content area, tab bar, and PWA update prompt */
 export function Layout() {
@@ -16,6 +18,7 @@ export function Layout() {
   const { isLoading, profile, firebaseUser } = useAuth();
   const isAnonymous = firebaseUser?.isAnonymous ?? true;
   const minDelayActive = useMinDelay(isFirebaseConfigured ? 1000 : 0);
+  const { entries, clear } = useConsoleCapture();
 
   if (isLoading || minDelayActive) {
     return <LoadingScreen />;
@@ -89,6 +92,7 @@ export function Layout() {
 
       <TabBar />
       <UpdatePrompt />
+      <ConsoleOverlay entries={entries} clear={clear} />
     </div>
   );
 }

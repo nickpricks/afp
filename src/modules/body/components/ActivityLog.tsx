@@ -37,7 +37,7 @@ export function ActivityLog({
                   type="button"
                   onClick={() => onEdit(a)}
                   className={
-                    `flex w-full items-center justify-between rounded-lg px-3 pr-10 py-2 text-sm transition-colors ${
+                    `flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors ${
                       isActive
                         ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border border-line'
                         : 'bg-surface-card border border-line'
@@ -52,10 +52,10 @@ onDuplicate && (
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); onDuplicate(a); }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6.5 w-6.5 items-center justify-center rounded-full bg-accent text-fg-on-accent opacity-0 scale-75 transition-all duration-150 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:opacity-100 group-hover:scale-100 active:scale-90 shadow-sm"
+                    className="btn-row-action"
                     aria-label={`Add similar ${a.type}`}
                   >
-                    <Plus size={13} strokeWidth={2.5} />
+                    <Plus size={10} strokeWidth={2.5} />
                   </button>
                 )
 }

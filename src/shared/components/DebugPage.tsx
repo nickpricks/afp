@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { isFirebaseConfigured, auth } from '@/shared/auth/firebase-config';
 import { useAuth } from '@/shared/auth/useAuth';
+import { useToast } from '@/shared/errors/useToast';
 import { CONFIG } from '@/constants/config';
 import { ROUTES } from '@/constants/routes';
 import { DevBench } from '@/shared/components/DevBench';
@@ -17,7 +18,9 @@ function formatModules(modules: Record<string, boolean> | undefined): string {
 
 /** Diagnostic page to verify deployment configuration — accessible at /#/debug */
 export function DebugPage() {
-  const { firebaseUser, profile } = useAuth();
+  const authCtxDump = useAuth();
+  const toastCtxDump = useToast();
+  const { firebaseUser, profile } = authCtxDump;
   const currentUser = auth.currentUser ?? firebaseUser;
 
   const checks = [
@@ -66,7 +69,23 @@ export function DebugPage() {
           }
         </tbody>
       </table>
-      <p className="mt-4 text-xs text-gray-400">
+      <details className="mt-4">
+        <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600">AuthContext raw JSON</summary>
+        <pre className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 rounded text-xs overflow-auto max-h-80">
+          {JSON.stringify(authCtxDump, null, 2)}
+        </pre>
+      </details>
+
+      <details className="mt-4">
+        <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600">ToastContext raw JSON</summary>
+        <pre className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 rounded text-xs overflow-auto max-h-80">
+          {JSON.stringify(toastCtxDump, null, 2)}
+        </pre>
+      </details>
+
+      <p className="mt-4 text-xs text-gray-400 italic">Console output available via the {'>'}_  pill at bottom-right</p>
+
+      <p className="mt-2 text-xs text-gray-400">
         Navigate to /debug to view this page.
       </p>
 
