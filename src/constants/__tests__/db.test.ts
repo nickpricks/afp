@@ -31,8 +31,8 @@ describe('DbSubcollection', () => {
     expect(DbSubcollection.Diapers).toBe('diapers');
   });
 
-  it('has exactly 12 subcollections', () => {
-    expect(Object.keys(DbSubcollection)).toHaveLength(12);
+  it('has exactly 13 subcollections', () => {
+    expect(Object.keys(DbSubcollection)).toHaveLength(13);
   });
 
   it('no longer has old BabyFeeds/BabySleep/BabyGrowth/BabyDiapers', () => {
