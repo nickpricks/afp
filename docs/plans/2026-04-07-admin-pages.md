@@ -1,6 +1,6 @@
 # Admin Pages (Invites + Users) Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build proper admin management pages — an Invites page with revoke/delete/copy-link actions and a Users page with role/module editing. Replace the current inline AdminPanel with a tabbed admin layout.
 
@@ -15,7 +15,7 @@
 **Files:**
 - Modify: `src/admin/components/AdminPanel.tsx`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // src/admin/__tests__/AdminPanel.test.tsx
@@ -72,11 +72,11 @@ describe('AdminPanel', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/admin/__tests__/AdminPanel.test.tsx`
 
-- [ ] **Step 3: Rewrite AdminPanel as tabbed container**
+- [x] **Step 3: Rewrite AdminPanel as tabbed container**
 
 ```typescript
 // src/admin/components/AdminPanel.tsx
@@ -122,7 +122,7 @@ export function AdminPanel() {
 }
 ```
 
-- [ ] **Step 4: Create stub InvitesTab and UsersTab** (to make it compile — fleshed out in Tasks 2-3)
+- [x] **Step 4: Create stub InvitesTab and UsersTab** (to make it compile — fleshed out in Tasks 2-3)
 
 ```typescript
 // src/admin/components/InvitesTab.tsx
@@ -175,11 +175,11 @@ export function UsersTab() {
 }
 ```
 
-- [ ] **Step 5: Run test + full suite**
+- [x] **Step 5: Run test + full suite**
 
 Run: `bunx vitest run src/admin/__tests__/AdminPanel.test.tsx && bun run test && bunx tsc --noEmit`
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/admin/
@@ -195,7 +195,7 @@ git commit -m "feat(admin): tabbed AdminPanel with InvitesTab and UsersTab stubs
 - Modify: `src/shared/auth/invite.ts` (add `deleteInvite`)
 - Create: `src/admin/__tests__/InvitesTab.test.tsx`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // src/admin/__tests__/InvitesTab.test.tsx
@@ -241,9 +241,9 @@ describe('InvitesTab', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
-- [ ] **Step 3: Add `deleteInvite` to `invite.ts`**
+- [x] **Step 3: Add `deleteInvite` to `invite.ts`**
 
 ```typescript
 // Add to src/shared/auth/invite.ts
@@ -271,15 +271,15 @@ export async function deleteInvite(code: string): Promise<Result<void>> {
 
 Add `deleteDoc` to the firebase import at top.
 
-- [ ] **Step 4: Update InvitesTab with actions**
+- [x] **Step 4: Update InvitesTab with actions**
 
 Add Copy Link and Delete buttons per invite row. Copy uses `navigator.clipboard.writeText()`. Delete calls `deleteInvite(code)` with confirmation toast.
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `bunx vitest run src/admin/__tests__/InvitesTab.test.tsx && bun run test`
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/admin/ src/shared/auth/invite.ts
@@ -295,7 +295,7 @@ git commit -m "feat(admin): invites tab with delete and copy-link actions"
 - Create: `src/admin/hooks/useAdminActions.ts`
 - Create: `src/admin/__tests__/UsersTab.test.tsx`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // src/admin/__tests__/UsersTab.test.tsx
@@ -342,9 +342,9 @@ describe('UsersTab', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
-- [ ] **Step 3: Create `useAdminActions` hook**
+- [x] **Step 3: Create `useAdminActions` hook**
 
 ```typescript
 // src/admin/hooks/useAdminActions.ts
@@ -399,15 +399,15 @@ export function useAdminActions() {
 }
 ```
 
-- [ ] **Step 4: Build UsersTab with role display and module badges**
+- [x] **Step 4: Build UsersTab with role display and module badges**
 
 Each user row shows: name, role badge, enabled module chips, expand button for editing.
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `bunx vitest run src/admin/__tests__/UsersTab.test.tsx && bun run test && bunx tsc --noEmit`
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/admin/
@@ -422,11 +422,11 @@ git commit -m "feat(admin): users tab with role display, module badges, and admi
 - Modify: `e2e/app.spec.ts`
 - Modify: `CHANGELOG.md`
 
-- [ ] **Step 1: Update E2E tests for new AdminPanel**
+- [x] **Step 1: Update E2E tests for new AdminPanel**
 
 The existing admin E2E tests check for "Create Invite" heading and module checkboxes. These should still work since InvitesTab contains InviteGenerator. Verify and fix if needed.
 
-- [ ] **Step 2: Add E2E test for Users tab**
+- [x] **Step 2: Add E2E test for Users tab**
 
 ```typescript
 test('Users tab shows on admin page', async ({ page }) => {
@@ -437,13 +437,13 @@ test('Users tab shows on admin page', async ({ page }) => {
 });
 ```
 
-- [ ] **Step 3: Update CHANGELOG**
+- [x] **Step 3: Update CHANGELOG**
 
-- [ ] **Step 4: Run all tests**
+- [x] **Step 4: Run all tests**
 
 Run: `bun run test && bunx tsc --noEmit && BASE_URL=http://localhost:3005 bunx playwright test --workers=1`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add e2e/app.spec.ts CHANGELOG.md

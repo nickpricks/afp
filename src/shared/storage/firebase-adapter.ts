@@ -13,6 +13,7 @@ import { db } from '@/shared/auth/firebase-config';
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { Result } from '@/shared/types';
 import { err, ok } from '@/shared/types';
+import { vlog, verr } from '@/shared/utils/verbose';
 
 /** Creates a Firestore-backed StorageAdapter scoped to the given base path */
 export function createFirebaseAdapter(basePath: string): StorageAdapter {
@@ -34,8 +35,10 @@ export function createFirebaseAdapter(basePath: string): StorageAdapter {
         const items = snapshot.docs.map(
           (d) => ({ id: d.id, ...d.data() }) as T,
         );
+        vlog('[AFP:storage:fb] GET_ALL', { path: basePath, collection: collectionName, count: items.length });
         return ok(items);
       } catch (e) {
+        verr('[AFP:storage:fb] GET_ALL failed', { path: basePath, collection: collectionName, error: e });
         return err(`Failed to fetch ${collectionName}: ${e instanceof Error ? e.message : String(e)}`);
       }
     },
@@ -60,8 +63,10 @@ export function createFirebaseAdapter(basePath: string): StorageAdapter {
         const docId = data.id ?? crypto.randomUUID();
         const ref = resolveDoc(collectionName, docId);
         await setDoc(ref, { ...data, id: docId }, { merge: true });
+        vlog('[AFP:storage:fb] SAVE', { path: basePath, collection: collectionName, id: docId });
         return ok(undefined);
       } catch (e) {
+        verr('[AFP:storage:fb] SAVE failed', { path: basePath, collection: collectionName, error: e });
         return err(`Failed to save to ${collectionName}: ${e instanceof Error ? e.message : String(e)}`);
       }
     },
@@ -69,8 +74,10 @@ export function createFirebaseAdapter(basePath: string): StorageAdapter {
     async remove(collectionName: string, id: string): Promise<Result<void>> {
       try {
         await deleteDoc(resolveDoc(collectionName, id));
+        vlog('[AFP:storage:fb] REMOVE', { path: basePath, collection: collectionName, id });
         return ok(undefined);
       } catch (e) {
+        verr('[AFP:storage:fb] REMOVE failed', { path: basePath, collection: collectionName, id, error: e });
         return err(`Failed to delete ${collectionName}/${id}: ${e instanceof Error ? e.message : String(e)}`);
       }
     },
@@ -80,6 +87,7 @@ export function createFirebaseAdapter(basePath: string): StorageAdapter {
       callback: (data: T[]) => void,
       onError?: (error: Error) => void,
     ): () => void {
+      vlog('[AFP:storage:fb] SNAPSHOT_SUBSCRIBE', { path: basePath, collection: collectionName });
       const q = query(resolveCollection(collectionName));
       return onSnapshot(
         q,
@@ -87,9 +95,13 @@ export function createFirebaseAdapter(basePath: string): StorageAdapter {
           const items = snapshot.docs.map(
             (d) => ({ id: d.id, ...d.data() }) as T,
           );
+          vlog('[AFP:storage:fb] SNAPSHOT', { path: basePath, collection: collectionName, count: items.length });
           callback(items);
         },
-        onError,
+        (error) => {
+          verr('[AFP:storage:fb] SNAPSHOT error', { path: basePath, collection: collectionName, error });
+          onError?.(error);
+        },
       );
     },
   };

@@ -6,6 +6,10 @@ import { ActivityType } from '@/shared/types';
 import { CONFIG } from '@/constants/config';
 import type { BodyActivity } from '@/modules/body/types';
 
+vi.mock('@/shared/errors/useToast', () => ({
+  useToast: () => ({ addToast: vi.fn() }),
+}));
+
 /** Creates N fake activities for testing pagination */
 function makeActivities(count: number): BodyActivity[] {
   return Array.from({ length: count }, (_, i) => ({

@@ -19,6 +19,10 @@ App shell components for layout, navigation, route guards, dashboard, profile, d
 - **DevBench.tsx** — Dev-only tool for generating test data across all modules with bulk modes
 - **bench-generators.ts** — Pure generator functions for DevBench (11 generators with x1/x100/x1k bulk + day-spread)
 - **DebugPage.tsx** — Debug info page showing auth state, config, and DevBench
+- **AlertBanner.tsx** — Severity-coded top banner (Info / Warning / Critical) for user-facing notifications
+- **DatePickerModal.tsx** — Modal for picking a backfill date; validates against a configurable min date
+- **SwipeToDelete.tsx** — CSS-only swipe-right-to-delete wrapper for touch devices (80 px threshold)
+- **ConsoleViewer.tsx** — In-app console log viewer component; renders captured `ConsoleEntry` items with level-coded colours
 
 ## loading/ subdirectory
 
@@ -32,4 +36,4 @@ Animated loading screen shown during auth initialization and Suspense fallbacks.
 
 ## Tests
 
-Tests in `__tests__/`: `Dashboard.test.tsx`, `DashboardCard.test.tsx`, `ProfilePage.test.tsx`. Loading screen tests in `loading/__tests__/LoadingScreen.test.tsx`.
+Tests in `__tests__/`: `Dashboard.test.tsx`, `DashboardCard.test.tsx`, `ProfilePage.test.tsx`, `AlertBanner.test.tsx`, `ProfileModuleRequest.test.tsx`. Loading screen tests in `loading/__tests__/LoadingScreen.test.tsx`.

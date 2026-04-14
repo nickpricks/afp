@@ -1,6 +1,6 @@
 # Viewer Invite Flow Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Allow admin to create viewer invites that scope the new user to read-only access of a specific user's data. The `InviteRecord` gains `role` and `viewerOf` fields. Invite redemption creates a viewer profile with `viewerOf` set.
 
@@ -18,7 +18,7 @@
 - Modify: `src/shared/auth/invite.ts`
 - Modify: `src/shared/auth/__tests__/invite.test.ts` (create if missing)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // src/shared/auth/__tests__/invite.test.ts
@@ -67,12 +67,12 @@ describe('generateInviteCode', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/shared/auth/__tests__/invite.test.ts`
 Expected: FAIL — `role` and `viewerOf` don't exist on `InviteRecord`
 
-- [ ] **Step 3: Add optional fields to InviteRecord**
+- [x] **Step 3: Add optional fields to InviteRecord**
 
 In `src/shared/auth/invite.ts`, update the interface:
 
@@ -90,11 +90,11 @@ export interface InviteRecord {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/auth/__tests__/invite.test.ts`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/auth/invite.ts src/shared/auth/__tests__/invite.test.ts
@@ -109,7 +109,7 @@ git commit -m "feat(invite): add role and viewerOf fields to InviteRecord"
 - Modify: `src/admin/components/InviteGenerator.tsx`
 - Create: `src/admin/__tests__/InviteGenerator.test.tsx`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // src/admin/__tests__/InviteGenerator.test.tsx
@@ -157,9 +157,9 @@ describe('InviteGenerator — viewer flow', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
-- [ ] **Step 3: Update InviteGenerator**
+- [x] **Step 3: Update InviteGenerator**
 
 Add role toggle (User | Viewer) and conditional "View of" dropdown:
 
@@ -202,7 +202,7 @@ const result = await createInvite(code, name.trim(), modules, firebaseUser.uid, 
 });
 ```
 
-- [ ] **Step 4: Update `createInvite` to accept role/viewerOf**
+- [x] **Step 4: Update `createInvite` to accept role/viewerOf**
 
 ```typescript
 // src/shared/auth/invite.ts — update createInvite signature
@@ -227,11 +227,11 @@ export async function createInvite(
   // ... rest unchanged
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `bunx vitest run src/admin/__tests__/InviteGenerator.test.tsx && bun run test && bunx tsc --noEmit`
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/admin/components/InviteGenerator.tsx src/shared/auth/invite.ts src/admin/__tests__/InviteGenerator.test.tsx
@@ -245,7 +245,7 @@ git commit -m "feat(invite): role selector and viewerOf picker in InviteGenerato
 **Files:**
 - Modify: `src/shared/auth/invite.ts` (`redeemInvite` function)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // Add to src/shared/auth/__tests__/invite.test.ts
@@ -270,7 +270,7 @@ describe('redeemInvite viewer flow', () => {
 });
 ```
 
-- [ ] **Step 2: Update `redeemInvite` to use invite's role**
+- [x] **Step 2: Update `redeemInvite` to use invite's role**
 
 In the `runTransaction` callback, change the profile creation:
 
@@ -287,11 +287,11 @@ if (record.viewerOf) {
 transaction.set(profileRef, profile);
 ```
 
-- [ ] **Step 3: Run tests**
+- [x] **Step 3: Run tests**
 
 Run: `bun run test && bunx tsc --noEmit`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/shared/auth/invite.ts src/shared/auth/__tests__/invite.test.ts
@@ -306,7 +306,7 @@ git commit -m "feat(invite): redemption creates viewer profile with viewerOf sco
 - Modify: `e2e/app.spec.ts`
 - Modify: `CHANGELOG.md`
 
-- [ ] **Step 1: Add E2E test for viewer role selector in invite form**
+- [x] **Step 1: Add E2E test for viewer role selector in invite form**
 
 ```typescript
 test('invite form shows role selector', async ({ page }) => {
@@ -316,15 +316,15 @@ test('invite form shows role selector', async ({ page }) => {
 });
 ```
 
-- [ ] **Step 2: Update CHANGELOG**
+- [x] **Step 2: Update CHANGELOG**
 
 Add entries for InviteRecord extension, role selector, viewer redemption.
 
-- [ ] **Step 3: Run all tests**
+- [x] **Step 3: Run all tests**
 
 Run: `bun run test && bunx tsc --noEmit && BASE_URL=http://localhost:3005 bunx playwright test --workers=1`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add e2e/app.spec.ts CHANGELOG.md

@@ -5,7 +5,7 @@ Data hooks for the Body module. Real-time listeners for body config and activity
 ## Key Files
 
 - `useBodyConfig.ts` -- Listens to `body_config/main`, provides config read/write. Returns config state that gates `BodyConfigForm` vs `BodyPage`
-- `useBodyData.ts` -- Listens to daily body documents and `body_activities` collection. Provides `logActivity`, `updateActivity`, `deleteActivity`, and floor tap handler
+- `useBodyData.ts` -- Listens to daily body documents and `body_activities` collection. Provides `logActivity` (accepts optional date param for backfill), `updateActivity`, `deleteActivity`, `deleteRecord`, and floor tap handler; stale closure fixed via `recordsRef`
 
 ## Conventions
 

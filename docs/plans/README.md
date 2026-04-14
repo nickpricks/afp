@@ -18,6 +18,14 @@ Implementation plans for AFP. One file per phase or feature.
 - `2026-04-07-viewer-invite-flow.md` -- Viewer invite flow implementation plan
 - `2026-04-10-loading-screen.md` -- Loading screen implementation plan (stick-figure SVG animations)
 - `2026-04-10-themes.md` -- Theme system overhaul plan (10 themes, fonts, ambient effects)
+- `2026-04-13-phase3-baby-foundation-plan.md` -- Phase 3 Baby module foundation (shared types, age-aware infrastructure)
+- `2026-04-13-phase3-baby-milestones-plan.md` -- Phase 3 Baby milestones feature plan
+- `2026-04-13-phase3-baby-meals-plan.md` -- Phase 3 Baby meals tracking plan (replaces infant feeds)
+- `2026-04-13-phase3-baby-needs-plan.md` -- Phase 3 Baby needs tracker plan (potty training, vaccinations)
+- `2026-04-13-phase3-baby-life-journal-plan.md` -- Phase 3 Baby life journal plan
+- `2026-04-13-phase3-baby-suggestions-plan.md` -- Phase 3 Baby suggestions engine plan
+- `2026-04-13-phase3-baby-elimination-plan.md` -- Phase 3 Baby elimination/removal plan for infant-only features
+- `2026-04-14-notifications-module-requests-plan.md` -- Notifications and module requests implementation plan
 
 ## Conventions
 

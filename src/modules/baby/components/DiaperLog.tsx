@@ -185,7 +185,7 @@ entries.map((entry) => {
               <span className="font-medium text-fg">{DIAPER_TYPE_LABELS[entry.type]}</span>
               <div className="flex items-center gap-2">
                 <span className="text-fg-muted">{entry.date} {entry.time}</span>
-                <span role="button" tabIndex={0} aria-label="Delete" onClick={(e) => { e.stopPropagation(); onRemove(entry.id); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); onRemove(entry.id); } }} className="text-xs text-fg-muted hover:text-red-500 transition-colors">x</span>
+                <span role="button" tabIndex={0} aria-label="Delete" onClick={(e) => { e.stopPropagation(); onRemove(entry.id); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); onRemove(entry.id); } }} className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all">x</span>
               </div>
             </div>
             {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}

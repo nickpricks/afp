@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { UsersTab } from '@/admin/components/UsersTab';
 
 const mockUsers = [
@@ -46,21 +47,31 @@ vi.mock('@/admin/hooks/useAdminActions', () => ({
   }),
 }));
 
+vi.mock('@/admin/hooks/useAdminNotifications', () => ({
+  useAdminNotifications: () => ({
+    moduleRequests: [],
+    approveModuleRequest: vi.fn(),
+    unreadCount: 0,
+    ready: true,
+    sendAlert: vi.fn(),
+  }),
+}));
+
 describe('UsersTab', () => {
   it('lists all users with name and role', () => {
-    render(<UsersTab />);
+    render(<MemoryRouter><UsersTab /></MemoryRouter>);
     expect(screen.getByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('Bob')).toBeInTheDocument();
   });
 
   it('shows role badges', () => {
-    render(<UsersTab />);
+    render(<MemoryRouter><UsersTab /></MemoryRouter>);
     expect(screen.getByText('user')).toBeInTheDocument();
     expect(screen.getByText('viewer')).toBeInTheDocument();
   });
 
   it('shows enabled module chips', () => {
-    render(<UsersTab />);
+    render(<MemoryRouter><UsersTab /></MemoryRouter>);
     // Alice has body, Bob has body + budget
     const bodyChips = screen.getAllByText('body');
     expect(bodyChips.length).toBeGreaterThanOrEqual(2);
@@ -68,7 +79,7 @@ describe('UsersTab', () => {
   });
 
   it('expands a user row on click to show edit controls', () => {
-    render(<UsersTab />);
+    render(<MemoryRouter><UsersTab /></MemoryRouter>);
     fireEvent.click(screen.getByText('Alice'));
     // Should see module toggles when expanded
     expect(screen.getByRole('checkbox', { name: /body/i })).toBeInTheDocument();

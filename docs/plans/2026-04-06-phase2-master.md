@@ -1,6 +1,6 @@
 # AFP Phase 2 — Master Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Redesign all AFP modules with first-time config flows, dashboards, multi-child baby support, expense to budget rename with income tracking, profile section, admin+viewer roles, and 3 new themes with ambient effects.
 
@@ -18,13 +18,13 @@ Track completion per phase. Update checkboxes as tasks complete.
 
 | Phase | Module | Enums | Types | Storage | Config UI | Data Hooks | UI Components | Tests | Firestore Rules | Negative Tests | Doc Sweep |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| **0** | Foundation | [ ] | [ ] | [ ] | — | — | — | [ ] | [ ] | — | — |
-| **2a** | Body | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| **2b** | Baby | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| **2c** | Budget | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| **2d** | Profile | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| **2e** | Admin+Viewer | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| **2f** | Themes | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| **0** | Foundation | [x] | [x] | [x] | — | — | — | [x] | [x] | — | — |
+| **2a** | Body | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| **2b** | Baby | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| **2c** | Budget | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| **2d** | Profile | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| **2e** | Admin+Viewer | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| **2f** | Themes | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
 
 ---
 
@@ -61,12 +61,12 @@ Every phase follows this structure:
 
 After all phases complete:
 
-- [ ] Run full test suite: `bun run test`
-- [ ] Run type check: `bun run typecheck`
-- [ ] Run linter: `bun run lint`
-- [ ] Run E2E tests: `bun run test:e2e`
-- [ ] Update CLAUDE.md comprehensively
-- [ ] Update README.md (modules, commands, architecture)
-- [ ] Update ROADMAP.md (move Phase 2 to done)
-- [ ] Update design spec status to "Implemented"
-- [ ] Mark all cells [x] in progress table above
+- [x] Run full test suite: `bun run test`
+- [x] Run type check: `bun run typecheck`
+- [x] Run linter: `bun run lint`
+- [x] Run E2E tests: `bun run test:e2e`
+- [x] Update CLAUDE.md comprehensively
+- [x] Update README.md (modules, commands, architecture)
+- [x] Update ROADMAP.md (move Phase 2 to done)
+- [x] Update design spec status to "Implemented"
+- [x] Mark all cells [x] in progress table above

@@ -34,6 +34,14 @@
   --font-family-body: var(--font-body, system-ui, sans-serif);
 }
 
+/* Hide scrollbar while preserving scroll functionality */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);

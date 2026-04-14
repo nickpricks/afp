@@ -92,28 +92,28 @@ function ScoreRing({ score, goal }: { score: number; goal: number }) {
   const pctLabel = Math.round(pct * 100);
 
   return (
-    <div className="relative mx-auto" style={{ width: 180, height: 180 }}>
+    <div className="relative mx-auto" style={{ width: 150, height: 150 }}>
       <svg viewBox="0 0 160 160" className="w-full h-full -rotate-90">
-        <circle cx="80" cy="80" r={radius} fill="none" stroke="var(--line)" strokeWidth="10" />
+        <circle cx="80" cy="80" r={radius} fill="none" stroke="var(--line)" strokeWidth="12" />
         <circle
           cx="80"
           cy="80"
           r={radius}
           fill="none"
           stroke="var(--accent)"
-          strokeWidth="10"
+          strokeWidth="12"
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           className="transition-[stroke-dashoffset] duration-700 ease-out"
-          style={{ filter: 'drop-shadow(0 0 6px var(--accent))' }}
+          style={{ filter: 'drop-shadow(0 0 8px var(--accent))' }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-5xl font-bold text-fg">{score}</span>
-        <span className="text-xs text-fg-muted uppercase tracking-wider mt-1">Score</span>
+        <span className="text-4xl font-bold text-fg tabular-nums">{score}</span>
+        <span className="text-[10px] text-fg-muted uppercase tracking-widest mt-0.5">Score</span>
       </div>
-      <p className="text-center text-xs text-accent mt-2 font-medium">{pctLabel}% of daily goal</p>
+      <p className="text-center text-[11px] text-accent mt-1.5 font-semibold">{pctLabel}% of daily goal</p>
     </div>
   );
 }
@@ -143,8 +143,8 @@ export function BodyStats({
       {/* Score Ring */}
       <ScoreRing score={todayRecord.total} goal={config.dailyGoal || CONFIG.DAILY_SCORE_GOAL} />
 
-      {/* Today's Details — cards with hover (+) */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* Today's Details — compact stat cards */}
+      <div className="grid grid-cols-2 gap-2">
         {
 STAT_CARDS
           .filter((c) => config[c.key] || c.showWhen?.(todayRecord))
@@ -155,13 +155,15 @@ STAT_CARDS
                 key={c.label}
                 type="button"
                 onClick={() => onNavigate(c.tab)}
-                className="rounded-lg bg-surface-card border border-line p-3 text-center transition-all hover:border-accent hover:shadow-[0_0_0_1px_var(--accent)] active:scale-95"
+                className="group rounded-xl bg-surface-card border border-line p-3 text-left transition-all hover:border-accent active:scale-[0.97]"
               >
-                <div className="flex items-center justify-center gap-1 text-fg-muted">
-                  <Icon size={14} />
-                  <span className="text-xs">{c.label}</span>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-accent/10 text-accent group-hover:bg-accent group-hover:text-fg-on-accent transition-colors">
+                    <Icon size={13} />
+                  </div>
+                  <span className="text-[11px] font-medium text-fg-muted">{c.label}</span>
                 </div>
-                <p className="text-2xl font-semibold text-fg mt-1">{c.getValue(todayRecord)}</p>
+                <p className="text-xl font-bold text-fg tabular-nums">{c.getValue(todayRecord)}</p>
               </button>
             );
           })
@@ -230,23 +232,25 @@ weekStats.dailyScores.map(({ key, score }) => {
         </div>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions — compact pill row */}
       {
 STAT_CARDS.some((c) => config[c.key]) && (
-        <div className="flex gap-3">
+        <div className="flex items-center justify-center gap-2 flex-wrap">
           {
-[...new Map(STAT_CARDS.filter((c) => config[c.key]).map((c) => [c.tab, c])).values()].map((c, i) => (
+[...new Map(STAT_CARDS.filter((c) => config[c.key]).map((c) => [c.tab, c])).values()].map((c) => {
+            const Icon = c.icon;
+            return (
             <button
               key={c.tab}
               type="button"
               onClick={() => onNavigate(c.tab)}
-              className={`flex-1 rounded-lg px-4 py-3 font-medium active:scale-95 transition-transform ${
-                i === 0 ? 'bg-accent text-fg-on-accent' : 'bg-surface-card border border-line text-fg'
-              }`}
+              className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent active:scale-95 transition-all hover:bg-accent hover:text-fg-on-accent"
             >
-              + {c.tab.charAt(0).toUpperCase() + c.tab.slice(1)}
+              <Icon size={13} />
+              <span>{c.tab.charAt(0).toUpperCase() + c.tab.slice(1)}</span>
             </button>
-          ))
+            );
+          })
 }
         </div>
       )

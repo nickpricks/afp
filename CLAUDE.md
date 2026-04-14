@@ -47,7 +47,10 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Tap-to-edit pattern**: All list views use tap-row-to-populate-form. Body: FloorsTab redirects +/- buttons, ActivityLog populates AddActivity. Baby: all 4 logs populate their forms. Budget: edit deferred (form on separate page). Active row: `bg-[var(--accent-muted)] border-l-2 border-l-accent`
 - **List constants**: `CONFIG.PAGE_SIZE` (25) for all paginated lists, `CONFIG.UNDO_DURATION_MS` (10000) for undo delete toasts, `CONFIG.METERS_PER_KM` (1000) for distance conversion — never hardcode these values
 - **Route guards**: `ModuleGate` wraps module routes, `AdminGate` wraps admin routes — redirect to `/` if unauthorized
-- **Admin panel**: Tabbed container (Invites | Users). `InvitesTab` has copy-link + delete actions. `UsersTab` has color-coded module chips (Body=indigo, Budget=emerald, Baby=pink), role stat bar, toggle switches, accordion expand. `useAdminActions` hook for Firestore profile writes
+- **Admin panel**: Tabbed container (Invites | Users | Broadcasts). `InvitesTab` has copy-link + delete actions. `UsersTab` has color-coded module chips (Body=indigo, Budget=emerald, Baby=pink), role stat bar, toggle switches, accordion expand, "View Dashboard" button per user, module request approve badges. `useAdminActions` hook for Firestore profile writes. Admin can view any user's dashboard via `?viewUser=uid` query param on `/`
+- **Notifications**: Per-user subcollection `users/{uid}/notifications/{id}`. User→admin: module requests (writes to admin's subcollection + own `requestedModules`). Admin→user: alerts/notices with severity, type, and `shownTillDate` expiry. `useNotifications` reads own inbox, `useAdminNotifications` adds send/approve/delete actions. `AlertBanner` renders above header in Layout. `BroadcastsTab` in admin panel for composing alerts. Spec: `docs/specs/2026-04-14-notifications-module-requests-design.md`
+- **Delete pattern**: Inline `x` text on all list rows (Body + Baby), `hover:text-red-500 hover:scale-125 hover:font-bold`. Mobile: `SwipeToDelete` wrapper (CSS-only touch, no gesture library — swap to `@use-gesture/react` if needed). Undo toast with `CONFIG.UNDO_DURATION_MS` (10s)
+- **Verbose storage logging**: Both `localStorage-adapter.ts` and `firebase-adapter.ts` log all SAVE/REMOVE/SNAPSHOT operations via `vlog()` when debug verbose toggle is on. Prefixed `[AFP:storage:local]` or `[AFP:storage:fb]`
 - **Invite viewer flow**: `InviteRecord` has optional `role` and `viewerOf` fields. `InviteGenerator` shows User/Viewer toggle + "View of" picker. `redeemInvite` creates Viewer profile with `viewerOf` scoping when `role='viewer'`
 - **Dev bypass**: When Firebase isn't configured (`isFirebaseConfigured = false`), auth is bypassed — all modules enabled, TheAdminNick role, localStorage adapter used instead of Firebase
 
@@ -60,6 +63,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - Firestore paths: baby children at `/users/{uid}/children/{childId}`, baby subcollections at `/users/{uid}/children/{childId}/feeds/{id}` (nested, not flat)
 - **Baby hooks**: `useBabyCollection<T>` generic hook in `useBabyCollection.ts`, composed by `useBabyData`. Each subcollection tracks `ready` state independently — sync status only shows `Synced` when all 4 listeners have reported
 - **Generic data hooks**: `useBabyCollection<T>` pattern — reusable hook for subcollection listener + state + save. New modules should follow this pattern instead of duplicating listener boilerplate
+- **Baby list refactor (worth investigating)**: Baby module has 4 inline `RecentXxx` render functions (FeedLog, SleepLog, GrowthLog, DiaperLog) each duplicating list/edit/delete/pagination logic. Body module solved this with a shared `ActivityLog` component. Baby should follow the same pattern — extract a shared `BabyLogList` component to reduce duplication and ensure consistent UX (delete hover, swipe, undo) across all baby logs
 
 ## Theme System
 
@@ -163,6 +167,12 @@ Found via grep sweeps — fix in next code hygiene pass:
 - Firestore `collection()` requires odd segment count (1, 3, 5...). Baby subcollections are flat: `baby_feeds`, not `baby/feeds`. New subcollections must follow this pattern
 - `react-hooks/set-state-in-effect` — no synchronous `setState` in `useEffect` body. Use refs, derived state via `useMemo`, or move to initial `useState` value
 - `scripts/*.ts` run in Bun (not Vite) — no `@/` path aliases. Use relative imports or document enum value mappings in comments
+- **StorageAdapter is per-user only**: `createAdapter(userPath(uid))` scopes to one user. Cross-user admin queries (e.g., list all profiles) need direct Firestore `collectionGroup` — the adapter doesn't support collection-wide reads by design
+- **Delete + recompute race**: After `adapter.remove()`, the `onSnapshot` listener hasn't fired yet. `activitiesRef.current` still contains the deleted item. Manually filter the deleted ID from the ref before recomputing summaries
+- **Dev mode doesn't persist profile reads**: `DEV_PROFILE` is hardcoded in `auth-context.tsx` — theme/colorMode saves go to localStorage correctly but are never read back on reload. Will work on prod with Firebase `onSnapshot`
+- **SwipeToDelete pattern**: Red background must be `opacity-0 pointer-events-none` by default, revealed via JS during swipe. Row content needs `bg-surface` class. The wrapper renders `<div>` — must go inside `<li>`, never wrap it (invalid HTML)
+- **E2E button disambiguation**: Quick action pills and tab bar buttons share text (e.g., "Floors", "Walking"). Use `page.locator('main button', { hasText: 'X' }).first()` to target tab buttons
+- **`@testing-library/user-event` not installed**: Use `fireEvent` from `@testing-library/react` in tests — `userEvent` is not a direct dependency
 - **Playwright `isVisible()` returns immediately** — does NOT wait, even with `{ timeout }` parameter. For waiting, use `expect(locator).toBeVisible({ timeout })` or `locator.waitFor()`. This caused 8 false-negative E2E tests when lazy-loaded routes hadn't rendered yet
 
 ## Security (Firestore Rules)

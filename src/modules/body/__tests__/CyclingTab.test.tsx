@@ -5,6 +5,10 @@ import { CyclingTab } from '@/modules/body/components/CyclingTab';
 import { ActivityType } from '@/shared/types';
 import type { BodyActivity } from '@/modules/body/types';
 
+vi.mock('@/shared/errors/useToast', () => ({
+  useToast: () => ({ addToast: vi.fn() }),
+}));
+
 const mockOnLog = vi.fn();
 const mockOnSave = vi.fn();
 

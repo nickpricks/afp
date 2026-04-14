@@ -66,6 +66,7 @@ export interface UserProfile {
   modules: ModuleConfig;
   createdAt: string;
   updatedAt: string;
+  requestedModules?: string[];
 }
 
 // ─── Toast Types ────────────────────────────────────────────────────────────
@@ -85,6 +86,43 @@ export enum SyncStatus {
   Syncing = 'syncing',
   Error = 'error',
   Offline = 'offline',
+}
+
+// ─── Notification Types ─────────────────────────────────────────────────────
+
+/** Type of notification entry */
+export enum NotificationType {
+  ModuleRequest = 'module_request',
+  AdminAlert = 'admin_alert',
+}
+
+/** Behavioral type for admin alerts */
+export enum AlertType {
+  Alert = 'alert',
+  Notice = 'notice',
+}
+
+/** Visual severity level for alert banners */
+export enum Severity {
+  Info = 'info',
+  Warning = 'warning',
+  Critical = 'critical',
+}
+
+/** A notification entry stored in users/{uid}/notifications/{id} */
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  moduleId?: ModuleId;
+  requestedBy?: string;
+  requestedByName?: string;
+  message?: string;
+  severity?: Severity;
+  alertType?: AlertType;
+  shownTillDate?: string;
+  createdAt: string;
+  read: boolean;
+  dismissed: boolean;
 }
 
 // ─── Activity Types ─────────────────────────────────────────────────────────

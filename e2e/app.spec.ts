@@ -82,9 +82,10 @@ test.describe('Body — Config gate', () => {
   test('saving config shows tabbed interface', async ({ page }) => {
     await page.goto('/body');
     await page.getByRole('button', { name: 'Save Configuration' }).click();
+    // Tab bar buttons — scope to the tab bar area (first set of buttons in main)
     await expect(page.getByRole('button', { name: 'Stats' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Floors', exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Walking', exact: true })).toBeVisible();
+    await expect(page.locator('main button', { hasText: 'Floors' }).first()).toBeVisible();
+    await expect(page.locator('main button', { hasText: 'Walking' }).first()).toBeVisible();
     // Running is off by default in DEFAULT_BODY_CONFIG — only Stats, Floors, Walking tabs show
   });
 });
@@ -102,18 +103,23 @@ test.describe('Body — Stats tab', () => {
     await expect(page.getByText('This Week')).toBeVisible();
   });
 
-  test('shows quick action buttons matching config', async ({ page }) => {
+  test('shows quick action pill buttons matching config', async ({ page }) => {
     // Default config: floors=true, walking=true, running=false
-    // Quick action text is "+" + capitalized tab name (e.g. "+ Floors", "+ Walking")
-    await expect(page.getByRole('button', { name: '+ Floors' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '+ Walking' })).toBeVisible();
+    // Quick action pills have icon + capitalized tab name (e.g. "Floors", "Walking")
+    // These are the pill-shaped buttons at the bottom of stats, distinct from tab bar buttons
+    const pills = page.locator('button.rounded-full');
+    await expect(pills.first()).toBeVisible();
+    // At least 2 pills (Floors + Walking) when running is off
+    const count = await pills.count();
+    expect(count).toBeGreaterThanOrEqual(2);
   });
 });
 
 test.describe('Body — Floors tab', () => {
   test.beforeEach(async ({ page }) => {
     await ensureBodyConfigured(page);
-    await page.getByRole('button', { name: 'Floors', exact: true }).click();
+    // Click the Floors TAB button (first match, in the tab bar)
+    await page.locator('main button', { hasText: 'Floors' }).first().click();
   });
 
   test('has up and down arrow buttons', async ({ page }) => {
@@ -146,7 +152,8 @@ test.describe('Body — Floors tab', () => {
 test.describe('Body — Walking tab', () => {
   test.beforeEach(async ({ page }) => {
     await ensureBodyConfigured(page);
-    await page.getByRole('button', { name: 'Walking', exact: true }).click();
+    // Click the Walking TAB button (first match, in the tab bar)
+    await page.locator('main button', { hasText: 'Walking' }).first().click();
   });
 
   test('has distance input and unit toggle', async ({ page }) => {

@@ -16,7 +16,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 
 import { ModuleId, SyncStatus, UserRole, type UserProfile } from '@/shared/types';
 import { auth, db, isFirebaseConfigured } from '@/shared/auth/firebase-config';
-import { DbCollection, DbSubcollection, DbDoc } from '@/constants/db';
+import { DbCollection, DbSubcollection, DbDoc, DbField } from '@/constants/db';
 import { createDefaultProfile } from '@/shared/utils/profile';
 
 export interface AuthContextValue {
@@ -26,6 +26,7 @@ export interface AuthContextValue {
   isLoading: boolean;
   syncStatus: SyncStatus;
   setSyncStatus: (status: SyncStatus) => void;
+  adminUid: string | null;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -47,6 +48,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
   const [isLoading, setIsLoading] = useState(isFirebaseConfigured);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>(SyncStatus.Offline);
+  const [adminUid, setAdminUid] = useState<string | null>(
+    !isFirebaseConfigured ? 'dev-user' : null,
+  );
+
+  useEffect(() => {
+    if (!isFirebaseConfigured) {
+      return;
+    }
+    const configRef = doc(db, DbCollection.App, DbDoc.Config);
+    const unsubscribe = onSnapshot(configRef, (snap) => {
+      if (snap.exists()) {
+        setAdminUid((snap.data()[DbField.AdminUid] as string | undefined) ?? null);
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     if (!isFirebaseConfigured) {
@@ -119,6 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       syncStatus,
       setSyncStatus,
+      adminUid,
     }
 }>
       {children}

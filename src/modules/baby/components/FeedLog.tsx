@@ -212,7 +212,7 @@ entries.map((entry) => {
                   aria-label="Delete"
                   onClick={(e) => { e.stopPropagation(); onRemove(entry.id); }}
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); onRemove(entry.id); } }}
-                  className="text-xs text-fg-muted hover:text-red-500 transition-colors"
+                  className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
                 >
                   x
                 </span>

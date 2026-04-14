@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { useAuth } from '@/shared/auth/useAuth';
 import { AdminClaim } from '@/shared/components/AdminClaim';
@@ -21,7 +22,8 @@ import { getGreeting, formatDayDate, todayStr } from '@/shared/utils/date';
 export function Dashboard() {
   const { firebaseUser, profile, isTheAdminNick } = useAuth();
   const { users } = useAllUsers();
-  const [selectedUid, setSelectedUid] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedUid = searchParams.get('viewUser');
   const [appClaimed, setAppClaimed] = useState<boolean | null>(isFirebaseConfigured ? null : true);
 
   useEffect(() => {
@@ -30,6 +32,18 @@ export function Dashboard() {
   }, [profile]);
 
   const ownUid = firebaseUser?.uid ?? '';
+
+  /** Updates selected user and syncs the URL query param */
+  const handleUserSelect = (uid: string) => {
+    const isOwn = uid === ownUid;
+    const next = new URLSearchParams(searchParams);
+    if (isOwn) {
+      next.delete('viewUser');
+    } else {
+      next.set('viewUser', uid);
+    }
+    setSearchParams(next, { replace: true });
+  };
 
   // Determine targetUid based on role
   let targetUid: string | undefined;
@@ -88,7 +102,7 @@ export function Dashboard() {
             <span className="text-xs text-fg-muted">Viewing</span>
             <select
               value={selectedUid ?? ownUid}
-              onChange={(e) => setSelectedUid(e.target.value === ownUid ? null : e.target.value)}
+              onChange={(e) => handleUserSelect(e.target.value)}
               className="bg-transparent text-sm font-medium text-fg appearance-none cursor-pointer"
             >
               <option value={ownUid}>My Data</option>

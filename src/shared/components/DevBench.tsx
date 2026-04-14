@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 
 import { isFirebaseConfigured } from '@/shared/auth/firebase-config';
+import { useAuth } from '@/shared/auth/useAuth';
 import type { BodyConfig } from '@/modules/body/types';
 import type { Child } from '@/modules/baby/types';
 import {
@@ -63,6 +64,59 @@ function BenchButton({ label, onClick }: { label: string; onClick: (date?: strin
   );
 }
 
+// ─── UserProfilePanel ───────────────────────────────────────────────────────
+
+/** Collapsible panel showing the current user's raw Firestore profile as JSON */
+function UserProfilePanel() {
+  const { firebaseUser, profile } = useAuth();
+  const [copied, setCopied] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const uid = firebaseUser?.uid ?? 'unknown';
+  const firestorePath = `users/${uid}/profile/main`;
+  const json = JSON.stringify(profile, null, 2);
+
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(json).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch((e) => console.error('[AFP] Clipboard copy failed:', e));
+  }, [json]);
+
+  return (
+    <div className="mb-3">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex items-center gap-1 text-xs font-semibold text-fg-muted mb-2 cursor-pointer hover:text-accent transition-colors"
+      >
+        <span className="text-[10px]">{open ? '▼' : '▶'}</span>
+        <span>User Profile</span>
+      </button>
+      {
+        open && (
+          <div className="rounded-lg bg-surface border border-line p-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-fg-muted font-mono">UID: {uid}</span>
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="px-2 py-0.5 rounded text-[10px] font-medium bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
+              >
+                {copied ? 'Copied!' : 'Copy JSON'}
+              </button>
+            </div>
+            <p className="text-[10px] text-fg-muted font-mono mb-2">{firestorePath}</p>
+            <pre className="text-[11px] font-mono text-fg leading-relaxed overflow-auto max-h-64 whitespace-pre-wrap break-words">
+              {json}
+            </pre>
+          </div>
+        )
+      }
+    </div>
+  );
+}
+
 // ─── DevBench Component ─────────────────────────────────────────────────────
 
 /** Dev-only bench panel — visible only when Firebase is not configured */
@@ -91,6 +145,9 @@ export function DevBench() {
           Nuke localStorage
         </button>
       </div>
+
+      {/* User profile data */}
+      <UserProfilePanel />
 
       {/* Body section */}
       {

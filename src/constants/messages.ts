@@ -38,8 +38,11 @@ export enum BodyMsg {
   RecordSaved = 'Body record saved',
   RecordFailed = 'Failed to save body record',
   ActivityUpdated = 'Activity updated',
+  ActivityDeleteFailed = 'Failed to delete activity',
   ActivityUpdateFailed = 'Failed to update activity',
   AtLeastOneActivity = 'Enable at least one activity',
+  RecordDeleted = 'Floor record deleted',
+  RecordDeleteFailed = 'Failed to delete floor record',
   TodayReset = 'Today reset',
 }
 
@@ -83,6 +86,21 @@ export enum AdminMsg {
   ModulesUpdateFailed = 'Failed to update modules',
   RoleUpdated = 'Role updated',
   RoleUpdateFailed = 'Failed to update role',
+}
+
+/** Notification and module request messages */
+export enum NotificationMsg {
+  ModuleRequested = 'Module requested',
+  ModuleRequestFailed = 'Failed to request module',
+  ModuleAlreadyRequested = 'Module already requested',
+  ModuleApproved = 'Module enabled',
+  ModuleApproveFailed = 'Failed to approve module request',
+  AlertCreated = 'Alert sent',
+  AlertCreateFailed = 'Failed to send alert',
+  AlertDismissed = 'Alert dismissed',
+  AlertDismissFailed = 'Failed to dismiss alert',
+  AlertDeleted = 'Alert removed',
+  AlertDeleteFailed = 'Failed to remove alert',
 }
 
 /** Context provider guard messages */

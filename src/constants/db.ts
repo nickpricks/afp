@@ -20,6 +20,7 @@ export enum DbSubcollection {
   Sleep = 'sleep',
   Growth = 'growth',
   Diapers = 'diapers',
+  Notifications = 'notifications',
 }
 
 /** Firestore document names */
