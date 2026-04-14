@@ -11,6 +11,7 @@ Pure utility functions with no React or Firebase dependencies.
 - **regex.ts** — `DATE_RE` and `INVITE_CODE_RE` regex patterns
 - **sort.ts** — `sortNewestFirst(items, getKey)` sorts by a string field in descending lexicographic order. Replaces inline `.sort()` comparators
 - **validation.ts** — `isValidNumber()` checks for finite positive numbers
+- **verbose.ts** — `isVerbose()` / `setVerbose()` toggle for debug-level adapter logging; persisted in localStorage
 
 ## Tests
 

@@ -11,7 +11,7 @@ Body/fitness tracking module. Floors (daily aggregate) + walk/run/cycle activiti
 ## Directories
 
 - `components/` — 10 UI components (BodyTracker, BodyPage, BodyStats, BodyConfigForm, FloorsTab, WalkingTab, RunningTab, CyclingTab, ActivityLog, AddActivity)
-- `hooks/` — Data hooks (useBodyConfig, useBodyData)
+- `hooks/` — Data hooks (useBodyConfig, useBodyData: logActivity with optional date, deleteActivity, deleteRecord, stale-closure fix via recordsRef)
 
 ## Tests
 

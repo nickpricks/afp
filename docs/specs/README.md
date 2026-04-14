@@ -10,6 +10,9 @@ Design specifications and analysis documents for AFP.
 - `2026-04-07-theme-system-analysis.md` -- Theme system analysis and improvement proposals
 - `2026-04-10-loading-screen-design.md` -- Loading screen design spec (three animated stick-figure SVG scenes)
 - `2026-04-10-themes-design.md` -- Theme system overhaul design spec (10 themes, font pairings, ambient effects)
+- `2026-04-13-phase3-vision-design.md` -- Phase 3 vision design spec (Baby→Kid, budget investments, body gamification)
+- `2026-04-13-phase3-baby-to-kid-design.md` -- Baby-to-kid evolution design spec (milestones, meals, potty training, vaccinations)
+- `2026-04-14-notifications-module-requests-design.md` -- Notifications and module requests design spec
 
 ## Conventions
 

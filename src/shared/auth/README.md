@@ -4,7 +4,7 @@ Firebase authentication, Google Sign-In, TheAdminNick admin model, invite system
 
 ## Files
 
-- **auth-context.tsx** — AuthProvider and AuthContext; wraps Firebase Auth state and user profile with dev-mode bypass
+- **auth-context.tsx** — AuthProvider and AuthContext; wraps Firebase Auth state and user profile with dev-mode bypass; exposes `adminUid` for viewer-scoped writes
 - **useAuth.ts** — `useAuth` hook consuming AuthContext (separate file for fast-refresh)
 - **firebase-config.ts** — Firebase app/auth/Firestore initialization with dev vs prod config
 - **google-auth.ts** — `signInWithGoogle()` -- links anonymous account to Google via popup, handles credential-already-in-use fallback, returns `'cancelled'` for popup dismiss

@@ -167,6 +167,12 @@ Found via grep sweeps — fix in next code hygiene pass:
 - Firestore `collection()` requires odd segment count (1, 3, 5...). Baby subcollections are flat: `baby_feeds`, not `baby/feeds`. New subcollections must follow this pattern
 - `react-hooks/set-state-in-effect` — no synchronous `setState` in `useEffect` body. Use refs, derived state via `useMemo`, or move to initial `useState` value
 - `scripts/*.ts` run in Bun (not Vite) — no `@/` path aliases. Use relative imports or document enum value mappings in comments
+- **StorageAdapter is per-user only**: `createAdapter(userPath(uid))` scopes to one user. Cross-user admin queries (e.g., list all profiles) need direct Firestore `collectionGroup` — the adapter doesn't support collection-wide reads by design
+- **Delete + recompute race**: After `adapter.remove()`, the `onSnapshot` listener hasn't fired yet. `activitiesRef.current` still contains the deleted item. Manually filter the deleted ID from the ref before recomputing summaries
+- **Dev mode doesn't persist profile reads**: `DEV_PROFILE` is hardcoded in `auth-context.tsx` — theme/colorMode saves go to localStorage correctly but are never read back on reload. Will work on prod with Firebase `onSnapshot`
+- **SwipeToDelete pattern**: Red background must be `opacity-0 pointer-events-none` by default, revealed via JS during swipe. Row content needs `bg-surface` class. The wrapper renders `<div>` — must go inside `<li>`, never wrap it (invalid HTML)
+- **E2E button disambiguation**: Quick action pills and tab bar buttons share text (e.g., "Floors", "Walking"). Use `page.locator('main button', { hasText: 'X' }).first()` to target tab buttons
+- **`@testing-library/user-event` not installed**: Use `fireEvent` from `@testing-library/react` in tests — `userEvent` is not a direct dependency
 - **Playwright `isVisible()` returns immediately** — does NOT wait, even with `{ timeout }` parameter. For waiting, use `expect(locator).toBeVisible({ timeout })` or `locator.waitFor()`. This caused 8 false-negative E2E tests when lazy-loaded routes hadn't rendered yet
 
 ## Security (Firestore Rules)

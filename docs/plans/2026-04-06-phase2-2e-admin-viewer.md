@@ -11,15 +11,15 @@
 - Modify: `src/shared/auth/the-admin-nick.ts`
 - Create: `src/shared/components/AdminClaim.tsx`
 
-- [ ] **Step 1: Build admin claim screen**
+- [x] **Step 1: Build admin claim screen**
 
 Shown when `app/config` doesn't exist. "Claim this app as admin" button → sets `headminickUid` in Firestore → creates admin profile.
 
-- [ ] **Step 2: Wire into app startup**
+- [x] **Step 2: Wire into app startup**
 
 In `AuthProvider` or `App.tsx`: if authenticated but no `app/config` → show `<AdminClaim />`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/auth/the-admin-nick.ts src/shared/components/AdminClaim.tsx src/App.tsx
@@ -32,7 +32,7 @@ git commit -m "feat(admin): add fresh database admin claim flow"
 - Create: `src/shared/components/Dashboard.tsx`
 - Create: `src/shared/components/DashboardCard.tsx`
 
-- [ ] **Step 1: Build Dashboard component**
+- [x] **Step 1: Build Dashboard component**
 
 Role-aware:
 - User: shows own data summary cards per enabled module
@@ -41,15 +41,15 @@ Role-aware:
 
 DashboardCard: reusable card component showing module summary (today's stats, last entries).
 
-- [ ] **Step 2: Build admin user selector**
+- [x] **Step 2: Build admin user selector**
 
 Dropdown listing all profiled users (from Firestore `users/` collection query). Admin selects → Dashboard re-renders with that user's data.
 
-- [ ] **Step 3: Wire as home route**
+- [x] **Step 3: Wire as home route**
 
 `/` and `/dashboard` → `<Dashboard />`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/shared/components/Dashboard.tsx src/shared/components/DashboardCard.tsx src/App.tsx
@@ -62,18 +62,18 @@ git commit -m "feat(admin): universal dashboard with role-aware data scoping"
 - Modify: `src/shared/auth/invite.ts`
 - Modify: `src/admin/components/InviteGenerator.tsx`
 
-- [ ] **Step 1: Update invite creation to support viewer role**
+- [x] **Step 1: Update invite creation to support viewer role**
 
 Add `role` and `viewerOf` fields to invite creation. InviteGenerator gets:
 - Role selector: [User | Viewer]
 - If Viewer: "View of" dropdown (lists existing users)
 - Module checkboxes (scope what viewer can see)
 
-- [ ] **Step 2: Update invite redemption**
+- [x] **Step 2: Update invite redemption**
 
 When redeeming a viewer invite, copy `viewerOf` to the new user's profile.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/auth/invite.ts src/admin/components/InviteGenerator.tsx
@@ -86,15 +86,15 @@ git commit -m "feat(admin): viewer invite creation with viewerOf scoping"
 - Modify: `src/admin/components/AdminPanel.tsx`
 - Create: `src/admin/components/InvitesPage.tsx`
 
-- [ ] **Step 1: Build InvitesPage**
+- [x] **Step 1: Build InvitesPage**
 
 Shows: Create Invite form + list of all invites (pending/redeemed). Actions: Revoke, Delete, Re-send (copy link).
 
-- [ ] **Step 2: Wire routing**
+- [x] **Step 2: Wire routing**
 
 `/admin/invites` → `<InvitesPage />`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/admin/ src/App.tsx
@@ -106,20 +106,20 @@ git commit -m "feat(admin): invites management page with revoke/delete/re-send"
 **Files:**
 - Create: `src/admin/components/UsersPage.tsx`
 
-- [ ] **Step 1: Build UsersPage**
+- [x] **Step 1: Build UsersPage**
 
 Lists all profiled users from Firestore. Per user: name, role, modules, last active.
 Actions: [View Dashboard] [Edit Role] [Toggle Modules].
 
-- [ ] **Step 2: Add anonymous users section (future placeholder)**
+- [x] **Step 2: Add anonymous users section (future placeholder)**
 
 Show "Anonymous users listing requires Cloud Function — coming soon" message. Add [Purge Anonymous] button that's disabled with tooltip "Requires Cloud Function setup".
 
-- [ ] **Step 3: Wire routing**
+- [x] **Step 3: Wire routing**
 
 `/admin/users` → `<UsersPage />`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/admin/components/UsersPage.tsx src/App.tsx
@@ -128,35 +128,35 @@ git commit -m "feat(admin): users management page with role/module editing"
 
 ### Task 2e.6: Admin Permissions Sweep
 
-- [ ] **Step 1: Audit every Firestore rule**
+- [x] **Step 1: Audit every Firestore rule**
 
 Walk through each `match` block in `firestore.rules` and verify:
 - `isHeadminick()` is on every collection's read AND write
 - Viewer read access uses `isViewerOf(userId)` consistently
 - Viewer write access is BLOCKED on all module data collections
 
-- [ ] **Step 2: Audit every route guard**
+- [x] **Step 2: Audit every route guard**
 
 Verify:
 - `/admin/*` routes wrapped in `AdminGate`
 - Module routes wrapped in `ModuleGate`
 - Dashboard handles all 3 roles without crashing
 
-- [ ] **Step 3: Document audit results**
+- [x] **Step 3: Document audit results**
 
 Add comment in `firestore.rules` header: "Phase 2 security audit: [date]".
 
 ### Task 2e.7: Viewer Role Tests
 
-- [ ] **Step 1: Unit test — viewer sees correct data scope**
+- [x] **Step 1: Unit test — viewer sees correct data scope**
 
 Test that Dashboard with viewer profile fetches `viewerOf` user's data, not own data.
 
-- [ ] **Step 2: Unit test — viewer cannot write**
+- [x] **Step 2: Unit test — viewer cannot write**
 
 Mock storage adapter, verify viewer's write attempts are blocked.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/__tests__/ src/admin/__tests__/
@@ -165,15 +165,15 @@ git commit -m "test(admin): viewer role data scoping and write restriction tests
 
 ### Task 2e.8: Admin Role Tests
 
-- [ ] **Step 1: Unit test — admin user selector works**
+- [x] **Step 1: Unit test — admin user selector works**
 
 Test that admin Dashboard loads user list and switching user changes displayed data.
 
-- [ ] **Step 2: Unit test — admin can change user roles**
+- [x] **Step 2: Unit test — admin can change user roles**
 
 Test UsersPage role editing updates the target user's profile.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/admin/__tests__/
@@ -182,23 +182,23 @@ git commit -m "test(admin): admin user selector and role management tests"
 
 ### Task 2e.9: Cross-Role Negative Tests
 
-- [ ] **Step 1: Viewer cannot access admin routes**
+- [x] **Step 1: Viewer cannot access admin routes**
 
 Test: viewer navigating to `/admin`, `/admin/invites`, `/admin/users` → redirected to `/`.
 
-- [ ] **Step 2: User cannot access other user's data**
+- [x] **Step 2: User cannot access other user's data**
 
 Test: User A navigating to User B's child detail → access denied or empty data.
 
-- [ ] **Step 3: Viewer of User A cannot see User B's data**
+- [x] **Step 3: Viewer of User A cannot see User B's data**
 
 Test: viewer with `viewerOf: userA` → fetching userB's data returns empty/error.
 
-- [ ] **Step 4: Anonymous user (no profile) cannot access anything**
+- [x] **Step 4: Anonymous user (no profile) cannot access anything**
 
 Test: no profile → all module routes redirect, dashboard shows "invite only" wall.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add e2e/ src/
@@ -207,15 +207,15 @@ git commit -m "test(admin): cross-role negative tests for unauthorized access"
 
 ### Task 2e.10: Admin + Viewer Doc Sweep
 
-- [ ] **Step 1: Update CLAUDE.md**
+- [x] **Step 1: Update CLAUDE.md**
 
 Add: viewer role architecture, viewerOf scoping, admin claim flow, universal dashboard, admin pages.
 
-- [ ] **Step 2: Update CHANGELOG.md**
+- [x] **Step 2: Update CHANGELOG.md**
 
-- [ ] **Step 3: Update README.md docs table**
+- [x] **Step 3: Update README.md docs table**
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add CLAUDE.md CHANGELOG.md README.md

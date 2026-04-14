@@ -25,7 +25,7 @@ Dev mode works without Firebase — all modules enabled, TheAdminNick role, loca
 | `bun run lint` | Type check + ESLint |
 | `bun run typecheck` | tsc --noEmit only |
 | `bun run lint:eslint` | ESLint only |
-| `bun run test` | Vitest unit tests (320) |
+| `bun run test` | Vitest unit tests (359) |
 | `bun run test:e2e` | Playwright E2E tests (42) |
 | `bun run format` | Prettier format all source files |
 | `bun run format:check` | Prettier check (CI-friendly, no writes) |
@@ -56,7 +56,7 @@ Hooks accept optional `targetUid` for data scoping. Write callbacks are no-ops i
 
 ```
 src/
-  admin/          — Admin panel (tabbed Invites + Users), invite generator
+  admin/          — Admin panel (tabbed Invites + Users + Broadcasts), invite generator, notifications
   constants/      — config (PAGE_SIZE, UNDO_DURATION_MS, METERS_PER_KM), routes, db paths, messages
   modules/
     body/         — BodyPage (tabbed), FloorsTab, Walking/Running/CyclingTab, BodyStats, scoring
@@ -64,11 +64,11 @@ src/
     baby/         — BabyLanding, ChildDetail (tabbed), FeedLog, SleepLog, GrowthLog, DiaperLog
   shared/
     auth/         — Firebase auth, invite system, TheAdminNick model
-    components/   — Dashboard, DashboardCard, Layout, TabBar, ModuleGate, AdminGate, DevBench, loading/
+    components/   — Dashboard, DashboardCard, Layout, TabBar, ModuleGate, AdminGate, AlertBanner, DatePickerModal, SwipeToDelete, DevBench, loading/
     errors/       — ErrorBoundary, toast notifications (with undo action support)
-    hooks/        — useModules, useSyncStatus, useMinDelay
+    hooks/        — useModules, useNotifications, useModuleRequest, useSyncStatus, useMinDelay
     storage/      — StorageAdapter interface + Firebase/localStorage impls
-    types.ts      — Result<T>, ModuleId, SyncStatus, UserRole, ToastType, all enums
+    types.ts      — Result<T>, ModuleId, SyncStatus, UserRole, ToastType, NotificationType, Severity, all enums
     utils/        — date, error, profile, validation, regex, format, sort helpers
   themes/         — 10 CSS themes, ambient effects, theme definitions + migration
 ```
@@ -82,7 +82,8 @@ src/
 - **Tap-to-edit** — tap a list entry to populate the form above, button becomes "Update"
 - **Undo delete** — 10s toast with "Undo" action on all deletable lists
 - **Pagination** — all lists use `CONFIG.PAGE_SIZE` (25 default), "Show more" button
-- **List hover (+)** — per-row duplicate button on activity/floor lists, appears on hover
+- **Delete UX** — inline `x` on all lists (hover → red, grows), swipe-to-delete on mobile via `SwipeToDelete` wrapper, 10s undo toast
+- **Notifications** — per-user `notifications` subcollection. Module request flow (user → admin), admin alerts/broadcasts with severity banners
 - **Score ring** — SVG progress ring with daily goal, zone labels (Easy Start → Beast Mode)
 - **Daily goal builder** — per-activity sliders in config form, presets (🌿💪🔥⚡)
 - **Loading screen** — 3 SVG stick-figure scenes (Climber, Athlete, Reader), random per mount, with brand text reveal
@@ -95,13 +96,18 @@ src/
 | Doc | What |
 |---|---|
 | `CLAUDE.md` | AI assistant instructions, architecture, conventions, known issues |
-| `docs/ROADMAP.md` | Phase progress (~84%), prioritized backlog (P0-P3), theme roster |
+| `docs/ROADMAP.md` | Phase progress (~90%), prioritized backlog (P0-P3), theme roster |
 | `docs/firebase-setup.md` | Firebase setup guide |
 | `docs/getting-started.md` | Getting started guide |
-| `docs/specs/` | Design specs (Phase 1, Phase 2, Dashboard, Theme analysis, Loading screen, Themes) |
-| `docs/plans/` | Implementation plans (Phase 1, Phase 2 per-module, Dashboard, Admin, Viewer, Loading screen, Themes) |
+| `docs/specs/` | Design specs (Phase 1, Phase 2, Dashboard, Theme analysis, Loading screen, Themes, Notifications, Phase 3 vision + baby-to-kid) |
+| `docs/plans/` | Implementation plans (Phase 1, Phase 2 per-module, Dashboard, Admin, Viewer, Loading screen, Themes, Notifications, Phase 3 baby) |
 | `docs/revz/` | Code reviews, coverage analysis, session reviews |
 
 ## License
 
 Private — personal use only.
+
+---
+
+[![🚀 Pages](https://github.com/nickpricks/afp/actions/workflows/deploy.yml/badge.svg)](https://github.com/nickpricks/afp/actions/workflows/deploy.yml)
+[![🔒 Firestore](https://github.com/nickpricks/afp/actions/workflows/firebase-rules.yml/badge.svg)](https://github.com/nickpricks/afp/actions/workflows/firebase-rules.yml)

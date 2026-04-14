@@ -1,6 +1,6 @@
 # Universal Dashboard Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build a role-aware dashboard at `/` that shows module summary cards scoped to the correct user (own data for User, viewerOf for Viewer, selected user for Admin).
 
@@ -16,7 +16,7 @@
 - Modify: `src/shared/utils/date.ts`
 - Modify: `src/shared/utils/__tests__/date.test.ts` (create if missing)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // src/shared/utils/__tests__/date.test.ts
@@ -51,12 +51,12 @@ describe('formatDayDate', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/shared/utils/__tests__/date.test.ts`
 Expected: FAIL — `getGreeting` and `formatDayDate` are not exported
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Add to `src/shared/utils/date.ts`:
 
@@ -76,12 +76,12 @@ export const formatDayDate = (dateStr: string): string => {
 };
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/utils/__tests__/date.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/utils/date.ts src/shared/utils/__tests__/date.test.ts
@@ -96,7 +96,7 @@ git commit -m "feat: add getGreeting and formatDayDate helpers"
 - Create: `src/shared/components/DashboardCard.tsx`
 - Create: `src/shared/components/__tests__/DashboardCard.test.tsx`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // src/shared/components/__tests__/DashboardCard.test.tsx
@@ -142,12 +142,12 @@ describe('DashboardCard', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/shared/components/__tests__/DashboardCard.test.tsx`
 Expected: FAIL — module not found
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```typescript
 // src/shared/components/DashboardCard.tsx
@@ -186,12 +186,12 @@ export function DashboardCard({
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/components/__tests__/DashboardCard.test.tsx`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/components/DashboardCard.tsx src/shared/components/__tests__/DashboardCard.test.tsx
@@ -206,7 +206,7 @@ git commit -m "feat: add DashboardCard component with theme-aware styling"
 - Modify: `src/modules/expenses/hooks/useExpenses.ts`
 - Modify: `src/modules/expenses/hooks/useIncome.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // Add to src/modules/expenses/__tests__/summary.test.ts (or new file)
@@ -217,7 +217,7 @@ git commit -m "feat: add DashboardCard component with theme-aware styling"
 
 Since these are hook signature changes (adding an optional param), existing tests serve as regression. The key verification is that `bun run test` still passes and `tsc --noEmit` compiles.
 
-- [ ] **Step 2: Update `useExpenses` to accept `targetUid`**
+- [x] **Step 2: Update `useExpenses` to accept `targetUid`**
 
 In `src/modules/expenses/hooks/useExpenses.ts`, change:
 
@@ -279,7 +279,7 @@ For write callbacks (`addExpense`, `deleteExpense`), add early return when readO
   );
 ```
 
-- [ ] **Step 3: Update `useIncome` identically**
+- [x] **Step 3: Update `useIncome` identically**
 
 In `src/modules/expenses/hooks/useIncome.ts`, apply the same pattern:
 
@@ -339,12 +339,12 @@ export function useIncome(targetUid?: string) {
 }
 ```
 
-- [ ] **Step 4: Run tests + type check**
+- [x] **Step 4: Run tests + type check**
 
 Run: `bun run test && bunx tsc --noEmit`
 Expected: All 217 tests PASS, types clean. No callers need updating — `targetUid` is optional.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/modules/expenses/hooks/useExpenses.ts src/modules/expenses/hooks/useIncome.ts
@@ -359,7 +359,7 @@ git commit -m "feat: add targetUid to useExpenses and useIncome for read-only sc
 - Modify: `src/modules/body/hooks/useBodyConfig.ts`
 - Modify: `src/modules/body/hooks/useBodyData.ts`
 
-- [ ] **Step 1: Update `useBodyConfig`**
+- [x] **Step 1: Update `useBodyConfig`**
 
 ```typescript
 export function useBodyConfig(targetUid?: string) {
@@ -417,7 +417,7 @@ export function useBodyConfig(targetUid?: string) {
 }
 ```
 
-- [ ] **Step 2: Update `useBodyData`**
+- [x] **Step 2: Update `useBodyData`**
 
 ```typescript
 export function useBodyData(targetUid?: string) {
@@ -479,12 +479,12 @@ For write callbacks (`tap`, `logActivity`, `saveRecord`, `updateActivity`), add 
   );
 ```
 
-- [ ] **Step 3: Run tests + type check**
+- [x] **Step 3: Run tests + type check**
 
 Run: `bun run test && bunx tsc --noEmit`
 Expected: All tests PASS, types clean
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/modules/body/hooks/useBodyConfig.ts src/modules/body/hooks/useBodyData.ts
@@ -499,7 +499,7 @@ git commit -m "feat: add targetUid to useBodyConfig and useBodyData for read-onl
 - Modify: `src/modules/baby/hooks/useBabyCollection.ts`
 - Modify: `src/modules/baby/hooks/useBabyData.ts`
 
-- [ ] **Step 1: Update `useBabyCollection`**
+- [x] **Step 1: Update `useBabyCollection`**
 
 ```typescript
 export function useBabyCollection<T extends Record<string, unknown> & { id: string }>(
@@ -560,7 +560,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
 }
 ```
 
-- [ ] **Step 2: Update `useBabyData` to thread `targetUid`**
+- [x] **Step 2: Update `useBabyData` to thread `targetUid`**
 
 ```typescript
 export function useBabyData(childId: string | null, targetUid?: string) {
@@ -574,12 +574,12 @@ export function useBabyData(childId: string | null, targetUid?: string) {
   // ... rest unchanged
 ```
 
-- [ ] **Step 3: Run tests + type check**
+- [x] **Step 3: Run tests + type check**
 
 Run: `bun run test && bunx tsc --noEmit`
 Expected: All tests PASS, types clean
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/modules/baby/hooks/useBabyCollection.ts src/modules/baby/hooks/useBabyData.ts
@@ -594,7 +594,7 @@ git commit -m "feat: add targetUid to useBabyCollection and useBabyData for read
 - Create: `src/admin/hooks/useAllUsers.ts`
 - Create: `src/admin/hooks/__tests__/useAllUsers.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // src/admin/hooks/__tests__/useAllUsers.test.ts
@@ -629,12 +629,12 @@ describe('useAllUsers', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/admin/hooks/__tests__/useAllUsers.test.ts`
 Expected: FAIL — module not found
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```typescript
 // src/admin/hooks/useAllUsers.ts
@@ -679,12 +679,12 @@ export function useAllUsers() {
 
 Note: This is a basic implementation. In production with Firestore, querying all user profiles requires a collection group query or listing `/users/` docs. The localStorage adapter returns all items. This gets refined when we have real multi-user data.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bunx vitest run src/admin/hooks/__tests__/useAllUsers.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/admin/hooks/useAllUsers.ts src/admin/hooks/__tests__/useAllUsers.test.ts
@@ -699,7 +699,7 @@ git commit -m "feat: add useAllUsers hook for admin user listing"
 - Create: `src/shared/components/Dashboard.tsx`
 - Create: `src/shared/components/__tests__/Dashboard.test.tsx`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // src/shared/components/__tests__/Dashboard.test.tsx
@@ -763,12 +763,12 @@ describe('Dashboard', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/shared/components/__tests__/Dashboard.test.tsx`
 Expected: FAIL — module not found
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```typescript
 // src/shared/components/Dashboard.tsx
@@ -918,12 +918,12 @@ export function Dashboard() {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/components/__tests__/Dashboard.test.tsx`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/components/Dashboard.tsx src/shared/components/__tests__/Dashboard.test.tsx
@@ -938,7 +938,7 @@ git commit -m "feat: add Dashboard component with role-aware data scoping"
 - Modify: `src/App.tsx`
 - Modify: `src/shared/components/Layout.tsx`
 
-- [ ] **Step 1: Update App.tsx — add Dashboard route**
+- [x] **Step 1: Update App.tsx — add Dashboard route**
 
 Replace line 45:
 ```typescript
@@ -955,7 +955,7 @@ Add import at top:
 import { Dashboard } from '@/shared/components/Dashboard';
 ```
 
-- [ ] **Step 2: Update Layout.tsx — header logo**
+- [x] **Step 2: Update Layout.tsx — header logo**
 
 Replace line 42:
 ```typescript
@@ -974,12 +974,12 @@ import { Link } from 'react-router-dom';
 // (useNavigate import can stay for profile button)
 ```
 
-- [ ] **Step 3: Run full test suite + type check**
+- [x] **Step 3: Run full test suite + type check**
 
 Run: `bun run test && bunx tsc --noEmit`
 Expected: All tests PASS, types clean
 
-- [ ] **Step 4: Run E2E to verify routing**
+- [x] **Step 4: Run E2E to verify routing**
 
 Run: `BASE_URL=http://localhost:3005 bunx playwright test --workers=1`
 Expected: The E2E test `loads and redirects to /body` will now FAIL because `/` renders Dashboard instead of redirecting. Update the test:
@@ -993,7 +993,7 @@ test('loads and shows dashboard', async ({ page }) => {
 });
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/App.tsx src/shared/components/Layout.tsx e2e/app.spec.ts
@@ -1009,7 +1009,7 @@ git commit -m "feat: wire Dashboard route and header logo"
 - Modify: `CLAUDE.md`
 - Modify: `docs/ROADMAP.md`
 
-- [ ] **Step 1: Add Dashboard entries to CHANGELOG.md**
+- [x] **Step 1: Add Dashboard entries to CHANGELOG.md**
 
 Under `## [0.2.1]` New Features:
 
@@ -1020,23 +1020,23 @@ Under `## [0.2.1]` New Features:
 | Header logo | "AFP" text replaced with favicon.png image, links to Dashboard |
 ```
 
-- [ ] **Step 2: Update CLAUDE.md architecture section**
+- [x] **Step 2: Update CLAUDE.md architecture section**
 
 Add under Architecture:
 ```markdown
 - **Dashboard**: Role-aware home at `/`. Hooks accept optional `targetUid` — User reads own data, Viewer reads `viewerOf` user, Admin selects from `useAllUsers()`. Write callbacks no-op when `readOnly`. `DashboardCard` uses `shadow-sm` + `bg-[var(--accent-muted)]` for theme-aware styling
 ```
 
-- [ ] **Step 3: Update ROADMAP.md**
+- [x] **Step 3: Update ROADMAP.md**
 
 Mark Phase 2e Dashboard task as done.
 
-- [ ] **Step 4: Run final full test suite**
+- [x] **Step 4: Run final full test suite**
 
 Run: `bun run test && bunx tsc --noEmit && BASE_URL=http://localhost:3005 bunx playwright test --workers=1`
 Expected: ALL green
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add CHANGELOG.md CLAUDE.md docs/ROADMAP.md

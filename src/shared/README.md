@@ -9,11 +9,11 @@ Cross-cutting infrastructure that modules depend on but don't own.
 ## Subdirectories
 
 - **auth/** — Firebase auth, Google Sign-In, TheAdminNick admin model, invite system, username claiming
-- **components/** — App shell UI (Layout, TabBar, Dashboard, ProfilePage, DevBench, loading screens, route guards)
+- **components/** — App shell UI (Layout, TabBar, Dashboard, ProfilePage, DevBench, AlertBanner, DatePickerModal, SwipeToDelete, loading screens, route guards)
 - **errors/** — Error boundary and toast notifications
-- **hooks/** — Shared hooks (useModules, useSyncStatus, useMinDelay)
-- **storage/** — Backend-agnostic storage layer (Firebase + localStorage adapters)
-- **utils/** — Pure utility functions (date, error, format, profile, regex, sort, validation)
+- **hooks/** — Shared hooks (useModules, useSyncStatus, useMinDelay, useNotifications, useModuleRequest, useConsoleCapture)
+- **storage/** — Backend-agnostic storage layer (Firebase + localStorage adapters, verbose logging)
+- **utils/** — Pure utility functions (date, error, format, profile, regex, sort, validation, verbose)
 
 ## Tests
 

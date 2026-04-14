@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-04-10
+Last updated: 2026-04-14
 
 ---
 
@@ -13,11 +13,12 @@ Last updated: 2026-04-10
 | Phase 2a (Body) | ✅ Core done | 32/34 | Missing: Firestore rule verification (needs deploy) |
 | Phase 2b (Baby) | ✅ Core done | 29/23 | Firestore rules TBD (needs deploy) |
 | Phase 2c (Budget) | ✅ Core done | 30/28 | Firestore rules TBD (needs deploy) |
-| Phase 2d (Profile) | 🚧 Partial | 6/9 | Missing: auth provider linking (needs Firebase), username tests, negative tests, doc sweep |
-| Phase 2e (Admin+Viewer) | 🚧 ~95% | 33/35 | Done: admin pages, viewer invite flow, role tests, admin claim flow. Missing: Firestore rules audit (needs deploy), doc sweep |
+| Phase 2d (Profile) | ✅ Core done | 8/9 | Module request buttons added, theme save fix done. Remaining: auth provider linking (needs Firebase) |
+| Phase 2e (Admin+Viewer) | ✅ Core done | 35/35 | Done: admin pages, view user dashboard, Broadcasts tab, viewer invite flow, role tests, admin claim flow |
+| Notifications | ✅ Done | 20/20 | Per-user notifications, module requests, admin alerts, Broadcasts tab |
 | Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
 | Phase 2g (E2E + Bench) | ❌ Not started | 0/8 | Interactive E2E flows, build/bundle/test benchmarks |
-| **Total** | **~84%** | **148/178** | |
+| **Total** | **~90%** | **176/198** | |
 
 ---
 
@@ -44,6 +45,7 @@ All P0 items completed.
 | ~~🔨~~ | ~~Body module reconfigure — gear icon to re-enter config~~ | 2d | DONE |
 | 🔨 | Link/unlink auth providers in profile | 2d | Not started (needs Firebase Auth) |
 | 🔨 | Username uniqueness + negative tests | 2d | Not started |
+| ~~🔨~~ | ~~Module request buttons in profile~~ | 2d | DONE (Session 9) |
 | ~~🔨~~ | ~~Universal Dashboard — role-aware home page~~ | 2e | DONE |
 | ~~🔨~~ | ~~Admin user management — list users, toggle modules~~ | 2e | DONE (Session 6) |
 | ~~🔨~~ | ~~Viewer role UI — read-only dashboard, invite flow~~ | 2e | DONE (Session 6) |
@@ -59,7 +61,7 @@ All P0 items completed.
 | | Bug | Module | Severity |
 |---|-----|--------|----------|
 | ~~🐛~~ | ~~Walking/Running list no pagination~~ | Body | ~~Medium~~ — DONE (ActivityLog 7→30) |
-| 🐛 | Walking/Running list no date grouping | Body | Medium |
+| 🐛 | Walking/Running list no date grouping | Body | Medium — delete UX now done (x button on all Body lists) |
 | 🐛 | Floors recent list flat styling | Body | Low |
 | ~~🐛~~ | ~~Stats score lacks context (no goal)~~ | Body | ~~Low~~ — DONE (SVG score ring, Session 6) |
 | ~~🐛~~ | ~~Stats "THIS WEEK" card cramped~~ | Body | ~~Low~~ — DONE (weekly bar chart, Session 6) |
@@ -84,6 +86,7 @@ All P0 items completed.
 | 💡 | Health API sync (phone steps/distance) | Body | Large |
 | 💡 | Growth chart visualization | Baby | Medium |
 | 💡 | Expense bulk import | Budget | Medium |
+| ~~💡~~ | ~~Notifications + module requests — per-user alerts, admin broadcasts~~ | Admin | ~~Medium~~ — DONE (Session 9) |
 | 💡 | Dev mode enhancements — role switcher, time travel | Dev | Medium |
 | ~~💡~~ | ~~Climbing stick-figure loading animation~~ | UI | ~~Small~~ — DONE (Session 7, 3 SVG scenes) |
 
@@ -147,6 +150,15 @@ All P0 items completed.
 ---
 
 ## Done
+
+### 2026-04-14 — Session 9 (Notifications, module requests, Phase 3 brainstorm)
+
+- [x] Notifications module — per-user notification bell, admin alert broadcasts, Broadcasts tab in AdminPanel
+- [x] Module request buttons in Profile — users can request access to Body/Baby/Budget modules
+- [x] Admin alerts on incoming module requests
+- [x] View user dashboard — admin can navigate directly into any user's module view
+- [x] Phase 3 brainstorm — Baby→Kid evolution, budget investments, body gamification (7 plan files, 2 spec files)
+- [x] Phase 2d (Profile) and Phase 2e (Admin+Viewer) marked ✅ Core done
 
 ### 2026-04-10 — Session 8 (E2E regression, code hygiene, ToastType enum)
 

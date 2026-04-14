@@ -1,6 +1,6 @@
 # AprilFoolsJoke Phase 1 Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build a unified PWA combining floor tracking, expense tracking, and baby tracking — one installable app backed by Firebase with invite-only access.
 
@@ -124,7 +124,7 @@ aprilfoolsjoke/
 **Files:**
 - Create: `package.json`, `index.html`, `vite.config.ts`, `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`, `eslint.config.js`, `src/main.tsx`, `src/App.tsx`, `src/index.css`
 
-- [ ] **Step 1: Create new repo directory**
+- [x] **Step 1: Create new repo directory**
 
 ```bash
 cd /Users/nick/Projects/Github
@@ -132,20 +132,20 @@ mkdir aprilfoolsjoke && cd aprilfoolsjoke
 git init
 ```
 
-- [ ] **Step 2: Initialize with bun**
+- [x] **Step 2: Initialize with bun**
 
 ```bash
 bun init -y
 ```
 
-- [ ] **Step 3: Install dependencies**
+- [x] **Step 3: Install dependencies**
 
 ```bash
 bun add react react-dom react-router-dom firebase lucide-react
 bun add -d @vitejs/plugin-react @tailwindcss/vite tailwindcss typescript vite vite-plugin-pwa vitest @types/react @types/react-dom @types/node @vitest/coverage-v8 @testing-library/react @testing-library/jest-dom jsdom @playwright/test eslint @eslint/js typescript-eslint eslint-plugin-react-hooks eslint-plugin-react-refresh globals
 ```
 
-- [ ] **Step 4: Write package.json scripts**
+- [x] **Step 4: Write package.json scripts**
 
 Replace the scripts section of `package.json`:
 
@@ -170,7 +170,7 @@ Replace the scripts section of `package.json`:
 }
 ```
 
-- [ ] **Step 5: Write tsconfig.json**
+- [x] **Step 5: Write tsconfig.json**
 
 Create `tsconfig.json`:
 
@@ -233,7 +233,7 @@ Create `tsconfig.node.json`:
 }
 ```
 
-- [ ] **Step 6: Write vite.config.ts**
+- [x] **Step 6: Write vite.config.ts**
 
 Create `vite.config.ts`:
 
@@ -279,7 +279,7 @@ export default defineConfig(({ mode }) => {
 });
 ```
 
-- [ ] **Step 7: Write eslint.config.js**
+- [x] **Step 7: Write eslint.config.js**
 
 Create `eslint.config.js`:
 
@@ -309,7 +309,7 @@ export default defineConfig([
 ]);
 ```
 
-- [ ] **Step 8: Write index.html**
+- [x] **Step 8: Write index.html**
 
 Create `index.html`:
 
@@ -330,7 +330,7 @@ Create `index.html`:
 </html>
 ```
 
-- [ ] **Step 9: Write entry point and placeholder App**
+- [x] **Step 9: Write entry point and placeholder App**
 
 Create `src/main.tsx`:
 
@@ -361,7 +361,7 @@ Create `src/index.css`:
 @import 'tailwindcss';
 ```
 
-- [ ] **Step 10: Create .gitignore**
+- [x] **Step 10: Create .gitignore**
 
 Create `.gitignore`:
 
@@ -378,7 +378,7 @@ e2e/results/
 .DS_Store
 ```
 
-- [ ] **Step 11: Verify scaffold builds**
+- [x] **Step 11: Verify scaffold builds**
 
 ```bash
 bun run build
@@ -386,7 +386,7 @@ bun run build
 
 Expected: Build succeeds, `dist/` created.
 
-- [ ] **Step 12: Commit**
+- [x] **Step 12: Commit**
 
 ```bash
 git add -A
@@ -401,7 +401,7 @@ git commit -m "feat: scaffold AprilFoolsJoke — Vite + React 19 + TypeScript + 
 - Create: `src/shared/types.ts`
 - Test: `src/shared/__tests__/types.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/shared/__tests__/types.test.ts`:
 
@@ -431,7 +431,7 @@ describe('Result type helpers', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 ```bash
 bunx vitest run src/shared/__tests__/types.test.ts
@@ -439,7 +439,7 @@ bunx vitest run src/shared/__tests__/types.test.ts
 
 Expected: FAIL — cannot find module `../types`
 
-- [ ] **Step 3: Write shared types**
+- [x] **Step 3: Write shared types**
 
 Create `src/shared/types.ts`:
 
@@ -495,7 +495,7 @@ export type UserProfile = {
 export type SyncStatus = 'synced' | 'syncing' | 'error' | 'offline';
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 ```bash
 bunx vitest run src/shared/__tests__/types.test.ts
@@ -503,7 +503,7 @@ bunx vitest run src/shared/__tests__/types.test.ts
 
 Expected: PASS (3 tests)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/types.ts src/shared/__tests__/types.test.ts
@@ -517,7 +517,7 @@ git commit -m "feat: add Result type and shared types (User, Module, SyncStatus)
 **Files:**
 - Create: `src/constants/config.ts`, `src/constants/routes.ts`
 
-- [ ] **Step 1: Write config.ts**
+- [x] **Step 1: Write config.ts**
 
 Create `src/constants/config.ts`:
 
@@ -531,7 +531,7 @@ export const CONFIG = {
 } as const;
 ```
 
-- [ ] **Step 2: Write routes.ts**
+- [x] **Step 2: Write routes.ts**
 
 Create `src/constants/routes.ts`:
 
@@ -552,7 +552,7 @@ export const ROUTES = {
 } as const;
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/constants/
@@ -567,7 +567,7 @@ git commit -m "feat: add app constants and route definitions"
 - Create: `src/themes/themes.ts`, `src/themes/family-blue.css`, `src/themes/summit-instrument.css`, `src/themes/corporate-glass.css`, `src/themes/night-city-elevator.css`, `src/themes/night-city-apartment.css`, `src/themes/deep-mariana.css`, `src/themes/industrial-furnace.css`, `src/themes/buttons.css`, `src/themes/effects.css`
 - Modify: `src/index.css`
 
-- [ ] **Step 1: Write themes.ts**
+- [x] **Step 1: Write themes.ts**
 
 Create `src/themes/themes.ts` — ported from Floor-Tracker with Family Blue added:
 
@@ -711,7 +711,7 @@ export function useActiveThemeId(): ThemeId {
 }
 ```
 
-- [ ] **Step 2: Write Family Blue CSS (default theme)**
+- [x] **Step 2: Write Family Blue CSS (default theme)**
 
 Create `src/themes/family-blue.css`:
 
@@ -756,7 +756,7 @@ Create `src/themes/family-blue.css`:
 }
 ```
 
-- [ ] **Step 3: Port remaining 6 theme CSS files from Floor-Tracker**
+- [x] **Step 3: Port remaining 6 theme CSS files from Floor-Tracker**
 
 Create each theme CSS file following the same custom property pattern. Each file defines the same set of variables (`--bg-primary`, `--bg-secondary`, `--bg-card`, `--accent`, `--text-primary`, etc.) with theme-specific colors.
 
@@ -772,7 +772,7 @@ Each dark-only theme only needs the base selector (e.g., `.theme-deep-mariana { 
 
 Also port `src/themes/buttons.css` and `src/themes/effects.css` from Floor-Tracker.
 
-- [ ] **Step 4: Update index.css with theme imports and semantic tokens**
+- [x] **Step 4: Update index.css with theme imports and semantic tokens**
 
 Replace `src/index.css`:
 
@@ -818,7 +818,7 @@ body {
 }
 ```
 
-- [ ] **Step 5: Verify themes compile**
+- [x] **Step 5: Verify themes compile**
 
 ```bash
 bun run build
@@ -826,7 +826,7 @@ bun run build
 
 Expected: Build succeeds without CSS errors.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/themes/ src/index.css
@@ -841,7 +841,7 @@ git commit -m "feat: add theme system — Family Blue default + 6 ported from Fl
 - Create: `src/shared/auth/firebase-config.ts`, `src/shared/auth/auth-context.tsx`
 - Create: `firestore.rules`, `firebase.json`
 
-- [ ] **Step 1: Write Firebase config**
+- [x] **Step 1: Write Firebase config**
 
 Create `src/shared/auth/firebase-config.ts`:
 
@@ -872,7 +872,7 @@ export const db = initializeFirestore(app, {
 
 Note: Replace `PLACEHOLDER` values after creating the Firebase project. These are public identifiers, not secrets.
 
-- [ ] **Step 2: Write Firestore rules**
+- [x] **Step 2: Write Firestore rules**
 
 Create `firestore.rules`:
 
@@ -924,7 +924,7 @@ service cloud.firestore {
 }
 ```
 
-- [ ] **Step 3: Write firebase.json**
+- [x] **Step 3: Write firebase.json**
 
 Create `firebase.json`:
 
@@ -936,7 +936,7 @@ Create `firebase.json`:
 }
 ```
 
-- [ ] **Step 4: Write AuthContext**
+- [x] **Step 4: Write AuthContext**
 
 Create `src/shared/auth/auth-context.tsx`:
 
@@ -1018,7 +1018,7 @@ export function useAuth(): AuthState {
 }
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/auth/ firestore.rules firebase.json
@@ -1033,7 +1033,7 @@ git commit -m "feat: add Firebase config, Firestore rules with Headminick model,
 - Create: `src/shared/storage/adapter.ts`, `src/shared/storage/firebase-adapter.ts`
 - Test: `src/shared/storage/__tests__/adapter.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/shared/storage/__tests__/adapter.test.ts`:
 
@@ -1102,7 +1102,7 @@ describe('StorageAdapter contract', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 ```bash
 bunx vitest run src/shared/storage/__tests__/adapter.test.ts
@@ -1110,7 +1110,7 @@ bunx vitest run src/shared/storage/__tests__/adapter.test.ts
 
 Expected: FAIL — cannot find module `../adapter`
 
-- [ ] **Step 3: Write the adapter interface**
+- [x] **Step 3: Write the adapter interface**
 
 Create `src/shared/storage/adapter.ts`:
 
@@ -1126,7 +1126,7 @@ export interface StorageAdapter {
 }
 ```
 
-- [ ] **Step 4: Write the Firebase adapter**
+- [x] **Step 4: Write the Firebase adapter**
 
 Create `src/shared/storage/firebase-adapter.ts`:
 
@@ -1201,7 +1201,7 @@ export function createFirebaseAdapter(basePath: string): StorageAdapter {
 }
 ```
 
-- [ ] **Step 5: Run test to verify it passes**
+- [x] **Step 5: Run test to verify it passes**
 
 ```bash
 bunx vitest run src/shared/storage/__tests__/adapter.test.ts
@@ -1209,7 +1209,7 @@ bunx vitest run src/shared/storage/__tests__/adapter.test.ts
 
 Expected: PASS (3 tests)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/shared/storage/
@@ -1223,7 +1223,7 @@ git commit -m "feat: add StorageAdapter interface + Firebase implementation"
 **Files:**
 - Create: `src/shared/errors/toast-context.tsx`, `src/shared/errors/ErrorBoundary.tsx`
 
-- [ ] **Step 1: Write ToastContext**
+- [x] **Step 1: Write ToastContext**
 
 Create `src/shared/errors/toast-context.tsx`:
 
@@ -1293,7 +1293,7 @@ export function useToast(): ToastContextType {
 }
 ```
 
-- [ ] **Step 2: Write ErrorBoundary**
+- [x] **Step 2: Write ErrorBoundary**
 
 Create `src/shared/errors/ErrorBoundary.tsx`:
 
@@ -1338,7 +1338,7 @@ export class ErrorBoundary extends Component<Props, State> {
 }
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/errors/
@@ -1353,7 +1353,7 @@ git commit -m "feat: add toast notification system and ErrorBoundary"
 - Create: `src/shared/auth/invite.ts`, `src/shared/auth/headminick.ts`
 - Test: `src/shared/auth/__tests__/invite.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/shared/auth/__tests__/invite.test.ts`:
 
@@ -1383,7 +1383,7 @@ describe('invite helpers', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 ```bash
 bunx vitest run src/shared/auth/__tests__/invite.test.ts
@@ -1391,7 +1391,7 @@ bunx vitest run src/shared/auth/__tests__/invite.test.ts
 
 Expected: FAIL
 
-- [ ] **Step 3: Write invite helpers**
+- [x] **Step 3: Write invite helpers**
 
 Create `src/shared/auth/invite.ts`:
 
@@ -1475,7 +1475,7 @@ export async function redeemInvite(code: string, uid: string): Promise<Result<In
 }
 ```
 
-- [ ] **Step 4: Write Headminick helpers**
+- [x] **Step 4: Write Headminick helpers**
 
 Create `src/shared/auth/headminick.ts`:
 
@@ -1527,7 +1527,7 @@ export async function updateUserModules(uid: string, modules: ModuleConfig): Pro
 }
 ```
 
-- [ ] **Step 5: Run test to verify it passes**
+- [x] **Step 5: Run test to verify it passes**
 
 ```bash
 bunx vitest run src/shared/auth/__tests__/invite.test.ts
@@ -1535,7 +1535,7 @@ bunx vitest run src/shared/auth/__tests__/invite.test.ts
 
 Expected: PASS (3 tests)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/shared/auth/
@@ -1550,7 +1550,7 @@ git commit -m "feat: add invite system and Headminick admin helpers"
 - Create: `src/shared/components/Layout.tsx`, `src/shared/components/TabBar.tsx`, `src/shared/components/SyncStatus.tsx`, `src/shared/components/UpdatePrompt.tsx`
 - Create: `src/shared/hooks/useSyncStatus.ts`, `src/shared/hooks/useModules.ts`
 
-- [ ] **Step 1: Write useModules hook**
+- [x] **Step 1: Write useModules hook**
 
 Create `src/shared/hooks/useModules.ts`:
 
@@ -1571,7 +1571,7 @@ export function useModules(): ModuleId[] {
 }
 ```
 
-- [ ] **Step 2: Write useSyncStatus hook**
+- [x] **Step 2: Write useSyncStatus hook**
 
 Create `src/shared/hooks/useSyncStatus.ts`:
 
@@ -1584,7 +1584,7 @@ export function useSyncStatus() {
 }
 ```
 
-- [ ] **Step 3: Write SyncStatus component**
+- [x] **Step 3: Write SyncStatus component**
 
 Create `src/shared/components/SyncStatus.tsx`:
 
@@ -1612,7 +1612,7 @@ export function SyncStatus() {
 }
 ```
 
-- [ ] **Step 4: Write TabBar component**
+- [x] **Step 4: Write TabBar component**
 
 Create `src/shared/components/TabBar.tsx`:
 
@@ -1672,7 +1672,7 @@ export function TabBar() {
 }
 ```
 
-- [ ] **Step 5: Write UpdatePrompt component**
+- [x] **Step 5: Write UpdatePrompt component**
 
 Create `src/shared/components/UpdatePrompt.tsx`:
 
@@ -1701,7 +1701,7 @@ export function UpdatePrompt() {
 }
 ```
 
-- [ ] **Step 6: Write Layout shell**
+- [x] **Step 6: Write Layout shell**
 
 Create `src/shared/components/Layout.tsx`:
 
@@ -1752,7 +1752,7 @@ export function Layout() {
 }
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/shared/components/ src/shared/hooks/
@@ -1767,7 +1767,7 @@ git commit -m "feat: add Layout shell, TabBar, SyncStatus, UpdatePrompt, module 
 - Create: `src/modules/body/types.ts`, `src/modules/body/scoring.ts`, `src/modules/body/hooks/useBodyData.ts`, `src/modules/body/components/BodyTracker.tsx`
 - Test: `src/modules/body/__tests__/scoring.test.ts`
 
-- [ ] **Step 1: Write the failing scoring test**
+- [x] **Step 1: Write the failing scoring test**
 
 Create `src/modules/body/__tests__/scoring.test.ts`:
 
@@ -1794,7 +1794,7 @@ describe('calculateTotal', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 ```bash
 bunx vitest run src/modules/body/__tests__/scoring.test.ts
@@ -1802,7 +1802,7 @@ bunx vitest run src/modules/body/__tests__/scoring.test.ts
 
 Expected: FAIL
 
-- [ ] **Step 3: Write types and scoring**
+- [x] **Step 3: Write types and scoring**
 
 Create `src/modules/body/types.ts`:
 
@@ -1825,7 +1825,7 @@ export function calculateTotal(up: number, down: number): number {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 ```bash
 bunx vitest run src/modules/body/__tests__/scoring.test.ts
@@ -1833,7 +1833,7 @@ bunx vitest run src/modules/body/__tests__/scoring.test.ts
 
 Expected: PASS (4 tests)
 
-- [ ] **Step 5: Write useBodyData hook**
+- [x] **Step 5: Write useBodyData hook**
 
 Create `src/modules/body/hooks/useBodyData.ts`:
 
@@ -1903,7 +1903,7 @@ export function useBodyData() {
 }
 ```
 
-- [ ] **Step 6: Write BodyTracker component**
+- [x] **Step 6: Write BodyTracker component**
 
 Create `src/modules/body/components/BodyTracker.tsx`:
 
@@ -1944,7 +1944,7 @@ export function BodyTracker() {
 }
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/modules/body/
@@ -1959,7 +1959,7 @@ git commit -m "feat: add Body module — floor tracking with scoring and real-ti
 - Create: `src/modules/expenses/types.ts`, `src/modules/expenses/categories.ts`, `src/modules/expenses/validation.ts`, `src/modules/expenses/hooks/useExpenses.ts`, `src/modules/expenses/components/AddExpense.tsx`, `src/modules/expenses/components/ExpenseList.tsx`
 - Test: `src/modules/expenses/__tests__/validation.test.ts`
 
-- [ ] **Step 1: Write the failing validation test**
+- [x] **Step 1: Write the failing validation test**
 
 Create `src/modules/expenses/__tests__/validation.test.ts`:
 
@@ -1997,7 +1997,7 @@ describe('validateExpense', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 ```bash
 bunx vitest run src/modules/expenses/__tests__/validation.test.ts
@@ -2005,7 +2005,7 @@ bunx vitest run src/modules/expenses/__tests__/validation.test.ts
 
 Expected: FAIL
 
-- [ ] **Step 3: Write types**
+- [x] **Step 3: Write types**
 
 Create `src/modules/expenses/types.ts`:
 
@@ -2029,7 +2029,7 @@ export type CategoryDefinition = {
 };
 ```
 
-- [ ] **Step 4: Write categories** (ported from Finularity)
+- [x] **Step 4: Write categories** (ported from Finularity)
 
 Create `src/modules/expenses/categories.ts`:
 
@@ -2058,7 +2058,7 @@ export function getSubCategories(categoryId: string): string[] {
 }
 ```
 
-- [ ] **Step 5: Write validation** (fixed version — returns Result, not void)
+- [x] **Step 5: Write validation** (fixed version — returns Result, not void)
 
 Create `src/modules/expenses/validation.ts`:
 
@@ -2077,7 +2077,7 @@ export function validateExpense(input: ExpenseInput): Result<void> {
 }
 ```
 
-- [ ] **Step 6: Run test to verify it passes**
+- [x] **Step 6: Run test to verify it passes**
 
 ```bash
 bunx vitest run src/modules/expenses/__tests__/validation.test.ts
@@ -2085,7 +2085,7 @@ bunx vitest run src/modules/expenses/__tests__/validation.test.ts
 
 Expected: PASS (6 tests)
 
-- [ ] **Step 7: Write useExpenses hook**
+- [x] **Step 7: Write useExpenses hook**
 
 Create `src/modules/expenses/hooks/useExpenses.ts`:
 
@@ -2160,7 +2160,7 @@ export function useExpenses() {
 }
 ```
 
-- [ ] **Step 8: Write AddExpense and ExpenseList components**
+- [x] **Step 8: Write AddExpense and ExpenseList components**
 
 Create `src/modules/expenses/components/AddExpense.tsx`:
 
@@ -2280,7 +2280,7 @@ export function ExpenseList() {
 }
 ```
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add src/modules/expenses/
@@ -2294,7 +2294,7 @@ git commit -m "feat: add Expenses module — categories, validation, CRUD with F
 **Files:**
 - Create: `src/modules/baby/types.ts`, `src/modules/baby/constants.ts`, `src/modules/baby/hooks/useBabyData.ts`, `src/modules/baby/components/FeedLog.tsx`, `src/modules/baby/components/SleepLog.tsx`, `src/modules/baby/components/GrowthLog.tsx`, `src/modules/baby/components/DiaperLog.tsx`
 
-- [ ] **Step 1: Write types and constants** (ported from BabyTracker Go models)
+- [x] **Step 1: Write types and constants** (ported from BabyTracker Go models)
 
 Create `src/modules/baby/types.ts`:
 
@@ -2346,7 +2346,7 @@ export const SLEEP_QUALITIES = ['Good', 'Fair', 'Poor'] as const;
 export const DIAPER_TYPES = ['Wet', 'Dirty', 'Mixed'] as const;
 ```
 
-- [ ] **Step 2: Write useBabyData hook**
+- [x] **Step 2: Write useBabyData hook**
 
 Create `src/modules/baby/hooks/useBabyData.ts`:
 
@@ -2405,7 +2405,7 @@ export function useBabyData() {
 }
 ```
 
-- [ ] **Step 3: Write FeedLog component**
+- [x] **Step 3: Write FeedLog component**
 
 Create `src/modules/baby/components/FeedLog.tsx`:
 
@@ -2485,7 +2485,7 @@ export function FeedLog() {
 }
 ```
 
-- [ ] **Step 4: Write SleepLog, GrowthLog, DiaperLog components**
+- [x] **Step 4: Write SleepLog, GrowthLog, DiaperLog components**
 
 Create `src/modules/baby/components/SleepLog.tsx`, `src/modules/baby/components/GrowthLog.tsx`, `src/modules/baby/components/DiaperLog.tsx` following the same pattern as FeedLog — form with appropriate fields per type constant, submit calls the corresponding `logSleep`/`logGrowth`/`logDiaper` from `useBabyData`, recent entries displayed below.
 
@@ -2494,7 +2494,7 @@ Fields per component:
 - **GrowthLog**: date, weight (kg), height (cm), headCircumference (cm), notes
 - **DiaperLog**: type (Wet/Dirty/Mixed), date, time, notes — with quick buttons for Wet and Dirty
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/modules/baby/
@@ -2508,7 +2508,7 @@ git commit -m "feat: add Baby module — feed, sleep, growth, diaper tracking"
 **Files:**
 - Create: `src/admin/components/AdminPanel.tsx`, `src/admin/components/InviteGenerator.tsx`, `src/admin/hooks/useAdmin.ts`
 
-- [ ] **Step 1: Write useAdmin hook**
+- [x] **Step 1: Write useAdmin hook**
 
 Create `src/admin/hooks/useAdmin.ts`:
 
@@ -2536,7 +2536,7 @@ export function useAdmin() {
 }
 ```
 
-- [ ] **Step 2: Write InviteGenerator**
+- [x] **Step 2: Write InviteGenerator**
 
 Create `src/admin/components/InviteGenerator.tsx`:
 
@@ -2598,7 +2598,7 @@ export function InviteGenerator() {
 }
 ```
 
-- [ ] **Step 3: Write AdminPanel**
+- [x] **Step 3: Write AdminPanel**
 
 Create `src/admin/components/AdminPanel.tsx`:
 
@@ -2631,7 +2631,7 @@ export function AdminPanel() {
 }
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/admin/
@@ -2645,7 +2645,7 @@ git commit -m "feat: add Headminick admin panel with invite generator"
 **Files:**
 - Modify: `src/App.tsx`
 
-- [ ] **Step 1: Write the full App with routing**
+- [x] **Step 1: Write the full App with routing**
 
 Replace `src/App.tsx`:
 
@@ -2706,7 +2706,7 @@ export function App() {
 }
 ```
 
-- [ ] **Step 2: Write InviteRedeem page**
+- [x] **Step 2: Write InviteRedeem page**
 
 Create `src/shared/auth/InviteRedeem.tsx`:
 
@@ -2751,7 +2751,7 @@ export function InviteRedeem() {
 }
 ```
 
-- [ ] **Step 3: Verify build**
+- [x] **Step 3: Verify build**
 
 ```bash
 bun run build
@@ -2759,7 +2759,7 @@ bun run build
 
 Expected: Build succeeds.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/App.tsx src/shared/auth/InviteRedeem.tsx
@@ -2773,7 +2773,7 @@ git commit -m "feat: wire up HashRouter with all module routes and invite flow"
 **Files:**
 - Create: `.github/workflows/deploy.yml`
 
-- [ ] **Step 1: Write deploy workflow**
+- [x] **Step 1: Write deploy workflow**
 
 Create `.github/workflows/deploy.yml`:
 
@@ -2827,7 +2827,7 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add .github/
@@ -2841,7 +2841,7 @@ git commit -m "feat: add CI/CD pipeline — lint, test, build, deploy to GitHub 
 **Files:**
 - Create: `CLAUDE.md`
 
-- [ ] **Step 1: Write CLAUDE.md**
+- [x] **Step 1: Write CLAUDE.md**
 
 Create `CLAUDE.md`:
 
@@ -2897,7 +2897,7 @@ No silent failures. Every write returns `Result<T>`. UI feedback via toast notif
 - **Deployment:** GitHub Pages via GitHub Actions (lint → test → build → deploy)
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add CLAUDE.md
@@ -2911,7 +2911,7 @@ git commit -m "docs: add CLAUDE.md for repository guidance"
 **Files:**
 - Create: `vitest.config.ts`, `src/test-setup.ts`
 
-- [ ] **Step 1: Write vitest config**
+- [x] **Step 1: Write vitest config**
 
 Create `vitest.config.ts`:
 
@@ -2945,7 +2945,7 @@ Create `src/test-setup.ts`:
 import '@testing-library/jest-dom/vitest';
 ```
 
-- [ ] **Step 2: Run all tests**
+- [x] **Step 2: Run all tests**
 
 ```bash
 bun run test
@@ -2953,7 +2953,7 @@ bun run test
 
 Expected: All tests pass (Result type tests, scoring tests, validation tests, adapter tests, invite tests).
 
-- [ ] **Step 3: Run coverage**
+- [x] **Step 3: Run coverage**
 
 ```bash
 bun run test:coverage
@@ -2961,7 +2961,7 @@ bun run test:coverage
 
 Expected: Coverage report generated. Data layer files should show 90%+.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add vitest.config.ts src/test-setup.ts
@@ -2975,7 +2975,7 @@ git commit -m "feat: add vitest config with coverage and jsdom environment"
 **Files:**
 - Create: README.md in each directory that has source files
 
-- [ ] **Step 1: Write READMEs**
+- [x] **Step 1: Write READMEs**
 
 Create short (10-20 line) README.md files in:
 - `src/` — App entry point, shell, CSS
@@ -2991,7 +2991,7 @@ Create short (10-20 line) README.md files in:
 
 Each README states: what the directory does, key files, any non-obvious conventions.
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add **/README.md
@@ -3002,7 +3002,7 @@ git commit -m "docs: add per-directory README.md files"
 
 ## Task 19: Audit Verification Checkpoint
 
-- [ ] **Step 1: Review and document resolved audit findings**
+- [x] **Step 1: Review and document resolved audit findings**
 
 Create `docs/audit-verification.md` documenting:
 
@@ -3029,7 +3029,7 @@ Create `docs/audit-verification.md` documenting:
 - Floor-Tracker: Memory management for long-term data → IndexedDB pagination
 - Finularity: Soft-deleted records never purged → purge job
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add docs/audit-verification.md
@@ -3040,7 +3040,7 @@ git commit -m "docs: audit verification — confirm source app findings resolved
 
 ## Task 20: Final Countdown Review
 
-- [ ] **Step 1: Run The Final Countdown skill**
+- [x] **Step 1: Run The Final Countdown skill**
 
 After all tasks are complete, invoke `/the-final-countdown` for comprehensive parallel agent review covering:
 - Code quality and architecture adherence to spec
@@ -3049,11 +3049,11 @@ After all tasks are complete, invoke `/the-final-countdown` for comprehensive pa
 - Type consistency across modules
 - README accuracy
 
-- [ ] **Step 2: Fix any issues found**
+- [x] **Step 2: Fix any issues found**
 
 Address review findings, commit fixes.
 
-- [ ] **Step 3: Tag release**
+- [x] **Step 3: Tag release**
 
 ```bash
 git tag v0.1.0

@@ -17,7 +17,7 @@ Before any phase, update shared enums and types that all phases depend on.
 - Modify: `src/constants/routes.ts`
 - Test: `src/shared/__tests__/types.test.ts`
 
-- [ ] **Step 1: Write failing test for new UserRole.Viewer**
+- [x] **Step 1: Write failing test for new UserRole.Viewer**
 
 ```typescript
 // src/shared/__tests__/types.test.ts — add test
@@ -26,12 +26,12 @@ it('UserRole includes Viewer', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/shared/__tests__/types.test.ts -v`
 Expected: FAIL — `UserRole.Viewer` is undefined
 
-- [ ] **Step 3: Add Viewer to UserRole enum**
+- [x] **Step 3: Add Viewer to UserRole enum**
 
 ```typescript
 // src/shared/types.ts — update UserRole
@@ -42,12 +42,12 @@ export enum UserRole {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/__tests__/types.test.ts -v`
 Expected: PASS
 
-- [ ] **Step 5: Update ModuleId — rename Expenses to Budget**
+- [x] **Step 5: Update ModuleId — rename Expenses to Budget**
 
 ```typescript
 // src/shared/types.ts — update ModuleId
@@ -60,11 +60,11 @@ export enum ModuleId {
 
 Update `ALL_MODULES` and `DEFAULT_MODULES` to use `Budget` instead of `Expenses`. Fix all imports across the codebase that reference `ModuleId.Expenses` — change to `ModuleId.Budget`.
 
-- [ ] **Step 6: Add new enums to types.ts**
+- [x] **Step 6: Add new enums to types.ts**
 
 Add `ActivityType`, `BudgetView`, `PaymentMethod`, `ExpenseCategory`, `IncomeSource`, `FeedType`, `SleepType`, `SleepQuality`, `DiaperType` — all exactly as defined in the design spec's Enums Reference section. Every numeric enum member gets a JSDoc comment.
 
-- [ ] **Step 7: Add viewerOf to UserProfile type**
+- [x] **Step 7: Add viewerOf to UserProfile type**
 
 ```typescript
 // src/shared/types.ts — update UserProfile
@@ -82,7 +82,7 @@ export interface UserProfile {
 }
 ```
 
-- [ ] **Step 8: Update DbSubcollection enum**
+- [x] **Step 8: Update DbSubcollection enum**
 
 ```typescript
 // src/constants/db.ts — add new subcollections
@@ -104,7 +104,7 @@ export enum DbSubcollection {
 
 Remove old `BabyFeeds`, `BabySleep`, `BabyGrowth`, `BabyDiapers` entries.
 
-- [ ] **Step 9: Update routes for new pages**
+- [x] **Step 9: Update routes for new pages**
 
 ```typescript
 // src/constants/routes.ts — add new paths
@@ -125,16 +125,16 @@ export enum AppPath {
 }
 ```
 
-- [ ] **Step 10: Update messages.ts with new message enums**
+- [x] **Step 10: Update messages.ts with new message enums**
 
 Add `BudgetMsg`, `BodyMsg`, `BabyMsg` enums for module-specific toast messages.
 
-- [ ] **Step 11: Run full type check**
+- [x] **Step 11: Run full type check**
 
 Run: `bun run typecheck`
 Expected: Errors from components still referencing old types. Note them — they'll be fixed in each phase.
 
-- [ ] **Step 12: Commit**
+- [x] **Step 12: Commit**
 
 ```bash
 git add src/shared/types.ts src/constants/ src/shared/__tests__/types.test.ts
@@ -146,7 +146,7 @@ git commit -m "feat: update shared enums and types for Phase 2"
 **Files:**
 - Modify: `firestore.rules`
 
-- [ ] **Step 1: Write complete updated rules**
+- [x] **Step 1: Write complete updated rules**
 
 Replace `firestore.rules` with rules that cover all Phase 2 collections:
 
@@ -296,7 +296,7 @@ service cloud.firestore {
 }
 ```
 
-- [ ] **Step 2: Commit rules**
+- [x] **Step 2: Commit rules**
 
 ```bash
 git add firestore.rules

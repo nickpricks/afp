@@ -1,6 +1,6 @@
 # Loading Screen Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Add three randomized stick-figure loading animations (climber, athlete, reader) shown during auth resolution and page transitions, plus a dedicated animation viewer page.
 
@@ -38,7 +38,7 @@
 - Create: `src/shared/hooks/useMinDelay.ts`
 - Create: `src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```tsx
 // src/shared/components/loading/__tests__/LoadingScreen.test.tsx
@@ -81,12 +81,12 @@ describe('useMinDelay', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: FAIL — module `@/shared/hooks/useMinDelay` not found
 
-- [ ] **Step 3: Write the hook**
+- [x] **Step 3: Write the hook**
 
 ```ts
 // src/shared/hooks/useMinDelay.ts
@@ -105,12 +105,12 @@ export const useMinDelay = (ms: number): boolean => {
 };
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: 2 tests PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/hooks/useMinDelay.ts src/shared/components/loading/__tests__/LoadingScreen.test.tsx
@@ -125,7 +125,7 @@ git commit -m "feat(loading): add useMinDelay hook with tests"
 - Create: `src/themes/loading.css`
 - Modify: `src/index.css:12`
 
-- [ ] **Step 1: Create the shared keyframes CSS file**
+- [x] **Step 1: Create the shared keyframes CSS file**
 
 ```css
 /* src/themes/loading.css */
@@ -272,7 +272,7 @@ git commit -m "feat(loading): add useMinDelay hook with tests"
 }
 ```
 
-- [ ] **Step 2: Add import to index.css**
+- [x] **Step 2: Add import to index.css**
 
 In `src/index.css`, after line 12 (`@import './themes/effects.css';`), add:
 
@@ -280,12 +280,12 @@ In `src/index.css`, after line 12 (`@import './themes/effects.css';`), add:
 @import './themes/loading.css';
 ```
 
-- [ ] **Step 3: Verify build compiles**
+- [x] **Step 3: Verify build compiles**
 
 Run: `bun run build 2>&1 | tail -3`
 Expected: Build succeeds (CSS file is valid, import resolves)
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/themes/loading.css src/index.css
@@ -299,7 +299,7 @@ git commit -m "feat(loading): add shared loading animation keyframes"
 **Files:**
 - Create: `src/shared/components/loading/SceneClimber.tsx`
 
-- [ ] **Step 1: Add render test to the test file**
+- [x] **Step 1: Add render test to the test file**
 
 Append to `src/shared/components/loading/__tests__/LoadingScreen.test.tsx`:
 
@@ -318,12 +318,12 @@ describe('SceneClimber', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: FAIL — `SceneClimber` module not found
 
-- [ ] **Step 3: Create SceneClimber component**
+- [x] **Step 3: Create SceneClimber component**
 
 ```tsx
 // src/shared/components/loading/SceneClimber.tsx
@@ -389,12 +389,12 @@ export function SceneClimber() {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: All tests PASS (useMinDelay × 2 + SceneClimber × 1)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/components/loading/SceneClimber.tsx src/shared/components/loading/__tests__/LoadingScreen.test.tsx
@@ -409,7 +409,7 @@ git commit -m "feat(loading): add SceneClimber SVG component"
 - Create: `src/shared/components/loading/SceneAthlete.tsx`
 - Modify: `src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 
-- [ ] **Step 1: Add render test**
+- [x] **Step 1: Add render test**
 
 Append to the test file:
 
@@ -426,12 +426,12 @@ describe('SceneAthlete', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: FAIL — `SceneAthlete` module not found
 
-- [ ] **Step 3: Create SceneAthlete component**
+- [x] **Step 3: Create SceneAthlete component**
 
 ```tsx
 // src/shared/components/loading/SceneAthlete.tsx
@@ -487,12 +487,12 @@ export function SceneAthlete() {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: All tests PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/components/loading/SceneAthlete.tsx src/shared/components/loading/__tests__/LoadingScreen.test.tsx
@@ -507,7 +507,7 @@ git commit -m "feat(loading): add SceneAthlete SVG component"
 - Create: `src/shared/components/loading/SceneReader.tsx`
 - Modify: `src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 
-- [ ] **Step 1: Add render test**
+- [x] **Step 1: Add render test**
 
 Append to the test file:
 
@@ -525,12 +525,12 @@ describe('SceneReader', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: FAIL — `SceneReader` module not found
 
-- [ ] **Step 3: Create SceneReader component**
+- [x] **Step 3: Create SceneReader component**
 
 ```tsx
 // src/shared/components/loading/SceneReader.tsx
@@ -592,12 +592,12 @@ export function SceneReader() {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: All tests PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/components/loading/SceneReader.tsx src/shared/components/loading/__tests__/LoadingScreen.test.tsx
@@ -612,7 +612,7 @@ git commit -m "feat(loading): add SceneReader SVG component"
 - Create: `src/shared/components/loading/LoadingScreen.tsx`
 - Modify: `src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 
-- [ ] **Step 1: Add tests for LoadingScreen**
+- [x] **Step 1: Add tests for LoadingScreen**
 
 Append to the test file:
 
@@ -638,12 +638,12 @@ describe('LoadingScreen', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: FAIL — `LoadingScreen` module not found
 
-- [ ] **Step 3: Create LoadingScreen component**
+- [x] **Step 3: Create LoadingScreen component**
 
 ```tsx
 // src/shared/components/loading/LoadingScreen.tsx
@@ -690,12 +690,12 @@ export function LoadingScreen({ showText = true }: LoadingScreenProps) {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: All tests PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/components/loading/LoadingScreen.tsx src/shared/components/loading/__tests__/LoadingScreen.test.tsx
@@ -709,7 +709,7 @@ git commit -m "feat(loading): add LoadingScreen shell with random scene + brand 
 **Files:**
 - Modify: `src/shared/components/Layout.tsx:1-21`
 
-- [ ] **Step 1: Update Layout imports and loading state**
+- [x] **Step 1: Update Layout imports and loading state**
 
 Replace the loading block in `Layout.tsx`. Add imports at top:
 
@@ -730,17 +730,17 @@ Replace lines 16-22 (the `if (isLoading)` block) with:
 
 Note: `useMinDelay` must be called unconditionally (React hook rules), so declare it before the early returns.
 
-- [ ] **Step 2: Verify the app builds**
+- [x] **Step 2: Verify the app builds**
 
 Run: `bun run build 2>&1 | tail -3`
 Expected: Build succeeds
 
-- [ ] **Step 3: Run existing tests to verify no regressions**
+- [x] **Step 3: Run existing tests to verify no regressions**
 
 Run: `bunx vitest run`
 Expected: All tests PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/shared/components/Layout.tsx
@@ -754,7 +754,7 @@ git commit -m "feat(loading): replace Loading... text with LoadingScreen in Layo
 **Files:**
 - Modify: `src/App.tsx`
 
-- [ ] **Step 1: Convert static imports to React.lazy**
+- [x] **Step 1: Convert static imports to React.lazy**
 
 Replace the component imports (lines 11-20) with lazy imports and add a Suspense wrapper:
 
@@ -788,7 +788,7 @@ const Dashboard = lazy(() => import('@/shared/components/Dashboard').then(m => (
 const AnimationViewer = lazy(() => import('@/shared/components/AnimationViewer').then(m => ({ default: m.AnimationViewer })));
 ```
 
-- [ ] **Step 2: Wrap Routes with Suspense**
+- [x] **Step 2: Wrap Routes with Suspense**
 
 Replace the `<Routes>` block in the App component with:
 
@@ -814,12 +814,12 @@ Replace the `<Routes>` block in the App component with:
 </Suspense>
 ```
 
-- [ ] **Step 3: Verify build and tests**
+- [x] **Step 3: Verify build and tests**
 
 Run: `bun run build 2>&1 | tail -3 && bunx vitest run`
 Expected: Build succeeds, all tests PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/App.tsx
@@ -836,7 +836,7 @@ git commit -m "feat(loading): lazy-load routes with Suspense + LoadingScreen fal
 - Modify: `src/shared/components/DebugPage.tsx`
 - Modify: `src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 
-- [ ] **Step 1: Add route constant**
+- [x] **Step 1: Add route constant**
 
 In `src/constants/routes.ts`, add to `AppPath` enum:
 
@@ -850,7 +850,7 @@ Add to `ROUTES`:
 ANIMATIONS: AppPath.Animations,
 ```
 
-- [ ] **Step 2: Add AnimationViewer test**
+- [x] **Step 2: Add AnimationViewer test**
 
 Append to the test file:
 
@@ -871,12 +871,12 @@ describe('AnimationViewer', () => {
 });
 ```
 
-- [ ] **Step 3: Run test to verify it fails**
+- [x] **Step 3: Run test to verify it fails**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: FAIL — `AnimationViewer` module not found
 
-- [ ] **Step 4: Create AnimationViewer component**
+- [x] **Step 4: Create AnimationViewer component**
 
 ```tsx
 // src/shared/components/AnimationViewer.tsx
@@ -977,7 +977,7 @@ function BrandText() {
 }
 ```
 
-- [ ] **Step 5: Add link in DebugPage**
+- [x] **Step 5: Add link in DebugPage**
 
 In `src/shared/components/DebugPage.tsx`, add import at top:
 
@@ -999,17 +999,17 @@ After the `<DevBench />` div (before the closing `</div>` of the component), add
 </div>
 ```
 
-- [ ] **Step 6: Run tests to verify**
+- [x] **Step 6: Run tests to verify**
 
 Run: `bunx vitest run src/shared/components/loading/__tests__/LoadingScreen.test.tsx`
 Expected: All tests PASS
 
-- [ ] **Step 7: Verify full build**
+- [x] **Step 7: Verify full build**
 
 Run: `bun run build 2>&1 | tail -3`
 Expected: Build succeeds
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/constants/routes.ts src/shared/components/AnimationViewer.tsx src/shared/components/DebugPage.tsx src/shared/components/loading/__tests__/LoadingScreen.test.tsx
@@ -1022,22 +1022,22 @@ git commit -m "feat(loading): add AnimationViewer page with scene switcher + tex
 
 **Files:** None (verification only)
 
-- [ ] **Step 1: Run full unit test suite**
+- [x] **Step 1: Run full unit test suite**
 
 Run: `bunx vitest run`
 Expected: All tests PASS (295 existing + ~9 new = ~304)
 
-- [ ] **Step 2: Run lint**
+- [x] **Step 2: Run lint**
 
 Run: `bun run lint`
 Expected: 0 errors
 
-- [ ] **Step 3: Run E2E tests**
+- [x] **Step 3: Run E2E tests**
 
 Run: `bun run test:e2e`
 Expected: All 42 E2E tests PASS
 
-- [ ] **Step 4: Run build**
+- [x] **Step 4: Run build**
 
 Run: `bun run build`
 Expected: Build succeeds with no errors

@@ -1,6 +1,6 @@
 # 🔔 Notifications & Module Requests Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Add a per-user notification subcollection powering two features: users can request modules from their Profile page (admin sees requests and one-click approves), and admin can post alerts/notices that appear as color-coded banners across all pages.
 
@@ -75,7 +75,7 @@
 
 The admin UID lives in `app/config.headminickUid` (Firestore) but isn't exposed to hooks. `useModuleRequest` needs it to write to the admin's notifications subcollection.
 
-- [ ] **Step 1: Add `adminUid` to `AuthContextValue`**
+- [x] **Step 1: Add `adminUid` to `AuthContextValue`**
 
 In `src/shared/auth/auth-context.tsx`, add to the interface:
 
@@ -91,7 +91,7 @@ export interface AuthContextValue {
 }
 ```
 
-- [ ] **Step 2: Read admin UID from `app/config` in `AuthProvider`**
+- [x] **Step 2: Read admin UID from `app/config` in `AuthProvider`**
 
 In the `AuthProvider` component, add state and a one-time read:
 
@@ -115,12 +115,12 @@ useEffect(() => {
 
 Pass `adminUid` in the context value.
 
-- [ ] **Step 3: Run type check**
+- [x] **Step 3: Run type check**
 
 Run: `bun run lint`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/shared/auth/auth-context.tsx
@@ -136,7 +136,7 @@ git commit -m "feat: expose adminUid in auth context from app/config"
 - Modify: `src/constants/db.ts`
 - Modify: `src/constants/messages.ts`
 
-- [ ] **Step 1: Add notification types to `src/shared/types.ts`**
+- [x] **Step 1: Add notification types to `src/shared/types.ts`**
 
 Add after the `SyncStatus` enum (after line 88):
 
@@ -185,7 +185,7 @@ export interface Notification {
 }
 ```
 
-- [ ] **Step 2: Add `requestedModules` to `UserProfile`**
+- [x] **Step 2: Add `requestedModules` to `UserProfile`**
 
 In `src/shared/types.ts`, add to the `UserProfile` interface after `updatedAt`:
 
@@ -207,7 +207,7 @@ export interface UserProfile {
 }
 ```
 
-- [ ] **Step 3: Add `Notifications` to `DbSubcollection` in `src/constants/db.ts`**
+- [x] **Step 3: Add `Notifications` to `DbSubcollection` in `src/constants/db.ts`**
 
 ```typescript
 export enum DbSubcollection {
@@ -227,7 +227,7 @@ export enum DbSubcollection {
 }
 ```
 
-- [ ] **Step 4: Add `NotificationMsg` enum to `src/constants/messages.ts`**
+- [x] **Step 4: Add `NotificationMsg` enum to `src/constants/messages.ts`**
 
 Add at end of file:
 
@@ -248,12 +248,12 @@ export enum NotificationMsg {
 }
 ```
 
-- [ ] **Step 5: Run type check**
+- [x] **Step 5: Run type check**
 
 Run: `bun run lint`
 Expected: PASS — no type errors
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/shared/types.ts src/constants/db.ts src/constants/messages.ts
@@ -267,7 +267,7 @@ git commit -m "feat: add notification types, DB paths, and messages"
 **Files:**
 - Create: `src/shared/__tests__/notification-types.test.ts`
 
-- [ ] **Step 1: Write tests for notification type enums**
+- [x] **Step 1: Write tests for notification type enums**
 
 ```typescript
 import { describe, expect, it } from 'vitest';
@@ -329,12 +329,12 @@ describe('Notification types', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it passes**
+- [x] **Step 2: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/__tests__/notification-types.test.ts`
 Expected: PASS — all 4 tests pass
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/__tests__/notification-types.test.ts
@@ -350,7 +350,7 @@ git commit -m "test: add notification type enum tests"
 
 This hook follows the `useBabyCollection` pattern: `createAdapter(userPath(uid))` → `onSnapshot` on the `notifications` subcollection. Any user reads their own notifications.
 
-- [ ] **Step 1: Create the hook**
+- [x] **Step 1: Create the hook**
 
 ```typescript
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -438,12 +438,12 @@ export function useNotifications() {
 }
 ```
 
-- [ ] **Step 2: Run type check**
+- [x] **Step 2: Run type check**
 
 Run: `bun run lint`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/hooks/useNotifications.ts
@@ -457,7 +457,7 @@ git commit -m "feat: add useNotifications hook for per-user notification inbox"
 **Files:**
 - Create: `src/shared/hooks/__tests__/useNotifications.test.ts`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```typescript
 import { describe, expect, it, vi, beforeEach } from 'vitest';
@@ -571,12 +571,12 @@ describe('useNotifications', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it passes**
+- [x] **Step 2: Run test to verify it passes**
 
 Run: `bunx vitest run src/shared/hooks/__tests__/useNotifications.test.ts`
 Expected: PASS — all 7 tests
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/hooks/__tests__/useNotifications.test.ts
@@ -592,7 +592,7 @@ git commit -m "test: add useNotifications hook tests"
 
 Dual-write: writes `module_request` notification to admin's subcollection + appends to own `requestedModules` array. Needs admin UID from app config.
 
-- [ ] **Step 1: Create the hook**
+- [x] **Step 1: Create the hook**
 
 ```typescript
 import { useCallback } from 'react';
@@ -665,12 +665,12 @@ export function useModuleRequest(adminUid: string | null) {
 }
 ```
 
-- [ ] **Step 2: Run type check**
+- [x] **Step 2: Run type check**
 
 Run: `bun run lint`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/hooks/useModuleRequest.ts
@@ -684,7 +684,7 @@ git commit -m "feat: add useModuleRequest hook with dual-write to admin notifica
 **Files:**
 - Create: `src/shared/hooks/__tests__/useModuleRequest.test.ts`
 
-- [ ] **Step 1: Write tests**
+- [x] **Step 1: Write tests**
 
 ```typescript
 import { describe, expect, it, vi, beforeEach } from 'vitest';
@@ -764,12 +764,12 @@ describe('useModuleRequest', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests**
+- [x] **Step 2: Run tests**
 
 Run: `bunx vitest run src/shared/hooks/__tests__/useModuleRequest.test.ts`
 Expected: PASS — all 3 tests
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/hooks/__tests__/useModuleRequest.test.ts
@@ -785,7 +785,7 @@ git commit -m "test: add useModuleRequest hook tests"
 
 Currently the Modules section (lines 359-380) only shows enabled modules. Add disabled modules as greyed-out chips with a "Request" button.
 
-- [ ] **Step 1: Add imports at top of `ProfilePage.tsx`**
+- [x] **Step 1: Add imports at top of `ProfilePage.tsx`**
 
 Add to existing imports:
 
@@ -794,7 +794,7 @@ import { useModuleRequest } from '@/shared/hooks/useModuleRequest';
 import { ALL_MODULES } from '@/shared/types';
 ```
 
-- [ ] **Step 2: Add hook call in component body**
+- [x] **Step 2: Add hook call in component body**
 
 Near the existing `enabledModules` derivation (around line 197), add:
 
@@ -804,7 +804,7 @@ const { requestModule } = useModuleRequest(adminUid);
 
 `adminUid` comes from `useAuth().adminUid` (added in Task 0). Extract it alongside `profile` and `isTheAdminNick`.
 
-- [ ] **Step 3: Replace the Modules section**
+- [x] **Step 3: Replace the Modules section**
 
 Replace lines 359-380 with:
 
@@ -854,7 +854,7 @@ Replace lines 359-380 with:
       </section>
 ```
 
-- [ ] **Step 4: Run type check + dev server visual verification**
+- [x] **Step 4: Run type check + dev server visual verification**
 
 Run: `bun run lint`
 Expected: PASS
@@ -862,7 +862,7 @@ Expected: PASS
 Run: `bun run dev`
 Open Profile page — verify enabled modules show active, disabled show greyed with "Request" button.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/components/ProfilePage.tsx
@@ -876,7 +876,7 @@ git commit -m "feat: add module request buttons to Profile page"
 **Files:**
 - Create: `src/shared/components/__tests__/ProfileModuleRequest.test.tsx`
 
-- [ ] **Step 1: Write render tests**
+- [x] **Step 1: Write render tests**
 
 ```typescript
 import { describe, expect, it, vi } from 'vitest';
@@ -952,12 +952,12 @@ describe('ProfilePage module request UI', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests**
+- [x] **Step 2: Run tests**
 
 Run: `bunx vitest run src/shared/components/__tests__/ProfileModuleRequest.test.tsx`
 Expected: PASS — all 4 tests
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/components/__tests__/ProfileModuleRequest.test.tsx
@@ -971,7 +971,7 @@ git commit -m "test: add Profile module request UI tests"
 **Files:**
 - Create: `src/shared/components/AlertBanner.tsx`
 
-- [ ] **Step 1: Create the component**
+- [x] **Step 1: Create the component**
 
 ```tsx
 import { AlertType, Severity } from '@/shared/types';
@@ -1037,12 +1037,12 @@ export function AlertBanner({ alerts, onDismiss }: AlertBannerProps) {
 }
 ```
 
-- [ ] **Step 2: Run type check**
+- [x] **Step 2: Run type check**
 
 Run: `bun run lint`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/components/AlertBanner.tsx
@@ -1056,7 +1056,7 @@ git commit -m "feat: add AlertBanner component with severity-coded styling"
 **Files:**
 - Create: `src/shared/components/__tests__/AlertBanner.test.tsx`
 
-- [ ] **Step 1: Write tests**
+- [x] **Step 1: Write tests**
 
 ```tsx
 import { describe, expect, it, vi } from 'vitest';
@@ -1124,12 +1124,12 @@ describe('AlertBanner', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests**
+- [x] **Step 2: Run tests**
 
 Run: `bunx vitest run src/shared/components/__tests__/AlertBanner.test.tsx`
 Expected: PASS — all 7 tests
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shared/components/__tests__/AlertBanner.test.tsx
@@ -1143,7 +1143,7 @@ git commit -m "test: add AlertBanner component tests"
 **Files:**
 - Modify: `src/shared/components/Layout.tsx`
 
-- [ ] **Step 1: Add imports**
+- [x] **Step 1: Add imports**
 
 Add to `Layout.tsx` imports:
 
@@ -1152,7 +1152,7 @@ import { AlertBanner } from '@/shared/components/AlertBanner';
 import { useNotifications } from '@/shared/hooks/useNotifications';
 ```
 
-- [ ] **Step 2: Add hook call in Layout component**
+- [x] **Step 2: Add hook call in Layout component**
 
 After existing hooks (around line 21), add:
 
@@ -1160,7 +1160,7 @@ After existing hooks (around line 21), add:
 const { activeAlerts, dismiss } = useNotifications();
 ```
 
-- [ ] **Step 3: Render AlertBanner above header**
+- [x] **Step 3: Render AlertBanner above header**
 
 In the return JSX, add `<AlertBanner>` between the ambient effects div and the header. Replace:
 
@@ -1177,7 +1177,7 @@ With:
       <header className="flex items-center justify-between px-4 py-3 bg-surface-card border-b border-line">
 ```
 
-- [ ] **Step 4: Add admin notification badge to header**
+- [x] **Step 4: Add admin notification badge to header**
 
 For the admin user, show an unread badge on their profile avatar. In the header section where the profile button is rendered (around line 52-68), wrap the admin's avatar with a relative container and add a badge:
 
@@ -1193,7 +1193,7 @@ Add the profile avatar button wrapper as `relative` (add `className="relative ro
 
 Also destructure `isTheAdminNick` from `useAuth()` and `unreadCount` from `useNotifications()`.
 
-- [ ] **Step 5: Run type check + visual verification**
+- [x] **Step 5: Run type check + visual verification**
 
 Run: `bun run lint`
 Expected: PASS
@@ -1201,7 +1201,7 @@ Expected: PASS
 Run: `bun run dev`
 Verify: No banner visible when no active alerts. Admin avatar shows badge when unread notifications exist.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/shared/components/Layout.tsx
@@ -1217,7 +1217,7 @@ git commit -m "feat: wire AlertBanner into Layout shell + admin notification bad
 
 Admin reads own notifications (for request badges) and writes to user subcollections (for alerts).
 
-- [ ] **Step 1: Create the hook**
+- [x] **Step 1: Create the hook**
 
 ```typescript
 import { useCallback } from 'react';
@@ -1359,12 +1359,12 @@ export function useAdminNotifications() {
 }
 ```
 
-- [ ] **Step 2: Run type check**
+- [x] **Step 2: Run type check**
 
 Run: `bun run lint`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/admin/hooks/useAdminNotifications.ts
@@ -1378,7 +1378,7 @@ git commit -m "feat: add useAdminNotifications hook for alerts and request appro
 **Files:**
 - Create: `src/admin/hooks/__tests__/useAdminNotifications.test.ts`
 
-- [ ] **Step 1: Write tests**
+- [x] **Step 1: Write tests**
 
 ```typescript
 import { describe, expect, it, vi, beforeEach } from 'vitest';
@@ -1516,12 +1516,12 @@ describe('useAdminNotifications', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests**
+- [x] **Step 2: Run tests**
 
 Run: `bunx vitest run src/admin/hooks/__tests__/useAdminNotifications.test.ts`
 Expected: PASS — all 4 tests
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/admin/hooks/__tests__/useAdminNotifications.test.ts
@@ -1535,7 +1535,7 @@ git commit -m "test: add useAdminNotifications hook tests"
 **Files:**
 - Create: `src/admin/components/BroadcastsTab.tsx`
 
-- [ ] **Step 1: Create the compose form + alert list**
+- [x] **Step 1: Create the compose form + alert list**
 
 ```tsx
 import { useState, useCallback } from 'react';
@@ -1698,12 +1698,12 @@ export function BroadcastsTab() {
 }
 ```
 
-- [ ] **Step 2: Run type check**
+- [x] **Step 2: Run type check**
 
 Run: `bun run lint`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/admin/components/BroadcastsTab.tsx
@@ -1717,7 +1717,7 @@ git commit -m "feat: add BroadcastsTab with compose form and target picker"
 **Files:**
 - Create: `src/admin/components/__tests__/BroadcastsTab.test.tsx`
 
-- [ ] **Step 1: Write tests**
+- [x] **Step 1: Write tests**
 
 ```tsx
 import { describe, expect, it, vi } from 'vitest';
@@ -1781,12 +1781,12 @@ describe('BroadcastsTab', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests**
+- [x] **Step 2: Run tests**
 
 Run: `bunx vitest run src/admin/components/__tests__/BroadcastsTab.test.tsx`
 Expected: PASS — all 4 tests
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/admin/components/__tests__/BroadcastsTab.test.tsx
@@ -1801,7 +1801,7 @@ git commit -m "test: add BroadcastsTab component tests"
 - Modify: `src/admin/components/AdminPanel.tsx`
 - Modify: `src/admin/components/UsersTab.tsx`
 
-- [ ] **Step 1: Add Broadcasts tab to AdminPanel**
+- [x] **Step 1: Add Broadcasts tab to AdminPanel**
 
 Replace full `AdminPanel.tsx`:
 
@@ -1867,7 +1867,7 @@ export function AdminPanel() {
 }
 ```
 
-- [ ] **Step 2: Add request badges to UsersTab**
+- [x] **Step 2: Add request badges to UsersTab**
 
 In `UsersTab.tsx`, add import:
 
@@ -1903,17 +1903,17 @@ Inside the user row mapping (around line 91, before the role chip), add request 
                     ))}
 ```
 
-- [ ] **Step 3: Run type check**
+- [x] **Step 3: Run type check**
 
 Run: `bun run lint`
 Expected: PASS
 
-- [ ] **Step 4: Visual verification**
+- [x] **Step 4: Visual verification**
 
 Run: `bun run dev`
 Verify: AdminPanel shows 3 tabs. Users tab shows request badges (if any). Broadcasts tab shows compose form.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/admin/components/AdminPanel.tsx src/admin/components/UsersTab.tsx
@@ -1927,7 +1927,7 @@ git commit -m "feat: add Broadcasts tab to AdminPanel and request badges to User
 **Files:**
 - Create: `src/admin/components/__tests__/AdminPanel.test.tsx`
 
-- [ ] **Step 1: Write tests**
+- [x] **Step 1: Write tests**
 
 ```tsx
 import { describe, expect, it, vi } from 'vitest';
@@ -1989,12 +1989,12 @@ describe('AdminPanel', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests**
+- [x] **Step 2: Run tests**
 
 Run: `bunx vitest run src/admin/components/__tests__/AdminPanel.test.tsx`
 Expected: PASS — all 5 tests
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/admin/components/__tests__/AdminPanel.test.tsx
@@ -2008,7 +2008,7 @@ git commit -m "test: add AdminPanel tab switching and badge tests"
 **Files:**
 - Modify: `firestore.rules`
 
-- [ ] **Step 1: Add notification subcollection rules**
+- [x] **Step 1: Add notification subcollection rules**
 
 Add within the `match /users/{userId}` block:
 
@@ -2031,11 +2031,11 @@ Add within the `match /users/{userId}` block:
     }
 ```
 
-- [ ] **Step 2: Add `requestedModules` to profile update rules**
+- [x] **Step 2: Add `requestedModules` to profile update rules**
 
 Ensure the profile update rule allows users to write `requestedModules`. In the existing profile match block, add `requestedModules` to the allowed update fields list alongside `theme`, `colorMode`, `name`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add firestore.rules
@@ -2050,7 +2050,7 @@ git commit -m "feat: add Firestore rules for notifications subcollection"
 - Modify: `CLAUDE.md`
 - Modify: `CHANGELOG.md`
 
-- [ ] **Step 1: Add notification architecture to CLAUDE.md**
+- [x] **Step 1: Add notification architecture to CLAUDE.md**
 
 Add to the Architecture section:
 
@@ -2058,7 +2058,7 @@ Add to the Architecture section:
 - **Notifications**: Per-user subcollection `users/{uid}/notifications/{id}`. User→admin: module requests (writes to admin's subcollection + own `requestedModules`). Admin→user: alerts/notices with severity, type, and `shownTillDate` expiry. `useNotifications` reads own inbox, `useAdminNotifications` adds send/approve actions. `AlertBanner` renders above header in Layout. CSS swipe-to-delete planned (if needed, switch to `@use-gesture/react` library)
 ```
 
-- [ ] **Step 2: Add CHANGELOG entry**
+- [x] **Step 2: Add CHANGELOG entry**
 
 ```markdown
 ## [Unreleased]
@@ -2072,7 +2072,7 @@ Add to the Architecture section:
 - Firestore rules for notification read/write/create permissions
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add CLAUDE.md CHANGELOG.md
