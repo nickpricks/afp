@@ -47,7 +47,9 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Tap-to-edit pattern**: All list views use tap-row-to-populate-form. Body: FloorsTab redirects +/- buttons, ActivityLog populates AddActivity. Baby: all 4 logs populate their forms. Budget: edit deferred (form on separate page). Active row: `bg-[var(--accent-muted)] border-l-2 border-l-accent`
 - **List constants**: `CONFIG.PAGE_SIZE` (25) for all paginated lists, `CONFIG.UNDO_DURATION_MS` (10000) for undo delete toasts, `CONFIG.METERS_PER_KM` (1000) for distance conversion — never hardcode these values
 - **Route guards**: `ModuleGate` wraps module routes, `AdminGate` wraps admin routes — redirect to `/` if unauthorized
-- **Admin panel**: Tabbed container (Invites | Users). `InvitesTab` has copy-link + delete actions. `UsersTab` has color-coded module chips (Body=indigo, Budget=emerald, Baby=pink), role stat bar, toggle switches, accordion expand. `useAdminActions` hook for Firestore profile writes
+- **Admin panel**: Tabbed container (Invites | Users). `InvitesTab` has copy-link + delete actions. `UsersTab` has color-coded module chips (Body=indigo, Budget=emerald, Baby=pink), role stat bar, toggle switches, accordion expand, "View Dashboard" button per user. `useAdminActions` hook for Firestore profile writes. Admin can view any user's dashboard via `?viewUser=uid` query param on `/`. Broadcasts tab planned (see `docs/specs/2026-04-14-notifications-module-requests-design.md`)
+- **Delete pattern**: Inline `x` text on all list rows (Body + Baby), `hover:text-red-500 hover:scale-125 hover:font-bold`. Mobile: `SwipeToDelete` wrapper (CSS-only touch, no gesture library — swap to `@use-gesture/react` if needed). Undo toast with `CONFIG.UNDO_DURATION_MS` (10s)
+- **Verbose storage logging**: Both `localStorage-adapter.ts` and `firebase-adapter.ts` log all SAVE/REMOVE/SNAPSHOT operations via `vlog()` when debug verbose toggle is on. Prefixed `[AFP:storage:local]` or `[AFP:storage:fb]`
 - **Invite viewer flow**: `InviteRecord` has optional `role` and `viewerOf` fields. `InviteGenerator` shows User/Viewer toggle + "View of" picker. `redeemInvite` creates Viewer profile with `viewerOf` scoping when `role='viewer'`
 - **Dev bypass**: When Firebase isn't configured (`isFirebaseConfigured = false`), auth is bypassed — all modules enabled, TheAdminNick role, localStorage adapter used instead of Firebase
 
@@ -60,6 +62,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - Firestore paths: baby children at `/users/{uid}/children/{childId}`, baby subcollections at `/users/{uid}/children/{childId}/feeds/{id}` (nested, not flat)
 - **Baby hooks**: `useBabyCollection<T>` generic hook in `useBabyCollection.ts`, composed by `useBabyData`. Each subcollection tracks `ready` state independently — sync status only shows `Synced` when all 4 listeners have reported
 - **Generic data hooks**: `useBabyCollection<T>` pattern — reusable hook for subcollection listener + state + save. New modules should follow this pattern instead of duplicating listener boilerplate
+- **Baby list refactor (worth investigating)**: Baby module has 4 inline `RecentXxx` render functions (FeedLog, SleepLog, GrowthLog, DiaperLog) each duplicating list/edit/delete/pagination logic. Body module solved this with a shared `ActivityLog` component. Baby should follow the same pattern — extract a shared `BabyLogList` component to reduce duplication and ensure consistent UX (delete hover, swipe, undo) across all baby logs
 
 ## Theme System
 

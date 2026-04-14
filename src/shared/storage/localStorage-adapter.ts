@@ -1,6 +1,7 @@
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import { err, ok } from '@/shared/types';
 import type { Result } from '@/shared/types';
+import { vlog } from '@/shared/utils/verbose';
 
 type Listener = (data: unknown[]) => void;
 
@@ -37,7 +38,9 @@ export function createLocalStorageAdapter(basePath: string): StorageAdapter {
 
   return {
     async getAll<T>(collectionName: string): Promise<Result<T[]>> {
-      return ok(readCollection<T>(storageKey(basePath, collectionName)));
+      const items = readCollection<T>(storageKey(basePath, collectionName));
+      vlog('[AFP:storage:local] GET_ALL', { path: basePath, collection: collectionName, count: items.length });
+      return ok(items);
     },
 
     async getById<T>(collectionName: string, id: string): Promise<Result<T>> {
@@ -54,12 +57,14 @@ export function createLocalStorageAdapter(basePath: string): StorageAdapter {
       const id = data.id ?? crypto.randomUUID();
       const items = readCollection<Record<string, unknown>>(key);
       const idx = items.findIndex((item) => item['id'] === id);
-      if (idx >= 0) {
+      const isUpdate = idx >= 0;
+      if (isUpdate) {
         items[idx] = { ...items[idx], ...data, id };
       } else {
         items.push({ ...data, id });
       }
       writeCollection(key, items);
+      vlog('[AFP:storage:local] SAVE', { path: basePath, collection: collectionName, id, mode: isUpdate ? 'update' : 'create', totalItems: items.length });
       notify(collectionName);
       return ok(undefined);
     },
@@ -67,7 +72,9 @@ export function createLocalStorageAdapter(basePath: string): StorageAdapter {
     async remove(collectionName: string, id: string): Promise<Result<void>> {
       const key = storageKey(basePath, collectionName);
       const items = readCollection<Record<string, unknown>>(key);
+      const before = items.length;
       writeCollection(key, items.filter((item) => item['id'] !== id));
+      vlog('[AFP:storage:local] REMOVE', { path: basePath, collection: collectionName, id, itemsBefore: before, itemsAfter: before - 1 });
       notify(collectionName);
       return ok(undefined);
     },
@@ -78,8 +85,11 @@ export function createLocalStorageAdapter(basePath: string): StorageAdapter {
       }
       const cb = callback as Listener;
       listeners.get(collectionName)!.add(cb);
-      callback(readCollection<T>(storageKey(basePath, collectionName)));
+      const initial = readCollection<T>(storageKey(basePath, collectionName));
+      vlog('[AFP:storage:local] SNAPSHOT_INIT', { path: basePath, collection: collectionName, count: initial.length });
+      callback(initial);
       return () => {
+        vlog('[AFP:storage:local] SNAPSHOT_UNSUB', { path: basePath, collection: collectionName });
         listeners.get(collectionName)?.delete(cb);
       };
     },

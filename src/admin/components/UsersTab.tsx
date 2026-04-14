@@ -1,8 +1,10 @@
 import { useState, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useAllUsers } from '@/admin/hooks/useAllUsers';
 import { useAdminActions } from '@/admin/hooks/useAdminActions';
 import { ALL_MODULES, ModuleId, UserRole } from '@/shared/types';
+import { ROUTES } from '@/constants/routes';
 import type { UserEntry } from '@/admin/hooks/useAllUsers';
 import type { ModuleConfig } from '@/shared/types';
 
@@ -17,6 +19,7 @@ const MODULE_COLORS: Record<ModuleId, { chip: string; toggle: string }> = {
 export function UsersTab() {
   const { users, loading } = useAllUsers();
   const { updateUserModules, updateUserRole } = useAdminActions();
+  const navigate = useNavigate();
   const [expandedUid, setExpandedUid] = useState<string | null>(null);
 
   /** Role counts for summary stat bar (B) */
@@ -53,6 +56,14 @@ export function UsersTab() {
       updateUserRole(uid, role);
     },
     [updateUserRole],
+  );
+
+  /** Navigates to dashboard viewing a specific user's data */
+  const viewUserDashboard = useCallback(
+    (uid: string) => {
+      navigate(`${ROUTES.HOME}?viewUser=${uid}`);
+    },
+    [navigate],
   );
 
   if (loading) {
@@ -184,6 +195,19 @@ ALL_MODULES.map((m) => (
 }
                     </div>
                   </fieldset>
+
+                  {/* View user's dashboard data */}
+                  <button
+                    type="button"
+                    onClick={() => viewUserDashboard(u.uid)}
+                    className="flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/20"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                      <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
+                      <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                    </svg>
+                    View Dashboard
+                  </button>
                 </div>
               )
 }

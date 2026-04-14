@@ -6,7 +6,7 @@ import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { BodyActivity, BodyRecord } from '@/modules/body/types';
 import { computeBodyScore } from '@/modules/body/scoring';
-import { todayStr, nowTime } from '@/shared/utils/date';
+import { todayStr } from '@/shared/utils/date';
 import { ActivityType, SyncStatus, ToastType, isOk } from '@/shared/types';
 import { DbSubcollection, userPath } from '@/constants/db';
 import { BodyMsg } from '@/constants/messages';
@@ -41,6 +41,7 @@ export function useBodyData(targetUid?: string) {
   const [records, setRecords] = useState<Record<string, BodyRecord>>({});
   const [activities, setActivities] = useState<BodyActivity[]>([]);
   const activitiesRef = useRef<BodyActivity[]>([]);
+  const recordsRef = useRef<Record<string, BodyRecord>>({});
   const adapterRef = useRef<StorageAdapter | null>(null);
 
   const uid = targetUid ?? firebaseUser?.uid;
@@ -61,6 +62,7 @@ export function useBodyData(targetUid?: string) {
         for (const item of items) {
           mapped[item.dateStr] = item;
         }
+        recordsRef.current = mapped;
         setRecords(mapped);
         syncFn(SyncStatus.Synced);
       },
@@ -111,29 +113,32 @@ export function useBodyData(targetUid?: string) {
       if (!adapter) return;
 
       const key = todayStr();
-      const current = records[key] ?? emptyRecord(key);
+      const current = recordsRef.current[key] ?? emptyRecord(key);
       const updated: BodyRecord = {
         ...current,
         up: current.up + (type === 'up' ? 1 : 0),
         down: current.down + (type === 'down' ? 1 : 0),
         updatedAt: new Date().toISOString(),
       };
-      const withActivities = recomputeSummary(updated, activities);
+      const withActivities = recomputeSummary(updated, activitiesRef.current);
 
+      // Optimistic update for responsive tap UX
+      recordsRef.current = { ...recordsRef.current, [key]: withActivities };
       setRecords((prev) => ({ ...prev, [key]: withActivities }));
 
       const result = await adapter.save(DbSubcollection.Body, { ...withActivities, id: key });
       if (!isOk(result)) {
         addToast(result.error, ToastType.Error);
+        recordsRef.current = { ...recordsRef.current, [key]: current };
         setRecords((prev) => ({ ...prev, [key]: current }));
       }
     },
-    [records, activities, addToast, readOnly],
+    [addToast, readOnly],
   );
 
-  /** Logs a new activity (walk, run, etc.) */
+  /** Logs a new activity (walk, run, etc.) — defaults to today, pass date for backfill */
   const logActivity = useCallback(
-    async (type: ActivityType, distanceMeters: number) => {
+    async (type: ActivityType, distanceMeters: number, date?: string) => {
       if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter || distanceMeters <= 0) return;
@@ -143,35 +148,28 @@ export function useBodyData(targetUid?: string) {
         type,
         distance: distanceMeters,
         duration: null,
-        date: todayStr(),
+        date: date ?? todayStr(),
         timestamp: new Date().toISOString(),
-        createdAt: nowTime(),
+        createdAt: new Date().toISOString(),
       };
 
-      // Optimistically add to local state + ref
-      const optimistic = [...activitiesRef.current, entry];
-      activitiesRef.current = optimistic;
-      setActivities(optimistic);
-
+      // Save activity — snapshot listener will update state
       const result = await adapter.save(DbSubcollection.BodyActivities, entry);
       if (!isOk(result)) {
         addToast(result.error, ToastType.Error);
-        const rolled = activitiesRef.current.filter((a) => a.id !== entry.id);
-        activitiesRef.current = rolled;
-        setActivities(rolled);
         return;
       }
 
-      // Persist updated daily summary using current ref (not stale closure)
+      // Persist updated daily summary using current refs (not stale closure)
       const key = entry.date;
-      const base = records[key] ?? emptyRecord(key);
+      const base = recordsRef.current[key] ?? emptyRecord(key);
       const updated = recomputeSummary(base, activitiesRef.current);
       const summaryResult = await adapter.save(DbSubcollection.Body, { ...updated, id: key });
       if (!isOk(summaryResult)) {
         addToast(summaryResult.error, ToastType.Error);
       }
     },
-    [records, addToast, readOnly],
+    [addToast, readOnly],
   );
 
   /** Saves or updates a body record for any date (edit/backfill) */
@@ -181,7 +179,7 @@ export function useBodyData(targetUid?: string) {
       const adapter = adapterRef.current;
       if (!adapter) return;
 
-      const current = records[dateKey] ?? emptyRecord(dateKey);
+      const current = recordsRef.current[dateKey] ?? emptyRecord(dateKey);
       const merged: BodyRecord = {
         ...current,
         up: data.up ?? current.up,
@@ -190,17 +188,20 @@ export function useBodyData(targetUid?: string) {
       };
       const withActivities = recomputeSummary(merged, activitiesRef.current);
 
+      // Optimistic update for responsive edit UX
+      recordsRef.current = { ...recordsRef.current, [dateKey]: withActivities };
       setRecords((prev) => ({ ...prev, [dateKey]: withActivities }));
 
       const result = await adapter.save(DbSubcollection.Body, { ...withActivities, id: dateKey });
       if (!isOk(result)) {
         addToast(BodyMsg.RecordFailed, ToastType.Error);
+        recordsRef.current = { ...recordsRef.current, [dateKey]: current };
         setRecords((prev) => ({ ...prev, [dateKey]: current }));
       } else {
         addToast(BodyMsg.RecordSaved, ToastType.Success);
       }
     },
-    [records, addToast, readOnly],
+    [addToast, readOnly],
   );
 
   /** Updates an existing activity's distance */
@@ -219,33 +220,81 @@ export function useBodyData(targetUid?: string) {
         timestamp: new Date().toISOString(),
       };
 
-      // Optimistic update
-      const optimistic = activitiesRef.current.map((a) => (a.id === id ? updated : a));
-      activitiesRef.current = optimistic;
-      setActivities(optimistic);
-
+      // Save activity — snapshot listener will update state
       const result = await adapter.save(DbSubcollection.BodyActivities, updated);
       if (!isOk(result)) {
         addToast(BodyMsg.ActivityUpdateFailed, ToastType.Error);
-        const rolled = activitiesRef.current.map((a) => (a.id === id ? current : a));
-        activitiesRef.current = rolled;
-        setActivities(rolled);
         return;
       }
 
       addToast(BodyMsg.ActivityUpdated, ToastType.Success);
 
-      // Recompute daily summary
+      // Recompute daily summary using current refs
       const key = current.date;
-      const base = records[key] ?? emptyRecord(key);
+      const base = recordsRef.current[key] ?? emptyRecord(key);
       const recomputed = recomputeSummary(base, activitiesRef.current);
       const summaryResult = await adapter.save(DbSubcollection.Body, { ...recomputed, id: key });
       if (!isOk(summaryResult)) {
         addToast(summaryResult.error, ToastType.Error);
       }
     },
-    [records, addToast, readOnly],
+    [addToast, readOnly],
   );
 
-  return { records, todayRecord, activities, todayActivities, tap, logActivity, saveRecord, updateActivity };
+  /** Deletes an activity by ID and recomputes the daily summary */
+  const deleteActivity = useCallback(
+    async (id: string) => {
+      if (readOnly) return;
+      const adapter = adapterRef.current;
+      if (!adapter) return;
+
+      const target = activitiesRef.current.find((a) => a.id === id);
+      if (!target) return;
+
+      const result = await adapter.remove(DbSubcollection.BodyActivities, id);
+      if (!isOk(result)) {
+        addToast(BodyMsg.ActivityDeleteFailed, ToastType.Error);
+        return;
+      }
+
+      // Recompute daily summary — manually exclude deleted activity since snapshot may not have fired yet
+      const key = target.date;
+      const base = recordsRef.current[key] ?? emptyRecord(key);
+      const remaining = activitiesRef.current.filter((a) => a.id !== id);
+      const recomputed = recomputeSummary(base, remaining);
+      const summaryResult = await adapter.save(DbSubcollection.Body, { ...recomputed, id: key });
+      if (!isOk(summaryResult)) {
+        addToast(summaryResult.error, ToastType.Error);
+      }
+    },
+    [addToast, readOnly],
+  );
+
+  /** Deletes a floor record (entire day) by date key */
+  const deleteRecord = useCallback(
+    async (dateKey: string) => {
+      if (readOnly) return;
+      const adapter = adapterRef.current;
+      if (!adapter) return;
+
+      const result = await adapter.remove(DbSubcollection.Body, dateKey);
+      if (!isOk(result)) {
+        addToast(BodyMsg.RecordDeleteFailed, ToastType.Error);
+      }
+    },
+    [addToast, readOnly],
+  );
+
+  return {
+    records,
+    todayRecord,
+    activities,
+    todayActivities,
+    tap,
+    logActivity,
+    saveRecord,
+    updateActivity,
+    deleteActivity,
+    deleteRecord,
+  };
 }

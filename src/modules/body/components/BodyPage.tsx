@@ -39,7 +39,17 @@ function buildTabs(config: { floors: boolean; walking: boolean; running: boolean
 /** Main body module page — config gate + tabbed interface */
 export function BodyPage() {
   const { config, isConfigured, loading, saveConfig } = useBodyConfig();
-  const { records, todayRecord, activities, tap, logActivity, saveRecord, updateActivity } = useBodyData();
+  const {
+    records,
+    todayRecord,
+    activities,
+    tap,
+    logActivity,
+    saveRecord,
+    updateActivity,
+    deleteActivity,
+    deleteRecord,
+  } = useBodyData();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<TabId>('stats');
   const [showConfig, setShowConfig] = useState(false);
@@ -97,7 +107,7 @@ export function BodyPage() {
   return (
     <div className="flex flex-col gap-4 px-4 py-6">
       {/* Tab bar with settings button */}
-      <div className="flex gap-1 rounded-lg bg-surface-card border border-line p-1">
+      <div className="flex gap-1 overflow-x-auto no-scrollbar rounded-lg bg-surface-card border border-line p-1">
         {
           tabs.map((tab) => (
             <button
@@ -105,7 +115,7 @@ export function BodyPage() {
               type="button"
               onClick={() => setActiveTab(tab.id)}
               className={
-                `flex-1 rounded-md px-3 py-2 text-sm font-medium transition ${
+                `shrink-0 rounded-md px-3 py-2 text-sm font-medium transition ${
                   validTab === tab.id
                     ? 'bg-accent text-fg-on-accent'
                     : 'text-fg-muted hover:text-fg'
@@ -120,7 +130,7 @@ export function BodyPage() {
           type="button"
           aria-label="Settings"
           onClick={() => setShowConfig(true)}
-          className="rounded-md px-2 py-2 text-fg-muted hover:text-fg transition"
+          className="shrink-0 rounded-md px-2 py-2 text-fg-muted hover:text-fg transition"
         >
           ⚙
         </button>
@@ -146,6 +156,8 @@ export function BodyPage() {
             floorHeight={config.floorHeight}
             onTap={tap}
             onSaveRecord={saveRecord}
+            onDeleteRecord={deleteRecord}
+            onResetToday={handleResetToday}
           />
         )
       }
@@ -155,6 +167,7 @@ export function BodyPage() {
             activities={activities}
             onLog={logActivity}
             onSave={updateActivity}
+            onDelete={deleteActivity}
           />
         )
       }
@@ -164,6 +177,7 @@ export function BodyPage() {
             activities={activities}
             onLog={logActivity}
             onSave={updateActivity}
+            onDelete={deleteActivity}
           />
         )
       }
@@ -173,6 +187,7 @@ export function BodyPage() {
             activities={activities}
             onLog={logActivity}
             onSave={updateActivity}
+            onDelete={deleteActivity}
           />
         )
       }

@@ -26,12 +26,16 @@ export function AddActivity({
   defaultType,
   editEntry,
   onCancelEdit,
+  backfillDate,
+  onClearBackfill,
 }: {
-  onLog: (type: ActivityType, distanceMeters: number) => Promise<void>;
+  onLog: (type: ActivityType, distanceMeters: number, date?: string) => Promise<void>;
   onUpdate?: (id: string, data: { distance?: number }) => Promise<void>;
   defaultType?: ActivityType;
   editEntry?: BodyActivity | null;
   onCancelEdit?: () => void;
+  backfillDate?: string | null;
+  onClearBackfill?: () => void;
 }) {
   const [type, setType] = useState<ActivityType>(defaultType ?? ActivityType.Walk);
   const [distance, setDistance] = useState('');
@@ -66,9 +70,10 @@ export function AddActivity({
         await onUpdate(editEntry.id, { distance: distanceMeters });
         onCancelEdit?.();
       } else {
-        await onLog(type, distanceMeters);
+        await onLog(type, distanceMeters, backfillDate ?? undefined);
       }
       setDistance('');
+      onClearBackfill?.();
     } finally {
       setIsSaving(false);
     }
@@ -81,6 +86,20 @@ export function AddActivity({
 
   return (
     <div className="flex flex-col gap-3">
+      {backfillDate && !isEditMode && (
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
+            Adding for {backfillDate}
+          </span>
+          <button
+            type="button"
+            onClick={onClearBackfill}
+            className="text-xs text-fg-muted hover:text-fg"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
       {
         !defaultType && !isEditMode && (
           <div className="flex gap-2">
@@ -132,9 +151,9 @@ export function AddActivity({
           placeholder="Distance"
           value={distance}
           onChange={(e) => setDistance(e.target.value)}
-          className="flex-1 rounded-lg border border-line bg-surface-card px-3 py-2 text-fg"
+          className="min-w-0 flex-1 rounded-lg border border-line bg-surface-card px-3 py-2 text-fg"
         />
-        <div className="flex rounded-lg border border-line overflow-hidden">
+        <div className="flex shrink-0 rounded-lg border border-line overflow-hidden">
           <button
             type="button"
             onClick={() => {
@@ -142,7 +161,7 @@ export function AddActivity({
               setUnit('m');
             }}
             className={
-              `px-3 py-2 text-sm font-medium transition ${
+              `min-h-[44px] min-w-[44px] px-3 py-2 text-sm font-medium transition ${
                 unit === 'm' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'
               }`
             }
@@ -156,7 +175,7 @@ export function AddActivity({
               setUnit('km');
             }}
             className={
-              `px-3 py-2 text-sm font-medium transition ${
+              `min-h-[44px] min-w-[44px] px-3 py-2 text-sm font-medium transition ${
                 unit === 'km' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'
               }`
             }

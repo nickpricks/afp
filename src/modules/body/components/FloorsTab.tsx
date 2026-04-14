@@ -1,10 +1,16 @@
-import { useState } from 'react';
-import { ArrowUp, ArrowDown, RotateCcw, Plus } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { ArrowUp, ArrowDown, RotateCcw } from 'lucide-react';
 
 import type { BodyRecord } from '@/modules/body/types';
 import { BODY_DEFAULTS } from '@/modules/body/constants';
 import { CONFIG } from '@/constants/config';
+import { BodyMsg } from '@/constants/messages';
 import { todayStr } from '@/shared/utils/date';
+import { ToastType } from '@/shared/types';
+import { useToast } from '@/shared/errors/useToast';
+import { SwipeToDelete } from '@/shared/components/SwipeToDelete';
+import { DatePickerModal } from '@/shared/components/DatePickerModal';
+import { sortNewestFirst } from '@/shared/utils/sort';
 
 /** Formats meters as a readable distance string */
 function formatHeight(floors: number, floorHeight: number): string {
@@ -19,31 +25,70 @@ export function FloorsTab({
   floorHeight,
   onTap,
   onSaveRecord,
+  onDeleteRecord,
+  onResetToday,
 }: {
   todayRecord: BodyRecord;
   records: Record<string, BodyRecord>;
   floorHeight: number;
   onTap: (type: 'up' | 'down') => Promise<void>;
   onSaveRecord: (dateKey: string, data: { up?: number; down?: number }) => Promise<void>;
+  onDeleteRecord?: (dateKey: string) => Promise<void>;
+  onResetToday?: () => void;
 }) {
+  const { addToast } = useToast();
   const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const height = floorHeight || BODY_DEFAULTS.FLOOR_HEIGHT_M;
   const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const [pendingDeleteKey, setPendingDeleteKey] = useState<string | null>(null);
+  const undoRef = useRef(false);
 
   const today = todayStr();
   const isEditing = editingKey !== null;
 
-  // The record being displayed — either the editing date or today
+  // The record being displayed -- either the editing date or today
   const activeKey = editingKey ?? today;
   const activeRecord = editingKey
     ? records[editingKey] ?? { dateStr: editingKey, up: 0, down: 0, walkMeters: 0, runMeters: 0, total: 0, updatedAt: '' }
     : todayRecord;
 
-  const sortedDays = Object.entries(records)
-    .sort(([a], [b]) => b.localeCompare(a));
+  /** Optimistic delete with undo window */
+  const handleDelete = (dateKey: string) => {
+    if (!onDeleteRecord) return;
+    undoRef.current = false;
+    setPendingDeleteKey(dateKey);
+
+    // If we're editing this record, exit edit mode
+    if (editingKey === dateKey) {
+      setEditingKey(null);
+    }
+
+    addToast(BodyMsg.RecordDeleted, ToastType.Info, {
+      durationMs: CONFIG.UNDO_DURATION_MS,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          undoRef.current = true;
+          setPendingDeleteKey(null);
+        },
+      },
+    });
+    setTimeout(() => {
+      if (!undoRef.current) {
+        onDeleteRecord(dateKey);
+      }
+      setPendingDeleteKey(null);
+    }, CONFIG.UNDO_DURATION_MS);
+  };
+
+  const sortedDays = sortNewestFirst(
+    Object.entries(records).filter(([key]) => key !== pendingDeleteKey),
+    ([key]) => key,
+  );
   const recentDays = sortedDays.slice(0, limit);
 
-  /** Tap handler — redirects to editing date when in edit mode */
+  /** Tap handler -- redirects to editing date when in edit mode */
   const handleTap = async (type: 'up' | 'down') => {
     if (!isEditing) {
       await onTap(type);
@@ -93,7 +138,7 @@ export function FloorsTab({
         </p>
       </div>
 
-      {/* Tap buttons — always present, target changes based on edit mode */}
+      {/* Tap buttons -- always present, target changes based on edit mode */}
       <div className="flex justify-center gap-4">
         <button
           type="button"
@@ -111,6 +156,20 @@ export function FloorsTab({
         </button>
       </div>
 
+      {/* Reset today — only when viewing today and has data */}
+      {onResetToday && !isEditing && todayRecord.total > 0 && (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={onResetToday}
+            className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-fg-muted transition-colors hover:border-error hover:text-error hover:bg-error/5"
+          >
+            <RotateCcw size={13} />
+            Reset today
+          </button>
+        </div>
+      )}
+
       {/* Recent days */}
       {
         recentDays.length > 0 && (
@@ -120,38 +179,41 @@ export function FloorsTab({
               {
                 recentDays.map(([dateKey, rec]) => {
                   const isActive = dateKey === activeKey;
-                  return (
-                    <li key={dateKey} className="group relative">
-                      <button
-                        type="button"
-                        onClick={() => handleRowTap(dateKey)}
-                        className={
-                          `flex w-full items-center justify-between rounded-lg px-3 pr-10 py-2 text-sm transition-colors ${
-                            isActive
-                              ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border border-line'
-                              : dateKey === today
-                                ? 'bg-surface-card border border-line font-medium'
-                                : 'bg-surface-card border border-line opacity-80'
-                          }`
-                        }
-                      >
-                        <span className={isActive ? 'text-accent font-medium' : 'text-fg-muted'}>{dateKey}</span>
+                  const innerContent = (
+                    <div
+                      className={
+                        `flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer ${
+                          isActive
+                            ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border border-line'
+                            : dateKey === today
+                              ? 'bg-surface-card border border-line font-medium'
+                              : 'bg-surface-card border border-line opacity-80'
+                        }`
+                      }
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => handleRowTap(dateKey)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleRowTap(dateKey); }}
+                    >
+                      <span className={isActive ? 'text-accent font-medium' : 'text-fg-muted'}>{dateKey}</span>
+                      <span className="flex items-center gap-2">
                         <span className="text-fg font-medium">
                           {rec.up} up / {rec.down} down = {rec.total}
                         </span>
-                      </button>
-                      {
-dateKey !== today && (
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); setEditingKey(dateKey); }}
-                          className="btn-row-action"
-                          aria-label={`Edit ${dateKey}`}
-                        >
-                          <Plus size={10} strokeWidth={2.5} />
-                        </button>
-                      )
-}
+                        {onDeleteRecord && (
+                          <span role="button" tabIndex={0} aria-label="Delete" onClick={(e) => { e.stopPropagation(); handleDelete(dateKey); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); handleDelete(dateKey); } }} className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all">x</span>
+                        )}
+                      </span>
+                    </div>
+                  );
+
+                  return (
+                    <li key={dateKey} className="group relative">
+                      {onDeleteRecord ? (
+                        <SwipeToDelete onDelete={() => handleDelete(dateKey)}>
+                          {innerContent}
+                        </SwipeToDelete>
+                      ) : innerContent}
                     </li>
                   );
                 })
@@ -176,6 +238,28 @@ dateKey !== today && (
           </div>
         )
       }
+      {/* Add missing day button */}
+      <div className="flex justify-center">
+        <button
+          type="button"
+          onClick={() => setShowDatePicker(true)}
+          className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-fg-muted transition-colors hover:border-accent hover:text-accent"
+        >
+          + Add missing day
+        </button>
+      </div>
+
+      {/* Date picker modal */}
+      {showDatePicker && (
+        <DatePickerModal
+          title="Add floors for a past day"
+          onSelect={(date) => {
+            setEditingKey(date);
+            setShowDatePicker(false);
+          }}
+          onClose={() => setShowDatePicker(false)}
+        />
+      )}
     </div>
   );
 }

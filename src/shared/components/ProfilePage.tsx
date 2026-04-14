@@ -45,7 +45,7 @@ const saveAppearance = async (
   theme: string,
   colorMode: ColorMode,
 ): Promise<void> => {
-  const adapter = createAdapter(`users/${uid}/${DbSubcollection.Profile}`);
+  const adapter = createAdapter(`users/${uid}`);
   await adapter.save(DbSubcollection.Profile, {
     id: DbDoc.Main,
     theme,
@@ -59,7 +59,7 @@ const saveUsernameToProfile = async (
   uid: string,
   username: string | undefined,
 ): Promise<void> => {
-  const adapter = createAdapter(`users/${uid}/${DbSubcollection.Profile}`);
+  const adapter = createAdapter(`users/${uid}`);
   await adapter.save(DbSubcollection.Profile, {
     id: DbDoc.Main,
     username: username ?? null,

@@ -38,8 +38,11 @@ export enum BodyMsg {
   RecordSaved = 'Body record saved',
   RecordFailed = 'Failed to save body record',
   ActivityUpdated = 'Activity updated',
+  ActivityDeleteFailed = 'Failed to delete activity',
   ActivityUpdateFailed = 'Failed to update activity',
   AtLeastOneActivity = 'Enable at least one activity',
+  RecordDeleted = 'Floor record deleted',
+  RecordDeleteFailed = 'Failed to delete floor record',
   TodayReset = 'Today reset',
 }
 
