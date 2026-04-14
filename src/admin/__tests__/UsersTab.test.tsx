@@ -47,6 +47,16 @@ vi.mock('@/admin/hooks/useAdminActions', () => ({
   }),
 }));
 
+vi.mock('@/admin/hooks/useAdminNotifications', () => ({
+  useAdminNotifications: () => ({
+    moduleRequests: [],
+    approveModuleRequest: vi.fn(),
+    unreadCount: 0,
+    ready: true,
+    sendAlert: vi.fn(),
+  }),
+}));
+
 describe('UsersTab', () => {
   it('lists all users with name and role', () => {
     render(<MemoryRouter><UsersTab /></MemoryRouter>);

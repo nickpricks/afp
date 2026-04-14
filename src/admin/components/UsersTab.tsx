@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAllUsers } from '@/admin/hooks/useAllUsers';
 import { useAdminActions } from '@/admin/hooks/useAdminActions';
+import { useAdminNotifications } from '@/admin/hooks/useAdminNotifications';
 import { ALL_MODULES, ModuleId, UserRole } from '@/shared/types';
 import { ROUTES } from '@/constants/routes';
 import type { UserEntry } from '@/admin/hooks/useAllUsers';
@@ -19,6 +20,7 @@ const MODULE_COLORS: Record<ModuleId, { chip: string; toggle: string }> = {
 export function UsersTab() {
   const { users, loading } = useAllUsers();
   const { updateUserModules, updateUserRole } = useAdminActions();
+  const { moduleRequests, approveModuleRequest } = useAdminNotifications();
   const navigate = useNavigate();
   const [expandedUid, setExpandedUid] = useState<string | null>(null);
 
@@ -131,6 +133,23 @@ enabledModules.map((m) => (
                     </span>
                   ))
 }
+                  {/* Module request badges */}
+                  {moduleRequests
+                    .filter((r) => r.requestedBy === u.uid)
+                    .map((r) => (
+                      <button
+                        key={r.id}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          approveModuleRequest(r);
+                        }}
+                        className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600 hover:bg-amber-500/20 transition-colors"
+                        title={`Approve ${r.moduleId} for ${u.name}`}
+                      >
+                        {r.moduleId}
+                      </button>
+                    ))}
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${roleClass(u.role)}`}>
                     {u.role}
                   </span>
