@@ -88,6 +88,21 @@ export enum AdminMsg {
   RoleUpdateFailed = 'Failed to update role',
 }
 
+/** Notification and module request messages */
+export enum NotificationMsg {
+  ModuleRequested = 'Module requested',
+  ModuleRequestFailed = 'Failed to request module',
+  ModuleAlreadyRequested = 'Module already requested',
+  ModuleApproved = 'Module enabled',
+  ModuleApproveFailed = 'Failed to approve module request',
+  AlertCreated = 'Alert sent',
+  AlertCreateFailed = 'Failed to send alert',
+  AlertDismissed = 'Alert dismissed',
+  AlertDismissFailed = 'Failed to dismiss alert',
+  AlertDeleted = 'Alert removed',
+  AlertDeleteFailed = 'Failed to remove alert',
+}
+
 /** Context provider guard messages */
 export enum ProviderMsg {
   AuthRequired = 'useAuth must be used within an AuthProvider',
