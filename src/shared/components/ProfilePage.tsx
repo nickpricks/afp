@@ -19,7 +19,8 @@ import {
   type ColorMode,
   type ThemeId,
 } from '@/themes/themes';
-import { ModuleId, ToastType, isErr } from '@/shared/types';
+import { ModuleId, ToastType, isErr, ALL_MODULES } from '@/shared/types';
+import { useModuleRequest } from '@/shared/hooks/useModuleRequest';
 import { CONFIG } from '@/constants/config';
 import { AppPath } from '@/constants/routes';
 import { ProfileMsg, ValidationMsg } from '@/constants/messages';
@@ -69,7 +70,8 @@ const saveUsernameToProfile = async (
 
 /** Profile page for account info, appearance, module status, and about */
 export function ProfilePage() {
-  const { firebaseUser, profile, isTheAdminNick } = useAuth();
+  const { firebaseUser, profile, isTheAdminNick, adminUid } = useAuth();
+  const { requestModule } = useModuleRequest(adminUid);
   const { addToast } = useToast();
   const activeThemeId = useActiveThemeId();
 
@@ -194,11 +196,6 @@ export function ProfilePage() {
     }
   }, [addToast]);
 
-  const enabledModules = profile
-    ? Object.entries(profile.modules)
-        .filter(([, enabled]) => enabled)
-        .map(([id]) => id as ModuleId)
-    : [];
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
@@ -360,28 +357,36 @@ usernameError && (
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-fg-muted">
           Modules
         </h2>
-        {
-enabledModules.length === 0 && (
-          <p className="text-sm text-fg-muted">No modules enabled.</p>
-        )
-}
-        {
-enabledModules.length > 0 && (
-          <ul className="space-y-2">
-            {
-enabledModules.map((id) => (
-              <li
-                key={id}
-                className="flex items-center gap-2 text-sm text-fg"
-              >
-                <span className="inline-block h-2 w-2 rounded-full bg-accent" />
-                {MODULE_LABELS[id]}
+        <ul className="space-y-2">
+          {ALL_MODULES.map((id) => {
+            const enabled = profile?.modules[id] ?? false;
+            const requested = profile?.requestedModules?.includes(id) ?? false;
+            return (
+              <li key={id} className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <span className={`inline-block h-2 w-2 rounded-full ${enabled ? 'bg-accent' : 'bg-fg-muted/30'}`} />
+                  <span className={enabled ? 'text-fg' : 'text-fg-muted'}>
+                    {MODULE_LABELS[id]}
+                  </span>
+                </div>
+                {!enabled && !requested && !isTheAdminNick && (
+                  <button
+                    type="button"
+                    onClick={() => requestModule(id)}
+                    className="rounded-md bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent hover:bg-accent/20 transition-colors"
+                  >
+                    Request
+                  </button>
+                )}
+                {!enabled && requested && (
+                  <span className="rounded-md bg-fg-muted/10 px-2.5 py-1 text-xs font-medium text-fg-muted">
+                    Requested
+                  </span>
+                )}
               </li>
-            ))
-}
-          </ul>
-        )
-}
+            );
+          })}
+        </ul>
       </section>
 
       {/* About Section */}
