@@ -4,6 +4,19 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [Unreleased]
+
+### Added
+- Per-user notification system (`users/{uid}/notifications/{id}` subcollection)
+- Module request flow: users request from Profile → admin one-click approves in UsersTab
+- Admin Broadcasts tab: compose alerts with severity, type, and expiry targeting all or specific users
+- AlertBanner component: color-coded top banners (info/warning/critical) with dismiss support
+- `requestedModules` field on UserProfile for tracking pending requests
+- `adminUid` exposed in auth context from `app/config`
+- Firestore rules for notification read/write/create permissions
+
+---
+
 ## [0.2.5] — 2026-04-12
 
 Production auth fixes, Firestore rules, debug tools, baby sibling features, touch UX, loading animation polish.

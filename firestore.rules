@@ -70,7 +70,9 @@ service cloud.firestore {
         || (isOwner(userId)
             && request.resource.data.role == resource.data.role
             && request.resource.data.modules == resource.data.modules
-            && request.resource.data.viewerOf == resource.data.viewerOf);
+            && request.resource.data.viewerOf == resource.data.viewerOf)
+        || (isOwner(userId)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['requestedModules', 'updatedAt']));
       allow delete: if isHeadminick();
     }
 
@@ -132,6 +134,23 @@ service cloud.firestore {
         allow write: if (isOwner(userId) && hasModule(userId, 'baby'))
           || isHeadminick();
       }
+    }
+
+    // ─── Notifications ────────────────────────────────────────────────
+    match /users/{userId}/notifications/{notifId} {
+      // Anyone can read their own notifications
+      allow read: if request.auth.uid == userId;
+
+      // Users can update read/dismissed on their own notifications
+      allow update: if request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'dismissed']);
+
+      // Any authenticated user can create module_request to admin's notifications
+      allow create: if request.auth != null
+        && request.resource.data.type == 'module_request';
+
+      // Admin has full write to any user's notifications
+      allow write: if isHeadminick();
     }
 
     // Usernames (global uniqueness)
