@@ -16,26 +16,26 @@
 
 | # | Step | Description | Status |
 |---|------|-------------|--------|
-| 0 | 🔑 Expose Admin UID | Add `adminUid` to auth context from `app/config` | ⬜ |
-| 1 | 🏗️ Types & Constants | Notification types, enums, DB paths, messages | ⬜ |
-| 2 | 🧪 Types Tests | Unit tests for notification type helpers | ⬜ |
-| 3 | 🪝 useNotifications Hook | Generic subcollection hook for reading own notifications | ⬜ |
-| 4 | 🧪 useNotifications Tests | Hook tests with mock adapter | ⬜ |
-| 5 | 📨 useModuleRequest Hook | User sends module request (dual-write) | ⬜ |
-| 6 | 🧪 useModuleRequest Tests | Test dual-write and guard logic | ⬜ |
-| 7 | 🖥️ Profile Module Request UI | "Request" buttons on Profile page | ⬜ |
-| 8 | 🧪 Profile Module Request Tests | Render tests for request buttons | ⬜ |
-| 9 | 🔔 AlertBanner Component | Top banner rendering notifications | ⬜ |
-| 10 | 🧪 AlertBanner Tests | Render + dismiss tests | ⬜ |
-| 11 | 📐 Layout Integration | Wire AlertBanner + admin header badge into Layout | ⬜ |
-| 12 | 👑 useAdminNotifications Hook | Admin reads own notifications + sends alerts | ⬜ |
-| 13 | 🧪 useAdminNotifications Tests | Test send/approve/dismiss logic | ⬜ |
-| 14 | 📢 BroadcastsTab Component | Admin compose form + alert list | ⬜ |
-| 15 | 🧪 BroadcastsTab Tests | Render + compose tests | ⬜ |
-| 16 | 📋 AdminPanel + UsersTab Updates | Third tab + request badges on user rows | ⬜ |
-| 17 | 🧪 AdminPanel + UsersTab Tests | Tab switching + badge render tests | ⬜ |
-| 18 | 🔒 Firestore Rules | Security rules for notifications subcollection | ⬜ |
-| 19 | 📝 CLAUDE.md + CHANGELOG | Documentation updates | ⬜ |
+| 0 | 🔑 Expose Admin UID | Add `adminUid` to auth context from `app/config` | ✅ |
+| 1 | 🏗️ Types & Constants | Notification types, enums, DB paths, messages | ✅ |
+| 2 | 🧪 Types Tests | Unit tests for notification type helpers | ✅ |
+| 3 | 🪝 useNotifications Hook | Generic subcollection hook for reading own notifications | ✅ |
+| 4 | 🧪 useNotifications Tests | Hook tests with mock adapter | ✅ |
+| 5 | 📨 useModuleRequest Hook | User sends module request (dual-write) | ✅ |
+| 6 | 🧪 useModuleRequest Tests | Test dual-write and guard logic | ✅ |
+| 7 | 🖥️ Profile Module Request UI | "Request" buttons on Profile page | ✅ |
+| 8 | 🧪 Profile Module Request Tests | Render tests for request buttons | ✅ |
+| 9 | 🔔 AlertBanner Component | Top banner rendering notifications | ✅ |
+| 10 | 🧪 AlertBanner Tests | Render + dismiss tests | ✅ |
+| 11 | 📐 Layout Integration | Wire AlertBanner + admin header badge into Layout | ✅ |
+| 12 | 👑 useAdminNotifications Hook | Admin reads own notifications + sends alerts | ✅ |
+| 13 | 🧪 useAdminNotifications Tests | Test send/approve/dismiss logic | ✅ |
+| 14 | 📢 BroadcastsTab Component | Admin compose form + alert list | ✅ |
+| 15 | 🧪 BroadcastsTab Tests | Render + compose tests | ✅ |
+| 16 | 📋 AdminPanel + UsersTab Updates | Third tab + request badges on user rows | ✅ |
+| 17 | 🧪 AdminPanel + UsersTab Tests | Tab switching + badge render tests | ✅ |
+| 18 | 🔒 Firestore Rules | Security rules for notifications subcollection | ✅ |
+| 19 | 📝 CLAUDE.md + CHANGELOG | Documentation updates | ✅ |
 
 ## 📁 File Manifest
 
