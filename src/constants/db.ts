@@ -22,6 +22,8 @@ export enum DbSubcollection {
   Diapers = 'diapers',
   Elimination = 'elimination',
   Meals = 'meals',
+  Needs = 'needs',
+  Milestones = 'milestones',
   Notifications = 'notifications',
 }
 

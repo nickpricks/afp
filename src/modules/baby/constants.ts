@@ -6,6 +6,9 @@ import {
   PottyTrainingEvent,
   MealType,
   MealPortion,
+  NeedCategory,
+  NeedStatus,
+  MilestoneCategory,
 } from '@/modules/baby/types';
 
 /** Display labels for feed types, keyed by enum value */
@@ -113,6 +116,60 @@ export const ALL_MEAL_PORTIONS: readonly MealPortion[] = [
   MealPortion.Most,
   MealPortion.All,
   MealPortion.Extra,
+];
+
+/** Display labels for need categories, keyed by enum value */
+export const NEED_CATEGORY_LABELS: Record<NeedCategory, string> = {
+  [NeedCategory.Apparel]: 'Apparel',
+  [NeedCategory.Footwear]: 'Footwear',
+  [NeedCategory.School]: 'School',
+  [NeedCategory.Toys]: 'Toys',
+  [NeedCategory.Books]: 'Books',
+  [NeedCategory.Other]: 'Other',
+};
+
+/** All need category enum values in display order */
+export const ALL_NEED_CATEGORIES: readonly NeedCategory[] = [
+  NeedCategory.Apparel,
+  NeedCategory.Footwear,
+  NeedCategory.School,
+  NeedCategory.Toys,
+  NeedCategory.Books,
+  NeedCategory.Other,
+];
+
+/** Display labels for need lifecycle status, keyed by enum value */
+export const NEED_STATUS_LABELS: Record<NeedStatus, string> = {
+  [NeedStatus.Wishlist]: 'Wishlist',
+  [NeedStatus.Inventory]: 'Have',
+  [NeedStatus.Outgrown]: 'Outgrown',
+};
+
+/** All need status enum values in display order (lifecycle order) */
+export const ALL_NEED_STATUSES: readonly NeedStatus[] = [
+  NeedStatus.Wishlist,
+  NeedStatus.Inventory,
+  NeedStatus.Outgrown,
+];
+
+/** Display labels for milestone categories, keyed by enum value */
+export const MILESTONE_CATEGORY_LABELS: Record<MilestoneCategory, string> = {
+  [MilestoneCategory.Motor]: 'Motor',
+  [MilestoneCategory.Language]: 'Language',
+  [MilestoneCategory.Social]: 'Social',
+  [MilestoneCategory.Cognitive]: 'Cognitive',
+  [MilestoneCategory.Hobby]: 'Hobby',
+  [MilestoneCategory.Other]: 'Other',
+};
+
+/** All milestone category enum values in display order */
+export const ALL_MILESTONE_CATEGORIES: readonly MilestoneCategory[] = [
+  MilestoneCategory.Motor,
+  MilestoneCategory.Language,
+  MilestoneCategory.Social,
+  MilestoneCategory.Cognitive,
+  MilestoneCategory.Hobby,
+  MilestoneCategory.Other,
 ];
 
 /** Default child config with all tracking modules enabled */

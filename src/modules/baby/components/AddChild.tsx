@@ -48,6 +48,8 @@ export function AddChild({ onAdded }: { onAdded?: (childId: string) => void }) {
     { key: 'diapers', label: 'Diapers' },
     { key: 'potty', label: 'Potty' },
     { key: 'meals', label: 'Meals' },
+    { key: 'needs', label: 'Needs' },
+    { key: 'milestones', label: 'Milestones' },
   ];
 
   return (
