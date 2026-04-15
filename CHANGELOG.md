@@ -19,6 +19,10 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 ### Docs
 - Spec and plan docs updated to match code: `phase3-baby-to-kid-design.md`, `phase3-baby-foundation-plan.md`, `phase3-baby-meals-plan.md`, `phase3-baby-elimination-plan.md`.
 
+### Fixed
+- **Firestore deploy unblocked**: `firestore.indexes.json` previously declared a `fieldOverride` on the reserved `__name__` field path, which the Firestore API rejects (HTTP 400 "reserved field path"). The override was both invalid and unnecessary — single-field collection group queries (no `where`/`orderBy`) work without explicit indexes. File now ships with empty `indexes` + `fieldOverrides` arrays so future deploys succeed.
+- **Admin user list (root cause)**: `useAllUsers` queries `collectionGroup('profile')`, which is evaluated against `match /{path=**}/profile/{docId}` rules — not the path-based `match /users/{userId}/profile/{document=**}` block. Added a new collection group rule granting admin reads. The earlier index-only attempt was a misdiagnosis (permission-denied is always a rules problem, not an index problem).
+
 ---
 
 ## [0.2.6] — 2026-04-15

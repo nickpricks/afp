@@ -76,6 +76,12 @@ service cloud.firestore {
       allow delete: if isHeadminick();
     }
 
+    // Collection group: admin can sweep all profiles via collectionGroup('profile')
+    // Required by useAllUsers — path-based rule above does not apply to collection group queries.
+    match /{path=**}/profile/{docId} {
+      allow read: if isHeadminick();
+    }
+
     // Body config
     match /users/{userId}/body_config/{document=**} {
       allow read: if isOwner(userId) || isViewerOf(userId) || isHeadminick();
