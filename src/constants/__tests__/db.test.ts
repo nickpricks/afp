@@ -29,10 +29,14 @@ describe('DbSubcollection', () => {
     expect(DbSubcollection.Sleep).toBe('sleep');
     expect(DbSubcollection.Growth).toBe('growth');
     expect(DbSubcollection.Diapers).toBe('diapers');
+    expect(DbSubcollection.Elimination).toBe('elimination');
+    expect(DbSubcollection.Meals).toBe('meals');
+    expect(DbSubcollection.Needs).toBe('needs');
+    expect(DbSubcollection.Milestones).toBe('milestones');
   });
 
-  it('has exactly 13 subcollections', () => {
-    expect(Object.keys(DbSubcollection)).toHaveLength(13);
+  it('has exactly 17 subcollections', () => {
+    expect(Object.keys(DbSubcollection)).toHaveLength(17);
   });
 
   it('no longer has old BabyFeeds/BabySleep/BabyGrowth/BabyDiapers', () => {

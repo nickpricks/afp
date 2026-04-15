@@ -46,6 +46,10 @@ export function AddChild({ onAdded }: { onAdded?: (childId: string) => void }) {
     { key: 'sleep', label: 'Sleep' },
     { key: 'growth', label: 'Growth' },
     { key: 'diapers', label: 'Diapers' },
+    { key: 'potty', label: 'Potty' },
+    { key: 'meals', label: 'Meals' },
+    { key: 'needs', label: 'Needs' },
+    { key: 'milestones', label: 'Milestones' },
   ];
 
   return (
@@ -83,7 +87,7 @@ export function AddChild({ onAdded }: { onAdded?: (childId: string) => void }) {
               <label key={opt.key} className="flex items-center gap-2 text-sm text-fg">
                 <input
                   type="checkbox"
-                  checked={config[opt.key]}
+                  checked={config[opt.key] ?? false}
                   onChange={() => toggleConfig(opt.key)}
                   className="rounded border-line"
                 />

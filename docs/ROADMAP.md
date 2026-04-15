@@ -18,8 +18,8 @@ Last updated: 2026-04-14
 | Notifications | ✅ Done | 20/20 | Per-user notifications, module requests, admin alerts, Broadcasts tab |
 | Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
 | Phase 2g (E2E + Bench) | ✅ Done | 8/8 | Interactive E2E flows + build/bundle/test benchmarks |
-| Phase 3 (Baby → Kid) | 🚧 In progress | 2/10 | Plans 1 (Foundation) + 2 (Suggestions) done. Plans 3-9 designed, Plan 10 (Yoga) added |
-| **Total** | **~95%** | **186/208** | |
+| Phase 3 (Baby → Kid) | 🚧 In progress | 6/10 | Plans 1-6 done (Foundation, Suggestions, Elimination, Meals, Needs, Milestones). Plan 7 (Life Journal) ready. Plans 8-9 deferred. Plan 10 (Yoga) needs brainstorm |
+| **Total** | **~97%** | **190/208** | |
 
 ---
 
@@ -127,7 +127,7 @@ All P0 items completed.
 
 ## P3 — Future
 
-> **Current focus:** Phase 3 Baby → Kid. Plans 1-2 complete. Next up: Plan 3 (Elimination — migration + combined diaper/potty log), Plans 4-7 (Meals, Needs, Milestones, Life Journal). Plans 8-9 (Smart Alerts, Export/Import) deferred. Plan 10 (Yoga — Body module) awaiting brainstorm.
+> **Current focus:** Phase 3 Baby → Kid. Plans 1-6 complete (Plans 5+6 shipped via parallel-subagent worktrees + coordinator commit pattern; Plan 6 fell back to inline after rate-limit). Next up: Plan 7 (Life Journal) — depends on Plans 3-6. Plans 8-9 (Smart Alerts, Export/Import) deferred. Plan 10 (Yoga — Body module) awaiting brainstorm.
 
 ### Module Evolution
 

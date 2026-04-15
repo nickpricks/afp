@@ -25,8 +25,8 @@ Dev mode works without Firebase — all modules enabled, TheAdminNick role, loca
 | `bun run lint` | Type check + ESLint |
 | `bun run typecheck` | tsc --noEmit only |
 | `bun run lint:eslint` | ESLint only |
-| `bun run test` | Vitest unit tests (359) |
-| `bun run test:e2e` | Playwright E2E tests (42) |
+| `bun run test` | Vitest unit tests (435) |
+| `bun run test:e2e` | Playwright E2E tests (47) |
 | `bun run format` | Prettier format all source files |
 | `bun run format:check` | Prettier check (CI-friendly, no writes) |
 | `bun run test:coverage` | Unit tests with v8 coverage |

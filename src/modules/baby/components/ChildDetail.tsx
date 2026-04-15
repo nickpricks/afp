@@ -5,7 +5,10 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { FeedLog } from '@/modules/baby/components/FeedLog';
 import { SleepLog } from '@/modules/baby/components/SleepLog';
 import { GrowthLog } from '@/modules/baby/components/GrowthLog';
-import { DiaperLog } from '@/modules/baby/components/DiaperLog';
+import { EliminationLog } from '@/modules/baby/components/EliminationLog';
+import { MealsLog } from '@/modules/baby/components/MealsLog';
+import { NeedsLog } from '@/modules/baby/components/NeedsLog';
+import { MilestonesLog } from '@/modules/baby/components/MilestonesLog';
 import { SuggestionStrip } from '@/modules/baby/components/SuggestionStrip';
 import { useChildren } from '@/modules/baby/hooks/useChildren';
 import { useSuggestions } from '@/modules/baby/hooks/useSuggestions';
@@ -18,7 +21,7 @@ import { computeAge } from '@/modules/baby/utils';
 import { ROUTES } from '@/constants/routes';
 
 /** Tab identifiers for the child detail view */
-type TabId = 'dashboard' | 'feeding' | 'sleep' | 'growth' | 'diapers';
+type TabId = 'dashboard' | 'feeding' | 'sleep' | 'growth' | 'diapers' | 'meals' | 'needs' | 'milestones';
 
 /** Tab definition with id, label, and visibility flag */
 type TabDef = { id: TabId; label: string; visible: boolean };
@@ -65,12 +68,19 @@ function ChildDetailInner({ child, siblings, uid, onBack }: { child: Child; sibl
   const navigate = useNavigate();
   const { firebaseUser } = useAuth();
   const suggestions = useSuggestions(child);
+  const diapersOn = child.config.diapers;
+  const pottyOn = child.config.potty ?? false;
+  const eliminationLabel =
+    diapersOn && pottyOn ? 'Elimination' : pottyOn ? 'Potty' : 'Diapers';
   const tabs: TabDef[] = [
     { id: 'dashboard', label: 'Dashboard', visible: true },
     { id: 'feeding', label: 'Feeding', visible: child.config.feeding },
     { id: 'sleep', label: 'Sleep', visible: child.config.sleep },
     { id: 'growth', label: 'Growth', visible: child.config.growth },
-    { id: 'diapers', label: 'Diapers', visible: child.config.diapers },
+    { id: 'diapers', label: eliminationLabel, visible: diapersOn || pottyOn },
+    { id: 'meals', label: 'Meals', visible: child.config.meals ?? false },
+    { id: 'needs', label: 'Needs', visible: child.config.needs ?? false },
+    { id: 'milestones', label: 'Milestones', visible: child.config.milestones ?? false },
   ];
 
   const visibleTabs = tabs.filter((t) => t.visible);
@@ -160,13 +170,31 @@ function ChildDetailInner({ child, siblings, uid, onBack }: { child: Child; sibl
       {activeTab === 'feeding' && <FeedLog childId={childId} siblingIds={siblingIds} uid={uid} />}
       {activeTab === 'sleep' && <SleepLog childId={childId} siblingIds={siblingIds} uid={uid} />}
       {activeTab === 'growth' && <GrowthLog childId={childId} siblingIds={siblingIds} uid={uid} />}
-      {activeTab === 'diapers' && <DiaperLog childId={childId} siblingIds={siblingIds} uid={uid} />}
+      {activeTab === 'diapers' && (
+        <EliminationLog
+          childId={childId}
+          siblingIds={siblingIds}
+          uid={uid}
+          diapersEnabled={diapersOn}
+          pottyEnabled={pottyOn}
+        />
+      )}
+      {activeTab === 'meals' && <MealsLog childId={childId} siblingIds={siblingIds} uid={uid} />}
+      {activeTab === 'needs' && <NeedsLog childId={childId} siblingIds={siblingIds} uid={uid} />}
+      {activeTab === 'milestones' && <MilestonesLog childId={childId} siblingIds={siblingIds} uid={uid} />}
     </div>
   );
 }
 
 /** Dashboard tab showing today's summary and quick action buttons */
 function DashboardTab({ child, onNavigate }: { child: Child; onNavigate: (tab: TabId) => void }) {
+  const diapersOn = child.config.diapers;
+  const pottyOn = child.config.potty ?? false;
+  const eliminationLabel =
+    diapersOn && pottyOn ? 'Elimination' : pottyOn ? 'Potty' : 'Diapers';
+  const eliminationIcon = pottyOn && !diapersOn ? '🚽' : '🧷';
+  const eliminationDescription =
+    pottyOn && !diapersOn ? 'Log potty events' : diapersOn && pottyOn ? 'Log changes / events' : 'Log changes';
   return (
     <div className="flex flex-col gap-4 py-4">
       <h3 className="text-base font-medium text-fg">Today&apos;s Summary</h3>
@@ -187,8 +215,23 @@ child.config.growth && (
         )
 }
         {
-child.config.diapers && (
-          <SummaryCard label="Diapers" icon="🧷" description="Log changes" onClick={() => onNavigate('diapers')} />
+(diapersOn || pottyOn) && (
+          <SummaryCard label={eliminationLabel} icon={eliminationIcon} description={eliminationDescription} onClick={() => onNavigate('diapers')} />
+        )
+}
+        {
+child.config.meals && (
+          <SummaryCard label="Meals" icon="🍽" description="Log meals" onClick={() => onNavigate('meals')} />
+        )
+}
+        {
+child.config.needs && (
+          <SummaryCard label="Needs" icon="🛍" description="Wishlist + inventory" onClick={() => onNavigate('needs')} />
+        )
+}
+        {
+child.config.milestones && (
+          <SummaryCard label="Milestones" icon="🌟" description="Firsts + achievements" onClick={() => onNavigate('milestones')} />
         )
 }
       </div>

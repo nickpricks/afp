@@ -4,6 +4,67 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [pre-0.2.10] — 2026-04-15 (Phase 3 Plans 5+6 — Needs + Milestones)
+
+### Added
+- **Plan 5 (Needs)**: New `needs` subcollection at `users/{uid}/children/{childId}/needs/{id}`. `NeedsLog.tsx` component with filter chips (All / Wishlist / Have / Outgrown) and status lifecycle (Wishlist → Inventory via "Bought" button → Outgrown via "Outgrew" button). Built in an isolated git worktree by a parallel subagent.
+- **Plan 6 (Milestones)**: New `milestones` subcollection. `MilestonesLog.tsx` with 10 quick-add template chips (`milestone-templates.ts`), 6 categories (Motor / Language / Social / Cognitive / Hobby / Other), grouped-by-category list, optional media URL field rendered as link.
+- **AddChild form**: 7th and 8th checkboxes — Needs and Milestones (both default off).
+- **ChildDetail**: Two new tabs (Needs, Milestones) + dashboard SummaryCards (🛍 / 🌟), all gated by their respective `child.config` flags.
+- **Constants**: `DbSubcollection.Needs`, `DbSubcollection.Milestones`, `NEED_CATEGORY_LABELS`, `ALL_NEED_CATEGORIES`, `NEED_STATUS_LABELS`, `ALL_NEED_STATUSES`, `MILESTONE_CATEGORY_LABELS`, `ALL_MILESTONE_CATEGORIES`. `BabyMsg` adds 10 entries (`NeedAdded/Deleted/Updated/MovedToInventory/MovedToOutgrown/TitleRequired`, `MilestoneAdded/Deleted/Updated/TitleRequired`).
+
+### Process
+- **Parallel subagent dispatch** — Plans 5 and 6 dispatched simultaneously into isolated worktrees branched from a coordinator commit (`742fac2`) that pre-staged all shared-file additions. Plan 5 returned cleanly. Plan 6's subagent rate-limited mid-setup with a stale worktree base; reimplemented inline using the same TDD pattern.
+- **Pattern: pre-stage shared files, dispatch isolated worktrees** — avoids merge conflicts on `ChildDetail.tsx` / `constants/*.ts` / `AddChild.tsx`. Subagents only create new files; coordinator wires them up after merge.
+
+### Tests
+- 30 new tests (16 NeedsLog, 6 milestone-templates, 8 MilestonesLog) — total 435 unit (was 405 pre-Plans-5+6).
+
+### Docs
+- ROADMAP, CHANGELOG, CLAUDE.md updated. Per-directory READMEs updated.
+
+---
+
+## [pre-0.2.9] — 2026-04-15 (Phase 3 Plan 4 — Meals Module)
+
+### Added
+- **Plan 4 (Meals)**: New `meals` subcollection at `users/{uid}/children/{childId}/meals/{id}`. `MealsLog.tsx` component with full feature parity to other Baby logs (form-at-top, tap-to-edit, 10s undo-delete, pagination, sibling logging, "All" toggle).
+- **Auto-suggest meal type from current hour**: Breakfast (<10), Lunch (<14), Dinner (<19), Snack (>=19). Picks the right tab's pre-selected chip when opened.
+- **Optional portion** field (None / Bite / Little / Some / Most / All / Extra) — keyed off the 7-value `MealPortion` enum from Plan 1.
+- **AddChild form**: optional Meals checkbox (default off — auto-flipped by suggestion engine at 9 months).
+- **ChildDetail**: new Meals tab + dashboard SummaryCard, both gated by `child.config.meals`.
+- **Constants**: `DbSubcollection.Meals = 'meals'`, `BabyMsg.MealAdded`/`MealDeleted`/`MealDescriptionRequired`, `MEAL_TYPE_LABELS`, `ALL_MEAL_TYPES`, `MEAL_PORTION_LABELS`, `ALL_MEAL_PORTIONS`.
+
+### Tests
+- 6 new tests (rendering + form behavior + meal type chips) — total 405 unit (was 399).
+
+### Docs
+- ROADMAP, CHANGELOG, CLAUDE.md updated.
+
+---
+
+## [pre-0.2.8] — 2026-04-15 (Phase 3 Plan 3 — Combined Diaper/Potty)
+
+### Added
+- **Plan 3 (Elimination)**: New combined `elimination` subcollection at `users/{uid}/children/{childId}/elimination/{id}` that handles both diaper events (infant) and potty events (toddler+) via a `mode: EliminationMode` discriminator. Replaces standalone `DiaperLog` with `EliminationLog` in `ChildDetail`.
+- **`EliminationLog` component** (replaces `DiaperLog` via `git mv` — full refactor in place): preserves all existing UX (quick-log Wet/Dirty buttons, 10s undo-delete toast, pagination, sibling "log to all", edit row highlight) while adding mode toggle (when both flags enabled), potty event chips (Pee/Poop/Both/Accident/Attempt), and dynamic header label (Diaper / Potty / Elimination Log).
+- **Admin Migrations tab**: new 4th tab in `AdminPanel` exposing the diaper→elimination backfill. Iterates all users × children, copies legacy `diapers/*` entries into `elimination/*` non-destructively (old entries preserved). Live progress, per-error reporting, summary card.
+- **Migration helpers**: `transformDiaperToElimination` (pure) + `migrateChildDiapersToElimination` (Firestore writeBatch) in `src/modules/baby/migration/elimination.ts`. Pure orchestration runner in `src/admin/runEliminationMigration.ts` (testable with injected deps).
+- **Constants**: `DbSubcollection.Elimination = 'elimination'`, `POTTY_EVENT_LABELS`, `ALL_POTTY_EVENTS`, `BabyMsg.EliminationAdded`, `BabyMsg.EliminationDeleted`.
+- **AddChild form**: optional 5th checkbox for `Potty` (default off — newborn flow unchanged; explicit opt-in for older kids being added). Auto-flipped by suggestion engine at 24mo.
+
+### Changed
+- `useBabyData` now exposes a 5th subcollection: `elimination, logElimination, updateElimination, removeElimination`. Sync status only flips to `Synced` when all 5 listeners report ready. Existing `diapers/*` path retained for backward compatibility (read-only after migration).
+- `ChildDetail` tabs and `DashboardTab` quick-action grid: the diapers tab now appears when `config.diapers || config.potty` is true, with dynamic label and icon (🧷 / 🚽 / both).
+
+### Tests
+- 14 new tests (3 transform, 7 EliminationLog component, 4 migration runner) — total 399 unit (was 384 pre-session).
+
+### Docs
+- ROADMAP, CHANGELOG, CLAUDE.md updated.
+
+---
+
 ## [pre-0.2.7] — 2026-04-15 (Phase 3 Baby → Kid, Plans 1-2)
 
 ### Added

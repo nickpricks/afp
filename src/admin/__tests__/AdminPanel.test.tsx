@@ -58,4 +58,11 @@ describe('AdminPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Invites' }));
     expect(screen.getByRole('heading', { name: 'Create Invite' })).toBeInTheDocument();
   });
+
+  it('switches to Migrations tab and shows the diaper→elimination panel', () => {
+    render(<MemoryRouter><AdminPanel /></MemoryRouter>);
+    fireEvent.click(screen.getByRole('button', { name: 'Migrations' }));
+    expect(screen.getByRole('heading', { name: /Diaper.*Elimination/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Run migration/i })).toBeInTheDocument();
+  });
 });
