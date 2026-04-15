@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { InvitesTab } from '@/admin/components/InvitesTab';
 import { UsersTab } from '@/admin/components/UsersTab';
 import { BroadcastsTab } from '@/admin/components/BroadcastsTab';
+import { MigrationsTab } from '@/admin/components/MigrationsTab';
 import { useAdminNotifications } from '@/admin/hooks/useAdminNotifications';
 
-type AdminTab = 'invites' | 'users' | 'broadcasts';
+type AdminTab = 'invites' | 'users' | 'broadcasts' | 'migrations';
 
 /** Admin dashboard with Invites, Users, and Broadcasts tabs */
 export function AdminPanel() {
@@ -49,11 +50,21 @@ export function AdminPanel() {
         >
           Broadcasts
         </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('migrations')}
+          className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            activeTab === 'migrations' ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'
+          }`}
+        >
+          Migrations
+        </button>
       </div>
 
       {activeTab === 'invites' && <InvitesTab />}
       {activeTab === 'users' && <UsersTab />}
       {activeTab === 'broadcasts' && <BroadcastsTab />}
+      {activeTab === 'migrations' && <MigrationsTab />}
     </div>
   );
 }

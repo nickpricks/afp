@@ -56,6 +56,8 @@ export enum BabyMsg {
   GrowthDeleted = 'Growth entry deleted',
   DiaperAdded = 'Diaper logged',
   DiaperDeleted = 'Diaper deleted',
+  EliminationAdded = 'Logged',
+  EliminationDeleted = 'Entry deleted',
   ChildAdded = 'Child added',
   ChildUpdated = 'Child updated',
   SuggestionSnoozed = 'Suggestion snoozed for 30 days',

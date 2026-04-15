@@ -4,6 +4,28 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [pre-0.2.8] — 2026-04-15 (Phase 3 Plan 3 — Combined Diaper/Potty)
+
+### Added
+- **Plan 3 (Elimination)**: New combined `elimination` subcollection at `users/{uid}/children/{childId}/elimination/{id}` that handles both diaper events (infant) and potty events (toddler+) via a `mode: EliminationMode` discriminator. Replaces standalone `DiaperLog` with `EliminationLog` in `ChildDetail`.
+- **`EliminationLog` component** (replaces `DiaperLog` via `git mv` — full refactor in place): preserves all existing UX (quick-log Wet/Dirty buttons, 10s undo-delete toast, pagination, sibling "log to all", edit row highlight) while adding mode toggle (when both flags enabled), potty event chips (Pee/Poop/Both/Accident/Attempt), and dynamic header label (Diaper / Potty / Elimination Log).
+- **Admin Migrations tab**: new 4th tab in `AdminPanel` exposing the diaper→elimination backfill. Iterates all users × children, copies legacy `diapers/*` entries into `elimination/*` non-destructively (old entries preserved). Live progress, per-error reporting, summary card.
+- **Migration helpers**: `transformDiaperToElimination` (pure) + `migrateChildDiapersToElimination` (Firestore writeBatch) in `src/modules/baby/migration/elimination.ts`. Pure orchestration runner in `src/admin/runEliminationMigration.ts` (testable with injected deps).
+- **Constants**: `DbSubcollection.Elimination = 'elimination'`, `POTTY_EVENT_LABELS`, `ALL_POTTY_EVENTS`, `BabyMsg.EliminationAdded`, `BabyMsg.EliminationDeleted`.
+- **AddChild form**: optional 5th checkbox for `Potty` (default off — newborn flow unchanged; explicit opt-in for older kids being added). Auto-flipped by suggestion engine at 24mo.
+
+### Changed
+- `useBabyData` now exposes a 5th subcollection: `elimination, logElimination, updateElimination, removeElimination`. Sync status only flips to `Synced` when all 5 listeners report ready. Existing `diapers/*` path retained for backward compatibility (read-only after migration).
+- `ChildDetail` tabs and `DashboardTab` quick-action grid: the diapers tab now appears when `config.diapers || config.potty` is true, with dynamic label and icon (🧷 / 🚽 / both).
+
+### Tests
+- 14 new tests (3 transform, 7 EliminationLog component, 4 migration runner) — total 399 unit (was 384 pre-session).
+
+### Docs
+- ROADMAP, CHANGELOG, CLAUDE.md updated.
+
+---
+
 ## [pre-0.2.7] — 2026-04-15 (Phase 3 Baby → Kid, Plans 1-2)
 
 ### Added

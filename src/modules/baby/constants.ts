@@ -1,4 +1,10 @@
-import { FeedType, SleepType, SleepQuality, DiaperType } from '@/modules/baby/types';
+import {
+  FeedType,
+  SleepType,
+  SleepQuality,
+  DiaperType,
+  PottyTrainingEvent,
+} from '@/modules/baby/types';
 
 /** Display labels for feed types, keyed by enum value */
 export const FEED_TYPE_LABELS: Record<FeedType, string> = {
@@ -50,6 +56,24 @@ export const DIAPER_TYPE_LABELS: Record<DiaperType, string> = {
 
 /** All diaper type enum values in display order */
 export const ALL_DIAPER_TYPES: readonly DiaperType[] = [DiaperType.Wet, DiaperType.Dirty, DiaperType.Mixed];
+
+/** Display labels for potty training events, keyed by enum value */
+export const POTTY_EVENT_LABELS: Record<PottyTrainingEvent, string> = {
+  [PottyTrainingEvent.Pee]: 'Pee',
+  [PottyTrainingEvent.Poop]: 'Poop',
+  [PottyTrainingEvent.Both]: 'Both',
+  [PottyTrainingEvent.Accident]: 'Accident',
+  [PottyTrainingEvent.Attempt]: 'Attempt',
+};
+
+/** All potty training event enum values in display order */
+export const ALL_POTTY_EVENTS: readonly PottyTrainingEvent[] = [
+  PottyTrainingEvent.Pee,
+  PottyTrainingEvent.Poop,
+  PottyTrainingEvent.Both,
+  PottyTrainingEvent.Accident,
+  PottyTrainingEvent.Attempt,
+];
 
 /** Default child config with all tracking modules enabled */
 export const DEFAULT_CHILD_CONFIG = {

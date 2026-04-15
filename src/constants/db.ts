@@ -20,6 +20,7 @@ export enum DbSubcollection {
   Sleep = 'sleep',
   Growth = 'growth',
   Diapers = 'diapers',
+  Elimination = 'elimination',
   Notifications = 'notifications',
 }
 
