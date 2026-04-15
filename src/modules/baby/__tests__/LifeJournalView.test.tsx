@@ -73,4 +73,3 @@ describe('LifeJournalView', () => {
     expect(screen.getByText(/Outgrown: 1/)).toBeInTheDocument();
   });
 });
-

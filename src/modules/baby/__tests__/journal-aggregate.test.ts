@@ -96,7 +96,12 @@ function meal(date: string, id = `m-${date}`): MealEntry {
   };
 }
 
-function milestone(date: string, title: string, category = MilestoneCategory.Language, id = `ms-${date}`): Milestone {
+function milestone(
+  date: string,
+  title: string,
+  category = MilestoneCategory.Language,
+  id = `ms-${date}`,
+): Milestone {
   return {
     id,
     date,
@@ -125,24 +130,36 @@ function need(date: string, status: NeedStatus, id = `n-${date}-${status}`): Nee
 
 describe('computeCountingMoments', () => {
   it('returns no moments when no thresholds crossed', () => {
-    expect(computeCountingMoments({ totalBefore: 5, totalAfter: 7, dataType: 'diapers' })).toHaveLength(0);
+    expect(
+      computeCountingMoments({ totalBefore: 5, totalAfter: 7, dataType: 'diapers' }),
+    ).toHaveLength(0);
   });
 
   it('detects single threshold crossed in period', () => {
-    const moments = computeCountingMoments({ totalBefore: 95, totalAfter: 102, dataType: 'diapers' });
+    const moments = computeCountingMoments({
+      totalBefore: 95,
+      totalAfter: 102,
+      dataType: 'diapers',
+    });
     expect(moments).toHaveLength(1);
     expect(moments[0]!.threshold).toBe(100);
     expect(moments[0]!.dataType).toBe('diapers');
   });
 
   it('detects multiple thresholds crossed in same period', () => {
-    const moments = computeCountingMoments({ totalBefore: 90, totalAfter: 260, dataType: 'diapers' });
+    const moments = computeCountingMoments({
+      totalBefore: 90,
+      totalAfter: 260,
+      dataType: 'diapers',
+    });
     expect(moments.map((m) => m.threshold)).toEqual([100, 250]);
   });
 
   it('does not double-count threshold equal to totalBefore', () => {
     // Already at 100 before the period — the period did not cross it
-    expect(computeCountingMoments({ totalBefore: 100, totalAfter: 150, dataType: 'diapers' })).toHaveLength(0);
+    expect(
+      computeCountingMoments({ totalBefore: 100, totalAfter: 150, dataType: 'diapers' }),
+    ).toHaveLength(0);
   });
 
   it('uses the right threshold list per dataType', () => {
@@ -227,9 +244,33 @@ describe('computeJournalSummary', () => {
 
   it('picks the latest growth entry within the range', () => {
     const growth: GrowthEntry[] = [
-      { id: 'g1', date: '2026-04-13', weight: 10, height: 75, headCircumference: 42, createdAt: '', notes: '' },
-      { id: 'g2', date: '2026-04-16', weight: 11, height: 76, headCircumference: 43, createdAt: '', notes: '' },
-      { id: 'g3', date: '2026-04-25', weight: 12, height: 77, headCircumference: 44, createdAt: '', notes: '' }, // outside range
+      {
+        id: 'g1',
+        date: '2026-04-13',
+        weight: 10,
+        height: 75,
+        headCircumference: 42,
+        createdAt: '',
+        notes: '',
+      },
+      {
+        id: 'g2',
+        date: '2026-04-16',
+        weight: 11,
+        height: 76,
+        headCircumference: 43,
+        createdAt: '',
+        notes: '',
+      },
+      {
+        id: 'g3',
+        date: '2026-04-25',
+        weight: 12,
+        height: 77,
+        headCircumference: 44,
+        createdAt: '',
+        notes: '',
+      }, // outside range
     ];
     const s = computeJournalSummary({
       range: weekRange,
@@ -248,8 +289,12 @@ describe('computeJournalSummary', () => {
 
   it('reports counting moments for thresholds crossed this period', () => {
     // 98 diapers before the range (dates < 2026-04-13), 5 in range → crosses 100
-    const before: EliminationEntry[] = Array.from({ length: 98 }, (_, i) => diaper('2026-04-01', `pre-${i}`));
-    const within: EliminationEntry[] = Array.from({ length: 5 }, (_, i) => diaper('2026-04-14', `in-${i}`));
+    const before: EliminationEntry[] = Array.from({ length: 98 }, (_, i) =>
+      diaper('2026-04-01', `pre-${i}`),
+    );
+    const within: EliminationEntry[] = Array.from({ length: 5 }, (_, i) =>
+      diaper('2026-04-14', `in-${i}`),
+    );
     const s = computeJournalSummary({
       range: weekRange,
       feeds: [],

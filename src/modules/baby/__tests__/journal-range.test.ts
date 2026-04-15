@@ -48,19 +48,34 @@ describe('computeRange', () => {
 describe('formatRangeLabel', () => {
   it('Day formats as "Mon D, YYYY"', () => {
     expect(
-      formatRangeLabel({ start: '2026-04-13', end: '2026-04-13', grain: JournalGrain.Day, label: '' }),
+      formatRangeLabel({
+        start: '2026-04-13',
+        end: '2026-04-13',
+        grain: JournalGrain.Day,
+        label: '',
+      }),
     ).toBe('Apr 13, 2026');
   });
 
   it('Week formats as "Mon D–D, YYYY" with en-dash', () => {
     expect(
-      formatRangeLabel({ start: '2026-04-13', end: '2026-04-19', grain: JournalGrain.Week, label: '' }),
+      formatRangeLabel({
+        start: '2026-04-13',
+        end: '2026-04-19',
+        grain: JournalGrain.Week,
+        label: '',
+      }),
     ).toBe('Apr 13–19, 2026');
   });
 
   it('Month formats as "Month YYYY"', () => {
     expect(
-      formatRangeLabel({ start: '2026-04-01', end: '2026-04-30', grain: JournalGrain.Month, label: '' }),
+      formatRangeLabel({
+        start: '2026-04-01',
+        end: '2026-04-30',
+        grain: JournalGrain.Month,
+        label: '',
+      }),
     ).toBe('April 2026');
   });
 });

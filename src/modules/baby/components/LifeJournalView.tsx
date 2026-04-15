@@ -21,7 +21,9 @@ const STAGE_LABEL: Record<ChildStage, string> = {
 
 /** Narrative Daily/Weekly/Monthly journal — aggregates all baby subcollections */
 export function LifeJournalView({ child }: Props) {
-  const [range, setRange] = useState<JournalRange>(() => computeRange(JournalGrain.Week, todayStr()));
+  const [range, setRange] = useState<JournalRange>(() =>
+    computeRange(JournalGrain.Week, todayStr()),
+  );
   const summary = useJournalData(child.id ?? '', range);
   const stage = computeStage(child.dob);
 
