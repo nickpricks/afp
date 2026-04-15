@@ -18,8 +18,8 @@ Last updated: 2026-04-14
 | Notifications | ✅ Done | 20/20 | Per-user notifications, module requests, admin alerts, Broadcasts tab |
 | Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
 | Phase 2g (E2E + Bench) | ✅ Done | 8/8 | Interactive E2E flows + build/bundle/test benchmarks |
-| Phase 3 (Baby → Kid) | 🚧 In progress | 6/10 | Plans 1-6 done (Foundation, Suggestions, Elimination, Meals, Needs, Milestones). Plan 7 (Life Journal) ready. Plans 8-9 deferred. Plan 10 (Yoga) needs brainstorm |
-| **Total** | **~97%** | **190/208** | |
+| Phase 3 (Baby → Kid) | 🚧 In progress | 7/10 | Plans 1-7 done (Foundation, Suggestions, Elimination, Meals, Needs, Milestones, Life Journal). Plans 8-9 deferred. Plan 10 (Yoga) needs brainstorm |
+| **Total** | **~98%** | **191/208** | |
 
 ---
 
@@ -127,7 +127,7 @@ All P0 items completed.
 
 ## P3 — Future
 
-> **Current focus:** Phase 3 Baby → Kid. Plans 1-6 complete (Plans 5+6 shipped via parallel-subagent worktrees + coordinator commit pattern; Plan 6 fell back to inline after rate-limit). Next up: Plan 7 (Life Journal) — depends on Plans 3-6. Plans 8-9 (Smart Alerts, Export/Import) deferred. Plan 10 (Yoga — Body module) awaiting brainstorm.
+> **Current focus:** Phase 3 Baby → Kid. Plans 1-7 complete (Plan 7 — Life Journal — shipped as actual release v0.2.11, first non-pre- tag since v0.2.6). Counting-moment *celebration surfacing* deferred to Plan 8 (Smart Alerts). Plan 9 (Export/Import) deferred. Plan 10 (Yoga — Body module) awaiting brainstorm.
 
 ### Module Evolution
 
@@ -151,6 +151,18 @@ All P0 items completed.
 ---
 
 ## Done
+
+### 2026-04-15 — Session 12 (Phase 3 Plan 7 — Life Journal, v0.2.11 actual release)
+
+- [x] Phase 3 Plan 7 (Life Journal) — D/W/M aggregation view across all 7 baby subcollections (feeds, sleep, growth, elimination, meals, milestones, needs)
+- [x] Pure aggregation layer — `src/modules/baby/journal/` subdir (`constants.ts`, `types.ts`, `range.ts`, `aggregate.ts`) — fully testable without Firestore mocks
+- [x] `useJournalData` hook composing 7 `useBabyCollection` listeners + memoized summary
+- [x] `JournalPicker` (D/W/M grain selector + period stepper), `JournalCard` (generic wrapper), `LifeJournalView` (composite — 7 summary cards)
+- [x] Counting moments — compute-on-read threshold detection for diapers/feeds/meals/milestones. No persisted counters.
+- [x] Journal tab placed at position 2 in `ChildDetail` (Dashboard → Journal → Feeding → ...)
+- [x] `DashboardTab` 9A-minimal enrichment — live today-stat strip above navigation grid, "See full journal →" link
+- [x] Version bumps — `package.json` 0.2.6 → 0.2.11 (stale through pre- tags), `deploy.yml` `VITE_APP_VERSION` bumped. **Actual 0.2.11 release, not pre- tag**
+- [x] Unit tests: 435 → 469 (+34) — 9 range, 14 aggregate, 4 JournalPicker, 5 LifeJournalView, 2 DashboardTab strip
 
 ### 2026-04-15 — Session 10 (Phase 2g E2E, prod fixes, Phase 3 Plans 1-2)
 
