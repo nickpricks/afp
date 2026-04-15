@@ -40,13 +40,15 @@ vi.mock('@/shared/hooks/useNotifications', () => ({
 
 vi.mock('@/admin/hooks/useAllUsers', () => ({
   useAllUsers: () => ({
-    users: [{
-      uid: 'user-1',
-      name: 'Priya',
-      role: 'user',
-      modules: { body: true, budget: false, baby: false },
-      requestedModules: ['budget'],
-    }],
+    users: [
+      {
+        uid: 'user-1',
+        name: 'Priya',
+        role: 'user',
+        modules: { body: true, budget: false, baby: false },
+        requestedModules: ['budget'],
+      },
+    ],
     loading: false,
   }),
 }));
@@ -100,9 +102,7 @@ describe('useAdminNotifications', () => {
 
   it('approveModuleRequest enables module, clears request, marks read', async () => {
     const { result } = renderHook(() => useAdminNotifications());
-    await act(async () =>
-      result.current.approveModuleRequest(moduleRequest),
-    );
+    await act(async () => result.current.approveModuleRequest(moduleRequest));
 
     expect(mockUpdateUserModules).toHaveBeenCalledWith(
       'user-1',
@@ -122,9 +122,7 @@ describe('useAdminNotifications', () => {
 
   it('deleteAlert removes notification from target user', async () => {
     const { result } = renderHook(() => useAdminNotifications());
-    await act(async () =>
-      result.current.deleteAlert('user-1', 'alert-1'),
-    );
+    await act(async () => result.current.deleteAlert('user-1', 'alert-1'));
     expect(mockRemove).toHaveBeenCalledWith('notifications', 'alert-1');
   });
 });

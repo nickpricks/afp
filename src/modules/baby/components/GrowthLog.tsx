@@ -12,7 +12,15 @@ import { DbSubcollection } from '@/constants/db';
 import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
 
 /** Growth measurement form with weight, height, head circumference and recent entries */
-export function GrowthLog({ childId, siblingIds = [], uid = '' }: { childId?: string; siblingIds?: string[]; uid?: string }) {
+export function GrowthLog({
+  childId,
+  siblingIds = [],
+  uid = '',
+}: {
+  childId?: string;
+  siblingIds?: string[];
+  uid?: string;
+}) {
   const { growth, logGrowth, updateGrowth, removeGrowth } = useBabyData(childId ?? null);
   const { addToast } = useToast();
   const [date, setDate] = useState(todayStr);
@@ -51,7 +59,8 @@ export function GrowthLog({ childId, siblingIds = [], uid = '' }: { childId?: st
       await logGrowth(entryData);
       if (logToAll && hasSiblings && uid) {
         const count = await logToSiblings(uid, siblingIds, DbSubcollection.Growth, entryData);
-        if (count > 0) addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+        if (count > 0)
+          addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
       }
     }
 
@@ -76,7 +85,13 @@ export function GrowthLog({ childId, siblingIds = [], uid = '' }: { childId?: st
     setPendingDeleteId(id);
     addToast(BabyMsg.GrowthDeleted, ToastType.Info, {
       durationMs: CONFIG.UNDO_DURATION_MS,
-      action: { label: 'Undo', onClick: () => { undoRef.current = true; setPendingDeleteId(null); } },
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          undoRef.current = true;
+          setPendingDeleteId(null);
+        },
+      },
     });
     setTimeout(() => {
       if (!undoRef.current) removeGrowth(id);
@@ -94,92 +109,176 @@ export function GrowthLog({ childId, siblingIds = [], uid = '' }: { childId?: st
   return (
     <div className="flex flex-col gap-6 px-4 py-6">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {
-          editEntry && (
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">Editing {editEntry.date}</span>
-              <button type="button" onClick={handleCancelEdit} className="text-xs text-fg-muted hover:text-fg">Cancel</button>
-            </div>
-          )
-        }
+        {editEntry && (
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">
+              Editing {editEntry.date}
+            </span>
+            <button
+              type="button"
+              onClick={handleCancelEdit}
+              className="text-xs text-fg-muted hover:text-fg"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
 
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+        />
 
         <label className="flex flex-col gap-1">
           <span className="text-sm text-fg-muted">Weight (kg)</span>
-          <input type="number" min={0} step={0.01} value={weight ?? ''} onChange={(e) => setWeight(e.target.value ? Number(e.target.value) : null)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
+          <input
+            type="number"
+            min={0}
+            step={0.01}
+            value={weight ?? ''}
+            onChange={(e) => setWeight(e.target.value ? Number(e.target.value) : null)}
+            className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+          />
         </label>
 
         <label className="flex flex-col gap-1">
           <span className="text-sm text-fg-muted">Height (cm)</span>
-          <input type="number" min={0} step={0.1} value={height ?? ''} onChange={(e) => setHeight(e.target.value ? Number(e.target.value) : null)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
+          <input
+            type="number"
+            min={0}
+            step={0.1}
+            value={height ?? ''}
+            onChange={(e) => setHeight(e.target.value ? Number(e.target.value) : null)}
+            className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+          />
         </label>
 
         <label className="flex flex-col gap-1">
           <span className="text-sm text-fg-muted">Head Circumference (cm)</span>
-          <input type="number" min={0} step={0.1} value={headCircumference ?? ''} onChange={(e) => setHeadCircumference(e.target.value ? Number(e.target.value) : null)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
+          <input
+            type="number"
+            min={0}
+            step={0.1}
+            value={headCircumference ?? ''}
+            onChange={(e) => setHeadCircumference(e.target.value ? Number(e.target.value) : null)}
+            className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+          />
         </label>
 
-        <input type="text" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
+        <input
+          type="text"
+          placeholder="Notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+        />
 
         <div className="flex gap-2">
-          <button type="submit" disabled={saving || (weight === null && height === null && headCircumference === null)} className="flex-1 py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
+          <button
+            type="submit"
+            disabled={saving || (weight === null && height === null && headCircumference === null)}
+            className="flex-1 py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50"
+          >
             {saving && 'Saving...'}
             {!saving && (editEntry ? 'Update Growth' : 'Log Growth')}
           </button>
-          {
-            hasSiblings && !editEntry && (
-              <button type="button" onClick={() => setLogToAll((v) => !v)} className={`px-3 py-3 rounded-lg border text-xs font-medium transition-colors ${logToAll ? 'bg-accent/10 border-accent text-accent' : 'bg-surface-card border-line text-fg-muted'}`} title="Log to all children">All</button>
-            )
-          }
+          {hasSiblings && !editEntry && (
+            <button
+              type="button"
+              onClick={() => setLogToAll((v) => !v)}
+              className={`px-3 py-3 rounded-lg border text-xs font-medium transition-colors ${logToAll ? 'bg-accent/10 border-accent text-accent' : 'bg-surface-card border-line text-fg-muted'}`}
+              title="Log to all children"
+            >
+              All
+            </button>
+          )}
         </div>
       </form>
 
-      <RecentGrowth entries={recentGrowth} onEdit={startEdit} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
-      {
-        hasMore && (
-          <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">
-            Show more ({sortedGrowth.length - limit} remaining)
-          </button>
-        )
-      }
-      {
-        !hasMore && sortedGrowth.length > CONFIG.PAGE_SIZE && (
-          <p className="text-xs text-fg-muted text-center py-1">That's all the growth entries</p>
-        )
-      }
+      <RecentGrowth
+        entries={recentGrowth}
+        onEdit={startEdit}
+        editingId={editEntry?.id ?? null}
+        onRemove={handleUndoDelete}
+      />
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)}
+          className="text-xs text-accent font-medium py-1 self-center"
+        >
+          Show more ({sortedGrowth.length - limit} remaining)
+        </button>
+      )}
+      {!hasMore && sortedGrowth.length > CONFIG.PAGE_SIZE && (
+        <p className="text-xs text-fg-muted text-center py-1">That's all the growth entries</p>
+      )}
     </div>
   );
 }
 
 /** Renders a sorted list of recent growth measurements with edit/delete actions */
-function RecentGrowth({ entries, onEdit, editingId, onRemove }: { entries: GrowthEntry[]; onEdit: (e: GrowthEntry) => void; editingId: string | null; onRemove: (id: string) => void }) {
+function RecentGrowth({
+  entries,
+  onEdit,
+  editingId,
+  onRemove,
+}: {
+  entries: GrowthEntry[];
+  onEdit: (e: GrowthEntry) => void;
+  editingId: string | null;
+  onRemove: (id: string) => void;
+}) {
   if (entries.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-sm font-medium text-fg-muted">Recent Measurements</h3>
-      {
-entries.map((entry) => {
+      {entries.map((entry) => {
         const isActive = editingId === entry.id;
         return (
-          <button key={entry.id} type="button" onClick={() => onEdit(entry)} className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}>
+          <button
+            key={entry.id}
+            type="button"
+            onClick={() => onEdit(entry)}
+            className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}
+          >
             <div className="flex justify-between text-sm">
               <span className="font-medium text-fg">{entry.date}</span>
-              <span role="button" tabIndex={0} aria-label="Delete" onClick={(e) => { e.stopPropagation(); onRemove(entry.id); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); onRemove(entry.id); } }} className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all">x</span>
+              <span
+                role="button"
+                tabIndex={0}
+                aria-label="Delete"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove(entry.id);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.stopPropagation();
+                    onRemove(entry.id);
+                  }
+                }}
+                className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
+              >
+                x
+              </span>
             </div>
             <p className="text-xs text-fg-muted mt-1">
               {entry.weight !== null && `${entry.weight} kg`}
               {entry.weight !== null && entry.height !== null && ' \u00B7 '}
               {entry.height !== null && `${entry.height} cm`}
-              {(entry.weight !== null || entry.height !== null) && entry.headCircumference !== null && ' \u00B7 '}
+              {(entry.weight !== null || entry.height !== null) &&
+                entry.headCircumference !== null &&
+                ' \u00B7 '}
               {entry.headCircumference !== null && `HC ${entry.headCircumference} cm`}
             </p>
             {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}
           </button>
         );
-      })
-}
+      })}
     </div>
   );
 }

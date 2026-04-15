@@ -4,10 +4,7 @@ import { err, ok } from '@/shared/types';
 import { DATE_RE } from '@/shared/utils/regex';
 
 /** Validates feed entry input */
-export function validateFeedEntry(input: {
-  date: string;
-  type: FeedType;
-}): Result<void> {
+export function validateFeedEntry(input: { date: string; type: FeedType }): Result<void> {
   if (!input.date || !DATE_RE.test(input.date)) {
     return err('Valid date is required');
   }
@@ -36,10 +33,7 @@ export function validateSleepEntry(input: {
 }
 
 /** Validates growth entry input */
-export function validateGrowthEntry(input: {
-  date: string;
-  weight: number | null;
-}): Result<void> {
+export function validateGrowthEntry(input: { date: string; weight: number | null }): Result<void> {
   if (!input.date || !DATE_RE.test(input.date)) {
     return err('Valid date is required');
   }
@@ -50,10 +44,7 @@ export function validateGrowthEntry(input: {
 }
 
 /** Validates diaper entry input */
-export function validateDiaperEntry(input: {
-  date: string;
-  type: DiaperType;
-}): Result<void> {
+export function validateDiaperEntry(input: { date: string; type: DiaperType }): Result<void> {
   if (!input.date || !DATE_RE.test(input.date)) {
     return err('Valid date is required');
   }
@@ -64,10 +55,7 @@ export function validateDiaperEntry(input: {
 }
 
 /** Validates child input for add/update operations */
-export function validateChild(input: {
-  name: string;
-  dob: string;
-}): Result<void> {
+export function validateChild(input: { name: string; dob: string }): Result<void> {
   if (!input.name || input.name.trim().length === 0) {
     return err('Name is required');
   }

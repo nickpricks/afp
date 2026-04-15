@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  NotificationType,
-  AlertType,
-  Severity,
-  type Notification,
-  ModuleId,
-} from '@/shared/types';
+import { NotificationType, AlertType, Severity, type Notification, ModuleId } from '@/shared/types';
 
 describe('Notification types', () => {
   it('NotificationType has correct values', () => {

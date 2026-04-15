@@ -16,8 +16,7 @@ import { vlog, vwarn, verr } from '@/shared/utils/verbose';
 const googleProvider = new GoogleAuthProvider();
 
 /** Extracts Firebase error code from an unknown error */
-const getAuthErrorCode = (e: unknown): string | undefined =>
-  (e as { code?: string }).code;
+const getAuthErrorCode = (e: unknown): string | undefined => (e as { code?: string }).code;
 
 /**
  * Signs in with Google — links to existing anonymous account if possible,
@@ -28,7 +27,10 @@ const getAuthErrorCode = (e: unknown): string | undefined =>
 export async function signInWithGoogle(): Promise<Result<string>> {
   try {
     const currentUser = auth.currentUser;
-    vlog('[AFP:auth] signInWithGoogle start', { uid: currentUser?.uid, isAnonymous: currentUser?.isAnonymous });
+    vlog('[AFP:auth] signInWithGoogle start', {
+      uid: currentUser?.uid,
+      isAnonymous: currentUser?.isAnonymous,
+    });
 
     // If already signed in anonymously, link Google to preserve the UID
     if (currentUser?.isAnonymous) {
@@ -64,7 +66,10 @@ export async function signInWithGoogle(): Promise<Result<string>> {
         }
 
         // Popup blocked — fall back to redirect (common on mobile)
-        if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+        if (
+          code === 'auth/popup-blocked' ||
+          code === 'auth/operation-not-supported-in-this-environment'
+        ) {
           vlog('[AFP:auth] Popup blocked, falling back to redirect');
           await linkWithRedirect(currentUser, googleProvider);
           return ok('redirecting');
@@ -89,14 +94,19 @@ export async function signInWithGoogle(): Promise<Result<string>> {
     }
 
     // Popup blocked — fall back to redirect (common on mobile)
-    if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+    if (
+      code === 'auth/popup-blocked' ||
+      code === 'auth/operation-not-supported-in-this-environment'
+    ) {
       await signInWithRedirect(auth, googleProvider);
       return ok('redirecting');
     }
 
     // Actionable error messages for config issues
     if (code === 'auth/unauthorized-domain') {
-      return err('This domain is not authorized. Add it in Firebase Console → Auth → Authorized domains.');
+      return err(
+        'This domain is not authorized. Add it in Firebase Console → Auth → Authorized domains.',
+      );
     }
     if (code === 'auth/invalid-api-key') {
       return err('Invalid Firebase API key. Check VITE_FIREBASE_API_KEY in GitHub Secrets.');

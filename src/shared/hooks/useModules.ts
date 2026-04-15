@@ -8,8 +8,5 @@ import { useAuth } from '@/shared/auth/useAuth';
 export function useModules(): ModuleId[] {
   const { profile } = useAuth();
 
-  return useMemo(
-    () => ALL_MODULES.filter((id) => profile?.modules[id]),
-    [profile],
-  );
+  return useMemo(() => ALL_MODULES.filter((id) => profile?.modules[id]), [profile]);
 }

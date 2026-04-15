@@ -29,17 +29,26 @@ describe('AlertBanner', () => {
   });
 
   it('shows dismiss button for notice type', () => {
-    render(<AlertBanner alerts={[makeAlert({ alertType: AlertType.Notice })]} onDismiss={vi.fn()} />);
+    render(
+      <AlertBanner alerts={[makeAlert({ alertType: AlertType.Notice })]} onDismiss={vi.fn()} />,
+    );
     expect(screen.getByLabelText('Dismiss alert')).toBeInTheDocument();
   });
 
   it('hides dismiss button for alert type', () => {
-    render(<AlertBanner alerts={[makeAlert({ alertType: AlertType.Alert })]} onDismiss={vi.fn()} />);
+    render(
+      <AlertBanner alerts={[makeAlert({ alertType: AlertType.Alert })]} onDismiss={vi.fn()} />,
+    );
     expect(screen.queryByLabelText('Dismiss alert')).not.toBeInTheDocument();
   });
 
   it('shows expiry date for non-dismissible alerts', () => {
-    render(<AlertBanner alerts={[makeAlert({ alertType: AlertType.Alert, shownTillDate: '2026-04-20' })]} onDismiss={vi.fn()} />);
+    render(
+      <AlertBanner
+        alerts={[makeAlert({ alertType: AlertType.Alert, shownTillDate: '2026-04-20' })]}
+        onDismiss={vi.fn()}
+      />,
+    );
     expect(screen.getByText(/Expires 2026-04-20/)).toBeInTheDocument();
   });
 

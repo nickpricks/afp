@@ -34,16 +34,14 @@ export function WalkingTab({
         backfillDate={backfillDate}
         onClearBackfill={() => setBackfillDate(null)}
       />
-      {
-        walkActivities.length > 0 && (
-          <ActivityLog
-            activities={walkActivities}
-            onEdit={setEditEntry}
-            onDelete={onDelete}
-            editingId={editEntry?.id}
-          />
-        )
-      }
+      {walkActivities.length > 0 && (
+        <ActivityLog
+          activities={walkActivities}
+          onEdit={setEditEntry}
+          onDelete={onDelete}
+          editingId={editEntry?.id}
+        />
+      )}
       <div className="flex justify-center">
         <button
           type="button"

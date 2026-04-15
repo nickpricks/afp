@@ -53,9 +53,7 @@ describe('ReconciliationView', () => {
   });
 
   it('shows "No CC activity" when no credit card expenses', () => {
-    const expenses = [
-      makeExpense({ amount: 100, paymentMethod: PaymentMethod.UpiBankAccount }),
-    ];
+    const expenses = [makeExpense({ amount: 100, paymentMethod: PaymentMethod.UpiBankAccount })];
     render(<ReconciliationView expenses={expenses} />);
     expect(screen.getByText(/no cc activity/i)).toBeInTheDocument();
   });

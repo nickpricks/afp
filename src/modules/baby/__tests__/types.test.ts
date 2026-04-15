@@ -1,7 +1,14 @@
 import { describe, it, expect } from 'vitest';
 
 import { FeedType, SleepType, SleepQuality, DiaperType } from '@/modules/baby/types';
-import type { Child, ChildConfig, FeedEntry, SleepEntry, GrowthEntry, DiaperEntry } from '@/modules/baby/types';
+import type {
+  Child,
+  ChildConfig,
+  FeedEntry,
+  SleepEntry,
+  GrowthEntry,
+  DiaperEntry,
+} from '@/modules/baby/types';
 
 describe('FeedType enum', () => {
   it('has all expected values', () => {

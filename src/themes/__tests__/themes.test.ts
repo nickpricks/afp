@@ -1,11 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  ThemeId,
-  THEME_DEFINITIONS,
-  themeClass,
-  isValidThemeId,
-  resolveThemeId,
-} from '../themes';
+import { ThemeId, THEME_DEFINITIONS, themeClass, isValidThemeId, resolveThemeId } from '../themes';
 
 describe('ThemeId enum', () => {
   it('has exactly 10 themes', () => {

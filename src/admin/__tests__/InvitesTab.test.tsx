@@ -41,13 +41,20 @@ vi.mock('@/shared/storage/create-adapter', () => ({
     getById: vi.fn(),
     save: vi.fn(),
     remove: vi.fn(),
-    onSnapshot: (_c: string, cb: (d: unknown[]) => void) => { cb([]); return vi.fn(); },
+    onSnapshot: (_c: string, cb: (d: unknown[]) => void) => {
+      cb([]);
+      return vi.fn();
+    },
   }),
 }));
 
 describe('InvitesTab', () => {
   it('shows invite name and status badges', () => {
-    render(<MemoryRouter><InvitesTab /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <InvitesTab />
+      </MemoryRouter>,
+    );
     expect(screen.getByText('Test User')).toBeInTheDocument();
     expect(screen.getByText('Redeemed User')).toBeInTheDocument();
     expect(screen.getByText('Pending')).toBeInTheDocument();
@@ -55,13 +62,21 @@ describe('InvitesTab', () => {
   });
 
   it('shows Copy and Delete actions on pending invites', () => {
-    render(<MemoryRouter><InvitesTab /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <InvitesTab />
+      </MemoryRouter>,
+    );
     expect(screen.getByRole('button', { name: /copy/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
   });
 
   it('does not show actions on redeemed invites', () => {
-    render(<MemoryRouter><InvitesTab /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <InvitesTab />
+      </MemoryRouter>,
+    );
     const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
     // Only one delete button (for the pending invite)
     expect(deleteButtons).toHaveLength(1);
@@ -82,7 +97,11 @@ describe('InvitesTab — copy link', () => {
       clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
     });
 
-    render(<MemoryRouter><InvitesTab /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <InvitesTab />
+      </MemoryRouter>,
+    );
     fireEvent.click(screen.getByRole('button', { name: /copy/i }));
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(

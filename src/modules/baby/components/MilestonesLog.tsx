@@ -3,10 +3,7 @@ import { useState, useRef } from 'react';
 import { useBabyCollection } from '@/modules/baby/hooks/useBabyCollection';
 import type { Milestone } from '@/modules/baby/types';
 import { MilestoneCategory } from '@/modules/baby/types';
-import {
-  ALL_MILESTONE_CATEGORIES,
-  MILESTONE_CATEGORY_LABELS,
-} from '@/modules/baby/constants';
+import { ALL_MILESTONE_CATEGORIES, MILESTONE_CATEGORY_LABELS } from '@/modules/baby/constants';
 import { MILESTONE_TEMPLATES } from '@/modules/baby/milestone-templates';
 import { todayStr } from '@/shared/utils/date';
 import { useToast } from '@/shared/errors/useToast';
@@ -102,7 +99,8 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
       await log(entryData);
       if (logToAll && hasSiblings && uid) {
         const count = await logToSiblings(uid, siblingIds, DbSubcollection.Milestones, entryData);
-        if (count > 0) addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+        if (count > 0)
+          addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
       }
     }
 
@@ -154,8 +152,7 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
       <div>
         <p className="mb-2 text-xs uppercase tracking-wide text-fg-muted">Quick-add</p>
         <div className="flex flex-wrap gap-1">
-          {
-MILESTONE_TEMPLATES.map((t) => (
+          {MILESTONE_TEMPLATES.map((t) => (
             <button
               key={t.title}
               type="button"
@@ -164,29 +161,43 @@ MILESTONE_TEMPLATES.map((t) => (
             >
               {t.title}
             </button>
-          ))
-}
+          ))}
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {
-          editEntry && (
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">Editing {editEntry.date}</span>
-              <button type="button" onClick={handleCancelEdit} className="text-xs text-fg-muted hover:text-fg">Cancel</button>
-            </div>
-          )
-        }
+        {editEntry && (
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">
+              Editing {editEntry.date}
+            </span>
+            <button
+              type="button"
+              onClick={handleCancelEdit}
+              className="text-xs text-fg-muted hover:text-fg"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
 
         <div className="flex gap-3">
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
-          <select value={category} onChange={(e) => setCategory(Number(e.target.value) as MilestoneCategory)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg">
-            {
-ALL_MILESTONE_CATEGORIES.map((c) => (
-              <option key={c} value={c}>{MILESTONE_CATEGORY_LABELS[c]}</option>
-            ))
-}
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+          />
+          <select
+            value={category}
+            onChange={(e) => setCategory(Number(e.target.value) as MilestoneCategory)}
+            className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+          >
+            {ALL_MILESTONE_CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {MILESTONE_CATEGORY_LABELS[c]}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -223,92 +234,105 @@ ALL_MILESTONE_CATEGORIES.map((c) => (
         />
 
         <div className="flex gap-2">
-          <button type="submit" disabled={saving} className="flex-1 py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
+          <button
+            type="submit"
+            disabled={saving}
+            className="flex-1 py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50"
+          >
             {saving && 'Saving...'}
             {!saving && (editEntry ? 'Update Milestone' : 'Log Milestone')}
           </button>
-          {
-            hasSiblings && !editEntry && (
-              <button
-                type="button"
-                onClick={() => setLogToAll((v) => !v)}
-                className={`px-3 py-3 rounded-lg border text-xs font-medium transition-colors ${logToAll ? 'bg-accent/10 border-accent text-accent' : 'bg-surface-card border-line text-fg-muted'}`}
-                title="Log to all children"
-              >
-                All
-              </button>
-            )
-          }
+          {hasSiblings && !editEntry && (
+            <button
+              type="button"
+              onClick={() => setLogToAll((v) => !v)}
+              className={`px-3 py-3 rounded-lg border text-xs font-medium transition-colors ${logToAll ? 'bg-accent/10 border-accent text-accent' : 'bg-surface-card border-line text-fg-muted'}`}
+              title="Log to all children"
+            >
+              All
+            </button>
+          )}
         </div>
       </form>
 
-      {
-sortedAll.length === 0 && (
-        <p className="text-sm text-fg-muted text-center">No milestones yet — tap a quick-add chip or fill the form.</p>
-      )
-}
+      {sortedAll.length === 0 && (
+        <p className="text-sm text-fg-muted text-center">
+          No milestones yet — tap a quick-add chip or fill the form.
+        </p>
+      )}
 
-      {
-        ALL_MILESTONE_CATEGORIES.map((cat) => {
-          const entries = grouped.get(cat);
-          if (!entries || entries.length === 0) return null;
-          return (
-            <div key={cat} className="flex flex-col gap-2">
-              <h3 className="text-sm font-medium text-fg-muted">{MILESTONE_CATEGORY_LABELS[cat]}</h3>
-              {
-entries.map((m) => {
-                const isActive = editEntry?.id === m.id;
-                return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => startEdit(m)}
-                    className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}
-                  >
-                    <div className="flex justify-between text-sm">
-                      <span className="font-medium text-fg">🌟 {m.title}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-fg-muted">{m.date}</span>
-                        {
-                          m.mediaUrl && (
-                            <a
-                              href={m.mediaUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              aria-label="media"
-                              className="text-xs text-accent underline"
-                            >
-                              media
-                            </a>
-                          )
-                        }
-                        <span role="button" tabIndex={0} aria-label="Delete" onClick={(e) => { e.stopPropagation(); handleUndoDelete(m.id); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); handleUndoDelete(m.id); } }} className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all">x</span>
-                      </div>
+      {ALL_MILESTONE_CATEGORIES.map((cat) => {
+        const entries = grouped.get(cat);
+        if (!entries || entries.length === 0) return null;
+        return (
+          <div key={cat} className="flex flex-col gap-2">
+            <h3 className="text-sm font-medium text-fg-muted">{MILESTONE_CATEGORY_LABELS[cat]}</h3>
+            {entries.map((m) => {
+              const isActive = editEntry?.id === m.id;
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => startEdit(m)}
+                  className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}
+                >
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium text-fg">🌟 {m.title}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-fg-muted">{m.date}</span>
+                      {m.mediaUrl && (
+                        <a
+                          href={m.mediaUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label="media"
+                          className="text-xs text-accent underline"
+                        >
+                          media
+                        </a>
+                      )}
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Delete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUndoDelete(m.id);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.stopPropagation();
+                            handleUndoDelete(m.id);
+                          }
+                        }}
+                        className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
+                      >
+                        x
+                      </span>
                     </div>
-                    {m.description && <p className="text-xs text-fg-muted mt-1">{m.description}</p>}
-                    {m.notes && <p className="text-xs text-fg-muted mt-1">{m.notes}</p>}
-                  </button>
-                );
-              })
-}
-            </div>
-          );
-        })
-      }
+                  </div>
+                  {m.description && <p className="text-xs text-fg-muted mt-1">{m.description}</p>}
+                  {m.notes && <p className="text-xs text-fg-muted mt-1">{m.notes}</p>}
+                </button>
+              );
+            })}
+          </div>
+        );
+      })}
 
-      {
-        hasMore && (
-          <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">
-            Show more ({sortedAll.length - limit} remaining)
-          </button>
-        )
-      }
-      {
-        !hasMore && sortedAll.length > CONFIG.PAGE_SIZE && (
-          <p className="text-xs text-fg-muted text-center py-1">That&apos;s all the milestones</p>
-        )
-      }
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)}
+          className="text-xs text-accent font-medium py-1 self-center"
+        >
+          Show more ({sortedAll.length - limit} remaining)
+        </button>
+      )}
+      {!hasMore && sortedAll.length > CONFIG.PAGE_SIZE && (
+        <p className="text-xs text-fg-muted text-center py-1">That&apos;s all the milestones</p>
+      )}
     </div>
   );
 }

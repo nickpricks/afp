@@ -36,7 +36,10 @@ export function IncomeList({
       durationMs: CONFIG.UNDO_DURATION_MS,
       action: {
         label: 'Undo',
-        onClick: () => { undoRef.current = true; setPendingDeleteId(null); },
+        onClick: () => {
+          undoRef.current = true;
+          setPendingDeleteId(null);
+        },
       },
     });
     setTimeout(() => {
@@ -48,16 +51,13 @@ export function IncomeList({
   };
 
   if (sorted.length === 0) {
-    return (
-      <p className="px-4 py-8 text-center text-fg-muted">No income yet</p>
-    );
+    return <p className="px-4 py-8 text-center text-fg-muted">No income yet</p>;
   }
 
   return (
     <div className="flex flex-col gap-2 px-4">
       <ul className="flex flex-col gap-2">
-        {
-visible.map((entry) => {
+        {visible.map((entry) => {
           const sourceLabel = INCOME_SOURCE_LABELS[entry.source];
           return (
             <li
@@ -66,7 +66,8 @@ visible.map((entry) => {
             >
               <div className="flex flex-col gap-0.5">
                 <span className="font-medium text-fg">
-                  {CONFIG.CURRENCY_SYMBOL}{entry.amount.toLocaleString()}
+                  {CONFIG.CURRENCY_SYMBOL}
+                  {entry.amount.toLocaleString()}
                 </span>
                 <span className="text-xs text-fg-muted">
                   {sourceLabel.emoji} {sourceLabel.label}
@@ -85,25 +86,20 @@ visible.map((entry) => {
               </button>
             </li>
           );
-        })
-}
+        })}
       </ul>
-      {
-        hasMore && (
-          <button
-            type="button"
-            onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
-            className="text-xs text-accent font-medium py-2 self-center"
-          >
-            Show more ({sorted.length - limit} remaining)
-          </button>
-        )
-      }
-      {
-        !hasMore && sorted.length > CONFIG.PAGE_SIZE && (
-          <p className="text-xs text-fg-muted text-center py-2">That's all the income</p>
-        )
-      }
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
+          className="text-xs text-accent font-medium py-2 self-center"
+        >
+          Show more ({sorted.length - limit} remaining)
+        </button>
+      )}
+      {!hasMore && sorted.length > CONFIG.PAGE_SIZE && (
+        <p className="text-xs text-fg-muted text-center py-2">That's all the income</p>
+      )}
     </div>
   );
 }

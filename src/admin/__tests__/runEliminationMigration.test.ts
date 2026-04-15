@@ -67,7 +67,15 @@ describe('runEliminationMigration', () => {
       onProgress,
     );
     expect(onProgress).toHaveBeenCalledTimes(2);
-    expect(onProgress).toHaveBeenNthCalledWith(1, { current: 1, total: 2, currentLabel: expect.any(String) });
-    expect(onProgress).toHaveBeenNthCalledWith(2, { current: 2, total: 2, currentLabel: expect.any(String) });
+    expect(onProgress).toHaveBeenNthCalledWith(1, {
+      current: 1,
+      total: 2,
+      currentLabel: expect.any(String),
+    });
+    expect(onProgress).toHaveBeenNthCalledWith(2, {
+      current: 2,
+      total: 2,
+      currentLabel: expect.any(String),
+    });
   });
 });

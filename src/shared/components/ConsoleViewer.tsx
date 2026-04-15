@@ -43,18 +43,12 @@ function ConsoleEntryList({ entries, clear }: { entries: ConsoleEntry[]; clear: 
     <div className="rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-200 dark:border-gray-700">
         <span className="text-xs text-gray-500">Live console output</span>
-        <button
-          type="button"
-          onClick={clear}
-          className="text-xs text-gray-400 hover:text-gray-600"
-        >
+        <button type="button" onClick={clear} className="text-xs text-gray-400 hover:text-gray-600">
           Clear
         </button>
       </div>
       <div className="overflow-auto max-h-48 p-2 font-mono text-xs">
-        {entries.length === 0 && (
-          <p className="text-gray-400 italic">No console output yet</p>
-        )}
+        {entries.length === 0 && <p className="text-gray-400 italic">No console output yet</p>}
         {entries.map((e) => (
           <div key={e.id} className={`py-0.5 ${LEVEL_COLORS[e.level] ?? LEVEL_COLORS.log}`}>
             <span className="text-gray-400 mr-2">{e.timestamp}</span>

@@ -11,7 +11,13 @@ import { ProfilePage } from '@/shared/components/ProfilePage';
 
 vi.mock('@/shared/auth/useAuth', () => ({
   useAuth: () => ({
-    firebaseUser: { uid: 'user-uid', isAnonymous: false, displayName: 'Regular User', email: 'user@test.com', photoURL: null },
+    firebaseUser: {
+      uid: 'user-uid',
+      isAnonymous: false,
+      displayName: 'Regular User',
+      email: 'user@test.com',
+      photoURL: null,
+    },
     profile: {
       role: 'user',
       name: 'Regular User',
@@ -38,7 +44,14 @@ vi.mock('@/shared/errors/useToast', () => ({
 vi.mock('@/themes/themes', () => ({
   ThemeId: { FamilyBlue: 'family-blue' },
   THEME_DEFINITIONS: {
-    'family-blue': { id: 'family-blue', name: 'Family Blue', family: 'Family', darkOnly: false, fonts: { display: 'Syne', body: 'system-ui' }, previewColors: { bg: '#f0f7ff', accent: '#60a5fa', text: '#1e293b' } },
+    'family-blue': {
+      id: 'family-blue',
+      name: 'Family Blue',
+      family: 'Family',
+      darkOnly: false,
+      fonts: { display: 'Syne', body: 'system-ui' },
+      previewColors: { bg: '#f0f7ff', accent: '#60a5fa', text: '#1e293b' },
+    },
   },
   themeClass: (id: string) => `theme-${id}`,
   applyTheme: vi.fn(),
@@ -70,20 +83,31 @@ vi.mock('@/shared/storage/create-adapter', () => ({
     getById: vi.fn(),
     save: vi.fn().mockResolvedValue({ ok: true }),
     remove: vi.fn(),
-    onSnapshot: (_c: string, cb: (d: unknown[]) => void) => { cb([]); return vi.fn(); },
+    onSnapshot: (_c: string, cb: (d: unknown[]) => void) => {
+      cb([]);
+      return vi.fn();
+    },
   }),
 }));
 
 describe('Profile security — regular user', () => {
   it('does NOT show a role changer', () => {
-    render(<MemoryRouter><ProfilePage /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
     // No dropdown or input to change role
     expect(screen.queryByLabelText(/role/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/theAdminNick/i)).not.toBeInTheDocument();
   });
 
   it('does NOT show module toggles', () => {
-    render(<MemoryRouter><ProfilePage /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
     // Module section shows read-only status, no checkboxes to toggle
     const checkboxes = screen.queryAllByRole('checkbox');
     // There may be checkboxes for theme/color, but none labeled body/budget/baby
@@ -95,13 +119,21 @@ describe('Profile security — regular user', () => {
   });
 
   it('does NOT show viewerOf editor', () => {
-    render(<MemoryRouter><ProfilePage /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
     expect(screen.queryByLabelText(/viewer of/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/viewerOf/)).not.toBeInTheDocument();
   });
 
   it('shows profile name', () => {
-    render(<MemoryRouter><ProfilePage /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
     expect(screen.getByText('Regular User')).toBeInTheDocument();
   });
 });

@@ -25,9 +25,7 @@ export function AnimationViewer() {
             type="button"
             onClick={() => setActiveTab(tab)}
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-              activeTab === tab
-                ? 'bg-accent text-fg-on-accent'
-                : 'text-fg-muted hover:text-fg'
+              activeTab === tab ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'
             }`}
           >
             {tab}
@@ -47,7 +45,9 @@ export function AnimationViewer() {
       </label>
 
       {/* Scene display */}
-      <div className={`grid gap-8 ${activeTab === 'All' ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1'}`}>
+      <div
+        className={`grid gap-8 ${activeTab === 'All' ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1'}`}
+      >
         {(activeTab === 'All' || activeTab === 'Climber') && (
           <div className="flex flex-col items-center gap-4 p-6 rounded-lg bg-surface border border-line">
             <SceneClimber />

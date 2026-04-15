@@ -36,10 +36,7 @@ export async function isCurrentUserAdmin(uid: string): Promise<boolean> {
 }
 
 /** Sets up the app/config doc and creates the admin user profile atomically */
-export async function initializeAdmin(
-  uid: string,
-  name: string,
-): Promise<Result<void>> {
+export async function initializeAdmin(uid: string, name: string): Promise<Result<void>> {
   vlog('[AFP:admin] initializeAdmin start', { uid, name });
   try {
     const configRef = doc(db, DbCollection.App, DbDoc.Config);
@@ -71,13 +68,12 @@ export async function initializeAdmin(
 }
 
 /** Updates the module configuration for a user's profile */
-export async function updateUserModules(
-  uid: string,
-  modules: ModuleConfig,
-): Promise<Result<void>> {
+export async function updateUserModules(uid: string, modules: ModuleConfig): Promise<Result<void>> {
   vlog('[AFP:admin] updateUserModules', { uid, modules });
   try {
-    await updateDoc(doc(db, DbCollection.Users, uid, DbSubcollection.Profile, DbDoc.Main), { [DbField.Modules]: modules });
+    await updateDoc(doc(db, DbCollection.Users, uid, DbSubcollection.Profile, DbDoc.Main), {
+      [DbField.Modules]: modules,
+    });
     vlog('[AFP:admin] updateUserModules success');
     return ok(undefined);
   } catch (e) {

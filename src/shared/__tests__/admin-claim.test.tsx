@@ -29,20 +29,32 @@ vi.mock('@/shared/auth/google-auth', () => ({
 
 describe('AdminClaim', () => {
   it('shows claim screen with app name', () => {
-    render(<MemoryRouter><AdminClaim /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <AdminClaim />
+      </MemoryRouter>,
+    );
     expect(screen.getByText(/hasn't been set up yet/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /claim as admin/i })).toBeInTheDocument();
   });
 
   it('shows Google sign-in prompt when anonymous user clicks claim', async () => {
-    render(<MemoryRouter><AdminClaim /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <AdminClaim />
+      </MemoryRouter>,
+    );
     screen.getByRole('button', { name: /claim as admin/i }).click();
     // Anonymous user should be prompted to sign in with Google first
     expect(await screen.findByText(/sign in with google first/i)).toBeInTheDocument();
   });
 
   it('shows ownership warning', () => {
-    render(<MemoryRouter><AdminClaim /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <AdminClaim />
+      </MemoryRouter>,
+    );
     expect(screen.getByText(/only do this if you own/i)).toBeInTheDocument();
   });
 });

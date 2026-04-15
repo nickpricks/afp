@@ -41,11 +41,7 @@ const MODULE_LABELS: Record<ModuleId, string> = {
 };
 
 /** Saves profile appearance fields to the storage adapter */
-const saveAppearance = async (
-  uid: string,
-  theme: string,
-  colorMode: ColorMode,
-): Promise<void> => {
+const saveAppearance = async (uid: string, theme: string, colorMode: ColorMode): Promise<void> => {
   const adapter = createAdapter(`users/${uid}`);
   await adapter.save(DbSubcollection.Profile, {
     id: DbDoc.Main,
@@ -56,10 +52,7 @@ const saveAppearance = async (
 };
 
 /** Saves username to the user profile */
-const saveUsernameToProfile = async (
-  uid: string,
-  username: string | undefined,
-): Promise<void> => {
+const saveUsernameToProfile = async (uid: string, username: string | undefined): Promise<void> => {
   const adapter = createAdapter(`users/${uid}`);
   await adapter.save(DbSubcollection.Profile, {
     id: DbDoc.Main,
@@ -75,9 +68,7 @@ export function ProfilePage() {
   const { addToast } = useToast();
   const activeThemeId = useActiveThemeId();
 
-  const [colorMode, setColorMode] = useState<ColorMode>(
-    profile?.colorMode ?? 'system',
-  );
+  const [colorMode, setColorMode] = useState<ColorMode>(profile?.colorMode ?? 'system');
 
   // Username state
   const [isEditingUsername, setIsEditingUsername] = useState(false);
@@ -88,8 +79,7 @@ export function ProfilePage() {
 
   const uid = firebaseUser?.uid ?? '';
   const isAnonymous = firebaseUser?.isAnonymous ?? true;
-  const displayName =
-    firebaseUser?.displayName ?? profile?.name ?? 'Anonymous';
+  const displayName = firebaseUser?.displayName ?? profile?.name ?? 'Anonymous';
   const email = firebaseUser?.email ?? profile?.email ?? null;
   const photoURL = firebaseUser?.photoURL ?? null;
 
@@ -196,7 +186,6 @@ export function ProfilePage() {
     }
   }, [addToast]);
 
-
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <h1 className="text-xl font-bold text-fg">Profile</h1>
@@ -207,46 +196,32 @@ export function ProfilePage() {
           Account
         </h2>
         <div className="flex items-center gap-4">
-          {
-photoURL && (
+          {photoURL && (
             <img
               src={photoURL}
               alt=""
               referrerPolicy="no-referrer"
               className="h-14 w-14 rounded-full border border-line"
             />
-          )
-}
-          {
-!photoURL && (
+          )}
+          {!photoURL && (
             <div className="flex h-14 w-14 items-center justify-center rounded-full border border-line bg-accent text-fg-on-accent text-lg font-bold">
               {displayName.charAt(0).toUpperCase()}
             </div>
-          )
-}
+          )}
           <div className="min-w-0 flex-1">
-            <p className="truncate text-base font-semibold text-fg">
-              {displayName}
-            </p>
-            {
-email && (
-              <p className="truncate text-sm text-fg-muted">{email}</p>
-            )
-}
-            {
-isAnonymous && (
+            <p className="truncate text-base font-semibold text-fg">{displayName}</p>
+            {email && <p className="truncate text-sm text-fg-muted">{email}</p>}
+            {isAnonymous && (
               <span className="inline-block mt-1 rounded bg-accent/20 px-2 py-0.5 text-xs font-medium text-accent">
                 Anonymous
               </span>
-            )
-}
-            {
-isTheAdminNick && (
+            )}
+            {isTheAdminNick && (
               <span className="inline-block mt-1 ml-1 rounded bg-accent px-2 py-0.5 text-xs font-medium text-fg-on-accent">
                 Admin
               </span>
-            )
-}
+            )}
           </div>
         </div>
 
@@ -254,34 +229,25 @@ isTheAdminNick && (
         <div className="mt-4 border-t border-line pt-3">
           <div className="flex items-center justify-between">
             <span className="text-sm text-fg-muted">Username</span>
-            {
-!isEditingUsername && !profile?.username && (
+            {!isEditingUsername && !profile?.username && (
               <button
-                onClick={
-() => {
+                onClick={() => {
                   setIsEditingUsername(true);
-                }
-}
+                }}
                 className="text-sm font-medium text-accent hover:underline"
               >
                 Set Username
               </button>
-            )
-}
+            )}
           </div>
-          {
-profile?.username && !isEditingUsername && (
+          {profile?.username && !isEditingUsername && (
             <div className="mt-1 flex items-center gap-2">
-              <p className="text-sm font-medium text-fg">
-                @{profile.username}
-              </p>
+              <p className="text-sm font-medium text-fg">@{profile.username}</p>
               <button
-                onClick={
-() => {
+                onClick={() => {
                   setUsernameInput(profile.username ?? '');
                   setIsEditingUsername(true);
-                }
-}
+                }}
                 className="text-xs text-accent hover:underline"
               >
                 Change
@@ -294,29 +260,21 @@ profile?.username && !isEditingUsername && (
                 Remove
               </button>
             </div>
-          )
-}
-          {
-isEditingUsername && (
+          )}
+          {isEditingUsername && (
             <div className="mt-2 space-y-2">
               <input
                 type="text"
                 value={usernameInput}
-                onChange={
-(e) => {
+                onChange={(e) => {
                   setUsernameInput(e.target.value);
                   setUsernameError(null);
-                }
-}
+                }}
                 placeholder="your_username"
                 maxLength={20}
                 className="w-full rounded border border-line bg-surface px-3 py-1.5 text-sm text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
               />
-              {
-usernameError && (
-                <p className="text-xs text-red-500">{usernameError}</p>
-              )
-}
+              {usernameError && <p className="text-xs text-red-500">{usernameError}</p>}
               <div className="flex gap-2">
                 <button
                   onClick={handleUsernameSave}
@@ -326,21 +284,18 @@ usernameError && (
                   {isSavingUsername ? 'Saving...' : 'Save'}
                 </button>
                 <button
-                  onClick={
-() => {
+                  onClick={() => {
                     setIsEditingUsername(false);
                     setUsernameError(null);
                     setUsernameInput('');
-                  }
-}
+                  }}
                   className="rounded border border-line px-3 py-1 text-sm text-fg-muted"
                 >
                   Cancel
                 </button>
               </div>
             </div>
-          )
-}
+          )}
         </div>
       </section>
 
@@ -364,10 +319,10 @@ usernameError && (
             return (
               <li key={id} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <span className={`inline-block h-2 w-2 rounded-full ${enabled ? 'bg-accent' : 'bg-fg-muted/30'}`} />
-                  <span className={enabled ? 'text-fg' : 'text-fg-muted'}>
-                    {MODULE_LABELS[id]}
-                  </span>
+                  <span
+                    className={`inline-block h-2 w-2 rounded-full ${enabled ? 'bg-accent' : 'bg-fg-muted/30'}`}
+                  />
+                  <span className={enabled ? 'text-fg' : 'text-fg-muted'}>{MODULE_LABELS[id]}</span>
                 </div>
                 {!enabled && !requested && !isTheAdminNick && (
                   <button
@@ -394,23 +349,15 @@ usernameError && (
 
       {/* Sign Out / Dev Info */}
       <section className="rounded-lg border border-line bg-surface-card p-4">
-        {
-!isFirebaseConfigured && (
-          <p className="text-sm text-fg-muted">
-            Dev Mode — localStorage
-          </p>
-        )
-}
-        {
-isFirebaseConfigured && (
+        {!isFirebaseConfigured && <p className="text-sm text-fg-muted">Dev Mode — localStorage</p>}
+        {isFirebaseConfigured && (
           <button
             onClick={handleSignOut}
             className="w-full rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
           >
             Sign Out
           </button>
-        )
-}
+        )}
       </section>
     </div>
   );
@@ -442,11 +389,15 @@ function AppearanceSection({
         <div className="flex items-center gap-3">
           <div
             className="h-8 w-8 rounded-lg border border-line"
-            style={{ background: `linear-gradient(135deg, ${activeTheme.previewColors.bg} 50%, ${activeTheme.previewColors.accent} 50%)` }}
+            style={{
+              background: `linear-gradient(135deg, ${activeTheme.previewColors.bg} 50%, ${activeTheme.previewColors.accent} 50%)`,
+            }}
           />
           <div>
             <p className="text-sm font-medium text-fg">{activeTheme.name}</p>
-            <p className="text-xs text-fg-muted">{activeTheme.family} · {activeTheme.fonts.display}</p>
+            <p className="text-xs text-fg-muted">
+              {activeTheme.family} · {activeTheme.fonts.display}
+            </p>
           </div>
         </div>
         <button
@@ -478,7 +429,9 @@ function AppearanceSection({
                 >
                   <div
                     className="h-10 w-10 flex-shrink-0 rounded-lg border border-line"
-                    style={{ background: `linear-gradient(135deg, ${theme.previewColors.bg} 50%, ${theme.previewColors.accent} 50%)` }}
+                    style={{
+                      background: `linear-gradient(135deg, ${theme.previewColors.bg} 50%, ${theme.previewColors.accent} 50%)`,
+                    }}
                   />
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-fg">{theme.name}</p>
@@ -518,7 +471,8 @@ function AppearanceSection({
             <div className="mt-4 border-t border-line pt-3">
               <p className="text-sm text-fg">Effects</p>
               <p className="text-xs text-fg-muted mt-1">
-                {activeTheme.effects.join(', ')} · {activeTheme.defaultParticleCount} particles · {activeTheme.defaultParticleSize}
+                {activeTheme.effects.join(', ')} · {activeTheme.defaultParticleCount} particles ·{' '}
+                {activeTheme.defaultParticleSize}
               </p>
             </div>
           )}
@@ -539,9 +493,7 @@ function AboutSection() {
 
   return (
     <section className="rounded-lg border border-line bg-surface-card p-4">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-fg-muted">
-        About
-      </h2>
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-fg-muted">About</h2>
       <div className="space-y-1 text-sm">
         <p className="text-fg">
           <span className="text-fg-muted">App:</span> {CONFIG.APP_NAME}
@@ -559,18 +511,16 @@ function AboutSection() {
             i
           </button>
         </div>
-        <Link
-          to={AppPath.Debug}
-          className="inline-block mt-2 text-sm text-accent hover:underline"
-        >
+        <Link to={AppPath.Debug} className="inline-block mt-2 text-sm text-accent hover:underline">
           Debug Info
         </Link>
       </div>
-      {
-showChangelog && (
+      {showChangelog && (
         <div className="mt-4 border-t border-line pt-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-fg-muted">Changelog</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
+              Changelog
+            </span>
             <button
               type="button"
               onClick={() => setShowChangelog(false)}
@@ -583,8 +533,7 @@ showChangelog && (
             {changelogRaw as string}
           </pre>
         </div>
-      )
-}
+      )}
     </section>
   );
 }

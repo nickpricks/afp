@@ -8,18 +8,8 @@ import { useAdminActions } from '@/admin/hooks/useAdminActions';
 import { createAdapter } from '@/shared/storage/create-adapter';
 import { userPath, DbSubcollection, DbDoc } from '@/constants/db';
 import { NotificationMsg } from '@/constants/messages';
-import {
-  isOk,
-  NotificationType,
-  ToastType,
-} from '@/shared/types';
-import type {
-  AlertType,
-  ModuleId,
-  ModuleConfig,
-  Notification,
-  Severity,
-} from '@/shared/types';
+import { isOk, NotificationType, ToastType } from '@/shared/types';
+import type { AlertType, ModuleId, ModuleConfig, Notification, Severity } from '@/shared/types';
 import { nowTime } from '@/shared/utils/date';
 
 interface CreateAlertParams {
@@ -63,7 +53,10 @@ export function useAdminNotifications() {
       for (const uid of params.targetUids) {
         const adapter = createAdapter(userPath(uid));
         const entry = { ...notification, id: crypto.randomUUID() };
-        const result = await adapter.save(DbSubcollection.Notifications, entry as unknown as Record<string, unknown> & { id: string });
+        const result = await adapter.save(
+          DbSubcollection.Notifications,
+          entry as unknown as Record<string, unknown> & { id: string },
+        );
         if (!isOk(result)) allOk = false;
       }
 
@@ -95,8 +88,10 @@ export function useAdminNotifications() {
       }
 
       const userAdapter = createAdapter(userPath(request.requestedBy));
-      const updatedRequested = (targetUser as unknown as { requestedModules?: string[] }).requestedModules
-        ?.filter((m: string) => m !== request.moduleId) ?? [];
+      const updatedRequested =
+        (targetUser as unknown as { requestedModules?: string[] }).requestedModules?.filter(
+          (m: string) => m !== request.moduleId,
+        ) ?? [];
       await userAdapter.save(DbSubcollection.Profile, {
         id: DbDoc.Main,
         requestedModules: updatedRequested,

@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { BudgetMsg, BodyMsg, BabyMsg, ValidationMsg, InviteMsg, ProviderMsg } from '@/constants/messages';
+import {
+  BudgetMsg,
+  BodyMsg,
+  BabyMsg,
+  ValidationMsg,
+  InviteMsg,
+  ProviderMsg,
+} from '@/constants/messages';
 
 describe('BudgetMsg', () => {
   it('has expense and income messages', () => {

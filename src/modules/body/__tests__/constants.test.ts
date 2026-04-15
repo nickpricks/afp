@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 
-import { BODY_DEFAULTS, SCORING_WEIGHTS, ACTIVITY_LABELS, FLOOR_HEIGHT_OPTIONS } from '@/modules/body/constants';
+import {
+  BODY_DEFAULTS,
+  SCORING_WEIGHTS,
+  ACTIVITY_LABELS,
+  FLOOR_HEIGHT_OPTIONS,
+} from '@/modules/body/constants';
 import { ActivityType } from '@/shared/types';
 
 describe('BODY_DEFAULTS', () => {

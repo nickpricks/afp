@@ -34,16 +34,14 @@ export function CyclingTab({
         backfillDate={backfillDate}
         onClearBackfill={() => setBackfillDate(null)}
       />
-      {
-        cycleActivities.length > 0 && (
-          <ActivityLog
-            activities={cycleActivities}
-            onEdit={setEditEntry}
-            onDelete={onDelete}
-            editingId={editEntry?.id}
-          />
-        )
-      }
+      {cycleActivities.length > 0 && (
+        <ActivityLog
+          activities={cycleActivities}
+          onEdit={setEditEntry}
+          onDelete={onDelete}
+          editingId={editEntry?.id}
+        />
+      )}
       <div className="flex justify-center">
         <button
           type="button"

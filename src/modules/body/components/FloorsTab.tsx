@@ -50,7 +50,15 @@ export function FloorsTab({
   // The record being displayed -- either the editing date or today
   const activeKey = editingKey ?? today;
   const activeRecord = editingKey
-    ? records[editingKey] ?? { dateStr: editingKey, up: 0, down: 0, walkMeters: 0, runMeters: 0, total: 0, updatedAt: '' }
+    ? (records[editingKey] ?? {
+        dateStr: editingKey,
+        up: 0,
+        down: 0,
+        walkMeters: 0,
+        runMeters: 0,
+        total: 0,
+        updatedAt: '',
+      })
     : todayRecord;
 
   /** Optimistic delete with undo window */
@@ -115,26 +123,25 @@ export function FloorsTab({
     <div className="flex flex-col gap-6">
       {/* Header: shows editing date or today */}
       <div className="text-center">
-        {
-          isEditing && (
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">
-                {editingKey}
-              </span>
-              <button
-                type="button"
-                onClick={() => setEditingKey(null)}
-                className="flex items-center gap-1 rounded-full border border-line px-2 py-1 text-xs text-fg-muted hover:text-fg transition-colors"
-              >
-                <RotateCcw size={12} />
-                Back to Today
-              </button>
-            </div>
-          )
-        }
+        {isEditing && (
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">
+              {editingKey}
+            </span>
+            <button
+              type="button"
+              onClick={() => setEditingKey(null)}
+              className="flex items-center gap-1 rounded-full border border-line px-2 py-1 text-xs text-fg-muted hover:text-fg transition-colors"
+            >
+              <RotateCcw size={12} />
+              Back to Today
+            </button>
+          </div>
+        )}
         <p className="text-4xl font-bold text-accent">{activeRecord.up + activeRecord.down}</p>
         <p className="text-sm text-fg-muted mt-1">
-          {activeRecord.up} up ({formatHeight(activeRecord.up, height)}) / {activeRecord.down} down ({formatHeight(activeRecord.down, height)})
+          {activeRecord.up} up ({formatHeight(activeRecord.up, height)}) / {activeRecord.down} down
+          ({formatHeight(activeRecord.down, height)})
         </p>
       </div>
 
@@ -171,73 +178,86 @@ export function FloorsTab({
       )}
 
       {/* Recent days */}
-      {
-        recentDays.length > 0 && (
-          <div className="flex flex-col gap-2">
-            <h3 className="text-xs font-medium text-fg-muted uppercase tracking-wide">Recent</h3>
-            <ul className="flex flex-col gap-1">
-              {
-                recentDays.map(([dateKey, rec]) => {
-                  const isActive = dateKey === activeKey;
-                  const innerContent = (
-                    <div
-                      className={
-                        `flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer ${
-                          isActive
-                            ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border border-line'
-                            : dateKey === today
-                              ? 'bg-surface-card border border-line font-medium'
-                              : 'bg-surface-card border border-line opacity-80'
-                        }`
-                      }
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => handleRowTap(dateKey)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') handleRowTap(dateKey); }}
-                    >
-                      <span className={isActive ? 'text-accent font-medium' : 'text-fg-muted'}>{dateKey}</span>
-                      <span className="flex items-center gap-2">
-                        <span className="text-fg font-medium">
-                          {rec.up} up / {rec.down} down = {rec.total}
-                        </span>
-                        {onDeleteRecord && (
-                          <span role="button" tabIndex={0} aria-label="Delete" onClick={(e) => { e.stopPropagation(); handleDelete(dateKey); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); handleDelete(dateKey); } }} className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all">x</span>
-                        )}
-                      </span>
-                    </div>
-                  );
-
-                  return (
-                    <li key={dateKey} className="group relative">
-                      {onDeleteRecord ? (
-                        <SwipeToDelete onDelete={() => handleDelete(dateKey)}>
-                          {innerContent}
-                        </SwipeToDelete>
-                      ) : innerContent}
-                    </li>
-                  );
-                })
-              }
-            </ul>
-            {
-              sortedDays.length > limit && (
-                <button
-                  type="button"
-                  onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
-                  className="text-xs text-accent font-medium py-1 self-center"
+      {recentDays.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <h3 className="text-xs font-medium text-fg-muted uppercase tracking-wide">Recent</h3>
+          <ul className="flex flex-col gap-1">
+            {recentDays.map(([dateKey, rec]) => {
+              const isActive = dateKey === activeKey;
+              const innerContent = (
+                <div
+                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer ${
+                    isActive
+                      ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border border-line'
+                      : dateKey === today
+                        ? 'bg-surface-card border border-line font-medium'
+                        : 'bg-surface-card border border-line opacity-80'
+                  }`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleRowTap(dateKey)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleRowTap(dateKey);
+                  }}
                 >
-                  Show more ({sortedDays.length - limit} remaining)
-                </button>
-              )
-            }
-            {
-              sortedDays.length <= limit && sortedDays.length > CONFIG.PAGE_SIZE && (
-                <p className="text-xs text-fg-muted text-center py-1">That's all the days</p>
-              )
-            }
-          </div>
-        )
-      }
+                  <span className={isActive ? 'text-accent font-medium' : 'text-fg-muted'}>
+                    {dateKey}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <span className="text-fg font-medium">
+                      {rec.up} up / {rec.down} down = {rec.total}
+                    </span>
+                    {onDeleteRecord && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Delete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(dateKey);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.stopPropagation();
+                            handleDelete(dateKey);
+                          }
+                        }}
+                        className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
+                      >
+                        x
+                      </span>
+                    )}
+                  </span>
+                </div>
+              );
+
+              return (
+                <li key={dateKey} className="group relative">
+                  {onDeleteRecord ? (
+                    <SwipeToDelete onDelete={() => handleDelete(dateKey)}>
+                      {innerContent}
+                    </SwipeToDelete>
+                  ) : (
+                    innerContent
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          {sortedDays.length > limit && (
+            <button
+              type="button"
+              onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
+              className="text-xs text-accent font-medium py-1 self-center"
+            >
+              Show more ({sortedDays.length - limit} remaining)
+            </button>
+          )}
+          {sortedDays.length <= limit && sortedDays.length > CONFIG.PAGE_SIZE && (
+            <p className="text-xs text-fg-muted text-center py-1">That's all the days</p>
+          )}
+        </div>
+      )}
       {/* Add missing day button */}
       <div className="flex justify-center">
         <button

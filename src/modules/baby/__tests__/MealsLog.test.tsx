@@ -66,10 +66,7 @@ describe('MealsLog — form behavior', () => {
     const submitBtn = screen.getByRole('button', { name: /^Log Meal$/ });
     fireEvent.click(submitBtn);
     expect(mockLog).not.toHaveBeenCalled();
-    expect(mockAddToast).toHaveBeenCalledWith(
-      'Description required',
-      'error',
-    );
+    expect(mockAddToast).toHaveBeenCalledWith('Description required', 'error');
   });
 
   it('submits a valid meal entry', () => {

@@ -8,9 +8,7 @@ export const computeTotalIncome = (income: Income[]): number => {
 
 /** Computes total spent from expenses, excluding settlements */
 export const computeTotalSpent = (expenses: Expense[]): number => {
-  return expenses
-    .filter((e) => !e.isSettlement)
-    .reduce((sum, e) => sum + e.amount, 0);
+  return expenses.filter((e) => !e.isSettlement).reduce((sum, e) => sum + e.amount, 0);
 };
 
 /** Filters items with a `date` field by BudgetView range relative to a reference date */
@@ -43,9 +41,7 @@ export const computeCCOutstanding = (expenses: Expense[]): number => {
     )
     .reduce((sum, e) => sum + e.amount, 0);
 
-  const ccSettled = expenses
-    .filter((e) => e.isSettlement)
-    .reduce((sum, e) => sum + e.amount, 0);
+  const ccSettled = expenses.filter((e) => e.isSettlement).reduce((sum, e) => sum + e.amount, 0);
 
   return Math.max(0, ccSpent - ccSettled);
 };

@@ -15,10 +15,7 @@ import { ToastType } from '@/shared/types';
 
 /** Fetches child IDs for a single user from Firestore */
 async function fetchChildIds(uid: string): Promise<string[]> {
-  const childrenRef = collection(
-    db,
-    `${DbCollection.Users}/${uid}/${DbSubcollection.Children}`,
-  );
+  const childrenRef = collection(db, `${DbCollection.Users}/${uid}/${DbSubcollection.Children}`);
   const snap = await getDocs(childrenRef);
   return snap.docs.map((d) => d.id);
 }
@@ -76,43 +73,35 @@ export function MigrationsTab() {
           {running ? 'Running...' : 'Run migration'}
         </button>
 
-        {
-          progress && (
-            <p className="text-xs text-fg-muted">
-              {progress.current} / {progress.total} — {progress.currentLabel}
-            </p>
-          )
-        }
+        {progress && (
+          <p className="text-xs text-fg-muted">
+            {progress.current} / {progress.total} — {progress.currentLabel}
+          </p>
+        )}
 
-        {
-          summary && (
-            <div className="rounded-md border border-line bg-surface px-3 py-2 text-sm">
-              <p className="font-medium text-fg">Done</p>
-              <ul className="mt-1 space-y-0.5 text-xs text-fg-muted">
-                <li>Users scanned: {summary.usersScanned}</li>
-                <li>Children scanned: {summary.childrenScanned}</li>
-                <li>Entries migrated: {summary.entriesMigrated}</li>
-                <li>Errors: {summary.errors.length}</li>
-              </ul>
-              {
-                summary.errors.length > 0 && (
-                  <details className="mt-2">
-                    <summary className="cursor-pointer text-xs text-fg-muted">View errors</summary>
-                    <ul className="mt-1 space-y-1 text-xs text-red-500">
-                      {
-                        summary.errors.map((e) => (
-                          <li key={`${e.uid}-${e.childId}`}>
-                            {e.uid.slice(0, 8)}/{e.childId.slice(0, 8)}: {e.error}
-                          </li>
-                        ))
-                      }
-                    </ul>
-                  </details>
-                )
-              }
-            </div>
-          )
-        }
+        {summary && (
+          <div className="rounded-md border border-line bg-surface px-3 py-2 text-sm">
+            <p className="font-medium text-fg">Done</p>
+            <ul className="mt-1 space-y-0.5 text-xs text-fg-muted">
+              <li>Users scanned: {summary.usersScanned}</li>
+              <li>Children scanned: {summary.childrenScanned}</li>
+              <li>Entries migrated: {summary.entriesMigrated}</li>
+              <li>Errors: {summary.errors.length}</li>
+            </ul>
+            {summary.errors.length > 0 && (
+              <details className="mt-2">
+                <summary className="cursor-pointer text-xs text-fg-muted">View errors</summary>
+                <ul className="mt-1 space-y-1 text-xs text-red-500">
+                  {summary.errors.map((e) => (
+                    <li key={`${e.uid}-${e.childId}`}>
+                      {e.uid.slice(0, 8)}/{e.childId.slice(0, 8)}: {e.error}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
+          </div>
+        )}
       </section>
     </div>
   );

@@ -44,9 +44,7 @@ export function DebugPage() {
     },
     {
       label: 'Project ID',
-      value: isFirebaseConfigured
-        ? import.meta.env.VITE_FIREBASE_PROJECT_ID
-        : 'not set',
+      value: isFirebaseConfigured ? import.meta.env.VITE_FIREBASE_PROJECT_ID : 'not set',
     },
   ];
 
@@ -55,32 +53,36 @@ export function DebugPage() {
       <h1 className="text-lg font-bold mb-4">AFP Debug</h1>
       <table className="w-full border-collapse">
         <tbody>
-          {
-            checks.map(({ label, value, expected }) => {
-              const display = typeof value === 'boolean' ? (value ? 'true' : 'false') : String(value);
-              const isPassing = expected === undefined || value === expected;
+          {checks.map(({ label, value, expected }) => {
+            const display = typeof value === 'boolean' ? (value ? 'true' : 'false') : String(value);
+            const isPassing = expected === undefined || value === expected;
 
-              return (
-                <tr key={label} className="border-b border-gray-200 dark:border-gray-700">
-                  <td className="py-2 pr-4 text-gray-500">{label}</td>
-                  <td className={`py-2 font-semibold ${isPassing ? 'text-green-600' : 'text-red-500'}`}>
-                    {display}
-                  </td>
-                </tr>
-              );
-            })
-          }
+            return (
+              <tr key={label} className="border-b border-gray-200 dark:border-gray-700">
+                <td className="py-2 pr-4 text-gray-500">{label}</td>
+                <td
+                  className={`py-2 font-semibold ${isPassing ? 'text-green-600' : 'text-red-500'}`}
+                >
+                  {display}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       <details className="mt-4">
-        <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600">AuthContext raw JSON</summary>
+        <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600">
+          AuthContext raw JSON
+        </summary>
         <pre className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 rounded text-xs overflow-auto max-h-80">
           {JSON.stringify(authCtxDump, null, 2)}
         </pre>
       </details>
 
       <details className="mt-4">
-        <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600">ToastContext raw JSON</summary>
+        <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600">
+          ToastContext raw JSON
+        </summary>
         <pre className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 rounded text-xs overflow-auto max-h-80">
           {JSON.stringify(toastCtxDump, null, 2)}
         </pre>
@@ -90,27 +92,27 @@ export function DebugPage() {
         <input
           type="checkbox"
           checked={verbose}
-          onChange={(e) => { setVerbose(e.target.checked); setVerboseState(e.target.checked); }}
+          onChange={(e) => {
+            setVerbose(e.target.checked);
+            setVerboseState(e.target.checked);
+          }}
           className="rounded border-line accent-accent"
         />
         <span className="text-xs text-fg-muted">Verbose logs (auth, invites, admin)</span>
       </label>
 
-      <p className="mt-2 text-xs text-gray-400 italic">Console output available via the {'>'}_  pill at bottom-right</p>
-
-      <p className="mt-2 text-xs text-gray-400">
-        Navigate to /debug to view this page.
+      <p className="mt-2 text-xs text-gray-400 italic">
+        Console output available via the {'>'}_ pill at bottom-right
       </p>
+
+      <p className="mt-2 text-xs text-gray-400">Navigate to /debug to view this page.</p>
 
       <div className="mt-6">
         <DevBench />
       </div>
 
       <div className="mt-6">
-        <Link
-          to={ROUTES.ANIMATIONS}
-          className="text-sm text-accent hover:underline"
-        >
+        <Link to={ROUTES.ANIMATIONS} className="text-sm text-accent hover:underline">
           Animation Viewer →
         </Link>
       </div>

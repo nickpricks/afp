@@ -53,13 +53,7 @@ describe('CyclingTab', () => {
   });
 
   it('shows nothing when no cycling activities exist', () => {
-    render(
-      <CyclingTab
-        activities={[walkActivity]}
-        onLog={mockOnLog}
-        onSave={mockOnSave}
-      />,
-    );
+    render(<CyclingTab activities={[walkActivity]} onLog={mockOnLog} onSave={mockOnSave} />);
     // The form is there but no activity log
     expect(screen.getByText('Log Cycle')).toBeInTheDocument();
     expect(screen.queryByText(/2000/)).not.toBeInTheDocument();

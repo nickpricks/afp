@@ -1,6 +1,11 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 
-import { isValidUsername, isUsernameAvailable, claimUsername, releaseUsername } from '@/shared/auth/username';
+import {
+  isValidUsername,
+  isUsernameAvailable,
+  claimUsername,
+  releaseUsername,
+} from '@/shared/auth/username';
 import { isOk, isErr } from '@/shared/types';
 
 describe('isValidUsername', () => {
@@ -95,7 +100,7 @@ describe('username claim/release (dev mode — localStorage)', () => {
     expect(await isUsernameAvailable('nick123')).toBe(true);
   });
 
-  it('releasing someone else\'s username does nothing', async () => {
+  it("releasing someone else's username does nothing", async () => {
     await claimUsername('nick123', 'uid-a');
     await releaseUsername('nick123', 'uid-b');
     // Still taken by uid-a
