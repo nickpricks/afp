@@ -5,6 +5,7 @@ import { AddExpense } from '@/modules/expenses/components/AddExpense';
 import { AddIncome } from '@/modules/expenses/components/AddIncome';
 import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
 import { useIncome } from '@/modules/expenses/hooks/useIncome';
+import { ROUTES } from '@/constants/routes';
 import type { ExpenseCategory, IncomeSource, PaymentMethod } from '@/shared/types';
 
 type AddTab = 'expense' | 'income';
@@ -31,7 +32,7 @@ export function AddExpensePage() {
       paymentMethod: input.paymentMethod ?? undefined,
     });
     if (success) {
-      navigate('/expenses', { replace: true });
+      navigate(ROUTES.BUDGET, { replace: true });
     }
     return success;
   }
@@ -46,7 +47,7 @@ export function AddExpensePage() {
   }): Promise<boolean> {
     const success = await addIncome(input);
     if (success) {
-      navigate('/expenses', { replace: true });
+      navigate(ROUTES.BUDGET, { replace: true });
     }
     return success;
   }
