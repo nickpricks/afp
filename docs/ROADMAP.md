@@ -18,7 +18,8 @@ Last updated: 2026-04-14
 | Notifications | ✅ Done | 20/20 | Per-user notifications, module requests, admin alerts, Broadcasts tab |
 | Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
 | Phase 2g (E2E + Bench) | ✅ Done | 8/8 | Interactive E2E flows + build/bundle/test benchmarks |
-| **Total** | **~95%** | **184/198** | |
+| Phase 3 (Baby → Kid) | 🚧 In progress | 2/10 | Plans 1 (Foundation) + 2 (Suggestions) done. Plans 3-9 designed, Plan 10 (Yoga) added |
+| **Total** | **~95%** | **186/208** | |
 
 ---
 
@@ -126,7 +127,7 @@ All P0 items completed.
 
 ## P3 — Future
 
-> **Next session:** Brainstorm Phase 3 features (needed → desired). Scan source repos (BabyTracker, Floor-Tracker, Finularity) for feature ideas to port. See CLAUDE.md and per-repo roadmaps.
+> **Current focus:** Phase 3 Baby → Kid. Plans 1-2 complete. Next up: Plan 3 (Elimination — migration + combined diaper/potty log), Plans 4-7 (Meals, Needs, Milestones, Life Journal). Plans 8-9 (Smart Alerts, Export/Import) deferred. Plan 10 (Yoga — Body module) awaiting brainstorm.
 
 ### Module Evolution
 
@@ -150,6 +151,19 @@ All P0 items completed.
 ---
 
 ## Done
+
+### 2026-04-15 — Session 10 (Phase 2g E2E, prod fixes, Phase 3 Plans 1-2)
+
+- [x] Phase 2g: 5 E2E interaction flows + build bench script (v0.2.6 tag)
+- [x] Prod fix: expense redirect `/expenses` → `/budget`
+- [x] Prod fix: `firestore.indexes.json` collectionGroup index for `useAllUsers`
+- [x] CI workflow: `firebase-rules.yml` deploys indexes + rules together
+- [x] Firebase data structure doc (`docs/firebase-data-structure.md`)
+- [x] Phase 3 Plan 1 (Foundation) — 8 enums, 5 types, stage.ts, 9 tests
+- [x] Phase 3 Plan 2 (Suggestions) — `computeActiveSuggestions` + 2 hooks + 2 UI components + 3 integration surfaces (Layout toast, Dashboard banner, ChildDetail strip)
+- [x] Phase 3 Plan 10 (Yoga) — plan file added, awaiting brainstorm
+- [x] Enum improvements: `PottyType` → `PottyTrainingEvent`, `MealPortion` expanded 5→7 values
+- [x] Unit tests: 320 → 384 (+64)
 
 ### 2026-04-14 — Session 9 (Notifications, module requests, Phase 3 brainstorm)
 

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 
 import { SyncStatusIndicator } from '@/shared/components/SyncStatus';
@@ -7,8 +8,12 @@ import { GoogleSignInButton } from '@/shared/components/GoogleSignInButton';
 import { AlertBanner } from '@/shared/components/AlertBanner';
 import { useAuth } from '@/shared/auth/useAuth';
 import { useNotifications } from '@/shared/hooks/useNotifications';
+import { useChildren } from '@/modules/baby/hooks/useChildren';
+import { useAllSuggestions } from '@/modules/baby/hooks/useSuggestions';
+import { useToast } from '@/shared/errors/useToast';
 import { isFirebaseConfigured } from '@/shared/auth/firebase-config';
-import { ROUTES } from '@/constants/routes';
+import { AppPath, ROUTES } from '@/constants/routes';
+import { ToastType } from '@/shared/types';
 import { LoadingScreen } from '@/shared/components/loading/LoadingScreen';
 import { useMinDelay } from '@/shared/hooks/useMinDelay';
 import { ConsoleOverlay } from '@/shared/components/ConsoleViewer';
@@ -22,6 +27,25 @@ export function Layout() {
   const minDelayActive = useMinDelay(isFirebaseConfigured ? 1000 : 0);
   const { entries, clear } = useConsoleCapture();
   const { activeAlerts, unreadCount, dismiss } = useNotifications();
+  const { children } = useChildren();
+  const allSuggestions = useAllSuggestions(children);
+  const { addToast } = useToast();
+  const toastShownRef = useRef(false);
+
+  useEffect(() => {
+    if (toastShownRef.current) return;
+    if (allSuggestions.length === 0) return;
+    toastShownRef.current = true;
+    const first = allSuggestions[0]!;
+    const message =
+      allSuggestions.length === 1
+        ? `1 suggestion for ${first.childName}`
+        : `${allSuggestions.length} suggestions across your children`;
+    addToast(message, ToastType.Info, {
+      action: { label: 'View', onClick: () => navigate(AppPath.Home) },
+      durationMs: 6000,
+    });
+  }, [allSuggestions, addToast, navigate]);
 
   if (isLoading || minDelayActive) {
     return <LoadingScreen />;

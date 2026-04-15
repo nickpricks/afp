@@ -1,16 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { doc, updateDoc } from 'firebase/firestore';
 
 import { useAuth } from '@/shared/auth/useAuth';
 import { AdminClaim } from '@/shared/components/AdminClaim';
 import { DashboardCard } from '@/shared/components/DashboardCard';
 import { isAppClaimed } from '@/shared/auth/the-admin-nick';
-import { isFirebaseConfigured } from '@/shared/auth/firebase-config';
+import { isFirebaseConfigured, db } from '@/shared/auth/firebase-config';
 import { useBodyData } from '@/modules/body/hooks/useBodyData';
 import { useBodyConfig } from '@/modules/body/hooks/useBodyConfig';
 import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
 import { useIncome } from '@/modules/expenses/hooks/useIncome';
 import { useChildren } from '@/modules/baby/hooks/useChildren';
+import { useAllSuggestions } from '@/modules/baby/hooks/useSuggestions';
+import { SuggestionBanner } from '@/modules/baby/components/SuggestionBanner';
+import { configFieldFor, SuggestionAction } from '@/modules/baby/suggestions';
+import type { SuggestionFeature } from '@/modules/baby/suggestions';
 import { computeTotalSpent, computeTotalIncome } from '@/modules/expenses/budget-math';
 import { useAllUsers } from '@/admin/hooks/useAllUsers';
 import { UserRole, ModuleId } from '@/shared/types';
@@ -64,6 +69,20 @@ export function Dashboard() {
   const { expenses } = useExpenses(targetUid);
   const { income } = useIncome(targetUid);
   const { children } = useChildren(targetUid);
+  const allSuggestions = useAllSuggestions(children);
+
+  /** Applies a suggestion by updating the target child's config flag */
+  const applySuggestion = useCallback(
+    async (childId: string, feature: SuggestionFeature, action: SuggestionAction) => {
+      if (!firebaseUser) return;
+      const recommendOn = action === SuggestionAction.Enable;
+      const field = configFieldFor(feature);
+      const uidForWrite = targetUid ?? firebaseUser.uid;
+      const ref = doc(db, `users/${uidForWrite}/children/${childId}`);
+      await updateDoc(ref, { [`config.${field}`]: recommendOn });
+    },
+    [firebaseUser, targetUid],
+  );
 
   const modules = profile?.modules;
 
@@ -135,6 +154,11 @@ export function Dashboard() {
         </h2>
         <p className="text-sm text-fg-muted mt-0.5">{formatDayDate(todayStr())}</p>
       </div>
+
+      {/* Age-based suggestions for baby module */}
+      {modules[ModuleId.Baby] && (
+        <SuggestionBanner suggestions={allSuggestions} onAct={applySuggestion} />
+      )}
 
       {/* Module cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

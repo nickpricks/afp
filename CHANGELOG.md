@@ -4,6 +4,23 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [pre-0.2.7] — 2026-04-15 (Phase 3 Baby → Kid, Plans 1-2)
+
+### Added
+- **Plan 1 (Foundation)**: 8 new enums (`EliminationMode`, `PottyTrainingEvent`, `MealType`, `MealPortion`, `NeedCategory`, `NeedStatus`, `MilestoneCategory`, `ChildStage`). New types: `EliminationEntry`, `MealEntry`, `NeedEntry`, `Milestone`, `SuggestionSnooze`. Extended `ChildConfig` with optional `meals`, `potty`, `milestones`, `needs`. Extended `Child` with optional `suggestionState`. New `src/modules/baby/stage.ts` with `computeStage()`, `monthsOldFromDob()`, `STAGE_BOUNDARIES`, `SUGGEST_THRESHOLDS`, `SUGGESTION_SNOOZE_DAYS`.
+- **Plan 2 (Suggestions)**: Age-based suggestion system with three rendering surfaces — session toast in `Layout`, `SuggestionBanner` on Dashboard (when Baby module enabled), `SuggestionStrip` in `ChildDetail`. 30-day snooze persistence via `useSnooze` hook writing to `child.suggestionState`. Suggests enabling meals at 9mo, potty at 24mo, disabling feeds after 18mo, disabling diapers after 30mo.
+- **Yoga plan** (`docs/plans/2026-04-15-phase3-body-yoga-plan.md`): Plan 10 — duration-based Body module activity with asana selector (requires brainstorm before implementation).
+
+### Changed
+- `MealPortion` expanded from 5 → 7 values: `None, Bite, Little, Some, Most, All, Extra` — finer granularity between None and Most.
+- `PottyType` → `PottyTrainingEvent` (more accurate — includes both on-potty successes and off-potty accidents). Field in `EliminationEntry` renamed from `pottyType` to `pottyEvent`.
+- `BabyMsg` enum: +3 entries (`SuggestionSnoozed`, `SuggestionEnabled`, `SuggestionDisabled`).
+
+### Docs
+- Spec and plan docs updated to match code: `phase3-baby-to-kid-design.md`, `phase3-baby-foundation-plan.md`, `phase3-baby-meals-plan.md`, `phase3-baby-elimination-plan.md`.
+
+---
+
 ## [0.2.6] — 2026-04-15
 
 ### Added

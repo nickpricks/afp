@@ -49,8 +49,8 @@ export enum EliminationMode {
   Potty = 1,
 }
 
-/** Potty event type (used when mode === Potty) */
-export enum PottyType {
+/** Potty training event — captures both successes (on potty) and accidents (off potty) */
+export enum PottyTrainingEvent {
   Pee = 0,
   Poop = 1,
   Both = 2,
@@ -66,13 +66,15 @@ export enum MealType {
   Snack = 3,
 }
 
-/** Portion eaten — qualitative scale */
+/** Portion eaten — qualitative scale (0=refused, 6=seconds) */
 export enum MealPortion {
-  None = 0,
-  Some = 1,
-  Most = 2,
-  All = 3,
-  Extra = 4,
+  None = 0,    // 0% — refused
+  Bite = 1,    // ~10% — took a single bite/taste
+  Little = 2,  // ~25% — took a little
+  Some = 3,    // ~50% — about half
+  Most = 4,    // ~75%
+  All = 5,     // 100%
+  Extra = 6,   // >100% — seconds
 }
 
 /** Need category */
@@ -112,7 +114,7 @@ export type EliminationEntry = {
   time: string;
   mode: EliminationMode;
   diaperType?: DiaperType;
-  pottyType?: PottyType;
+  pottyEvent?: PottyTrainingEvent;
   timestamp: string;
   createdAt: string;
   notes: string;
@@ -214,7 +216,7 @@ cd /Users/nick/Projects/Github/afp
 git add src/modules/baby/types.ts
 git commit -m "feat(baby): extend types for stage-aware modules
 
-- Add EliminationMode, PottyType, MealType, MealPortion, NeedCategory, NeedStatus, MilestoneCategory, ChildStage enums
+- Add EliminationMode, PottyTrainingEvent, MealType, MealPortion, NeedCategory, NeedStatus, MilestoneCategory, ChildStage enums
 - Add EliminationEntry, MealEntry, NeedEntry, Milestone, SuggestionSnooze types
 - Extend ChildConfig with meals, potty, milestones, needs flags
 - Extend Child with optional suggestionState

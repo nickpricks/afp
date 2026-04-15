@@ -199,7 +199,7 @@ enum DiaperType {
   Mixed = 2,
 }
 
-enum PottyType {
+enum PottyTrainingEvent {
   Pee      = 0,
   Poop     = 1,
   Both     = 2,
@@ -212,8 +212,8 @@ type EliminationEntry = {
   date: string;
   time: string;
   mode: EliminationMode;
-  diaperType?: DiaperType; // only when mode === Diaper
-  pottyType?:  PottyType;  // only when mode === Potty
+  diaperType?: DiaperType;           // only when mode === Diaper
+  pottyEvent?: PottyTrainingEvent;   // only when mode === Potty
   timestamp: string;
   createdAt: string;
   notes: string;
@@ -254,11 +254,13 @@ enum MealType {
 }
 
 enum MealPortion {
-  None    = 0,  // refused to eat
-  Some    = 1,  // partial
-  Most    = 2,  // most of it
-  All     = 3,  // finished
-  Extra   = 4,  // asked for more
+  None    = 0,  // 0% — refused
+  Bite    = 1,  // ~10% — took a single bite/taste
+  Little  = 2,  // ~25% — took a little
+  Some    = 3,  // ~50% — about half
+  Most    = 4,  // ~75%
+  All     = 5,  // 100%
+  Extra   = 6,  // >100% — seconds
 }
 
 type MealEntry = {
@@ -586,9 +588,9 @@ All new types, enums, and schema additions consolidated for quick lookup.
 |---|---|---|
 | `ChildStage` | Infant, Toddler, Kid | Stage label (computed, not stored) |
 | `EliminationMode` | Diaper, Potty | Discriminator on `EliminationEntry` |
-| `PottyType` | Pee, Poop, Both, Accident, Attempt | Potty mode of EliminationEntry |
+| `PottyTrainingEvent` | Pee, Poop, Both, Accident, Attempt | Potty mode of EliminationEntry |
 | `MealType` | Breakfast, Lunch, Dinner, Snack | MealEntry |
-| `MealPortion` | None, Some, Most, All, Extra | MealEntry (optional field) |
+| `MealPortion` | None, Bite, Little, Some, Most, All, Extra | MealEntry (optional field) |
 | `MilestoneCategory` | Motor, Language, Social, Cognitive, Hobby, Other | Milestone |
 | `NeedCategory` | Apparel, Footwear, School, Toys, Books, Other | NeedEntry |
 | `NeedStatus` | Wishlist, Inventory, Outgrown | NeedEntry |
@@ -597,7 +599,7 @@ All new types, enums, and schema additions consolidated for quick lookup.
 
 | Type | Subcollection | Key fields |
 |---|---|---|
-| `EliminationEntry` | `elimination` (renamed from `diapers`) | mode, diaperType?, pottyType? |
+| `EliminationEntry` | `elimination` (renamed from `diapers`) | mode, diaperType?, pottyEvent? |
 | `MealEntry` | `meals` (new) | type, description, portion |
 | `Milestone` | `milestones` (new) | category, title, mediaUrl? |
 | `NeedEntry` | `needs` (new) | category, status, title |
