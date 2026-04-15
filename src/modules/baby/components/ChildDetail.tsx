@@ -6,6 +6,7 @@ import { FeedLog } from '@/modules/baby/components/FeedLog';
 import { SleepLog } from '@/modules/baby/components/SleepLog';
 import { GrowthLog } from '@/modules/baby/components/GrowthLog';
 import { EliminationLog } from '@/modules/baby/components/EliminationLog';
+import { MealsLog } from '@/modules/baby/components/MealsLog';
 import { SuggestionStrip } from '@/modules/baby/components/SuggestionStrip';
 import { useChildren } from '@/modules/baby/hooks/useChildren';
 import { useSuggestions } from '@/modules/baby/hooks/useSuggestions';
@@ -18,7 +19,7 @@ import { computeAge } from '@/modules/baby/utils';
 import { ROUTES } from '@/constants/routes';
 
 /** Tab identifiers for the child detail view */
-type TabId = 'dashboard' | 'feeding' | 'sleep' | 'growth' | 'diapers';
+type TabId = 'dashboard' | 'feeding' | 'sleep' | 'growth' | 'diapers' | 'meals';
 
 /** Tab definition with id, label, and visibility flag */
 type TabDef = { id: TabId; label: string; visible: boolean };
@@ -75,6 +76,7 @@ function ChildDetailInner({ child, siblings, uid, onBack }: { child: Child; sibl
     { id: 'sleep', label: 'Sleep', visible: child.config.sleep },
     { id: 'growth', label: 'Growth', visible: child.config.growth },
     { id: 'diapers', label: eliminationLabel, visible: diapersOn || pottyOn },
+    { id: 'meals', label: 'Meals', visible: child.config.meals ?? false },
   ];
 
   const visibleTabs = tabs.filter((t) => t.visible);
@@ -173,6 +175,7 @@ function ChildDetailInner({ child, siblings, uid, onBack }: { child: Child; sibl
           pottyEnabled={pottyOn}
         />
       )}
+      {activeTab === 'meals' && <MealsLog childId={childId} siblingIds={siblingIds} uid={uid} />}
     </div>
   );
 }
@@ -208,6 +211,11 @@ child.config.growth && (
         {
 (diapersOn || pottyOn) && (
           <SummaryCard label={eliminationLabel} icon={eliminationIcon} description={eliminationDescription} onClick={() => onNavigate('diapers')} />
+        )
+}
+        {
+child.config.meals && (
+          <SummaryCard label="Meals" icon="🍽" description="Log meals" onClick={() => onNavigate('meals')} />
         )
 }
       </div>

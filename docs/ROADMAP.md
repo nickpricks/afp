@@ -18,8 +18,8 @@ Last updated: 2026-04-14
 | Notifications | ✅ Done | 20/20 | Per-user notifications, module requests, admin alerts, Broadcasts tab |
 | Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
 | Phase 2g (E2E + Bench) | ✅ Done | 8/8 | Interactive E2E flows + build/bundle/test benchmarks |
-| Phase 3 (Baby → Kid) | 🚧 In progress | 3/10 | Plans 1 (Foundation) + 2 (Suggestions) + 3 (Elimination) done. Plans 4-9 designed, Plan 10 (Yoga) added |
-| **Total** | **~96%** | **187/208** | |
+| Phase 3 (Baby → Kid) | 🚧 In progress | 4/10 | Plans 1 (Foundation) + 2 (Suggestions) + 3 (Elimination) + 4 (Meals) done. Plans 5-9 designed, Plan 10 (Yoga) added |
+| **Total** | **~96%** | **188/208** | |
 
 ---
 
@@ -127,7 +127,7 @@ All P0 items completed.
 
 ## P3 — Future
 
-> **Current focus:** Phase 3 Baby → Kid. Plans 1-3 complete. Next up: Plans 4-7 (Meals, Needs, Milestones, Life Journal). Plans 8-9 (Smart Alerts, Export/Import) deferred. Plan 10 (Yoga — Body module) awaiting brainstorm.
+> **Current focus:** Phase 3 Baby → Kid. Plans 1-4 complete. Next up: Plans 5-7 (Needs, Milestones, Life Journal). Plans 8-9 (Smart Alerts, Export/Import) deferred. Plan 10 (Yoga — Body module) awaiting brainstorm.
 
 ### Module Evolution
 

@@ -4,6 +4,8 @@ import {
   SleepQuality,
   DiaperType,
   PottyTrainingEvent,
+  MealType,
+  MealPortion,
 } from '@/modules/baby/types';
 
 /** Display labels for feed types, keyed by enum value */
@@ -73,6 +75,44 @@ export const ALL_POTTY_EVENTS: readonly PottyTrainingEvent[] = [
   PottyTrainingEvent.Both,
   PottyTrainingEvent.Accident,
   PottyTrainingEvent.Attempt,
+];
+
+/** Display labels for meal types, keyed by enum value */
+export const MEAL_TYPE_LABELS: Record<MealType, string> = {
+  [MealType.Breakfast]: 'Breakfast',
+  [MealType.Lunch]: 'Lunch',
+  [MealType.Dinner]: 'Dinner',
+  [MealType.Snack]: 'Snack',
+};
+
+/** All meal type enum values in display order */
+export const ALL_MEAL_TYPES: readonly MealType[] = [
+  MealType.Breakfast,
+  MealType.Lunch,
+  MealType.Dinner,
+  MealType.Snack,
+];
+
+/** Display labels for meal portion sizes, keyed by enum value */
+export const MEAL_PORTION_LABELS: Record<MealPortion, string> = {
+  [MealPortion.None]: 'None — refused',
+  [MealPortion.Bite]: 'Bite (~10%)',
+  [MealPortion.Little]: 'Little (~25%)',
+  [MealPortion.Some]: 'Some (~50%)',
+  [MealPortion.Most]: 'Most (~75%)',
+  [MealPortion.All]: 'All (100%)',
+  [MealPortion.Extra]: 'Extra (seconds)',
+};
+
+/** All meal portion enum values in display order */
+export const ALL_MEAL_PORTIONS: readonly MealPortion[] = [
+  MealPortion.None,
+  MealPortion.Bite,
+  MealPortion.Little,
+  MealPortion.Some,
+  MealPortion.Most,
+  MealPortion.All,
+  MealPortion.Extra,
 ];
 
 /** Default child config with all tracking modules enabled */

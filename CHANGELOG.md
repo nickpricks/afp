@@ -4,6 +4,24 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [pre-0.2.9] — 2026-04-15 (Phase 3 Plan 4 — Meals Module)
+
+### Added
+- **Plan 4 (Meals)**: New `meals` subcollection at `users/{uid}/children/{childId}/meals/{id}`. `MealsLog.tsx` component with full feature parity to other Baby logs (form-at-top, tap-to-edit, 10s undo-delete, pagination, sibling logging, "All" toggle).
+- **Auto-suggest meal type from current hour**: Breakfast (<10), Lunch (<14), Dinner (<19), Snack (>=19). Picks the right tab's pre-selected chip when opened.
+- **Optional portion** field (None / Bite / Little / Some / Most / All / Extra) — keyed off the 7-value `MealPortion` enum from Plan 1.
+- **AddChild form**: optional Meals checkbox (default off — auto-flipped by suggestion engine at 9 months).
+- **ChildDetail**: new Meals tab + dashboard SummaryCard, both gated by `child.config.meals`.
+- **Constants**: `DbSubcollection.Meals = 'meals'`, `BabyMsg.MealAdded`/`MealDeleted`/`MealDescriptionRequired`, `MEAL_TYPE_LABELS`, `ALL_MEAL_TYPES`, `MEAL_PORTION_LABELS`, `ALL_MEAL_PORTIONS`.
+
+### Tests
+- 6 new tests (rendering + form behavior + meal type chips) — total 405 unit (was 399).
+
+### Docs
+- ROADMAP, CHANGELOG, CLAUDE.md updated.
+
+---
+
 ## [pre-0.2.8] — 2026-04-15 (Phase 3 Plan 3 — Combined Diaper/Potty)
 
 ### Added
