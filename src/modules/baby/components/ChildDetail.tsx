@@ -9,6 +9,7 @@ import { EliminationLog } from '@/modules/baby/components/EliminationLog';
 import { MealsLog } from '@/modules/baby/components/MealsLog';
 import { NeedsLog } from '@/modules/baby/components/NeedsLog';
 import { MilestonesLog } from '@/modules/baby/components/MilestonesLog';
+import { LifeJournalView } from '@/modules/baby/components/LifeJournalView';
 import { SuggestionStrip } from '@/modules/baby/components/SuggestionStrip';
 import { useChildren } from '@/modules/baby/hooks/useChildren';
 import { useSuggestions } from '@/modules/baby/hooks/useSuggestions';
@@ -21,7 +22,16 @@ import { computeAge } from '@/modules/baby/utils';
 import { ROUTES } from '@/constants/routes';
 
 /** Tab identifiers for the child detail view */
-type TabId = 'dashboard' | 'feeding' | 'sleep' | 'growth' | 'diapers' | 'meals' | 'needs' | 'milestones';
+type TabId =
+  | 'dashboard'
+  | 'journal'
+  | 'feeding'
+  | 'sleep'
+  | 'growth'
+  | 'diapers'
+  | 'meals'
+  | 'needs'
+  | 'milestones';
 
 /** Tab definition with id, label, and visibility flag */
 type TabDef = { id: TabId; label: string; visible: boolean };
@@ -74,6 +84,7 @@ function ChildDetailInner({ child, siblings, uid, onBack }: { child: Child; sibl
     diapersOn && pottyOn ? 'Elimination' : pottyOn ? 'Potty' : 'Diapers';
   const tabs: TabDef[] = [
     { id: 'dashboard', label: 'Dashboard', visible: true },
+    { id: 'journal', label: 'Journal', visible: true },
     { id: 'feeding', label: 'Feeding', visible: child.config.feeding },
     { id: 'sleep', label: 'Sleep', visible: child.config.sleep },
     { id: 'growth', label: 'Growth', visible: child.config.growth },
@@ -167,6 +178,7 @@ function ChildDetailInner({ child, siblings, uid, onBack }: { child: Child; sibl
 
       {/* Tab Content */}
       {activeTab === 'dashboard' && <DashboardTab child={child} onNavigate={setActiveTab} />}
+      {activeTab === 'journal' && <LifeJournalView child={child} />}
       {activeTab === 'feeding' && <FeedLog childId={childId} siblingIds={siblingIds} uid={uid} />}
       {activeTab === 'sleep' && <SleepLog childId={childId} siblingIds={siblingIds} uid={uid} />}
       {activeTab === 'growth' && <GrowthLog childId={childId} siblingIds={siblingIds} uid={uid} />}
