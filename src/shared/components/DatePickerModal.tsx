@@ -35,9 +35,7 @@ export function DatePickerModal({
         className="w-full max-w-xs rounded-xl bg-surface-card border border-line p-5 shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-sm font-semibold text-fg mb-3">
-          {title ?? 'Add missing day'}
-        </h3>
+        <h3 className="text-sm font-semibold text-fg mb-3">{title ?? 'Add missing day'}</h3>
 
         <input
           type="date"

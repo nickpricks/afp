@@ -28,11 +28,14 @@ import {
 function BenchButton({ label, onClick }: { label: string; onClick: (date?: string) => string }) {
   const [flash, setFlash] = useState<string | null>(null);
 
-  const fire = useCallback((count: number) => {
-    const msg = count === 1 ? onClick() : bulkRun(onClick, count, label);
-    setFlash(msg);
-    setTimeout(() => setFlash(null), 2000);
-  }, [onClick, label]);
+  const fire = useCallback(
+    (count: number) => {
+      const msg = count === 1 ? onClick() : bulkRun(onClick, count, label);
+      setFlash(msg);
+      setTimeout(() => setFlash(null), 2000);
+    },
+    [onClick, label],
+  );
 
   return (
     <div className="flex flex-col gap-1">
@@ -77,10 +80,13 @@ function UserProfilePanel() {
   const json = JSON.stringify(profile, null, 2);
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(json).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }).catch((e) => console.error('[AFP] Clipboard copy failed:', e));
+    navigator.clipboard
+      .writeText(json)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch((e) => console.error('[AFP] Clipboard copy failed:', e));
   }, [json]);
 
   return (
@@ -93,26 +99,24 @@ function UserProfilePanel() {
         <span className="text-[10px]">{open ? '▼' : '▶'}</span>
         <span>User Profile</span>
       </button>
-      {
-        open && (
-          <div className="rounded-lg bg-surface border border-line p-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-fg-muted font-mono">UID: {uid}</span>
-              <button
-                type="button"
-                onClick={handleCopy}
-                className="px-2 py-0.5 rounded text-[10px] font-medium bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
-              >
-                {copied ? 'Copied!' : 'Copy JSON'}
-              </button>
-            </div>
-            <p className="text-[10px] text-fg-muted font-mono mb-2">{firestorePath}</p>
-            <pre className="text-[11px] font-mono text-fg leading-relaxed overflow-auto max-h-64 whitespace-pre-wrap break-words">
-              {json}
-            </pre>
+      {open && (
+        <div className="rounded-lg bg-surface border border-line p-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-fg-muted font-mono">UID: {uid}</span>
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="px-2 py-0.5 rounded text-[10px] font-medium bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
+            >
+              {copied ? 'Copied!' : 'Copy JSON'}
+            </button>
           </div>
-        )
-      }
+          <p className="text-[10px] text-fg-muted font-mono mb-2">{firestorePath}</p>
+          <pre className="text-[11px] font-mono text-fg leading-relaxed overflow-auto max-h-64 whitespace-pre-wrap break-words">
+            {json}
+          </pre>
+        </div>
+      )}
     </div>
   );
 }
@@ -150,24 +154,20 @@ export function DevBench() {
       <UserProfilePanel />
 
       {/* Body section */}
-      {
-        bodyConfig && (
-          <div className="mb-3">
-            <p className="text-xs font-semibold text-fg-muted mb-2">Body</p>
-            <div className="flex flex-wrap gap-2">
-              {bodyConfig.floors && <BenchButton label="+ Floors" onClick={benchFloors} />}
-              {bodyConfig.walking && <BenchButton label="+ Walk" onClick={benchWalk} />}
-              {bodyConfig.running && <BenchButton label="+ Run" onClick={benchRun} />}
-              {bodyConfig.cycling && <BenchButton label="+ Cycle" onClick={benchCycle} />}
-            </div>
+      {bodyConfig && (
+        <div className="mb-3">
+          <p className="text-xs font-semibold text-fg-muted mb-2">Body</p>
+          <div className="flex flex-wrap gap-2">
+            {bodyConfig.floors && <BenchButton label="+ Floors" onClick={benchFloors} />}
+            {bodyConfig.walking && <BenchButton label="+ Walk" onClick={benchWalk} />}
+            {bodyConfig.running && <BenchButton label="+ Run" onClick={benchRun} />}
+            {bodyConfig.cycling && <BenchButton label="+ Cycle" onClick={benchCycle} />}
           </div>
-        )
-      }
-      {
-        !bodyConfig && (
-          <p className="text-xs text-fg-muted mb-3">Body: configure first to unlock bench buttons</p>
-        )
-      }
+        </div>
+      )}
+      {!bodyConfig && (
+        <p className="text-xs text-fg-muted mb-3">Body: configure first to unlock bench buttons</p>
+      )}
 
       {/* Budget section */}
       <div className="mb-3">
@@ -190,11 +190,9 @@ export function DevBench() {
           <BenchButton label="+ Diaper" onClick={benchDiaper} />
           <BenchButton label="+ Growth" onClick={benchGrowth} />
         </div>
-        {
-          !hasChild && (
-            <p className="text-xs text-fg-muted mt-1">First press auto-creates a random child</p>
-          )
-        }
+        {!hasChild && (
+          <p className="text-xs text-fg-muted mt-1">First press auto-creates a random child</p>
+        )}
       </div>
     </div>
   );

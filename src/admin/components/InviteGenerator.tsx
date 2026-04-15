@@ -4,7 +4,14 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { useToast } from '@/shared/errors/useToast';
 import { useAllUsers } from '@/admin/hooks/useAllUsers';
 import { generateInviteCode, createInvite } from '@/shared/auth/invite';
-import { ModuleId, UserRole, ToastType, isOk, ALL_MODULES, type ModuleConfig } from '@/shared/types';
+import {
+  ModuleId,
+  UserRole,
+  ToastType,
+  isOk,
+  ALL_MODULES,
+  type ModuleConfig,
+} from '@/shared/types';
 import { InviteMsg, ValidationMsg } from '@/constants/messages';
 
 /** Form for generating invite links with module selection */
@@ -82,9 +89,14 @@ export function InviteGenerator() {
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => { setRole('user'); setViewerOf(''); }}
+              onClick={() => {
+                setRole('user');
+                setViewerOf('');
+              }}
               className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                role === 'user' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg border border-line'
+                role === 'user'
+                  ? 'bg-accent text-fg-on-accent'
+                  : 'bg-surface-card text-fg border border-line'
               }`}
             >
               User
@@ -93,7 +105,9 @@ export function InviteGenerator() {
               type="button"
               onClick={() => setRole('viewer')}
               className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                role === 'viewer' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg border border-line'
+                role === 'viewer'
+                  ? 'bg-accent text-fg-on-accent'
+                  : 'bg-surface-card text-fg border border-line'
               }`}
             >
               Viewer
@@ -101,8 +115,7 @@ export function InviteGenerator() {
           </div>
         </div>
 
-        {
-role === 'viewer' && (
+        {role === 'viewer' && (
           <div>
             <label htmlFor="viewer-of" className="block text-sm font-medium text-fg-muted mb-1">
               View of
@@ -114,23 +127,21 @@ role === 'viewer' && (
               className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-fg"
             >
               <option value="">Select user...</option>
-              {
-users
+              {users
                 .filter((u) => u.role !== UserRole.Viewer)
                 .map((u) => (
-                  <option key={u.uid} value={u.uid}>{u.name}</option>
-                ))
-}
+                  <option key={u.uid} value={u.uid}>
+                    {u.name}
+                  </option>
+                ))}
             </select>
           </div>
-        )
-}
+        )}
 
         <fieldset>
           <legend className="text-sm font-medium text-fg-muted mb-2">Modules</legend>
           <div className="flex flex-wrap gap-4">
-            {
-ALL_MODULES.map((id) => (
+            {ALL_MODULES.map((id) => (
               <label key={id} className="flex items-center gap-2 text-sm text-fg">
                 <input
                   type="checkbox"
@@ -140,8 +151,7 @@ ALL_MODULES.map((id) => (
                 />
                 <span className="capitalize">{id}</span>
               </label>
-            ))
-}
+            ))}
           </div>
         </fieldset>
 
@@ -155,16 +165,14 @@ ALL_MODULES.map((id) => (
         </button>
       </div>
 
-      {
-inviteLink && (
+      {inviteLink && (
         <div className="mt-6">
           <p className="text-sm font-medium text-fg-muted mb-1">Invite Link</p>
           <div className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-fg break-all select-all">
             {inviteLink}
           </div>
         </div>
-      )
-}
+      )}
     </section>
   );
 }

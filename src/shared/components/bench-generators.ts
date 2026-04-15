@@ -15,7 +15,7 @@ export const MAX_PER_DAY = 10;
 // ─── localStorage helpers (with error handling) ─────────────────────────────
 
 /** Reads a collection array from localStorage */
-export const read = <T,>(key: string): T[] => {
+export const read = <T>(key: string): T[] => {
   try {
     const raw = localStorage.getItem(key);
     return raw ? (JSON.parse(raw) as T[]) : [];
@@ -51,7 +51,7 @@ export const bulkPush = <T extends { id?: string }>(key: string, newItems: T[]):
 };
 
 /** Reads a single doc (stored as array with one element) */
-export const readDoc = <T,>(key: string): T | null => {
+export const readDoc = <T>(key: string): T | null => {
   const items = read<T>(key);
   return items[0] ?? null;
 };
@@ -63,7 +63,7 @@ export const rand = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
 /** Random element from array */
-export const pick = <T,>(arr: readonly T[]): T => arr[rand(0, arr.length - 1)] as T;
+export const pick = <T>(arr: readonly T[]): T => arr[rand(0, arr.length - 1)] as T;
 
 /** Date string N days ago from today */
 export const daysAgo = (n: number): string => {
@@ -177,7 +177,9 @@ export const benchExpense = (date?: string): string => {
   const cat = CATEGORIES[catId]!;
   const subCat = pick(cat.subCategories);
   const amount = rand(20, 5000);
-  const paymentMethods = Object.values(PaymentMethod).filter((v): v is PaymentMethod => typeof v === 'number');
+  const paymentMethods = Object.values(PaymentMethod).filter(
+    (v): v is PaymentMethod => typeof v === 'number',
+  );
   const now = new Date().toISOString();
   const expense: Expense = {
     id: crypto.randomUUID(),
@@ -219,11 +221,21 @@ export const benchSettlement = (date?: string): string => {
 
 /** Adds a random income entry */
 export const benchIncome = (date?: string): string => {
-  const sources = Object.values(IncomeSource).filter((v): v is IncomeSource => typeof v === 'number');
+  const sources = Object.values(IncomeSource).filter(
+    (v): v is IncomeSource => typeof v === 'number',
+  );
   const source = pick(sources);
-  const labels: Record<number, string> = { 0: 'Salary', 1: 'Business', 2: 'Interest', 3: 'Refund', 4: 'Other' };
+  const labels: Record<number, string> = {
+    0: 'Salary',
+    1: 'Business',
+    2: 'Interest',
+    3: 'Refund',
+    4: 'Other',
+  };
   const amount = rand(5000, 100000);
-  const paymentMethods = Object.values(PaymentMethod).filter((v): v is PaymentMethod => typeof v === 'number');
+  const paymentMethods = Object.values(PaymentMethod).filter(
+    (v): v is PaymentMethod => typeof v === 'number',
+  );
   const now = new Date().toISOString();
   const entry: Income = {
     id: crypto.randomUUID(),
@@ -271,8 +283,20 @@ export const ensureChild = (): string => {
 /** Adds a random feed entry */
 export const benchFeed = (date?: string): string => {
   const childId = ensureChild();
-  const type = pick([FeedType.Bottle, FeedType.BreastLeft, FeedType.BreastRight, FeedType.BreastBoth, FeedType.SolidFood]);
-  const labels: Record<number, string> = { 0: 'Bottle', 1: 'Breast L', 2: 'Breast R', 3: 'Breast Both', 4: 'Solid' };
+  const type = pick([
+    FeedType.Bottle,
+    FeedType.BreastLeft,
+    FeedType.BreastRight,
+    FeedType.BreastBoth,
+    FeedType.SolidFood,
+  ]);
+  const labels: Record<number, string> = {
+    0: 'Bottle',
+    1: 'Breast L',
+    2: 'Breast R',
+    3: 'Breast Both',
+    4: 'Solid',
+  };
   const entry: FeedEntry = {
     id: crypto.randomUUID(),
     date: date ?? pick([todayStr(), daysAgo(rand(1, 3))]),
@@ -354,7 +378,9 @@ export const bulkRun = (gen: (date?: string) => string, count: number, label: st
     const date = spreadDate(i);
     results.push({ '#': i + 1, date, result: gen(date) });
   }
-  console.groupCollapsed(`[DevBench] ${label} ×${count} (spread over ${Math.ceil(count / MAX_PER_DAY)} days)`);
+  console.groupCollapsed(
+    `[DevBench] ${label} ×${count} (spread over ${Math.ceil(count / MAX_PER_DAY)} days)`,
+  );
   console.table(results);
   console.groupEnd();
   return `${count} added over ${Math.ceil(count / MAX_PER_DAY)} days — see console`;

@@ -42,8 +42,7 @@ export enum DbField {
 }
 
 /** Builds user base path: `users/{uid}` */
-export const userPath = (uid: string): string =>
-  `${DbCollection.Users}/${uid}`;
+export const userPath = (uid: string): string => `${DbCollection.Users}/${uid}`;
 
 /** Builds child base path: `users/{uid}/children/{childId}` */
 export const childPath = (uid: string, childId: string): string =>

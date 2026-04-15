@@ -22,7 +22,9 @@ const EXTRA_PAYMENT_METHODS: PaymentMethod[] = [
 ];
 
 /** All income source enum values (filter out reverse-mapped strings from numeric enum) */
-const ALL_INCOME_SOURCES = Object.values(IncomeSource).filter((v) => typeof v === 'number') as IncomeSource[];
+const ALL_INCOME_SOURCES = Object.values(IncomeSource).filter(
+  (v) => typeof v === 'number',
+) as IncomeSource[];
 
 /** Form for adding a new income entry with source, amount, payment method, and note */
 export function AddIncome({
@@ -73,13 +75,11 @@ export function AddIncome({
         key={method}
         type="button"
         onClick={() => setPaymentMethod(method)}
-        className={
-`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+        className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
           isActive
             ? 'border-accent bg-accent text-fg-on-accent'
             : 'border-line bg-surface-card text-fg-muted hover:border-accent/50'
-        }`
-}
+        }`}
       >
         {label.emoji} {label.shortLabel}
       </button>
@@ -100,16 +100,14 @@ export function AddIncome({
         onChange={(e) => setSource(Number(e.target.value) as IncomeSource)}
         className="rounded-lg border border-line bg-surface-card px-3 py-2 text-fg"
       >
-        {
-ALL_INCOME_SOURCES.map((s) => {
+        {ALL_INCOME_SOURCES.map((s) => {
           const label = INCOME_SOURCE_LABELS[s];
           return (
             <option key={s} value={s}>
               {label.emoji} {label.label}
             </option>
           );
-        })
-}
+        })}
       </select>
 
       <div className="flex items-center gap-2">
@@ -130,11 +128,8 @@ ALL_INCOME_SOURCES.map((s) => {
         <span className="text-xs text-fg-muted">Payment Method</span>
         <div className="flex flex-wrap gap-1.5">
           {QUICK_PAYMENT_METHODS.map(renderMethodBubble)}
-          {
-showAllMethods && EXTRA_PAYMENT_METHODS.map(renderMethodBubble)
-}
-          {
-!showAllMethods && (
+          {showAllMethods && EXTRA_PAYMENT_METHODS.map(renderMethodBubble)}
+          {!showAllMethods && (
             <button
               type="button"
               onClick={() => setShowAllMethods(true)}
@@ -142,8 +137,7 @@ showAllMethods && EXTRA_PAYMENT_METHODS.map(renderMethodBubble)
             >
               More...
             </button>
-          )
-}
+          )}
         </div>
       </div>
 

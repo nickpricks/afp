@@ -1,9 +1,4 @@
-import {
-  createContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useEffect, useState, type ReactNode } from 'react';
 import {
   getRedirectResult,
   GoogleAuthProvider,
@@ -103,7 +98,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const profileRef = doc(db, DbCollection.Users, firebaseUser.uid, DbSubcollection.Profile, DbDoc.Main);
+    const profileRef = doc(
+      db,
+      DbCollection.Users,
+      firebaseUser.uid,
+      DbSubcollection.Profile,
+      DbDoc.Main,
+    );
 
     const unsubscribe = onSnapshot(
       profileRef,
@@ -128,17 +129,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isTheAdminNick = profile?.role === UserRole.TheAdminNick;
 
   return (
-    <AuthContext value={
-{
-      firebaseUser,
-      profile,
-      isTheAdminNick,
-      isLoading,
-      syncStatus,
-      setSyncStatus,
-      adminUid,
-    }
-}>
+    <AuthContext
+      value={{
+        firebaseUser,
+        profile,
+        isTheAdminNick,
+        isLoading,
+        syncStatus,
+        setSyncStatus,
+        adminUid,
+      }}
+    >
       {children}
     </AuthContext>
   );

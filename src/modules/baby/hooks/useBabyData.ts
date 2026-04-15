@@ -17,9 +17,24 @@ export function useBabyData(childId: string | null, targetUid?: string) {
   const { setSyncStatus } = useAuth();
 
   const feedCol = useBabyCollection<FeedEntry>(childId, DbSubcollection.Feeds, 'Feed', targetUid);
-  const sleepCol = useBabyCollection<SleepEntry>(childId, DbSubcollection.Sleep, 'Sleep', targetUid);
-  const growthCol = useBabyCollection<GrowthEntry>(childId, DbSubcollection.Growth, 'Growth', targetUid);
-  const diaperCol = useBabyCollection<DiaperEntry>(childId, DbSubcollection.Diapers, 'Diaper', targetUid);
+  const sleepCol = useBabyCollection<SleepEntry>(
+    childId,
+    DbSubcollection.Sleep,
+    'Sleep',
+    targetUid,
+  );
+  const growthCol = useBabyCollection<GrowthEntry>(
+    childId,
+    DbSubcollection.Growth,
+    'Growth',
+    targetUid,
+  );
+  const diaperCol = useBabyCollection<DiaperEntry>(
+    childId,
+    DbSubcollection.Diapers,
+    'Diaper',
+    targetUid,
+  );
   const eliminationCol = useBabyCollection<EliminationEntry>(
     childId,
     DbSubcollection.Elimination,
@@ -31,11 +46,7 @@ export function useBabyData(childId: string | null, targetUid?: string) {
   useEffect(() => {
     if (!childId) return;
     const allReady =
-      feedCol.ready &&
-      sleepCol.ready &&
-      growthCol.ready &&
-      diaperCol.ready &&
-      eliminationCol.ready;
+      feedCol.ready && sleepCol.ready && growthCol.ready && diaperCol.ready && eliminationCol.ready;
     setSyncStatus(allReady ? SyncStatus.Synced : SyncStatus.Syncing);
   }, [
     childId,

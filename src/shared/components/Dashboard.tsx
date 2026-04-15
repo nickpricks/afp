@@ -60,8 +60,8 @@ export function Dashboard() {
 
   // Target user's name for viewer banner
   const targetName = targetUid
-    ? users.find((u) => u.uid === targetUid)?.name ?? 'another user'
-    : profile?.name ?? '';
+    ? (users.find((u) => u.uid === targetUid)?.name ?? 'another user')
+    : (profile?.name ?? '');
 
   // Module data — hooks use targetUid for scoping
   const { config: bodyConfig } = useBodyConfig(targetUid);
@@ -107,45 +107,41 @@ export function Dashboard() {
 
   // Baby card: option B — child count
   const childCount = children.length;
-  const babyMetric = childCount === 0 ? 'No children' : `${childCount} ${childCount === 1 ? 'child' : 'children'}`;
-  const babySubtitle = childCount > 0
-    ? children.map((c) => c.name).join(', ')
-    : 'Add a child to get started';
+  const babyMetric =
+    childCount === 0 ? 'No children' : `${childCount} ${childCount === 1 ? 'child' : 'children'}`;
+  const babySubtitle =
+    childCount > 0 ? children.map((c) => c.name).join(', ') : 'Add a child to get started';
 
   return (
     <div className="flex flex-col gap-4">
       {/* Admin user selector */}
-      {
-        isTheAdminNick && users.length > 0 && (
-          <div className="flex items-center gap-2 rounded-full bg-surface-card border border-line px-3 py-1.5 w-fit">
-            <span className="text-xs text-fg-muted">Viewing</span>
-            <select
-              value={selectedUid ?? ownUid}
-              onChange={(e) => handleUserSelect(e.target.value)}
-              className="bg-transparent text-sm font-medium text-fg appearance-none cursor-pointer"
-            >
-              <option value={ownUid}>My Data</option>
-              {
-                users
-                  .filter((u) => u.uid !== ownUid)
-                  .map((u) => (
-                    <option key={u.uid} value={u.uid}>{u.name}</option>
-                  ))
-              }
-            </select>
-          </div>
-        )
-      }
+      {isTheAdminNick && users.length > 0 && (
+        <div className="flex items-center gap-2 rounded-full bg-surface-card border border-line px-3 py-1.5 w-fit">
+          <span className="text-xs text-fg-muted">Viewing</span>
+          <select
+            value={selectedUid ?? ownUid}
+            onChange={(e) => handleUserSelect(e.target.value)}
+            className="bg-transparent text-sm font-medium text-fg appearance-none cursor-pointer"
+          >
+            <option value={ownUid}>My Data</option>
+            {users
+              .filter((u) => u.uid !== ownUid)
+              .map((u) => (
+                <option key={u.uid} value={u.uid}>
+                  {u.name}
+                </option>
+              ))}
+          </select>
+        </div>
+      )}
 
       {/* Viewer banner */}
-      {
-        profile.role === UserRole.Viewer && (
-          <div className="flex items-center justify-center gap-2 rounded-lg bg-[var(--accent-muted)] px-4 py-2">
-            <span className="text-xs">👁</span>
-            <span className="text-sm text-accent font-medium">Viewing {targetName}'s data</span>
-          </div>
-        )
-      }
+      {profile.role === UserRole.Viewer && (
+        <div className="flex items-center justify-center gap-2 rounded-lg bg-[var(--accent-muted)] px-4 py-2">
+          <span className="text-xs">👁</span>
+          <span className="text-sm text-accent font-medium">Viewing {targetName}'s data</span>
+        </div>
+      )}
 
       {/* Greeting */}
       <div>
@@ -162,43 +158,37 @@ export function Dashboard() {
 
       {/* Module cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {
-          modules[ModuleId.Body] && (
-            <DashboardCard
-              title="Body"
-              icon="💪"
-              metric={String(todayRecord?.total ?? 0)}
-              subtitle={
-                bodyConfig.floors
-                  ? `${todayRecord?.up ?? 0} up / ${todayRecord?.down ?? 0} down`
-                  : 'No floors configured'
-              }
-              to={ROUTES.BODY}
-            />
-          )
-        }
-        {
-          modules[ModuleId.Budget] && (
-            <DashboardCard
-              title="Budget"
-              icon="💰"
-              metric={`${CONFIG.CURRENCY_SYMBOL}${totalSpent.toLocaleString()}`}
-              subtitle={`Remaining: ${CONFIG.CURRENCY_SYMBOL}${remaining.toLocaleString()}`}
-              to={ROUTES.BUDGET}
-            />
-          )
-        }
-        {
-          modules[ModuleId.Baby] && (
-            <DashboardCard
-              title="Baby"
-              icon="👶"
-              metric={babyMetric}
-              subtitle={babySubtitle}
-              to={ROUTES.BABY}
-            />
-          )
-        }
+        {modules[ModuleId.Body] && (
+          <DashboardCard
+            title="Body"
+            icon="💪"
+            metric={String(todayRecord?.total ?? 0)}
+            subtitle={
+              bodyConfig.floors
+                ? `${todayRecord?.up ?? 0} up / ${todayRecord?.down ?? 0} down`
+                : 'No floors configured'
+            }
+            to={ROUTES.BODY}
+          />
+        )}
+        {modules[ModuleId.Budget] && (
+          <DashboardCard
+            title="Budget"
+            icon="💰"
+            metric={`${CONFIG.CURRENCY_SYMBOL}${totalSpent.toLocaleString()}`}
+            subtitle={`Remaining: ${CONFIG.CURRENCY_SYMBOL}${remaining.toLocaleString()}`}
+            to={ROUTES.BUDGET}
+          />
+        )}
+        {modules[ModuleId.Baby] && (
+          <DashboardCard
+            title="Baby"
+            icon="👶"
+            metric={babyMetric}
+            subtitle={babySubtitle}
+            to={ROUTES.BABY}
+          />
+        )}
       </div>
     </div>
   );

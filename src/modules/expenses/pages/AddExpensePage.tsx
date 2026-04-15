@@ -58,26 +58,18 @@ export function AddExpensePage() {
         <button
           type="button"
           onClick={() => setActiveTab('expense')}
-          className={
-`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-            activeTab === 'expense'
-              ? 'bg-accent text-fg-on-accent'
-              : 'text-fg-muted hover:text-fg'
-          }`
-}
+          className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            activeTab === 'expense' ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'
+          }`}
         >
           Expense
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('income')}
-          className={
-`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-            activeTab === 'income'
-              ? 'bg-accent text-fg-on-accent'
-              : 'text-fg-muted hover:text-fg'
-          }`
-}
+          className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            activeTab === 'income' ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'
+          }`}
         >
           Income
         </button>

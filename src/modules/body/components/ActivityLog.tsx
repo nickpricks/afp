@@ -61,61 +61,74 @@ export function ActivityLog({
     <div className="flex flex-col gap-1">
       <h3 className="text-xs font-medium text-fg-muted uppercase tracking-wide">Activities</h3>
       <ul className="flex flex-col gap-1">
-        {
-          visible.map((a) => {
-            const isActive = editingId === a.id;
-            const rowContent = (
-              <div
-                className={
-                  `flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer ${
-                    isActive
-                      ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border border-line'
-                      : 'bg-surface-card border border-line'
-                  }`
-                }
-                role="button"
-                tabIndex={0}
-                onClick={() => onEdit(a)}
-                onKeyDown={(e) => { if (e.key === 'Enter') onEdit(a); }}
-              >
-                <span className={isActive ? 'text-accent font-medium' : 'font-medium text-fg'}>{a.date}</span>
-                <span className="flex items-center gap-2">
-                  <span className="text-fg-muted">{formatDistanceOrDash(a.distance)}</span>
-                  {onDelete && (
-                    <span role="button" tabIndex={0} aria-label="Delete" onClick={(e) => { e.stopPropagation(); handleDelete(a); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); handleDelete(a); } }} className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all">x</span>
-                  )}
-                </span>
-              </div>
-            );
+        {visible.map((a) => {
+          const isActive = editingId === a.id;
+          const rowContent = (
+            <div
+              className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer ${
+                isActive
+                  ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border border-line'
+                  : 'bg-surface-card border border-line'
+              }`}
+              role="button"
+              tabIndex={0}
+              onClick={() => onEdit(a)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') onEdit(a);
+              }}
+            >
+              <span className={isActive ? 'text-accent font-medium' : 'font-medium text-fg'}>
+                {a.date}
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-fg-muted">{formatDistanceOrDash(a.distance)}</span>
+                {onDelete && (
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(a);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.stopPropagation();
+                        handleDelete(a);
+                      }
+                    }}
+                    className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
+                  >
+                    x
+                  </span>
+                )}
+              </span>
+            </div>
+          );
 
-            return (
-              <li key={a.id ?? a.createdAt} className="group relative">
-                {onDelete ? (
-                  <SwipeToDelete onDelete={() => handleDelete(a)}>
-                    {rowContent}
-                  </SwipeToDelete>
-                ) : rowContent}
-              </li>
-            );
-          })
-        }
+          return (
+            <li key={a.id ?? a.createdAt} className="group relative">
+              {onDelete ? (
+                <SwipeToDelete onDelete={() => handleDelete(a)}>{rowContent}</SwipeToDelete>
+              ) : (
+                rowContent
+              )}
+            </li>
+          );
+        })}
       </ul>
-      {
-        hasMore && (
-          <button
-            type="button"
-            onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
-            className="text-xs text-accent font-medium py-1"
-          >
-            Show more ({sorted.length - limit} remaining)
-          </button>
-        )
-      }
-      {
-        !hasMore && sorted.length > CONFIG.PAGE_SIZE && (
-          <p className="text-xs text-fg-muted text-center py-1">That's all the activities</p>
-        )
-      }
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
+          className="text-xs text-accent font-medium py-1"
+        >
+          Show more ({sorted.length - limit} remaining)
+        </button>
+      )}
+      {!hasMore && sorted.length > CONFIG.PAGE_SIZE && (
+        <p className="text-xs text-fg-muted text-center py-1">That's all the activities</p>
+      )}
     </div>
   );
 }

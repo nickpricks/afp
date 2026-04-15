@@ -1,6 +1,11 @@
 import { useState } from 'react';
 
-import { CATEGORIES, getAllCategoryIds, getSubCategories, PAYMENT_METHOD_LABELS } from '@/modules/expenses/categories';
+import {
+  CATEGORIES,
+  getAllCategoryIds,
+  getSubCategories,
+  PAYMENT_METHOD_LABELS,
+} from '@/modules/expenses/categories';
 import { PaymentMethod, ExpenseCategory } from '@/shared/types';
 import { CONFIG } from '@/constants/config';
 import { todayStr } from '@/shared/utils/date';
@@ -42,7 +47,9 @@ export function AddExpense({
   const [category, setCategory] = useState<ExpenseCategory>(getAllCategoryIds()[0]!);
   const [subCat, setSubCat] = useState('');
   const [amount, setAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(PaymentMethod.UpiBankAccount);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
+    PaymentMethod.UpiBankAccount,
+  );
   const [showAllMethods, setShowAllMethods] = useState(false);
   const [note, setNote] = useState('');
 
@@ -81,13 +88,11 @@ export function AddExpense({
         key={method}
         type="button"
         onClick={() => setPaymentMethod(paymentMethod === method ? null : method)}
-        className={
-`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+        className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
           isActive
             ? 'border-accent bg-accent text-fg-on-accent'
             : 'border-line bg-surface-card text-fg-muted hover:border-accent/50'
-        }`
-}
+        }`}
       >
         {label.emoji} {label.shortLabel}
       </button>
@@ -105,41 +110,33 @@ export function AddExpense({
 
       <select
         value={category}
-        onChange={
-(e) => {
+        onChange={(e) => {
           setCategory(Number(e.target.value) as ExpenseCategory);
           setSubCat('');
-        }
-}
+        }}
         className="rounded-lg border border-line bg-surface-card px-3 py-2 text-fg"
       >
-        {
-getAllCategoryIds().map((id) => (
+        {getAllCategoryIds().map((id) => (
           <option key={id} value={id}>
             {CATEGORIES[id]!.label}
           </option>
-        ))
-}
+        ))}
       </select>
 
-      {
-subCategories.length > 0 && (
+      {subCategories.length > 0 && (
         <select
           value={subCat}
           onChange={(e) => setSubCat(e.target.value)}
           className="rounded-lg border border-line bg-surface-card px-3 py-2 text-fg"
         >
           <option value="">-- Sub-category --</option>
-          {
-subCategories.map((sc) => (
+          {subCategories.map((sc) => (
             <option key={sc} value={sc}>
               {sc}
             </option>
-          ))
-}
+          ))}
         </select>
-      )
-}
+      )}
 
       <div className="flex items-center gap-2">
         <span className="text-fg-muted text-sm font-medium">{CONFIG.CURRENCY_SYMBOL}</span>
@@ -156,29 +153,24 @@ subCategories.map((sc) => (
       </div>
 
       <div className="flex gap-1.5">
-        {
-          AMOUNT_PRESETS.map((preset) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => setAmount(String(preset))}
-              className="flex-1 rounded-lg border border-line bg-surface-card px-2 py-1 text-xs font-medium text-fg-muted hover:border-accent/50 transition-colors"
-            >
-              {preset}
-            </button>
-          ))
-        }
+        {AMOUNT_PRESETS.map((preset) => (
+          <button
+            key={preset}
+            type="button"
+            onClick={() => setAmount(String(preset))}
+            className="flex-1 rounded-lg border border-line bg-surface-card px-2 py-1 text-xs font-medium text-fg-muted hover:border-accent/50 transition-colors"
+          >
+            {preset}
+          </button>
+        ))}
       </div>
 
       <div className="flex flex-col gap-1.5">
         <span className="text-xs text-fg-muted">Payment Method</span>
         <div className="flex flex-wrap gap-1.5">
           {QUICK_PAYMENT_METHODS.map(renderMethodBubble)}
-          {
-showAllMethods && EXTRA_PAYMENT_METHODS.map(renderMethodBubble)
-}
-          {
-!showAllMethods && (
+          {showAllMethods && EXTRA_PAYMENT_METHODS.map(renderMethodBubble)}
+          {!showAllMethods && (
             <button
               type="button"
               onClick={() => setShowAllMethods(true)}
@@ -186,8 +178,7 @@ showAllMethods && EXTRA_PAYMENT_METHODS.map(renderMethodBubble)
             >
               More...
             </button>
-          )
-}
+          )}
         </div>
       </div>
 

@@ -31,11 +31,17 @@ describe('validateFeedEntry', () => {
 
 describe('validateSleepEntry', () => {
   it('accepts valid sleep entry', () => {
-    expect(isOk(validateSleepEntry({ date: '2026-04-04', type: SleepType.Nap, quality: SleepQuality.Good }))).toBe(true);
+    expect(
+      isOk(
+        validateSleepEntry({ date: '2026-04-04', type: SleepType.Nap, quality: SleepQuality.Good }),
+      ),
+    ).toBe(true);
   });
 
   it('accepts null quality', () => {
-    expect(isOk(validateSleepEntry({ date: '2026-04-04', type: SleepType.Night, quality: null }))).toBe(true);
+    expect(
+      isOk(validateSleepEntry({ date: '2026-04-04', type: SleepType.Night, quality: null })),
+    ).toBe(true);
   });
 
   it('rejects invalid date', () => {

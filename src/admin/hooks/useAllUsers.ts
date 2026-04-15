@@ -38,10 +38,13 @@ export function useAllUsers() {
       (snapshot) => {
         const profiles: UserEntry[] = snapshot.docs
           .filter((d) => d.data()['role'] != null)
-          .map((d) => ({
-            ...d.data(),
-            uid: extractUid(d.ref.path),
-          } as unknown as UserEntry))
+          .map(
+            (d) =>
+              ({
+                ...d.data(),
+                uid: extractUid(d.ref.path),
+              }) as unknown as UserEntry,
+          )
           .filter((u) => u.uid !== '');
         setUsers(profiles);
         setLoading(false);

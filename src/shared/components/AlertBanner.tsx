@@ -49,9 +49,7 @@ export function AlertBanner({ alerts, onDismiss }: AlertBannerProps) {
               </button>
             )}
             {!isDismissible && (
-              <span className="ml-3 text-xs opacity-40">
-                Expires {alert.shownTillDate}
-              </span>
+              <span className="ml-3 text-xs opacity-40">Expires {alert.shownTillDate}</span>
             )}
           </div>
         );

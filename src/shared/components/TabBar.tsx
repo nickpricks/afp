@@ -12,9 +12,9 @@ type TabId = ModuleId | 'admin';
 type TabDefinition = { icon: typeof Activity; label: string; route: string };
 
 const MODULE_TABS: Record<ModuleId, TabDefinition> = {
-  [ModuleId.Body]:     { icon: Activity, label: 'Body',     route: ROUTES.BODY },
-  [ModuleId.Budget]:   { icon: Receipt,  label: 'Budget',   route: ROUTES.BUDGET },
-  [ModuleId.Baby]:     { icon: Baby,     label: 'Baby',     route: ROUTES.BABY },
+  [ModuleId.Body]: { icon: Activity, label: 'Body', route: ROUTES.BODY },
+  [ModuleId.Budget]: { icon: Receipt, label: 'Budget', route: ROUTES.BUDGET },
+  [ModuleId.Baby]: { icon: Baby, label: 'Baby', route: ROUTES.BABY },
 };
 
 const ADMIN_TAB: TabDefinition = { icon: Activity, label: 'Admin', route: ROUTES.ADMIN };
@@ -37,12 +37,9 @@ export function TabBar() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-surface-card border-t border-line flex justify-around py-2 px-4 z-40">
-      {
-tabs.map(({ id, icon: Icon, label, route }) => {
+      {tabs.map(({ id, icon: Icon, label, route }) => {
         const isActive = location.pathname.startsWith(route);
-        const tabIcon = id === 'admin'
-          ? <span className="text-base">👑</span>
-          : <Icon size={20} />;
+        const tabIcon = id === 'admin' ? <span className="text-base">👑</span> : <Icon size={20} />;
 
         return (
           <button
@@ -54,8 +51,7 @@ tabs.map(({ id, icon: Icon, label, route }) => {
             <span>{label}</span>
           </button>
         );
-      })
-}
+      })}
     </nav>
   );
 }

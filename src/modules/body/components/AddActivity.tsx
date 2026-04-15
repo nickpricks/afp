@@ -11,13 +11,15 @@ function convertDistance(value: string, from: 'm' | 'km', to: 'm' | 'km'): strin
   if (from === to || !value) return value;
   const num = Number(value);
   if (!Number.isFinite(num)) return value;
-  return from === 'km'
-    ? String(num * CONFIG.METERS_PER_KM)
-    : String(num / CONFIG.METERS_PER_KM);
+  return from === 'km' ? String(num * CONFIG.METERS_PER_KM) : String(num / CONFIG.METERS_PER_KM);
 }
 
 /** Available activity types for logging (yoga is coming soon) */
-const LOGGABLE_TYPES: readonly ActivityType[] = [ActivityType.Walk, ActivityType.Run, ActivityType.Cycle];
+const LOGGABLE_TYPES: readonly ActivityType[] = [
+  ActivityType.Walk,
+  ActivityType.Run,
+  ActivityType.Cycle,
+];
 
 /** Form for logging or updating a walk/run/cycle activity with distance input */
 export function AddActivity({
@@ -100,47 +102,39 @@ export function AddActivity({
           </button>
         </div>
       )}
-      {
-        !defaultType && !isEditMode && (
-          <div className="flex gap-2">
-            {
-              LOGGABLE_TYPES.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setType(t)}
-                  className={
-                    `flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                      t === type
-                        ? 'bg-accent text-fg-on-accent'
-                        : 'bg-surface-card text-fg border border-line'
-                    }`
-                  }
-                >
-                  {ACTIVITY_LABELS[t]}
-                </button>
-              ))
-            }
-          </div>
-        )
-      }
-
-      {
-        isEditMode && (
-          <div className="flex items-center gap-2">
-            <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">
-              Editing {editEntry!.date}
-            </span>
+      {!defaultType && !isEditMode && (
+        <div className="flex gap-2">
+          {LOGGABLE_TYPES.map((t) => (
             <button
+              key={t}
               type="button"
-              onClick={handleCancel}
-              className="text-xs text-fg-muted hover:text-fg"
+              onClick={() => setType(t)}
+              className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                t === type
+                  ? 'bg-accent text-fg-on-accent'
+                  : 'bg-surface-card text-fg border border-line'
+              }`}
             >
-              Cancel
+              {ACTIVITY_LABELS[t]}
             </button>
-          </div>
-        )
-      }
+          ))}
+        </div>
+      )}
+
+      {isEditMode && (
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">
+            Editing {editEntry!.date}
+          </span>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="text-xs text-fg-muted hover:text-fg"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
 
       <div className="flex gap-2">
         <input
@@ -160,11 +154,9 @@ export function AddActivity({
               if (unit === 'km') setDistance(convertDistance(distance, 'km', 'm'));
               setUnit('m');
             }}
-            className={
-              `min-h-[44px] min-w-[44px] px-3 py-2 text-sm font-medium transition ${
-                unit === 'm' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'
-              }`
-            }
+            className={`min-h-[44px] min-w-[44px] px-3 py-2 text-sm font-medium transition ${
+              unit === 'm' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'
+            }`}
           >
             m
           </button>
@@ -174,11 +166,9 @@ export function AddActivity({
               if (unit === 'm') setDistance(convertDistance(distance, 'm', 'km'));
               setUnit('km');
             }}
-            className={
-              `min-h-[44px] min-w-[44px] px-3 py-2 text-sm font-medium transition ${
-                unit === 'km' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'
-              }`
-            }
+            className={`min-h-[44px] min-w-[44px] px-3 py-2 text-sm font-medium transition ${
+              unit === 'km' ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg'
+            }`}
           >
             km
           </button>
@@ -191,7 +181,11 @@ export function AddActivity({
         disabled={isDisabled}
         className="rounded-lg bg-accent px-4 py-2 text-fg-on-accent font-medium disabled:opacity-40 active:scale-95 transition-transform"
       >
-        {isSaving ? 'Saving...' : isEditMode ? 'Update' : `Log ${ACTIVITY_LABELS[defaultType ?? type]}`}
+        {isSaving
+          ? 'Saving...'
+          : isEditMode
+            ? 'Update'
+            : `Log ${ACTIVITY_LABELS[defaultType ?? type]}`}
       </button>
     </div>
   );

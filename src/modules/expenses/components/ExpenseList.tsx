@@ -44,7 +44,10 @@ export function ExpenseList({
       durationMs: CONFIG.UNDO_DURATION_MS,
       action: {
         label: 'Undo',
-        onClick: () => { undoRef.current = true; setPendingDeleteId(null); },
+        onClick: () => {
+          undoRef.current = true;
+          setPendingDeleteId(null);
+        },
       },
     });
     setTimeout(() => {
@@ -56,16 +59,13 @@ export function ExpenseList({
   };
 
   if (sorted.length === 0) {
-    return (
-      <p className="px-4 py-8 text-center text-fg-muted">No expenses yet</p>
-    );
+    return <p className="px-4 py-8 text-center text-fg-muted">No expenses yet</p>;
   }
 
   return (
     <div className="flex flex-col gap-2 px-4">
       <ul className="flex flex-col gap-2">
-        {
-visible.map((expense) => {
+        {visible.map((expense) => {
           const pmLabel = PAYMENT_METHOD_LABELS[expense.paymentMethod];
           return (
             <li
@@ -75,22 +75,19 @@ visible.map((expense) => {
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-fg">
-                    {CONFIG.CURRENCY_SYMBOL}{expense.amount}
+                    {CONFIG.CURRENCY_SYMBOL}
+                    {expense.amount}
                   </span>
-                  {
-                    pmLabel && (
-                      <span className="rounded bg-surface px-1.5 py-0.5 text-[10px] text-fg-muted">
-                        {pmLabel.shortLabel}
-                      </span>
-                    )
-                  }
-                  {
-                    expense.isSettlement && (
-                      <span className="rounded bg-accent/10 px-1.5 py-0.5 text-[10px] text-accent">
-                        Settlement
-                      </span>
-                    )
-                  }
+                  {pmLabel && (
+                    <span className="rounded bg-surface px-1.5 py-0.5 text-[10px] text-fg-muted">
+                      {pmLabel.shortLabel}
+                    </span>
+                  )}
+                  {expense.isSettlement && (
+                    <span className="rounded bg-accent/10 px-1.5 py-0.5 text-[10px] text-accent">
+                      Settlement
+                    </span>
+                  )}
                 </div>
                 <span className="text-xs text-fg-muted">
                   {formatCategory(expense.category, expense.subCat)}
@@ -109,25 +106,20 @@ visible.map((expense) => {
               </button>
             </li>
           );
-        })
-}
+        })}
       </ul>
-      {
-        hasMore && (
-          <button
-            type="button"
-            onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
-            className="text-xs text-accent font-medium py-2 self-center"
-          >
-            Show more ({sorted.length - limit} remaining)
-          </button>
-        )
-      }
-      {
-        !hasMore && sorted.length > CONFIG.PAGE_SIZE && (
-          <p className="text-xs text-fg-muted text-center py-2">That's all the expenses</p>
-        )
-      }
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
+          className="text-xs text-accent font-medium py-2 self-center"
+        >
+          Show more ({sorted.length - limit} remaining)
+        </button>
+      )}
+      {!hasMore && sorted.length > CONFIG.PAGE_SIZE && (
+        <p className="text-xs text-fg-muted text-center py-2">That's all the expenses</p>
+      )}
     </div>
   );
 }

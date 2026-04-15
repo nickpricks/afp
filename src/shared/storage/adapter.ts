@@ -15,5 +15,9 @@ export interface StorageAdapter {
   remove(collection: string, id: string): Promise<Result<void>>;
 
   /** Subscribes to real-time updates for a collection, returning an unsubscribe function */
-  onSnapshot<T>(collection: string, callback: (data: T[]) => void, onError?: (error: Error) => void): () => void;
+  onSnapshot<T>(
+    collection: string,
+    callback: (data: T[]) => void,
+    onError?: (error: Error) => void,
+  ): () => void;
 }

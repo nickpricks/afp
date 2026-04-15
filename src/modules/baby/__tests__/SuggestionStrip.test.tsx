@@ -45,7 +45,11 @@ describe('SuggestionStrip', () => {
   });
 
   it('shows aggregate summary for multiple suggestions', () => {
-    const second: Suggestion = { ...suggestion, feature: 'feeds', action: SuggestionAction.Disable };
+    const second: Suggestion = {
+      ...suggestion,
+      feature: 'feeds',
+      action: SuggestionAction.Disable,
+    };
     render(<SuggestionStrip suggestions={[suggestion, second]} onEnable={vi.fn()} />);
     expect(screen.getByText(/2 suggestions/i)).toBeInTheDocument();
   });

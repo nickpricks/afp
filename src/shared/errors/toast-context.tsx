@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { ToastType } from '@/shared/types';
 
@@ -18,7 +11,11 @@ export interface Toast {
 
 export interface ToastContextValue {
   toasts: Toast[];
-  addToast: (message: string, type: ToastType, options?: { action?: Toast['action']; durationMs?: number }) => void;
+  addToast: (
+    message: string,
+    type: ToastType,
+    options?: { action?: Toast['action']; durationMs?: number },
+  ) => void;
   removeToast: (id: string) => void;
 }
 
@@ -41,7 +38,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addToast = useCallback(
-    (message: string, type: Toast['type'], options?: { action?: Toast['action']; durationMs?: number }) => {
+    (
+      message: string,
+      type: Toast['type'],
+      options?: { action?: Toast['action']; durationMs?: number },
+    ) => {
       const id = crypto.randomUUID();
       setToasts((prev) => [...prev, { id, message, type, action: options?.action }]);
       const timer = setTimeout(() => removeToast(id), options?.durationMs ?? AUTO_DISMISS_MS);
@@ -78,41 +79,38 @@ function toastClasses(type: ToastType): string {
 }
 
 /** Fixed overlay that renders active toast notifications */
-function ToastOverlay({
-  toasts,
-  onDismiss,
-}: {
-  toasts: Toast[];
-  onDismiss: (id: string) => void;
-}) {
+function ToastOverlay({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: string) => void }) {
   if (toasts.length === 0) return null;
 
   return (
     <div className="fixed bottom-20 left-1/2 z-50 flex -translate-x-1/2 flex-col gap-2">
-      {
-toasts.map((toast) => (
+      {toasts.map((toast) => (
         <div
           key={toast.id}
           role="alert"
           className={`w-80 rounded-lg px-4 py-3 text-sm shadow-lg flex items-center justify-between gap-2 ${toastClasses(toast.type)}`}
         >
-          <button type="button" onClick={() => onDismiss(toast.id)} className="flex-1 text-left cursor-pointer">
+          <button
+            type="button"
+            onClick={() => onDismiss(toast.id)}
+            className="flex-1 text-left cursor-pointer"
+          >
             {toast.message}
           </button>
-          {
-            toast.action && (
-              <button
-                type="button"
-                onClick={() => { toast.action!.onClick(); onDismiss(toast.id); }}
-                className="font-bold underline whitespace-nowrap"
-              >
-                {toast.action.label}
-              </button>
-            )
-          }
+          {toast.action && (
+            <button
+              type="button"
+              onClick={() => {
+                toast.action!.onClick();
+                onDismiss(toast.id);
+              }}
+              className="font-bold underline whitespace-nowrap"
+            >
+              {toast.action.label}
+            </button>
+          )}
         </div>
-      ))
-}
+      ))}
     </div>
   );
 }

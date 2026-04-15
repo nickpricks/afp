@@ -78,9 +78,7 @@ export function EliminationLog({
   function buildEntryData() {
     const now = new Date().toISOString();
     const base = { date, time, mode, timestamp: now, createdAt: now, notes };
-    return mode === EliminationMode.Diaper
-      ? { ...base, diaperType }
-      : { ...base, pottyEvent };
+    return mode === EliminationMode.Diaper ? { ...base, diaperType } : { ...base, pottyEvent };
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -94,13 +92,9 @@ export function EliminationLog({
     } else {
       await logElimination(entryData);
       if (logToAll && hasSiblings && uid) {
-        const count = await logToSiblings(
-          uid,
-          siblingIds,
-          DbSubcollection.Elimination,
-          entryData,
-        );
-        if (count > 0) addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+        const count = await logToSiblings(uid, siblingIds, DbSubcollection.Elimination, entryData);
+        if (count > 0)
+          addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
       }
     }
 
@@ -166,110 +160,155 @@ export function EliminationLog({
     <div className="flex flex-col gap-6 px-4 py-6">
       <h2 className="text-lg font-semibold text-fg">{headerLabel}</h2>
 
-      {
-        diapersEnabled && pottyEnabled && (
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setMode(EliminationMode.Diaper)}
-              className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${mode === EliminationMode.Diaper ? 'bg-accent text-fg-on-accent border-accent' : 'bg-surface-card text-fg border-line'}`}
-            >
-              Diaper
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode(EliminationMode.Potty)}
-              className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${mode === EliminationMode.Potty ? 'bg-accent text-fg-on-accent border-accent' : 'bg-surface-card text-fg border-line'}`}
-            >
-              Potty
-            </button>
-          </div>
-        )
-      }
+      {diapersEnabled && pottyEnabled && (
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setMode(EliminationMode.Diaper)}
+            className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${mode === EliminationMode.Diaper ? 'bg-accent text-fg-on-accent border-accent' : 'bg-surface-card text-fg border-line'}`}
+          >
+            Diaper
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode(EliminationMode.Potty)}
+            className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${mode === EliminationMode.Potty ? 'bg-accent text-fg-on-accent border-accent' : 'bg-surface-card text-fg border-line'}`}
+          >
+            Potty
+          </button>
+        </div>
+      )}
 
-      {
-        showQuickLog && (
-          <div className="flex gap-2">
-            <button type="button" disabled={saving} onClick={() => quickLogDiaper(DiaperType.Wet)} className="flex-1 py-3 rounded-lg bg-surface-card text-fg border border-line font-medium disabled:opacity-50 active:scale-95 transition-transform">Quick Wet</button>
-            <button type="button" disabled={saving} onClick={() => quickLogDiaper(DiaperType.Dirty)} className="flex-1 py-3 rounded-lg bg-surface-card text-fg border border-line font-medium disabled:opacity-50 active:scale-95 transition-transform">Quick Dirty</button>
-          </div>
-        )
-      }
+      {showQuickLog && (
+        <div className="flex gap-2">
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => quickLogDiaper(DiaperType.Wet)}
+            className="flex-1 py-3 rounded-lg bg-surface-card text-fg border border-line font-medium disabled:opacity-50 active:scale-95 transition-transform"
+          >
+            Quick Wet
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => quickLogDiaper(DiaperType.Dirty)}
+            className="flex-1 py-3 rounded-lg bg-surface-card text-fg border border-line font-medium disabled:opacity-50 active:scale-95 transition-transform"
+          >
+            Quick Dirty
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {
-          editEntry && (
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">Editing {editEntry.date} {editEntry.time}</span>
-              <button type="button" onClick={handleCancelEdit} className="text-xs text-fg-muted hover:text-fg">Cancel</button>
-            </div>
-          )
-        }
+        {editEntry && (
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">
+              Editing {editEntry.date} {editEntry.time}
+            </span>
+            <button
+              type="button"
+              onClick={handleCancelEdit}
+              className="text-xs text-fg-muted hover:text-fg"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
 
-        {
-          mode === EliminationMode.Diaper && (
-            <div className="flex gap-2">
-              {
-ALL_DIAPER_TYPES.map((dt) => (
-                <button key={dt} type="button" onClick={() => setDiaperType(dt)} className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${diaperType === dt ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg border border-line'}`}>{DIAPER_TYPE_LABELS[dt]}</button>
-              ))
-}
-            </div>
-          )
-        }
+        {mode === EliminationMode.Diaper && (
+          <div className="flex gap-2">
+            {ALL_DIAPER_TYPES.map((dt) => (
+              <button
+                key={dt}
+                type="button"
+                onClick={() => setDiaperType(dt)}
+                className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${diaperType === dt ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg border border-line'}`}
+              >
+                {DIAPER_TYPE_LABELS[dt]}
+              </button>
+            ))}
+          </div>
+        )}
 
-        {
-          mode === EliminationMode.Potty && (
-            <div className="flex flex-wrap gap-2">
-              {
-ALL_POTTY_EVENTS.map((ev) => (
-                <button key={ev} type="button" onClick={() => setPottyEvent(ev)} className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${pottyEvent === ev ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg border border-line'}`}>{POTTY_EVENT_LABELS[ev]}</button>
-              ))
-}
-            </div>
-          )
-        }
+        {mode === EliminationMode.Potty && (
+          <div className="flex flex-wrap gap-2">
+            {ALL_POTTY_EVENTS.map((ev) => (
+              <button
+                key={ev}
+                type="button"
+                onClick={() => setPottyEvent(ev)}
+                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${pottyEvent === ev ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg border border-line'}`}
+              >
+                {POTTY_EVENT_LABELS[ev]}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="flex gap-3">
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
-          <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+          />
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+          />
         </div>
 
-        <input type="text" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
+        <input
+          type="text"
+          placeholder="Notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+        />
 
         <div className="flex gap-2">
-          <button type="submit" disabled={saving} className="flex-1 py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
+          <button
+            type="submit"
+            disabled={saving}
+            className="flex-1 py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50"
+          >
             {saving && 'Saving...'}
             {!saving && (editEntry ? 'Update' : 'Log')}
           </button>
-          {
-            hasSiblings && !editEntry && (
-              <button
-                type="button"
-                onClick={() => setLogToAll((v) => !v)}
-                className={`px-3 py-3 rounded-lg border text-xs font-medium transition-colors ${logToAll ? 'bg-accent/10 border-accent text-accent' : 'bg-surface-card border-line text-fg-muted'}`}
-                title="Log to all children"
-              >
-                All
-              </button>
-            )
-          }
+          {hasSiblings && !editEntry && (
+            <button
+              type="button"
+              onClick={() => setLogToAll((v) => !v)}
+              className={`px-3 py-3 rounded-lg border text-xs font-medium transition-colors ${logToAll ? 'bg-accent/10 border-accent text-accent' : 'bg-surface-card border-line text-fg-muted'}`}
+              title="Log to all children"
+            >
+              All
+            </button>
+          )}
         </div>
       </form>
 
-      <RecentElimination entries={recentEntries} onEdit={startEdit} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
-      {
-        hasMore && (
-          <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">
-            Show more ({sortedEntries.length - limit} remaining)
-          </button>
-        )
-      }
-      {
-        !hasMore && sortedEntries.length > CONFIG.PAGE_SIZE && (
-          <p className="text-xs text-fg-muted text-center py-1">That&apos;s all the entries</p>
-        )
-      }
+      <RecentElimination
+        entries={recentEntries}
+        onEdit={startEdit}
+        editingId={editEntry?.id ?? null}
+        onRemove={handleUndoDelete}
+      />
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)}
+          className="text-xs text-accent font-medium py-1 self-center"
+        >
+          Show more ({sortedEntries.length - limit} remaining)
+        </button>
+      )}
+      {!hasMore && sortedEntries.length > CONFIG.PAGE_SIZE && (
+        <p className="text-xs text-fg-muted text-center py-1">That&apos;s all the entries</p>
+      )}
     </div>
   );
 }
@@ -291,8 +330,7 @@ function RecentElimination({
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-sm font-medium text-fg-muted">Recent</h3>
-      {
-entries.map((entry) => {
+      {entries.map((entry) => {
         const isActive = editingId === entry.id;
         const label =
           entry.mode === EliminationMode.Diaper
@@ -300,19 +338,44 @@ entries.map((entry) => {
             : POTTY_EVENT_LABELS[entry.pottyEvent ?? PottyTrainingEvent.Pee];
         const modeBadge = entry.mode === EliminationMode.Potty ? '🚽' : '🧷';
         return (
-          <button key={entry.id} type="button" onClick={() => onEdit(entry)} className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}>
+          <button
+            key={entry.id}
+            type="button"
+            onClick={() => onEdit(entry)}
+            className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}
+          >
             <div className="flex justify-between text-sm">
-              <span className="font-medium text-fg">{modeBadge} {label}</span>
+              <span className="font-medium text-fg">
+                {modeBadge} {label}
+              </span>
               <div className="flex items-center gap-2">
-                <span className="text-fg-muted">{entry.date} {entry.time}</span>
-                <span role="button" tabIndex={0} aria-label="Delete" onClick={(e) => { e.stopPropagation(); onRemove(entry.id); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); onRemove(entry.id); } }} className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all">x</span>
+                <span className="text-fg-muted">
+                  {entry.date} {entry.time}
+                </span>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Delete"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemove(entry.id);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.stopPropagation();
+                      onRemove(entry.id);
+                    }
+                  }}
+                  className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
+                >
+                  x
+                </span>
               </div>
             </div>
             {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}
           </button>
         );
-      })
-}
+      })}
     </div>
   );
 }

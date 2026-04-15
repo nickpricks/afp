@@ -29,7 +29,9 @@ test.describe('Flow: Budget full expense', () => {
 });
 
 test.describe('Flow: Body configure → log floors → log walk', () => {
-  test('configure → floors up ×3 → walking 500m → reload → verify all persists', async ({ page }) => {
+  test('configure → floors up ×3 → walking 500m → reload → verify all persists', async ({
+    page,
+  }) => {
     // Configure body module with defaults
     await ensureBodyConfigured(page);
 
@@ -52,7 +54,9 @@ test.describe('Flow: Body configure → log floors → log walk', () => {
 
     // Reload and verify persistence
     await page.reload();
-    await expect(page.locator('main button', { hasText: 'Floors' }).first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('main button', { hasText: 'Floors' }).first()).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify floors persisted
     await page.locator('main button', { hasText: 'Floors' }).first().click();
@@ -95,7 +99,9 @@ test.describe('Flow: Payment bubble toggle', () => {
 });
 
 test.describe('Flow: Body gear reconfigure', () => {
-  test('enable Running via gear → verify tab appears → reload → verify persists', async ({ page }) => {
+  test('enable Running via gear → verify tab appears → reload → verify persists', async ({
+    page,
+  }) => {
     // Configure with defaults (Floors + Walking, Running OFF)
     await ensureBodyConfigured(page);
 
@@ -114,11 +120,15 @@ test.describe('Flow: Body gear reconfigure', () => {
     await page.getByRole('button', { name: 'Save Configuration' }).click();
 
     // Immediate check: Running tab now visible
-    await expect(page.locator('main button', { hasText: 'Running' }).first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('main button', { hasText: 'Running' }).first()).toBeVisible({
+      timeout: 5000,
+    });
 
     // Reload and verify persistence
     await page.reload();
-    await expect(page.locator('main button', { hasText: 'Stats' }).first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('main button', { hasText: 'Stats' }).first()).toBeVisible({
+      timeout: 10000,
+    });
     await expect(page.locator('main button', { hasText: 'Running' }).first()).toBeVisible();
   });
 });

@@ -61,10 +61,11 @@ export function AdminClaim() {
         </p>
       </div>
 
-      {
-needsGoogle && (
+      {needsGoogle && (
         <div className="flex flex-col gap-3 w-full max-w-xs">
-          <p className="text-sm text-fg-muted">Sign in with Google first to secure your admin account.</p>
+          <p className="text-sm text-fg-muted">
+            Sign in with Google first to secure your admin account.
+          </p>
           <button
             type="button"
             onClick={handleGoogleSignIn}
@@ -74,11 +75,9 @@ needsGoogle && (
             {claiming ? 'Signing in...' : 'Sign in with Google'}
           </button>
         </div>
-      )
-}
+      )}
 
-      {
-!needsGoogle && (
+      {!needsGoogle && (
         <button
           type="button"
           onClick={handleClaim}
@@ -87,11 +86,11 @@ needsGoogle && (
         >
           {claiming ? 'Setting up...' : 'Claim as Admin'}
         </button>
-      )
-}
+      )}
 
       <p className="text-xs text-fg-muted max-w-xs">
-        This grants full control — manage users, modules, and invites. Only do this if you own this deployment.
+        This grants full control — manage users, modules, and invites. Only do this if you own this
+        deployment.
       </p>
     </div>
   );

@@ -12,9 +12,9 @@ function getCcBubble() {
 
 /** Returns all payment method bubbles (excludes "More..." and submit) */
 function getMethodBubbles() {
-  return screen.getAllByRole('button').filter(
-    (b) => b.textContent !== 'More...' && b.getAttribute('type') === 'button',
-  );
+  return screen
+    .getAllByRole('button')
+    .filter((b) => b.textContent !== 'More...' && b.getAttribute('type') === 'button');
 }
 
 describe('AddExpense — amount presets', () => {
@@ -110,8 +110,6 @@ describe('AddExpense — payment method bubbles', () => {
       fireEvent.submit(screen.getByRole('button', { name: 'Add Expense' }));
     });
 
-    expect(onSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ paymentMethod: null }),
-    );
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ paymentMethod: null }));
   });
 });

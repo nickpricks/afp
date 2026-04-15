@@ -3,22 +3,46 @@ import { useEffect, useRef, useState } from 'react';
 import type { ConsoleEntry } from '@/shared/components/ConsoleViewer';
 
 type ConsoleLevel =
-  | 'log' | 'info' | 'warn' | 'error'
-  | 'debug' | 'trace'
-  | 'dir' | 'dirxml'
-  | 'table' | 'group' | 'groupCollapsed' | 'groupEnd'
-  | 'count' | 'countReset'
-  | 'time' | 'timeLog' | 'timeEnd'
-  | 'assert' | 'clear';
+  | 'log'
+  | 'info'
+  | 'warn'
+  | 'error'
+  | 'debug'
+  | 'trace'
+  | 'dir'
+  | 'dirxml'
+  | 'table'
+  | 'group'
+  | 'groupCollapsed'
+  | 'groupEnd'
+  | 'count'
+  | 'countReset'
+  | 'time'
+  | 'timeLog'
+  | 'timeEnd'
+  | 'assert'
+  | 'clear';
 
 const ALL_LEVELS: ConsoleLevel[] = [
-  'log', 'info', 'warn', 'error',
-  'debug', 'trace',
-  'dir', 'dirxml',
-  'table', 'group', 'groupCollapsed', 'groupEnd',
-  'count', 'countReset',
-  'time', 'timeLog', 'timeEnd',
-  'assert', 'clear',
+  'log',
+  'info',
+  'warn',
+  'error',
+  'debug',
+  'trace',
+  'dir',
+  'dirxml',
+  'table',
+  'group',
+  'groupCollapsed',
+  'groupEnd',
+  'count',
+  'countReset',
+  'time',
+  'timeLog',
+  'timeEnd',
+  'assert',
+  'clear',
 ];
 
 /** Serializes unknown args into a readable string */
@@ -47,7 +71,8 @@ export function useConsoleCapture() {
       originals[level] = c[level];
     }
 
-    const capture = (level: ConsoleLevel) =>
+    const capture =
+      (level: ConsoleLevel) =>
       (...args: unknown[]) => {
         (originals[level] as (...a: unknown[]) => void)?.(...args);
         setEntries((prev) => [

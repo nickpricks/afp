@@ -5,11 +5,23 @@ import { db, isFirebaseConfigured } from '@/shared/auth/firebase-config';
 import { useToast } from '@/shared/errors/useToast';
 import { DbCollection, DbSubcollection, DbDoc } from '@/constants/db';
 import { AdminMsg } from '@/constants/messages';
-import { isOk, ok, err, ToastType, type Result, type ModuleConfig, type UserRole } from '@/shared/types';
+import {
+  isOk,
+  ok,
+  err,
+  ToastType,
+  type Result,
+  type ModuleConfig,
+  type UserRole,
+} from '@/shared/types';
 import { toErrorMessage } from '@/shared/utils/error';
 
 /** Updates a user's profile field in Firestore or localStorage */
-async function updateProfileField(uid: string, field: string, value: unknown): Promise<Result<void>> {
+async function updateProfileField(
+  uid: string,
+  field: string,
+  value: unknown,
+): Promise<Result<void>> {
   if (!isFirebaseConfigured) {
     try {
       const key = `afp:${uid}:profile`;

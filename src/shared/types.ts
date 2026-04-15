@@ -13,13 +13,10 @@ export const err = <T = never>(error: string): Result<T> => ({
 });
 
 /** Type guard that narrows a Result to its success variant */
-export const isOk = <T>(result: Result<T>): result is { ok: true; data: T } =>
-  result.ok;
+export const isOk = <T>(result: Result<T>): result is { ok: true; data: T } => result.ok;
 
 /** Type guard that narrows a Result to its failure variant */
-export const isErr = <T>(
-  result: Result<T>,
-): result is { ok: false; error: string } => !result.ok;
+export const isErr = <T>(result: Result<T>): result is { ok: false; error: string } => !result.ok;
 
 // ─── Module Types ────────────────────────────────────────────────────────────
 

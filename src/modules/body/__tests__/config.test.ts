@@ -13,7 +13,8 @@ describe('BodyConfig validation', () => {
       cycling: false,
       yoga: false,
     };
-    const hasAny = allOff.floors || allOff.walking || allOff.running || allOff.cycling || allOff.yoga;
+    const hasAny =
+      allOff.floors || allOff.walking || allOff.running || allOff.cycling || allOff.yoga;
     expect(hasAny).toBe(false);
   });
 

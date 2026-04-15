@@ -5,7 +5,7 @@ UI components for the Baby module. Multi-child tracking with nested subcollectio
 ## Files
 
 - **BabyLanding.tsx** — Landing page listing all children, entry point to child detail
-- **ChildDetail.tsx** — Tabbed detail view for a single child. 8 possible tabs: Dashboard / Feeding / Sleep / Growth / Diapers (combined Diaper+Potty as Elimination) / Meals / Needs / Milestones. Each tab gated by `ChildConfig`
+- **ChildDetail.tsx** — Tabbed detail view for a single child. 9 possible tabs: Dashboard / Journal / Feeding / Sleep / Growth / Diapers (combined Diaper+Potty as Elimination) / Meals / Needs / Milestones. Dashboard + Journal always visible; rest gated by `ChildConfig`. DashboardTab carries a live today-stat strip sourced from `useJournalData`, plus a "See full journal →" shortcut
 - **AddChild.tsx** — Form to add a new child profile with 8 module checkboxes, auto-navigates to detail on creation
 - **FeedLog.tsx** — Feed tracking log (infant)
 - **SleepLog.tsx** — Sleep tracking log
@@ -14,6 +14,9 @@ UI components for the Baby module. Multi-child tracking with nested subcollectio
 - **MealsLog.tsx** — Meals tracking with auto-suggest meal type from current hour and optional 7-value portion enum (toddler+)
 - **NeedsLog.tsx** — Wishlist/inventory tracker with status filter chips (All / Wishlist / Have / Outgrown) and lifecycle transition buttons (Bought → Outgrew)
 - **MilestonesLog.tsx** — Developmental firsts + custom achievements. Predefined-template quick-add chips, grouped-by-category list, optional media URL link
+- **LifeJournalView.tsx** — Narrative D/W/M aggregation view across all 7 subcollections. Uses `JournalPicker` (grain + period stepper) + `JournalCard` wrappers. Composes `useJournalData` to produce 7 summary cards (counting moments conditional)
+- **JournalPicker.tsx** — Grain selector (Day/Week/Month) + previous/next period stepper with aria-labels
+- **JournalCard.tsx** — Generic wrapper for a titled card with empty-state fallback, used by LifeJournalView
 - **SuggestionStrip.tsx** — Age-based suggestion banner (above tabs in ChildDetail)
 
 ## Conventions

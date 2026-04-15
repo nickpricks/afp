@@ -48,10 +48,7 @@ function createMockAdapter(): StorageAdapter {
       return ok(undefined);
     },
 
-    onSnapshot<T>(
-      _collection: string,
-      _callback: (data: T[]) => void,
-    ): () => void {
+    onSnapshot<T>(_collection: string, _callback: (data: T[]) => void): () => void {
       return vi.fn();
     },
   };

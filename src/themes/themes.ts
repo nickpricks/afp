@@ -26,9 +26,30 @@ const FONTS_GARDEN: FontPair = { display: 'DM Serif Display', body: 'system-ui' 
 const FONTS_ELEGANT: FontPair = { display: 'Playfair Display', body: 'system-ui' };
 const FONTS_MAGIC: FontPair = { display: 'Cinzel', body: 'JetBrains Mono' };
 
-export type ThemeEffect = 'snowflakes' | 'leaves' | 'stars' | 'hearts' | 'ink' | 'scanline' | 'crt' | 'bubbles' | 'embers' | 'wisps';
+export type ThemeEffect =
+  | 'snowflakes'
+  | 'leaves'
+  | 'stars'
+  | 'hearts'
+  | 'ink'
+  | 'scanline'
+  | 'crt'
+  | 'bubbles'
+  | 'embers'
+  | 'wisps';
 
-const ALL_EFFECTS: ThemeEffect[] = ['snowflakes', 'leaves', 'stars', 'hearts', 'ink', 'scanline', 'crt', 'bubbles', 'embers', 'wisps'];
+const ALL_EFFECTS: ThemeEffect[] = [
+  'snowflakes',
+  'leaves',
+  'stars',
+  'hearts',
+  'ink',
+  'scanline',
+  'crt',
+  'bubbles',
+  'embers',
+  'wisps',
+];
 
 export type ThemeDefinition = {
   id: ThemeId;

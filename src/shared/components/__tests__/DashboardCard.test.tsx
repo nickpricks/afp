@@ -5,7 +5,13 @@ import { MemoryRouter } from 'react-router-dom';
 import { DashboardCard } from '@/shared/components/DashboardCard';
 
 function renderCard(props = {}) {
-  const defaults = { title: 'Body', icon: '💪', metric: '42.5', subtitle: '3 up / 1 down', to: '/body' };
+  const defaults = {
+    title: 'Body',
+    icon: '💪',
+    metric: '42.5',
+    subtitle: '3 up / 1 down',
+    to: '/body',
+  };
   return render(
     <MemoryRouter>
       <DashboardCard {...defaults} {...props} />

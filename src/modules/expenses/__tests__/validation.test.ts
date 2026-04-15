@@ -9,13 +9,21 @@ const numericValues = <T extends Record<string, string | number>>(e: T): number[
 
 describe('validateExpense', () => {
   it('accepts a valid expense with enum category', () => {
-    const result = validateExpense({ date: '2026-04-02', category: ExpenseCategory.Food, amount: 100 });
+    const result = validateExpense({
+      date: '2026-04-02',
+      category: ExpenseCategory.Food,
+      amount: 100,
+    });
     expect(isOk(result)).toBe(true);
   });
 
   it('accepts all enum categories', () => {
     for (const cat of numericValues(ExpenseCategory)) {
-      const result = validateExpense({ date: '2026-04-02', category: cat as ExpenseCategory, amount: 50 });
+      const result = validateExpense({
+        date: '2026-04-02',
+        category: cat as ExpenseCategory,
+        amount: 50,
+      });
       expect(isOk(result)).toBe(true);
     }
   });
@@ -27,25 +35,41 @@ describe('validateExpense', () => {
   });
 
   it('rejects an invalid date format', () => {
-    const result = validateExpense({ date: '02-04-2026', category: ExpenseCategory.Food, amount: 100 });
+    const result = validateExpense({
+      date: '02-04-2026',
+      category: ExpenseCategory.Food,
+      amount: 100,
+    });
     expect(isErr(result)).toBe(true);
     if (isErr(result)) expect(result.error).toBe('Date must be in YYYY-MM-DD format');
   });
 
   it('rejects an unknown category', () => {
-    const result = validateExpense({ date: '2026-04-02', category: 'unknown' as ExpenseCategory, amount: 100 });
+    const result = validateExpense({
+      date: '2026-04-02',
+      category: 'unknown' as ExpenseCategory,
+      amount: 100,
+    });
     expect(isErr(result)).toBe(true);
     if (isErr(result)) expect(result.error).toBe('Unknown category');
   });
 
   it('rejects zero amount', () => {
-    const result = validateExpense({ date: '2026-04-02', category: ExpenseCategory.Food, amount: 0 });
+    const result = validateExpense({
+      date: '2026-04-02',
+      category: ExpenseCategory.Food,
+      amount: 0,
+    });
     expect(isErr(result)).toBe(true);
     if (isErr(result)) expect(result.error).toBe('Amount must be greater than zero');
   });
 
   it('rejects negative amount', () => {
-    const result = validateExpense({ date: '2026-04-02', category: ExpenseCategory.Food, amount: -50 });
+    const result = validateExpense({
+      date: '2026-04-02',
+      category: ExpenseCategory.Food,
+      amount: -50,
+    });
     expect(isErr(result)).toBe(true);
     if (isErr(result)) expect(result.error).toBe('Amount must be greater than zero');
   });
@@ -53,13 +77,21 @@ describe('validateExpense', () => {
 
 describe('validateIncome', () => {
   it('accepts a valid income entry', () => {
-    const result = validateIncome({ date: '2026-04-02', source: IncomeSource.Salary, amount: 50000 });
+    const result = validateIncome({
+      date: '2026-04-02',
+      source: IncomeSource.Salary,
+      amount: 50000,
+    });
     expect(isOk(result)).toBe(true);
   });
 
   it('accepts all enum sources', () => {
     for (const src of numericValues(IncomeSource)) {
-      const result = validateIncome({ date: '2026-04-02', source: src as IncomeSource, amount: 100 });
+      const result = validateIncome({
+        date: '2026-04-02',
+        source: src as IncomeSource,
+        amount: 100,
+      });
       expect(isOk(result)).toBe(true);
     }
   });
@@ -77,7 +109,11 @@ describe('validateIncome', () => {
   });
 
   it('rejects an unknown income source', () => {
-    const result = validateIncome({ date: '2026-04-02', source: 'unknown' as IncomeSource, amount: 100 });
+    const result = validateIncome({
+      date: '2026-04-02',
+      source: 'unknown' as IncomeSource,
+      amount: 100,
+    });
     expect(isErr(result)).toBe(true);
     if (isErr(result)) expect(result.error).toBe('Unknown income source');
   });

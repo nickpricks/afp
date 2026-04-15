@@ -54,13 +54,13 @@ export enum MealType {
 
 /** Portion eaten — qualitative scale (0=refused, 6=seconds) */
 export enum MealPortion {
-  None = 0,    // 0% — refused
-  Bite = 1,    // ~10% — took a single bite/taste
-  Little = 2,  // ~25% — took a little
-  Some = 3,    // ~50% — about half
-  Most = 4,    // ~75%
-  All = 5,     // 100%
-  Extra = 6,   // >100% — seconds
+  None = 0, // 0% — refused
+  Bite = 1, // ~10% — took a single bite/taste
+  Little = 2, // ~25% — took a little
+  Some = 3, // ~50% — about half
+  Most = 4, // ~75%
+  All = 5, // 100%
+  Extra = 6, // >100% — seconds
 }
 
 /** Need category */
@@ -101,14 +101,14 @@ export enum ChildStage {
 
 /** Per-child module toggles controlling which tracking tabs are visible */
 export type ChildConfig = {
-  feeding: boolean;      // existing — Feed module
-  sleep: boolean;        // existing
-  growth: boolean;       // existing
-  diapers: boolean;      // existing — Diaper mode of elimination subcollection
-  meals?: boolean;       // NEW — Meals module (optional for back-compat with old docs)
-  potty?: boolean;       // NEW — Potty mode of elimination subcollection
-  milestones?: boolean;  // NEW — Milestones module (Plan 6)
-  needs?: boolean;       // NEW — Needs module
+  feeding: boolean; // existing — Feed module
+  sleep: boolean; // existing
+  growth: boolean; // existing
+  diapers: boolean; // existing — Diaper mode of elimination subcollection
+  meals?: boolean; // NEW — Meals module (optional for back-compat with old docs)
+  potty?: boolean; // NEW — Potty mode of elimination subcollection
+  milestones?: boolean; // NEW — Milestones module (Plan 6)
+  needs?: boolean; // NEW — Needs module
 };
 
 /** A child profile in the children collection */

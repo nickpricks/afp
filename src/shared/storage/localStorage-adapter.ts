@@ -39,7 +39,11 @@ export function createLocalStorageAdapter(basePath: string): StorageAdapter {
   return {
     async getAll<T>(collectionName: string): Promise<Result<T[]>> {
       const items = readCollection<T>(storageKey(basePath, collectionName));
-      vlog('[AFP:storage:local] GET_ALL', { path: basePath, collection: collectionName, count: items.length });
+      vlog('[AFP:storage:local] GET_ALL', {
+        path: basePath,
+        collection: collectionName,
+        count: items.length,
+      });
       return ok(items);
     },
 
@@ -64,7 +68,13 @@ export function createLocalStorageAdapter(basePath: string): StorageAdapter {
         items.push({ ...data, id });
       }
       writeCollection(key, items);
-      vlog('[AFP:storage:local] SAVE', { path: basePath, collection: collectionName, id, mode: isUpdate ? 'update' : 'create', totalItems: items.length });
+      vlog('[AFP:storage:local] SAVE', {
+        path: basePath,
+        collection: collectionName,
+        id,
+        mode: isUpdate ? 'update' : 'create',
+        totalItems: items.length,
+      });
       notify(collectionName);
       return ok(undefined);
     },
@@ -73,20 +83,37 @@ export function createLocalStorageAdapter(basePath: string): StorageAdapter {
       const key = storageKey(basePath, collectionName);
       const items = readCollection<Record<string, unknown>>(key);
       const before = items.length;
-      writeCollection(key, items.filter((item) => item['id'] !== id));
-      vlog('[AFP:storage:local] REMOVE', { path: basePath, collection: collectionName, id, itemsBefore: before, itemsAfter: before - 1 });
+      writeCollection(
+        key,
+        items.filter((item) => item['id'] !== id),
+      );
+      vlog('[AFP:storage:local] REMOVE', {
+        path: basePath,
+        collection: collectionName,
+        id,
+        itemsBefore: before,
+        itemsAfter: before - 1,
+      });
       notify(collectionName);
       return ok(undefined);
     },
 
-    onSnapshot<T>(collectionName: string, callback: (data: T[]) => void, _onError?: (error: Error) => void): () => void {
+    onSnapshot<T>(
+      collectionName: string,
+      callback: (data: T[]) => void,
+      _onError?: (error: Error) => void,
+    ): () => void {
       if (!listeners.has(collectionName)) {
         listeners.set(collectionName, new Set());
       }
       const cb = callback as Listener;
       listeners.get(collectionName)!.add(cb);
       const initial = readCollection<T>(storageKey(basePath, collectionName));
-      vlog('[AFP:storage:local] SNAPSHOT_INIT', { path: basePath, collection: collectionName, count: initial.length });
+      vlog('[AFP:storage:local] SNAPSHOT_INIT', {
+        path: basePath,
+        collection: collectionName,
+        count: initial.length,
+      });
       callback(initial);
       return () => {
         vlog('[AFP:storage:local] SNAPSHOT_UNSUB', { path: basePath, collection: collectionName });

@@ -59,19 +59,31 @@ vi.mock('@/admin/hooks/useAdminNotifications', () => ({
 
 describe('UsersTab', () => {
   it('lists all users with name and role', () => {
-    render(<MemoryRouter><UsersTab /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <UsersTab />
+      </MemoryRouter>,
+    );
     expect(screen.getByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('Bob')).toBeInTheDocument();
   });
 
   it('shows role badges', () => {
-    render(<MemoryRouter><UsersTab /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <UsersTab />
+      </MemoryRouter>,
+    );
     expect(screen.getByText('user')).toBeInTheDocument();
     expect(screen.getByText('viewer')).toBeInTheDocument();
   });
 
   it('shows enabled module chips', () => {
-    render(<MemoryRouter><UsersTab /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <UsersTab />
+      </MemoryRouter>,
+    );
     // Alice has body, Bob has body + budget
     const bodyChips = screen.getAllByText('body');
     expect(bodyChips.length).toBeGreaterThanOrEqual(2);
@@ -79,7 +91,11 @@ describe('UsersTab', () => {
   });
 
   it('expands a user row on click to show edit controls', () => {
-    render(<MemoryRouter><UsersTab /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <UsersTab />
+      </MemoryRouter>,
+    );
     fireEvent.click(screen.getByText('Alice'));
     // Should see module toggles when expanded
     expect(screen.getByRole('checkbox', { name: /body/i })).toBeInTheDocument();

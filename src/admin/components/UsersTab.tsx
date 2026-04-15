@@ -11,8 +11,14 @@ import type { ModuleConfig } from '@/shared/types';
 
 /** Module-specific color classes (A: color-coded module chips) */
 const MODULE_COLORS: Record<ModuleId, { chip: string; toggle: string }> = {
-  [ModuleId.Body]: { chip: 'bg-indigo-500/10 text-indigo-600', toggle: 'peer-checked:bg-indigo-500' },
-  [ModuleId.Budget]: { chip: 'bg-emerald-500/10 text-emerald-600', toggle: 'peer-checked:bg-emerald-500' },
+  [ModuleId.Body]: {
+    chip: 'bg-indigo-500/10 text-indigo-600',
+    toggle: 'peer-checked:bg-indigo-500',
+  },
+  [ModuleId.Budget]: {
+    chip: 'bg-emerald-500/10 text-emerald-600',
+    toggle: 'peer-checked:bg-emerald-500',
+  },
   [ModuleId.Baby]: { chip: 'bg-pink-500/10 text-pink-600', toggle: 'peer-checked:bg-pink-500' },
 };
 
@@ -92,8 +98,7 @@ export function UsersTab() {
       </div>
 
       <ul className="divide-y divide-line rounded-xl bg-surface-card border border-line">
-        {
-users.map((u) => {
+        {users.map((u) => {
           const isExpanded = expandedUid === u.uid;
           const isAdmin = u.role === UserRole.TheAdminNick;
           const enabledModules = ALL_MODULES.filter((m) => u.modules[m]);
@@ -111,28 +116,25 @@ users.map((u) => {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-fg">{u.name}</span>
-                    {
-u.viewerOf && (
+                    {u.viewerOf && (
                       <span className="text-xs text-fg-muted">
-                        viewing {users.find((other) => other.uid === u.viewerOf)?.name ?? u.viewerOf}
+                        viewing{' '}
+                        {users.find((other) => other.uid === u.viewerOf)?.name ?? u.viewerOf}
                       </span>
-                    )
-}
+                    )}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   {/* A: Color-coded module chips */}
-                  {
-enabledModules.map((m) => (
+                  {enabledModules.map((m) => (
                     <span
                       key={m}
                       className={`rounded-full px-2 py-0.5 text-xs font-medium ${MODULE_COLORS[m].chip}`}
                     >
                       {m}
                     </span>
-                  ))
-}
+                  ))}
                   {/* Module request badges */}
                   {moduleRequests
                     .filter((r) => r.requestedBy === u.uid)
@@ -150,7 +152,9 @@ enabledModules.map((m) => (
                         {r.moduleId}
                       </button>
                     ))}
-                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${roleClass(u.role)}`}>
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${roleClass(u.role)}`}
+                  >
                     {u.role}
                   </span>
                   <svg
@@ -159,13 +163,16 @@ enabledModules.map((m) => (
                     fill="currentColor"
                     className={`h-4 w-4 text-fg-muted transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                   >
-                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
               </button>
 
-              {
-isExpanded && (
+              {isExpanded && (
                 <div className="border-t border-line bg-surface/30 px-4 py-3 space-y-3">
                   <div>
                     <label className="block text-xs font-medium text-fg-muted mb-1.5">Role</label>
@@ -177,25 +184,20 @@ isExpanded && (
                     >
                       <option value={UserRole.User}>User</option>
                       <option value={UserRole.Viewer}>Viewer</option>
-                      {
-isAdmin && (
-                        <option value={UserRole.TheAdminNick}>Admin</option>
-                      )
-}
+                      {isAdmin && <option value={UserRole.TheAdminNick}>Admin</option>}
                     </select>
-                    {
-isAdmin && (
-                      <span className="ml-2 text-xs text-fg-muted">Admin role cannot be changed</span>
-                    )
-}
+                    {isAdmin && (
+                      <span className="ml-2 text-xs text-fg-muted">
+                        Admin role cannot be changed
+                      </span>
+                    )}
                   </div>
 
                   {/* C: Toggle switches instead of checkboxes */}
                   <fieldset>
                     <legend className="text-xs font-medium text-fg-muted mb-1.5">Modules</legend>
                     <div className="flex flex-wrap gap-4">
-                      {
-ALL_MODULES.map((m) => (
+                      {ALL_MODULES.map((m) => (
                         <label key={m} className="flex items-center gap-2 cursor-pointer">
                           <div className="relative">
                             <input
@@ -205,13 +207,14 @@ ALL_MODULES.map((m) => (
                               aria-label={m}
                               className="peer sr-only"
                             />
-                            <div className={`h-5 w-9 rounded-full bg-fg-muted/20 transition-colors ${MODULE_COLORS[m].toggle}`} />
+                            <div
+                              className={`h-5 w-9 rounded-full bg-fg-muted/20 transition-colors ${MODULE_COLORS[m].toggle}`}
+                            />
                             <div className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-4" />
                           </div>
                           <span className="text-sm capitalize text-fg">{m}</span>
                         </label>
-                      ))
-}
+                      ))}
                     </div>
                   </fieldset>
 
@@ -221,19 +224,26 @@ ALL_MODULES.map((m) => (
                     onClick={() => viewUserDashboard(u.uid)}
                     className="flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/20"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="h-4 w-4"
+                    >
                       <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
-                      <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                      <path
+                        fillRule="evenodd"
+                        d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     View Dashboard
                   </button>
                 </div>
-              )
-}
+              )}
             </li>
           );
-        })
-}
+        })}
       </ul>
     </div>
   );

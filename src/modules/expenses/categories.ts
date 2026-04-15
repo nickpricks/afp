@@ -31,7 +31,18 @@ export const CATEGORIES: Partial<Record<ExpenseCategory, CategoryDefinition>> = 
   [ExpenseCategory.Bills]: {
     id: ExpenseCategory.Bills,
     label: '🧾 Bills',
-    subCategories: ['Phone', 'Internet', 'Subscriptions', 'Electricity', 'Rent', 'Society', 'Gas', 'Water', 'Tax', 'Maintenance'],
+    subCategories: [
+      'Phone',
+      'Internet',
+      'Subscriptions',
+      'Electricity',
+      'Rent',
+      'Society',
+      'Gas',
+      'Water',
+      'Tax',
+      'Maintenance',
+    ],
   },
   [ExpenseCategory.Medical]: {
     id: ExpenseCategory.Medical,
@@ -61,7 +72,13 @@ export const CATEGORIES: Partial<Record<ExpenseCategory, CategoryDefinition>> = 
   [ExpenseCategory.Finance]: {
     id: ExpenseCategory.Finance,
     label: '💰 Finance',
-    subCategories: ['Borrowed Given', 'Borrowed Taken', 'Loan EMI', 'Credit Card Payment', 'Investment'],
+    subCategories: [
+      'Borrowed Given',
+      'Borrowed Taken',
+      'Loan EMI',
+      'Credit Card Payment',
+      'Investment',
+    ],
   },
   [ExpenseCategory.Entertainment]: {
     id: ExpenseCategory.Entertainment,

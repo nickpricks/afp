@@ -45,7 +45,9 @@ export function AdminPanel() {
           type="button"
           onClick={() => setActiveTab('broadcasts')}
           className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-            activeTab === 'broadcasts' ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'
+            activeTab === 'broadcasts'
+              ? 'bg-accent text-fg-on-accent'
+              : 'text-fg-muted hover:text-fg'
           }`}
         >
           Broadcasts
@@ -54,7 +56,9 @@ export function AdminPanel() {
           type="button"
           onClick={() => setActiveTab('migrations')}
           className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-            activeTab === 'migrations' ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'
+            activeTab === 'migrations'
+              ? 'bg-accent text-fg-on-accent'
+              : 'text-fg-muted hover:text-fg'
           }`}
         >
           Migrations

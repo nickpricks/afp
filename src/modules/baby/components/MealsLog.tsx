@@ -103,7 +103,8 @@ export function MealsLog({ childId, siblingIds = [], uid = '' }: Props) {
       await log(entryData);
       if (logToAll && hasSiblings && uid) {
         const count = await logToSiblings(uid, siblingIds, DbSubcollection.Meals, entryData);
-        if (count > 0) addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+        if (count > 0)
+          addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
       }
     }
 
@@ -145,74 +146,120 @@ export function MealsLog({ childId, siblingIds = [], uid = '' }: Props) {
       <h2 className="text-lg font-semibold text-fg">Meals</h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {
-          editEntry && (
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">Editing {editEntry.date} {editEntry.time}</span>
-              <button type="button" onClick={handleCancelEdit} className="text-xs text-fg-muted hover:text-fg">Cancel</button>
-            </div>
-          )
-        }
+        {editEntry && (
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-fg-on-accent">
+              Editing {editEntry.date} {editEntry.time}
+            </span>
+            <button
+              type="button"
+              onClick={handleCancelEdit}
+              className="text-xs text-fg-muted hover:text-fg"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-2">
-          {
-ALL_MEAL_TYPES.map((mt) => (
-            <button key={mt} type="button" onClick={() => setType(mt)} className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${type === mt ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg border border-line'}`}>{MEAL_TYPE_LABELS[mt]}</button>
-          ))
-}
+          {ALL_MEAL_TYPES.map((mt) => (
+            <button
+              key={mt}
+              type="button"
+              onClick={() => setType(mt)}
+              className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${type === mt ? 'bg-accent text-fg-on-accent' : 'bg-surface-card text-fg border border-line'}`}
+            >
+              {MEAL_TYPE_LABELS[mt]}
+            </button>
+          ))}
         </div>
 
-        <input type="text" placeholder="What was served (e.g. rice + dal + carrot)" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
+        <input
+          type="text"
+          placeholder="What was served (e.g. rice + dal + carrot)"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+        />
 
-        <select value={portion ?? ''} onChange={(e) => setPortion(e.target.value === '' ? null : (Number(e.target.value) as MealPortion))} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg">
+        <select
+          value={portion ?? ''}
+          onChange={(e) =>
+            setPortion(e.target.value === '' ? null : (Number(e.target.value) as MealPortion))
+          }
+          className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+        >
           <option value="">Portion (optional)</option>
-          {
-ALL_MEAL_PORTIONS.map((p) => (
-            <option key={p} value={p}>{MEAL_PORTION_LABELS[p]}</option>
-          ))
-}
+          {ALL_MEAL_PORTIONS.map((p) => (
+            <option key={p} value={p}>
+              {MEAL_PORTION_LABELS[p]}
+            </option>
+          ))}
         </select>
 
         <div className="flex gap-3">
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
-          <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+          />
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+          />
         </div>
 
-        <input type="text" placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg" />
+        <input
+          type="text"
+          placeholder="Notes (optional)"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
+        />
 
         <div className="flex gap-2">
-          <button type="submit" disabled={saving} className="flex-1 py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50">
+          <button
+            type="submit"
+            disabled={saving}
+            className="flex-1 py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50"
+          >
             {saving && 'Saving...'}
             {!saving && (editEntry ? 'Update Meal' : 'Log Meal')}
           </button>
-          {
-            hasSiblings && !editEntry && (
-              <button
-                type="button"
-                onClick={() => setLogToAll((v) => !v)}
-                className={`px-3 py-3 rounded-lg border text-xs font-medium transition-colors ${logToAll ? 'bg-accent/10 border-accent text-accent' : 'bg-surface-card border-line text-fg-muted'}`}
-                title="Log to all children"
-              >
-                All
-              </button>
-            )
-          }
+          {hasSiblings && !editEntry && (
+            <button
+              type="button"
+              onClick={() => setLogToAll((v) => !v)}
+              className={`px-3 py-3 rounded-lg border text-xs font-medium transition-colors ${logToAll ? 'bg-accent/10 border-accent text-accent' : 'bg-surface-card border-line text-fg-muted'}`}
+              title="Log to all children"
+            >
+              All
+            </button>
+          )}
         </div>
       </form>
 
-      <RecentMeals entries={recentEntries} onEdit={startEdit} editingId={editEntry?.id ?? null} onRemove={handleUndoDelete} />
-      {
-        hasMore && (
-          <button type="button" onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)} className="text-xs text-accent font-medium py-1 self-center">
-            Show more ({sortedEntries.length - limit} remaining)
-          </button>
-        )
-      }
-      {
-        !hasMore && sortedEntries.length > CONFIG.PAGE_SIZE && (
-          <p className="text-xs text-fg-muted text-center py-1">That&apos;s all the meals</p>
-        )
-      }
+      <RecentMeals
+        entries={recentEntries}
+        onEdit={startEdit}
+        editingId={editEntry?.id ?? null}
+        onRemove={handleUndoDelete}
+      />
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)}
+          className="text-xs text-accent font-medium py-1 self-center"
+        >
+          Show more ({sortedEntries.length - limit} remaining)
+        </button>
+      )}
+      {!hasMore && sortedEntries.length > CONFIG.PAGE_SIZE && (
+        <p className="text-xs text-fg-muted text-center py-1">That&apos;s all the meals</p>
+      )}
     </div>
   );
 }
@@ -234,24 +281,55 @@ function RecentMeals({
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-sm font-medium text-fg-muted">Recent Meals</h3>
-      {
-entries.map((entry) => {
+      {entries.map((entry) => {
         const isActive = editingId === entry.id;
-        const portionLabel = entry.portion !== null ? ` · ${MEAL_PORTION_LABELS[entry.portion]}` : '';
+        const portionLabel =
+          entry.portion !== null ? ` · ${MEAL_PORTION_LABELS[entry.portion]}` : '';
         return (
-          <button key={entry.id} type="button" onClick={() => onEdit(entry)} className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}>
+          <button
+            key={entry.id}
+            type="button"
+            onClick={() => onEdit(entry)}
+            className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}
+          >
             <div className="flex justify-between text-sm">
-              <span className="font-medium text-fg">🍽 {MEAL_TYPE_LABELS[entry.type]}: {entry.description}</span>
+              <span className="font-medium text-fg">
+                🍽 {MEAL_TYPE_LABELS[entry.type]}: {entry.description}
+              </span>
               <div className="flex items-center gap-2">
-                <span className="text-fg-muted">{entry.date} {entry.time}</span>
-                <span role="button" tabIndex={0} aria-label="Delete" onClick={(e) => { e.stopPropagation(); onRemove(entry.id); }} onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); onRemove(entry.id); } }} className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all">x</span>
+                <span className="text-fg-muted">
+                  {entry.date} {entry.time}
+                </span>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Delete"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemove(entry.id);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.stopPropagation();
+                      onRemove(entry.id);
+                    }
+                  }}
+                  className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
+                >
+                  x
+                </span>
               </div>
             </div>
-            {(entry.notes || portionLabel) && <p className="text-xs text-fg-muted mt-1">{portionLabel.replace(/^ · /, '')}{entry.notes && portionLabel ? ' — ' : ''}{entry.notes}</p>}
+            {(entry.notes || portionLabel) && (
+              <p className="text-xs text-fg-muted mt-1">
+                {portionLabel.replace(/^ · /, '')}
+                {entry.notes && portionLabel ? ' — ' : ''}
+                {entry.notes}
+              </p>
+            )}
           </button>
         );
-      })
-}
+      })}
     </div>
   );
 }

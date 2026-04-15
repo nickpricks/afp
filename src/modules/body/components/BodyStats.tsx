@@ -76,10 +76,36 @@ const STAT_CARDS: {
   getValue: (r: BodyRecord) => string;
   showWhen?: (r: BodyRecord) => boolean;
 }[] = [
-  { key: 'floors', tab: 'floors', label: 'Floors Up', icon: ArrowUp, getValue: (r) => String(r.up) },
-  { key: 'floors', tab: 'floors', label: 'Floors Down', icon: ArrowDown, getValue: (r) => String(r.down) },
-  { key: 'walking', tab: 'walking', label: 'Walked', icon: Footprints, getValue: (r) => formatDistance(r.walkMeters), showWhen: (r) => r.walkMeters > 0 },
-  { key: 'running', tab: 'running', label: 'Run', icon: TrendingUp, getValue: (r) => formatDistance(r.runMeters), showWhen: (r) => r.runMeters > 0 },
+  {
+    key: 'floors',
+    tab: 'floors',
+    label: 'Floors Up',
+    icon: ArrowUp,
+    getValue: (r) => String(r.up),
+  },
+  {
+    key: 'floors',
+    tab: 'floors',
+    label: 'Floors Down',
+    icon: ArrowDown,
+    getValue: (r) => String(r.down),
+  },
+  {
+    key: 'walking',
+    tab: 'walking',
+    label: 'Walked',
+    icon: Footprints,
+    getValue: (r) => formatDistance(r.walkMeters),
+    showWhen: (r) => r.walkMeters > 0,
+  },
+  {
+    key: 'running',
+    tab: 'running',
+    label: 'Run',
+    icon: TrendingUp,
+    getValue: (r) => formatDistance(r.runMeters),
+    showWhen: (r) => r.runMeters > 0,
+  },
   { key: 'cycling', tab: 'cycling', label: 'Cycled', icon: Bike, getValue: () => '—' },
 ];
 
@@ -113,7 +139,9 @@ function ScoreRing({ score, goal }: { score: number; goal: number }) {
         <span className="text-4xl font-bold text-fg tabular-nums">{score}</span>
         <span className="text-[10px] text-fg-muted uppercase tracking-widest mt-0.5">Score</span>
       </div>
-      <p className="text-center text-[11px] text-accent mt-1.5 font-semibold">{pctLabel}% of daily goal</p>
+      <p className="text-center text-[11px] text-accent mt-1.5 font-semibold">
+        {pctLabel}% of daily goal
+      </p>
     </div>
   );
 }
@@ -145,34 +173,29 @@ export function BodyStats({
 
       {/* Today's Details — compact stat cards */}
       <div className="grid grid-cols-2 gap-2">
-        {
-STAT_CARDS
-          .filter((c) => config[c.key] || c.showWhen?.(todayRecord))
-          .map((c) => {
-            const Icon = c.icon;
-            return (
-              <button
-                key={c.label}
-                type="button"
-                onClick={() => onNavigate(c.tab)}
-                className="group rounded-xl bg-surface-card border border-line p-3 text-left transition-all hover:border-accent active:scale-[0.97]"
-              >
-                <div className="flex items-center gap-1.5 mb-1">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-accent/10 text-accent group-hover:bg-accent group-hover:text-fg-on-accent transition-colors">
-                    <Icon size={13} />
-                  </div>
-                  <span className="text-[11px] font-medium text-fg-muted">{c.label}</span>
+        {STAT_CARDS.filter((c) => config[c.key] || c.showWhen?.(todayRecord)).map((c) => {
+          const Icon = c.icon;
+          return (
+            <button
+              key={c.label}
+              type="button"
+              onClick={() => onNavigate(c.tab)}
+              className="group rounded-xl bg-surface-card border border-line p-3 text-left transition-all hover:border-accent active:scale-[0.97]"
+            >
+              <div className="flex items-center gap-1.5 mb-1">
+                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-accent/10 text-accent group-hover:bg-accent group-hover:text-fg-on-accent transition-colors">
+                  <Icon size={13} />
                 </div>
-                <p className="text-xl font-bold text-fg tabular-nums">{c.getValue(todayRecord)}</p>
-              </button>
-            );
-          })
-}
+                <span className="text-[11px] font-medium text-fg-muted">{c.label}</span>
+              </div>
+              <p className="text-xl font-bold text-fg tabular-nums">{c.getValue(todayRecord)}</p>
+            </button>
+          );
+        })}
       </div>
 
       {/* Reset today */}
-      {
-onResetToday && todayRecord.total > 0 && (
+      {onResetToday && todayRecord.total > 0 && (
         <div className="flex justify-center">
           <button
             type="button"
@@ -183,21 +206,26 @@ onResetToday && todayRecord.total > 0 && (
             Reset today
           </button>
         </div>
-      )
-}
+      )}
 
       {/* Weekly Day Bars */}
       <div className="rounded-lg bg-surface-card border border-line p-4">
-        <h3 className="text-xs font-medium text-fg-muted uppercase tracking-wide mb-3">This Week</h3>
+        <h3 className="text-xs font-medium text-fg-muted uppercase tracking-wide mb-3">
+          This Week
+        </h3>
         <div className="grid grid-cols-7 gap-1.5">
-          {
-weekStats.dailyScores.map(({ key, score }) => {
+          {weekStats.dailyScores.map(({ key, score }) => {
             const isToday = key === today;
-            const barHeight = weekStats.maxScore > 0 ? Math.max((score / weekStats.maxScore) * 100, score > 0 ? 8 : 0) : 0;
+            const barHeight =
+              weekStats.maxScore > 0
+                ? Math.max((score / weekStats.maxScore) * 100, score > 0 ? 8 : 0)
+                : 0;
 
             return (
               <div key={key} className="flex flex-col items-center gap-1">
-                <span className="text-[10px] font-semibold text-fg">{score > 0 ? Math.round(score * 10) / 10 : ''}</span>
+                <span className="text-[10px] font-semibold text-fg">
+                  {score > 0 ? Math.round(score * 10) / 10 : ''}
+                </span>
                 <div className="w-full h-16 rounded-lg bg-surface relative overflow-hidden">
                   <div
                     className={`absolute bottom-0 left-0 right-0 rounded-lg transition-all duration-500 ${
@@ -206,13 +234,14 @@ weekStats.dailyScores.map(({ key, score }) => {
                     style={{ height: `${barHeight}%` }}
                   />
                 </div>
-                <span className={`text-[10px] font-semibold ${isToday ? 'text-accent' : 'text-fg-muted'}`}>
+                <span
+                  className={`text-[10px] font-semibold ${isToday ? 'text-accent' : 'text-fg-muted'}`}
+                >
                   {dayLabel(key)}
                 </span>
               </div>
             );
-          })
-}
+          })}
         </div>
 
         {/* Week summary row */}
@@ -233,28 +262,26 @@ weekStats.dailyScores.map(({ key, score }) => {
       </div>
 
       {/* Quick Actions — compact pill row */}
-      {
-STAT_CARDS.some((c) => config[c.key]) && (
+      {STAT_CARDS.some((c) => config[c.key]) && (
         <div className="flex items-center justify-center gap-2 flex-wrap">
-          {
-[...new Map(STAT_CARDS.filter((c) => config[c.key]).map((c) => [c.tab, c])).values()].map((c) => {
+          {[
+            ...new Map(STAT_CARDS.filter((c) => config[c.key]).map((c) => [c.tab, c])).values(),
+          ].map((c) => {
             const Icon = c.icon;
             return (
-            <button
-              key={c.tab}
-              type="button"
-              onClick={() => onNavigate(c.tab)}
-              className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent active:scale-95 transition-all hover:bg-accent hover:text-fg-on-accent"
-            >
-              <Icon size={13} />
-              <span>{c.tab.charAt(0).toUpperCase() + c.tab.slice(1)}</span>
-            </button>
+              <button
+                key={c.tab}
+                type="button"
+                onClick={() => onNavigate(c.tab)}
+                className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent active:scale-95 transition-all hover:bg-accent hover:text-fg-on-accent"
+              >
+                <Icon size={13} />
+                <span>{c.tab.charAt(0).toUpperCase() + c.tab.slice(1)}</span>
+              </button>
             );
-          })
-}
+          })}
         </div>
-      )
-}
+      )}
     </div>
   );
 }

@@ -4,6 +4,32 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.11] — 2026-04-15 (Phase 3 Plan 7 — Life Journal)
+
+### Added
+- **Life Journal** — Narrative Daily / Weekly / Monthly view aggregating all 7 baby subcollections (feeds, sleep, growth, elimination, meals, milestones, needs). Always-visible tab at position 2 in `ChildDetail` (between Dashboard and Feeding). Grain selector + previous/next period stepper. Seven cards: counting moments (conditional), Feeds & Meals, Sleep, Growth, Elimination, Milestones, Needs activity. Empty-state fallbacks per card.
+- **Counting moments** — Cumulative thresholds detected on read: diapers [100/250/500/1000/2500/5000], feeds [100/500/1000/2500/5000], meals [50/100/250/500/1000], milestones [10/25/50/100]. No persisted counters — detected by comparing totals before vs after the period. Compute-on-read design.
+- **Pure aggregation layer** — `src/modules/baby/journal/` subdir with `constants.ts` (thresholds + `JournalGrain` enum), `types.ts` (`JournalRange`, `JournalSummary`, `CountingMoment`, `CountingDataType`), `range.ts` (`computeRange`, `formatRangeLabel`), `aggregate.ts` (`computeCountingMoments`, `computeJournalSummary`). Fully pure — no Firestore mocking needed to test.
+- **Data hook** — `useJournalData(childId, range)` composes 7 `useBabyCollection` listeners + `computeJournalSummary` via `useMemo`.
+- **UI components** — `JournalPicker` (D/W/M + period stepper), `JournalCard` (generic wrapper with title + empty fallback), `LifeJournalView` (composite).
+
+### Changed
+- **ChildDetail `DashboardTab`** — Minimal stat strip (9A scope) added above the navigation grid: today's feed count + sleep hours + diaper count + milestone count (only shows if non-zero). "See full journal →" link opens the Journal tab. Dashboard no longer purely navigation — carries live data.
+- **Tab order** — Journal is now 2nd (was: Dashboard → Feeding → ...; now: Dashboard → Journal → Feeding → ...).
+- **Version bumps** — `package.json` 0.2.6 → 0.2.11 (was stale through pre-0.2.7 → pre-0.2.10). `deploy.yml` `VITE_APP_VERSION` 0.2.6 → 0.2.11.
+
+### Tests
+- 23+ new unit tests: 9 range, 14 aggregate, 4 JournalPicker, 5 LifeJournalView, plus DashboardTab strip test.
+- Total trajectory: 435 → 458+ unit.
+
+### Decisions
+- **Needs semantics (Option A)** — aggregated by `date`-in-range filtered by current `status`. Acknowledged imprecision: a need created March but bought April Week 2 counts as `needsAcquired` in week-view only if still within date-range — otherwise not counted. Reframed as "life event": anything touching the wishlist lifecycle this period is journal-worthy.
+- **Actual release, not pre-** — Plans 3-6 shipped as `pre-` tags; `0.2.11` promoted to real release since Phase 3 baby module feature-complete (7/10 plans done).
+- **Tab placement = second** — Dashboard teaser + Journal full view is the pattern, per "we show some on stats (dashboard) and rest on its own tab."
+- **Counting-moments as notifications** — deferred counting-moment *celebration surfacing* to Plan 8 (Smart Alerts); Journal just displays them passively for now.
+
+---
+
 ## [pre-0.2.10] — 2026-04-15 (Phase 3 Plans 5+6 — Needs + Milestones)
 
 ### Added

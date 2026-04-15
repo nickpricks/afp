@@ -24,11 +24,7 @@ export function BroadcastsTab() {
     if (!message.trim() || !shownTillDate) return;
     setSending(true);
 
-    const targetUids = targetAll
-      ? nonAdminUsers.map((u) => u.uid)
-      : targetUid
-        ? [targetUid]
-        : [];
+    const targetUids = targetAll ? nonAdminUsers.map((u) => u.uid) : targetUid ? [targetUid] : [];
 
     if (targetUids.length === 0) {
       setSending(false);
@@ -133,7 +129,9 @@ export function BroadcastsTab() {
             >
               <option value="">Select user...</option>
               {nonAdminUsers.map((u) => (
-                <option key={u.uid} value={u.uid}>{u.name}</option>
+                <option key={u.uid} value={u.uid}>
+                  {u.name}
+                </option>
               ))}
             </select>
           )}

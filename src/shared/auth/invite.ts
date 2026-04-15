@@ -28,7 +28,10 @@ export interface InviteRecord {
 /** Generates a lowercase alphanumeric invite code using crypto.getRandomValues */
 export function generateInviteCode(): string {
   const values = crypto.getRandomValues(new Uint8Array(CONFIG.INVITE_CODE_LENGTH));
-  return Array.from(values, (v) => CONFIG.INVITE_CODE_CHARSET[v % CONFIG.INVITE_CODE_CHARSET.length]).join('');
+  return Array.from(
+    values,
+    (v) => CONFIG.INVITE_CODE_CHARSET[v % CONFIG.INVITE_CODE_CHARSET.length],
+  ).join('');
 }
 
 /** Validates that a string matches the expected invite code format */
@@ -56,11 +59,19 @@ export async function createInvite(
     viewerOf: options?.viewerOf ?? null,
   };
 
-  vlog('[AFP:invite] createInvite', { code, name, modules, role: record.role, viewerOf: record.viewerOf });
+  vlog('[AFP:invite] createInvite', {
+    code,
+    name,
+    modules,
+    role: record.role,
+    viewerOf: record.viewerOf,
+  });
 
   if (!isFirebaseConfigured) {
     try {
-      const stored = JSON.parse(localStorage.getItem(CONFIG.DEV_INVITES_KEY) ?? '[]') as InviteRecord[];
+      const stored = JSON.parse(
+        localStorage.getItem(CONFIG.DEV_INVITES_KEY) ?? '[]',
+      ) as InviteRecord[];
       stored.push(record);
       localStorage.setItem(CONFIG.DEV_INVITES_KEY, JSON.stringify(stored));
       vlog('[AFP:invite] Created (dev localStorage)');
@@ -86,7 +97,9 @@ export async function deleteInvite(code: string): Promise<Result<void>> {
   vlog('[AFP:invite] deleteInvite', { code });
   if (!isFirebaseConfigured) {
     try {
-      const stored = JSON.parse(localStorage.getItem(CONFIG.DEV_INVITES_KEY) ?? '[]') as InviteRecord[];
+      const stored = JSON.parse(
+        localStorage.getItem(CONFIG.DEV_INVITES_KEY) ?? '[]',
+      ) as InviteRecord[];
       const filtered = stored.filter((inv) => inv.code !== code);
       localStorage.setItem(CONFIG.DEV_INVITES_KEY, JSON.stringify(filtered));
       return ok(undefined);
@@ -107,10 +120,7 @@ export async function deleteInvite(code: string): Promise<Result<void>> {
 }
 
 /** Redeems an invite code atomically — links UID and creates user profile in one transaction */
-export async function redeemInvite(
-  code: string,
-  uid: string,
-): Promise<Result<InviteRecord>> {
+export async function redeemInvite(code: string, uid: string): Promise<Result<InviteRecord>> {
   vlog('[AFP:invite] redeemInvite start', { code, uid });
 
   if (!isFirebaseConfigured) {
@@ -130,7 +140,11 @@ export async function redeemInvite(
       }
 
       const record = snap.data() as InviteRecord;
-      vlog('[AFP:invite] Invite found', { name: record.name, role: record.role, linkedUid: record.linkedUid });
+      vlog('[AFP:invite] Invite found', {
+        name: record.name,
+        role: record.role,
+        linkedUid: record.linkedUid,
+      });
 
       if (record.linkedUid !== null) {
         vwarn('[AFP:invite] Already redeemed:', code);

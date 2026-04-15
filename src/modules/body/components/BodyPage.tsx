@@ -19,7 +19,12 @@ type TabId = 'stats' | 'floors' | 'walking' | 'running' | 'cycling';
 type TabDef = { id: TabId; label: string };
 
 /** Builds the list of available tabs based on user's body config */
-function buildTabs(config: { floors: boolean; walking: boolean; running: boolean; cycling: boolean }): TabDef[] {
+function buildTabs(config: {
+  floors: boolean;
+  walking: boolean;
+  running: boolean;
+  cycling: boolean;
+}): TabDef[] {
   const tabs: TabDef[] = [{ id: 'stats', label: 'Stats' }];
   if (config.floors) {
     tabs.push({ id: 'floors', label: 'Floors' });
@@ -108,24 +113,18 @@ export function BodyPage() {
     <div className="flex flex-col gap-4 px-4 py-6">
       {/* Tab bar with settings button */}
       <div className="flex gap-1 overflow-x-auto no-scrollbar rounded-lg bg-surface-card border border-line p-1">
-        {
-          tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={
-                `shrink-0 rounded-md px-3 py-2 text-sm font-medium transition ${
-                  validTab === tab.id
-                    ? 'bg-accent text-fg-on-accent'
-                    : 'text-fg-muted hover:text-fg'
-                }`
-              }
-            >
-              {tab.label}
-            </button>
-          ))
-        }
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id)}
+            className={`shrink-0 rounded-md px-3 py-2 text-sm font-medium transition ${
+              validTab === tab.id ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
         <button
           type="button"
           aria-label="Settings"
@@ -137,60 +136,50 @@ export function BodyPage() {
       </div>
 
       {/* Tab content */}
-      {
-        validTab === 'stats' && (
-          <BodyStats
-            todayRecord={todayRecord}
-            records={records}
-            config={config}
-            onNavigate={handleNavigate}
-            onResetToday={handleResetToday}
-          />
-        )
-      }
-      {
-        validTab === 'floors' && (
-          <FloorsTab
-            todayRecord={todayRecord}
-            records={records}
-            floorHeight={config.floorHeight}
-            onTap={tap}
-            onSaveRecord={saveRecord}
-            onDeleteRecord={deleteRecord}
-            onResetToday={handleResetToday}
-          />
-        )
-      }
-      {
-        validTab === 'walking' && (
-          <WalkingTab
-            activities={activities}
-            onLog={logActivity}
-            onSave={updateActivity}
-            onDelete={deleteActivity}
-          />
-        )
-      }
-      {
-        validTab === 'running' && (
-          <RunningTab
-            activities={activities}
-            onLog={logActivity}
-            onSave={updateActivity}
-            onDelete={deleteActivity}
-          />
-        )
-      }
-      {
-        validTab === 'cycling' && (
-          <CyclingTab
-            activities={activities}
-            onLog={logActivity}
-            onSave={updateActivity}
-            onDelete={deleteActivity}
-          />
-        )
-      }
+      {validTab === 'stats' && (
+        <BodyStats
+          todayRecord={todayRecord}
+          records={records}
+          config={config}
+          onNavigate={handleNavigate}
+          onResetToday={handleResetToday}
+        />
+      )}
+      {validTab === 'floors' && (
+        <FloorsTab
+          todayRecord={todayRecord}
+          records={records}
+          floorHeight={config.floorHeight}
+          onTap={tap}
+          onSaveRecord={saveRecord}
+          onDeleteRecord={deleteRecord}
+          onResetToday={handleResetToday}
+        />
+      )}
+      {validTab === 'walking' && (
+        <WalkingTab
+          activities={activities}
+          onLog={logActivity}
+          onSave={updateActivity}
+          onDelete={deleteActivity}
+        />
+      )}
+      {validTab === 'running' && (
+        <RunningTab
+          activities={activities}
+          onLog={logActivity}
+          onSave={updateActivity}
+          onDelete={deleteActivity}
+        />
+      )}
+      {validTab === 'cycling' && (
+        <CyclingTab
+          activities={activities}
+          onLog={logActivity}
+          onSave={updateActivity}
+          onDelete={deleteActivity}
+        />
+      )}
     </div>
   );
 }

@@ -18,8 +18,8 @@ Last updated: 2026-04-14
 | Notifications | ✅ Done | 20/20 | Per-user notifications, module requests, admin alerts, Broadcasts tab |
 | Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
 | Phase 2g (E2E + Bench) | ✅ Done | 8/8 | Interactive E2E flows + build/bundle/test benchmarks |
-| Phase 3 (Baby → Kid) | 🚧 In progress | 6/10 | Plans 1-6 done (Foundation, Suggestions, Elimination, Meals, Needs, Milestones). Plan 7 (Life Journal) ready. Plans 8-9 deferred. Plan 10 (Yoga) needs brainstorm |
-| **Total** | **~97%** | **190/208** | |
+| Phase 3 (Baby → Kid) | 🚧 In progress | 7/10 | Brainstorm A (Baby→Kid) done: Plans 1-7 shipped (Foundation, Suggestions, Elimination, Meals, Needs, Milestones, Life Journal). Plans 8-9 deferred. Plan 10 = Yoga = Brainstorm C — see **Pending Brainstorms** block below |
+| **Total** | **~98%** | **191/208** | |
 
 ---
 
@@ -127,7 +127,20 @@ All P0 items completed.
 
 ## P3 — Future
 
-> **Current focus:** Phase 3 Baby → Kid. Plans 1-6 complete (Plans 5+6 shipped via parallel-subagent worktrees + coordinator commit pattern; Plan 6 fell back to inline after rate-limit). Next up: Plan 7 (Life Journal) — depends on Plans 3-6. Plans 8-9 (Smart Alerts, Export/Import) deferred. Plan 10 (Yoga — Body module) awaiting brainstorm.
+> **Current focus:** Phase 3 Baby → Kid. Plans 1-7 complete (Plan 7 — Life Journal — shipped as actual release v0.2.11, first non-pre- tag since v0.2.6). Counting-moment *celebration surfacing* deferred to Plan 8 (Smart Alerts). Plan 9 (Export/Import) deferred. Two pending AFP-scope brainstorms: **B (Budget → Investment)** and **C (Yoga)**, followed by **D (Body → Gamification)**. Two optional out-of-repo brainstorms park at **E (ft web)** and **F (passforge vault)**.
+
+### Pending Brainstorms
+
+Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produces a spec at `docs/specs/2026-04-XX-phase3-<topic>-design.md`, then per-feature plans in `docs/plans/`. Brainstorm order is input-richness order — hardest design work in the middle, easiest at the end.
+
+| # | Brainstorm | Scope | Status | Input richness | Notes |
+|---|------------|-------|--------|----------------|-------|
+| A | Baby → Kid | AFP | ✅ Done | High (BabyTracker roadmap v0.4–v0.5 pre-mapped) | Spec + 7 plans written, Plans 1–7 shipped as of v0.2.11 |
+| B | Budget → Investment | AFP | 🔨 Pending | Low (Finularity mostly port-focused — blank canvas) | Savings goals, recurring expenses, net worth, spend insights. Hardest of the four — placed second while rhythm is fresh |
+| C | Yoga | AFP | 🔨 Pending | Medium (plan scaffold exists at `2026-04-15-phase3-body-yoga-plan.md`) | Duration-based scoring, asana list size, breathing exercises. Scaffold plan exists but awaits decisions before expansion |
+| D | Body → Gamification | AFP | 🔨 Pending | Medium (Floor-Tracker: 30-challenge catalog, badges, usernames, streaks) | Lightest — mostly cherry-picking features over existing scoring data |
+| E | ft web layer | `ft/` repo | 🔮 Optional | — | Markdown-blogger frontend. Triggered by `ft/`'s roadmap, not AFP's |
+| F | passforge web vault | `passforge/` repo | 🔮 Optional | — | Web UI + browser extension. Triggered by `passforge/`'s roadmap |
 
 ### Module Evolution
 
@@ -151,6 +164,18 @@ All P0 items completed.
 ---
 
 ## Done
+
+### 2026-04-15 — Session 12 (Phase 3 Plan 7 — Life Journal, v0.2.11 actual release)
+
+- [x] Phase 3 Plan 7 (Life Journal) — D/W/M aggregation view across all 7 baby subcollections (feeds, sleep, growth, elimination, meals, milestones, needs)
+- [x] Pure aggregation layer — `src/modules/baby/journal/` subdir (`constants.ts`, `types.ts`, `range.ts`, `aggregate.ts`) — fully testable without Firestore mocks
+- [x] `useJournalData` hook composing 7 `useBabyCollection` listeners + memoized summary
+- [x] `JournalPicker` (D/W/M grain selector + period stepper), `JournalCard` (generic wrapper), `LifeJournalView` (composite — 7 summary cards)
+- [x] Counting moments — compute-on-read threshold detection for diapers/feeds/meals/milestones. No persisted counters.
+- [x] Journal tab placed at position 2 in `ChildDetail` (Dashboard → Journal → Feeding → ...)
+- [x] `DashboardTab` 9A-minimal enrichment — live today-stat strip above navigation grid, "See full journal →" link
+- [x] Version bumps — `package.json` 0.2.6 → 0.2.11 (stale through pre- tags), `deploy.yml` `VITE_APP_VERSION` bumped. **Actual 0.2.11 release, not pre- tag**
+- [x] Unit tests: 435 → 469 (+34) — 9 range, 14 aggregate, 4 JournalPicker, 5 LifeJournalView, 2 DashboardTab strip
 
 ### 2026-04-15 — Session 10 (Phase 2g E2E, prod fixes, Phase 3 Plans 1-2)
 

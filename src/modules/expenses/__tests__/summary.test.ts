@@ -55,10 +55,7 @@ describe('computeTotalIncome', () => {
 
 describe('computeTotalSpent', () => {
   it('sums all non-settlement expenses', () => {
-    const expenses = [
-      makeExpense({ amount: 200 }),
-      makeExpense({ amount: 300 }),
-    ];
+    const expenses = [makeExpense({ amount: 200 }), makeExpense({ amount: 300 })];
     expect(computeTotalSpent(expenses)).toBe(500);
   });
 
@@ -72,9 +69,7 @@ describe('computeTotalSpent', () => {
   });
 
   it('returns 0 when all expenses are settlements', () => {
-    const expenses = [
-      makeExpense({ amount: 500, isSettlement: true }),
-    ];
+    const expenses = [makeExpense({ amount: 500, isSettlement: true })];
     expect(computeTotalSpent(expenses)).toBe(0);
   });
 

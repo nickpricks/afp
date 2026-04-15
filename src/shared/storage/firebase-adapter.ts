@@ -32,14 +32,22 @@ export function createFirebaseAdapter(basePath: string): StorageAdapter {
       try {
         const q = query(resolveCollection(collectionName));
         const snapshot = await getDocs(q);
-        const items = snapshot.docs.map(
-          (d) => ({ id: d.id, ...d.data() }) as T,
-        );
-        vlog('[AFP:storage:fb] GET_ALL', { path: basePath, collection: collectionName, count: items.length });
+        const items = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as T);
+        vlog('[AFP:storage:fb] GET_ALL', {
+          path: basePath,
+          collection: collectionName,
+          count: items.length,
+        });
         return ok(items);
       } catch (e) {
-        verr('[AFP:storage:fb] GET_ALL failed', { path: basePath, collection: collectionName, error: e });
-        return err(`Failed to fetch ${collectionName}: ${e instanceof Error ? e.message : String(e)}`);
+        verr('[AFP:storage:fb] GET_ALL failed', {
+          path: basePath,
+          collection: collectionName,
+          error: e,
+        });
+        return err(
+          `Failed to fetch ${collectionName}: ${e instanceof Error ? e.message : String(e)}`,
+        );
       }
     },
 
@@ -51,7 +59,9 @@ export function createFirebaseAdapter(basePath: string): StorageAdapter {
         }
         return ok({ id: snap.id, ...snap.data() } as T);
       } catch (e) {
-        return err(`Failed to fetch ${collectionName}/${id}: ${e instanceof Error ? e.message : String(e)}`);
+        return err(
+          `Failed to fetch ${collectionName}/${id}: ${e instanceof Error ? e.message : String(e)}`,
+        );
       }
     },
 
@@ -66,8 +76,14 @@ export function createFirebaseAdapter(basePath: string): StorageAdapter {
         vlog('[AFP:storage:fb] SAVE', { path: basePath, collection: collectionName, id: docId });
         return ok(undefined);
       } catch (e) {
-        verr('[AFP:storage:fb] SAVE failed', { path: basePath, collection: collectionName, error: e });
-        return err(`Failed to save to ${collectionName}: ${e instanceof Error ? e.message : String(e)}`);
+        verr('[AFP:storage:fb] SAVE failed', {
+          path: basePath,
+          collection: collectionName,
+          error: e,
+        });
+        return err(
+          `Failed to save to ${collectionName}: ${e instanceof Error ? e.message : String(e)}`,
+        );
       }
     },
 
@@ -77,8 +93,15 @@ export function createFirebaseAdapter(basePath: string): StorageAdapter {
         vlog('[AFP:storage:fb] REMOVE', { path: basePath, collection: collectionName, id });
         return ok(undefined);
       } catch (e) {
-        verr('[AFP:storage:fb] REMOVE failed', { path: basePath, collection: collectionName, id, error: e });
-        return err(`Failed to delete ${collectionName}/${id}: ${e instanceof Error ? e.message : String(e)}`);
+        verr('[AFP:storage:fb] REMOVE failed', {
+          path: basePath,
+          collection: collectionName,
+          id,
+          error: e,
+        });
+        return err(
+          `Failed to delete ${collectionName}/${id}: ${e instanceof Error ? e.message : String(e)}`,
+        );
       }
     },
 
@@ -92,14 +115,20 @@ export function createFirebaseAdapter(basePath: string): StorageAdapter {
       return onSnapshot(
         q,
         (snapshot) => {
-          const items = snapshot.docs.map(
-            (d) => ({ id: d.id, ...d.data() }) as T,
-          );
-          vlog('[AFP:storage:fb] SNAPSHOT', { path: basePath, collection: collectionName, count: items.length });
+          const items = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as T);
+          vlog('[AFP:storage:fb] SNAPSHOT', {
+            path: basePath,
+            collection: collectionName,
+            count: items.length,
+          });
           callback(items);
         },
         (error) => {
-          verr('[AFP:storage:fb] SNAPSHOT error', { path: basePath, collection: collectionName, error });
+          verr('[AFP:storage:fb] SNAPSHOT error', {
+            path: basePath,
+            collection: collectionName,
+            error,
+          });
           onError?.(error);
         },
       );

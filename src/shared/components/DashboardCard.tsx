@@ -22,7 +22,9 @@ export function DashboardCard({
       <div className="flex items-center gap-2 mb-3">
         <span className="text-lg">{icon}</span>
         <span className="text-xs font-medium text-fg-muted uppercase tracking-wide">{title}</span>
-        <span className="ml-auto text-fg-muted opacity-0 group-hover:opacity-100 transition-opacity">&rarr;</span>
+        <span className="ml-auto text-fg-muted opacity-0 group-hover:opacity-100 transition-opacity">
+          &rarr;
+        </span>
       </div>
       <div className="rounded-lg bg-[var(--accent-muted)] px-3 py-2">
         <p className="text-3xl font-bold text-fg">{metric}</p>
