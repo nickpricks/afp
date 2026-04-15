@@ -4,6 +4,27 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [pre-0.2.10] — 2026-04-15 (Phase 3 Plans 5+6 — Needs + Milestones)
+
+### Added
+- **Plan 5 (Needs)**: New `needs` subcollection at `users/{uid}/children/{childId}/needs/{id}`. `NeedsLog.tsx` component with filter chips (All / Wishlist / Have / Outgrown) and status lifecycle (Wishlist → Inventory via "Bought" button → Outgrown via "Outgrew" button). Built in an isolated git worktree by a parallel subagent.
+- **Plan 6 (Milestones)**: New `milestones` subcollection. `MilestonesLog.tsx` with 10 quick-add template chips (`milestone-templates.ts`), 6 categories (Motor / Language / Social / Cognitive / Hobby / Other), grouped-by-category list, optional media URL field rendered as link.
+- **AddChild form**: 7th and 8th checkboxes — Needs and Milestones (both default off).
+- **ChildDetail**: Two new tabs (Needs, Milestones) + dashboard SummaryCards (🛍 / 🌟), all gated by their respective `child.config` flags.
+- **Constants**: `DbSubcollection.Needs`, `DbSubcollection.Milestones`, `NEED_CATEGORY_LABELS`, `ALL_NEED_CATEGORIES`, `NEED_STATUS_LABELS`, `ALL_NEED_STATUSES`, `MILESTONE_CATEGORY_LABELS`, `ALL_MILESTONE_CATEGORIES`. `BabyMsg` adds 10 entries (`NeedAdded/Deleted/Updated/MovedToInventory/MovedToOutgrown/TitleRequired`, `MilestoneAdded/Deleted/Updated/TitleRequired`).
+
+### Process
+- **Parallel subagent dispatch** — Plans 5 and 6 dispatched simultaneously into isolated worktrees branched from a coordinator commit (`742fac2`) that pre-staged all shared-file additions. Plan 5 returned cleanly. Plan 6's subagent rate-limited mid-setup with a stale worktree base; reimplemented inline using the same TDD pattern.
+- **Pattern: pre-stage shared files, dispatch isolated worktrees** — avoids merge conflicts on `ChildDetail.tsx` / `constants/*.ts` / `AddChild.tsx`. Subagents only create new files; coordinator wires them up after merge.
+
+### Tests
+- 30 new tests (16 NeedsLog, 6 milestone-templates, 8 MilestonesLog) — total 435 unit (was 405 pre-Plans-5+6).
+
+### Docs
+- ROADMAP, CHANGELOG, CLAUDE.md updated. Per-directory READMEs updated.
+
+---
+
 ## [pre-0.2.9] — 2026-04-15 (Phase 3 Plan 4 — Meals Module)
 
 ### Added
