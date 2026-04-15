@@ -1,6 +1,12 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useParams, useNavigate, generatePath } from 'react-router-dom';
 import { doc, updateDoc } from 'firebase/firestore';
+
+import { todayStr } from '@/shared/utils/date';
+
+import { useJournalData } from '@/modules/baby/hooks/useJournalData';
+import { JournalGrain } from '@/modules/baby/journal/constants';
+import { computeRange } from '@/modules/baby/journal/range';
 
 import { FeedLog } from '@/modules/baby/components/FeedLog';
 import { SleepLog } from '@/modules/baby/components/SleepLog';
@@ -199,7 +205,13 @@ function ChildDetailInner({ child, siblings, uid, onBack }: { child: Child; sibl
 }
 
 /** Dashboard tab showing today's summary and quick action buttons */
-function DashboardTab({ child, onNavigate }: { child: Child; onNavigate: (tab: TabId) => void }) {
+export function DashboardTab({
+  child,
+  onNavigate,
+}: {
+  child: Child;
+  onNavigate: (tab: TabId) => void;
+}) {
   const diapersOn = child.config.diapers;
   const pottyOn = child.config.potty ?? false;
   const eliminationLabel =
@@ -207,9 +219,38 @@ function DashboardTab({ child, onNavigate }: { child: Child; onNavigate: (tab: T
   const eliminationIcon = pottyOn && !diapersOn ? '🚽' : '🧷';
   const eliminationDescription =
     pottyOn && !diapersOn ? 'Log potty events' : diapersOn && pottyOn ? 'Log changes / events' : 'Log changes';
+
+  const todayRange = useMemo(() => computeRange(JournalGrain.Day, todayStr()), []);
+  const today = useJournalData(child.id ?? '', todayRange);
+
+  const stripParts: string[] = [];
+  if (today && today.feedCount > 0) stripParts.push(`${today.feedCount} feed${today.feedCount === 1 ? '' : 's'}`);
+  if (today && today.sleepHours > 0) stripParts.push(`${today.sleepHours.toFixed(1)} hrs sleep`);
+  if (today && today.diaperCount > 0)
+    stripParts.push(`${today.diaperCount} diaper${today.diaperCount === 1 ? '' : 's'}`);
+  if (today && today.pottyCount > 0)
+    stripParts.push(`${today.pottyCount} potty event${today.pottyCount === 1 ? '' : 's'}`);
+  if (today && today.mealCount > 0) stripParts.push(`${today.mealCount} meal${today.mealCount === 1 ? '' : 's'}`);
+  if (today && today.milestonesInRange.length > 0)
+    stripParts.push(
+      `${today.milestonesInRange.length} milestone${today.milestonesInRange.length === 1 ? '' : 's'}`,
+    );
+
   return (
     <div className="flex flex-col gap-4 py-4">
       <h3 className="text-base font-medium text-fg">Today&apos;s Summary</h3>
+      {stripParts.length > 0 && (
+        <div className="rounded-lg border border-line bg-surface-card p-3">
+          <p className="text-sm text-fg">{stripParts.join(' · ')}</p>
+          <button
+            type="button"
+            onClick={() => onNavigate('journal')}
+            className="mt-1 text-xs text-accent hover:underline"
+          >
+            See full journal &rarr;
+          </button>
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-3">
         {
 child.config.feeding && (
