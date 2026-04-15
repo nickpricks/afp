@@ -18,7 +18,7 @@ Last updated: 2026-04-14
 | Notifications | ✅ Done | 20/20 | Per-user notifications, module requests, admin alerts, Broadcasts tab |
 | Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
 | Phase 2g (E2E + Bench) | ✅ Done | 8/8 | Interactive E2E flows + build/bundle/test benchmarks |
-| Phase 3 (Baby → Kid) | 🚧 In progress | 7/10 | Plans 1-7 done (Foundation, Suggestions, Elimination, Meals, Needs, Milestones, Life Journal). Plans 8-9 deferred. Plan 10 (Yoga) needs brainstorm |
+| Phase 3 (Baby → Kid) | 🚧 In progress | 7/10 | Brainstorm A (Baby→Kid) done: Plans 1-7 shipped (Foundation, Suggestions, Elimination, Meals, Needs, Milestones, Life Journal). Plans 8-9 deferred. Plan 10 = Yoga = Brainstorm C — see **Pending Brainstorms** block below |
 | **Total** | **~98%** | **191/208** | |
 
 ---
@@ -127,7 +127,20 @@ All P0 items completed.
 
 ## P3 — Future
 
-> **Current focus:** Phase 3 Baby → Kid. Plans 1-7 complete (Plan 7 — Life Journal — shipped as actual release v0.2.11, first non-pre- tag since v0.2.6). Counting-moment *celebration surfacing* deferred to Plan 8 (Smart Alerts). Plan 9 (Export/Import) deferred. Plan 10 (Yoga — Body module) awaiting brainstorm.
+> **Current focus:** Phase 3 Baby → Kid. Plans 1-7 complete (Plan 7 — Life Journal — shipped as actual release v0.2.11, first non-pre- tag since v0.2.6). Counting-moment *celebration surfacing* deferred to Plan 8 (Smart Alerts). Plan 9 (Export/Import) deferred. Two pending AFP-scope brainstorms: **B (Budget → Investment)** and **C (Yoga)**, followed by **D (Body → Gamification)**. Two optional out-of-repo brainstorms park at **E (ft web)** and **F (passforge vault)**.
+
+### Pending Brainstorms
+
+Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produces a spec at `docs/specs/2026-04-XX-phase3-<topic>-design.md`, then per-feature plans in `docs/plans/`. Brainstorm order is input-richness order — hardest design work in the middle, easiest at the end.
+
+| # | Brainstorm | Scope | Status | Input richness | Notes |
+|---|------------|-------|--------|----------------|-------|
+| A | Baby → Kid | AFP | ✅ Done | High (BabyTracker roadmap v0.4–v0.5 pre-mapped) | Spec + 7 plans written, Plans 1–7 shipped as of v0.2.11 |
+| B | Budget → Investment | AFP | 🔨 Pending | Low (Finularity mostly port-focused — blank canvas) | Savings goals, recurring expenses, net worth, spend insights. Hardest of the four — placed second while rhythm is fresh |
+| C | Yoga | AFP | 🔨 Pending | Medium (plan scaffold exists at `2026-04-15-phase3-body-yoga-plan.md`) | Duration-based scoring, asana list size, breathing exercises. Scaffold plan exists but awaits decisions before expansion |
+| D | Body → Gamification | AFP | 🔨 Pending | Medium (Floor-Tracker: 30-challenge catalog, badges, usernames, streaks) | Lightest — mostly cherry-picking features over existing scoring data |
+| E | ft web layer | `ft/` repo | 🔮 Optional | — | Markdown-blogger frontend. Triggered by `ft/`'s roadmap, not AFP's |
+| F | passforge web vault | `passforge/` repo | 🔮 Optional | — | Web UI + browser extension. Triggered by `passforge/`'s roadmap |
 
 ### Module Evolution
 

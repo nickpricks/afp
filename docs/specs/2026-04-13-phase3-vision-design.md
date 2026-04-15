@@ -3,7 +3,9 @@
 **Date:** 2026-04-13
 **Status:** Design — pending user approval
 **Supersedes:** Prior workspace-level passforge/ft "independent CLIs" note in `../../../CLAUDE.md`
-**Parent of:** Three downstream brainstorms (A, B, C — see § 7) and two optional out-of-repo brainstorms (D, E)
+**Parent of:** Four downstream AFP-scope brainstorms (A, B, C, D — see § 7) and two optional out-of-repo brainstorms (E, F)
+
+**Amended 2026-04-15 (Session 12):** Yoga promoted to first-class brainstorm slot (C) after Plan 7 ship. Body → Gamification shifts from C to D. Out-of-repo brainstorms shift from D/E to E/F.
 
 ---
 
@@ -128,28 +130,32 @@ is and remains readable via the live URLs.
 
 ### Timing
 
-Archive executes **after Phase 3 brainstorms A+B+C complete** and feature
-inventories are locked in. Rationale: source repos stay editable-if-needed
-during the strip-mine scan, in case a deeper investigation into one of
-them is triggered by a brainstorm. Archive is the capstone, not the opener.
+Archive executes **after Phase 3 brainstorms A+B+C+D complete** and
+feature inventories are locked in. Rationale: source repos stay
+editable-if-needed during the strip-mine scan, in case a deeper
+investigation into one of them is triggered by a brainstorm. Archive is
+the capstone, not the opener.
 
 ---
 
-## 3. Phase 3: Three Module Evolutions
+## 3. Phase 3: Four AFP-scope Brainstorms
 
-Phase 3 evolves AFP's three existing modules:
-- **A — Baby → Kid**: stage-aware UI suggestions + new toddler/kid surfaces
-- **B — Budget → Investment**: parallel investment/savings surface alongside expense tracking
-- **C — Body → Gamification**: additive UI layer (challenges, streaks, sharing) over existing scoring
+Phase 3 evolves AFP's three existing modules, plus one narrow feature-scope brainstorm (Yoga):
+- **A — Baby → Kid**: stage-aware UI suggestions + new toddler/kid surfaces (module-scope)
+- **B — Budget → Investment**: parallel investment/savings surface alongside expense tracking (module-scope)
+- **C — Yoga**: duration-based Body tab + asana catalog + breathing exercises (feature-scope within Body; amended 2026-04-15)
+- **D — Body → Gamification**: additive UI layer (challenges, streaks, sharing) over existing scoring (module-scope)
 
-Each gets its own dedicated brainstorm session (this spec's terminal handoff
-in § 9). This § plus §§ 4-6 capture the **starting input** for those
-brainstorms — feature inventories from the source-repo strip-mine — not the
-final designs.
+Each gets its own dedicated brainstorm session (this spec's terminal
+handoff in § 9). This § plus §§ 4-6 capture the **starting input** for the
+three module-scope brainstorms — feature inventories from the source-repo
+strip-mine — not the final designs. The Yoga brainstorm (C) uses the
+existing plan scaffold at `docs/plans/2026-04-15-phase3-body-yoga-plan.md`
+as its starting input instead of a source-repo scan.
 
-Naming convention: each module brainstorm produces a spec at
-`docs/specs/2026-04-XX-phase3-<module>-design.md` and a plan at
-`docs/plans/2026-04-XX-phase3-<module>-plan.md`.
+Naming convention: each brainstorm produces a spec at
+`docs/specs/2026-04-XX-phase3-<topic>-design.md` and a plan at
+`docs/plans/2026-04-XX-phase3-<topic>-plan.md`.
 
 ---
 
@@ -232,7 +238,9 @@ date" data in AFP (savings target dates, recurring next-due dates).
 
 ---
 
-## 6. Module C — Body → Gamification
+## 6. Module D — Body → Gamification
+
+*(Section heading previously "Module C"; letter shifted to D when Yoga was promoted to C slot in Session 12. Content unchanged.)*
 
 **Stub.** AFP's body module currently tracks floors, walking, running,
 cycling, with a daily score and goal. It's functional but *flat* — there's
@@ -270,17 +278,18 @@ exception — it's a profile-level addition with its own data
 
 ## 7. Brainstorm Ordering & Rationale
 
-**Brainstorm order: A → B → C** (input-richness order):
+**Brainstorm order: A → B → C → D** (input-richness order; Yoga inserted at C after Session 12):
 
-| Order | Module | Why this position |
-|---|---|---|
-| 1st | A — Baby → Kid | Richest source backlog (BabyTracker has v0.4.3/v0.4.4/v0.5 already mapped). Brainstorm is mostly *structuring inherited designs*, not inventing. Best to do while context is hot from this scan. |
-| 2nd | B — Budget → Investment | Blank-canvas brainstorm (Finularity gives almost nothing). Hardest design exercise — better second when rhythm is established. |
-| 3rd | C — Body → Gamification | Lightest. Mostly cherry-picking discrete features (challenges, usernames, badges) over existing data. Coast at the end. |
+| Order | Brainstorm | Why this position | Status |
+|---|---|---|---|
+| 1st | A — Baby → Kid | Richest source backlog (BabyTracker has v0.4.3/v0.4.4/v0.5 already mapped). Brainstorm is mostly *structuring inherited designs*, not inventing. Best to do while context is hot from this scan. | ✅ Done — spec + 7 plans written; Plans 1–7 shipped as of v0.2.11 |
+| 2nd | B — Budget → Investment | Blank-canvas brainstorm (Finularity gives almost nothing). Hardest design exercise — better second when rhythm is established. | 🔨 Pending |
+| 3rd | C — Yoga | Narrow, plan-scaffold already exists (`docs/plans/2026-04-15-phase3-body-yoga-plan.md`). Brainstorm settles: scoring formula (duration-based vs calorie-estimate), asana list size, breathing exercises in or out, whether to share scoring bucket with Walk/Run/Cycle. Rationally fits here — a medium-size bite between B's blank canvas and D's feature assembly. | 🔨 Pending |
+| 4th | D — Body → Gamification | Lightest. Mostly cherry-picking discrete features (challenges, usernames, badges, streaks) over existing body scoring data. Coast at the end. | 🔨 Pending |
 
 **Brainstorm order ≠ shipping order.** Shipping order is decided
 separately at implementation time, based on what AFP needs to ship
-next. Specs and plans for A, B, C may sit unimplemented for months;
+next. Specs and plans for A, B, C, D may sit unimplemented for months;
 implementation picks the most-needed module when capacity opens up.
 
 ### Optional future brainstorms (separate projects)
@@ -288,11 +297,11 @@ implementation picks the most-needed module when capacity opens up.
 Two more brainstorms are anticipated but **scoped to other repos**, not
 AFP. Listed here for portfolio completeness:
 
-- **D — ft web layer** (in `ft/` repo) — markdown-blogger web frontend
+- **E — ft web layer** (in `ft/` repo) — markdown-blogger web frontend
   on top of the Go backbone. Frontend stack TBD (Go templates / Fresh /
   React / Svelte). Triggered when ft's CLI work reaches the web-layer
   milestone in its own roadmap.
-- **E — passforge web vault + browser extension** (in `passforge/`
+- **F — passforge web vault + browser extension** (in `passforge/`
   repo) — web UI for the existing v0.3.0 vault, plus a browser extension
   for password-manager UX (form fill, save, autocomplete). Triggered
   when passforge reaches that milestone in its own roadmap.
@@ -332,7 +341,21 @@ what it owns:
 - **Settlement/CC reconciliation** already exists in AFP
   (`ReconciliationView`) — does B enhance it, or stay independent?
 
-### Module C (Body → Gamification)
+### Module C (Yoga) — *added 2026-04-15*
+- **Scoring formula** — duration-based (minutes) vs session-based (1
+  session = N points)? How does Yoga score compose with Walk/Run/Cycle
+  in the daily Body score? Current formula is
+  `floors_up×1 + floors_down×0.5 + walk_km×10 + run_km×20 + cycle_km×15`;
+  Yoga needs a unit different from distance.
+- **Asana list size** — curated minimum (10–20 canonical poses) vs
+  larger catalog (50+ with search)? Tradeoff: UX friction vs serious-practitioner coverage.
+- **Breathing exercises** — in scope or deferred? They share the
+  "duration-based practice" pattern but have a different intent
+  (pranayama, box breathing, etc.) and could confuse the data model.
+- **Form shape** — single dropdown for asana + duration number, vs
+  multi-select (did asanas X, Y, Z for total duration)?
+
+### Module D (Body → Gamification) — *was Module C*
 - **Username uniqueness** — separate `usernames/{name}` collection
   (Floor-Tracker pattern) vs Firebase rule-enforced uniqueness on
   profile field. Trade-offs around redirect routing.
@@ -346,15 +369,16 @@ what it owns:
 
 ### Cross-cutting
 - **Scheduled-job infrastructure** — A's stage notifications, B's
-  recurring expenses, and C's streak-reminder pings all want CRON-like
+  recurring expenses, and D's streak-reminder pings all want CRON-like
   execution. AFP currently has none. Adding it (Firebase Cloud Functions
   or similar) is *foundational infrastructure* that unlocks all three —
-  worth deciding once before any of A/B/C lock their notification design.
+  worth deciding once before any of A/B/D lock their notification design.
+  (C/Yoga does not need CRON.)
 - **Stage/role/module visibility interaction** — for Viewers and Admins,
   does Module A stage-suggestion apply (a Viewer of a toddler sees
   toddler defaults), or is that always per-child stage regardless of
   viewer?
-- **AFP version bump policy** — does each Phase 3 module ship as a
+- **AFP version bump policy** — does each Phase 3 brainstorm ship as a
   minor version (v0.3.0 → v0.4.0 → v0.5.0 → v0.6.0) or all under v0.4.0?
 
 ### Nick's Final Words
@@ -372,15 +396,31 @@ feels, priorities, things to revisit, anything off-grid.*
 Terminal step of this brainstorm: invoke the **writing-plans** skill to
 produce an implementation plan. But the implementation plan for *what*?
 
-This vision spec defines three downstream **brainstorms** (A, B, C),
-each of which produces its own design spec, which then handoffs to
-**writing-plans** for its own implementation plan. So the immediate
-next session is:
+This vision spec defines four downstream AFP-scope **brainstorms** (A, B,
+C, D), each of which produces its own design spec, which then handoffs to
+**writing-plans** for its own implementation plan. So the immediate next
+session is:
 
-> **Module A (Baby → Kid) brainstorm** — invoke
-> `superpowers:brainstorming` skill, reference this vision spec
-> (§ 4 + § 8), produce `docs/specs/2026-04-XX-phase3-baby-to-kid-design.md`,
-> then writing-plans for its plan.
+> **A — Baby → Kid (DONE 2026-04-13 through 2026-04-15)** — spec at
+> `docs/specs/2026-04-13-phase3-baby-to-kid-design.md`, 7 plans written,
+> Plans 1-7 shipped as of v0.2.11.
+>
+> **B — Budget → Investment (next, pending)** — invoke
+> `superpowers:brainstorming`, reference this vision spec (§ 5 + § 8),
+> produce `docs/specs/2026-04-XX-phase3-budget-to-investment-design.md`,
+> then writing-plans for per-feature plans.
+>
+> **C — Yoga (pending after B)** — invoke `superpowers:brainstorming`,
+> reference the plan scaffold at
+> `docs/plans/2026-04-15-phase3-body-yoga-plan.md`, produce
+> `docs/specs/2026-04-XX-phase3-yoga-design.md`, then expand the scaffold
+> plan to ship-ready form.
+>
+> **D — Body → Gamification (pending after C)** — invoke
+> `superpowers:brainstorming`, reference this vision spec (§ 6 + § 8),
+> produce `docs/specs/2026-04-XX-phase3-body-to-gamification-design.md`,
+> then writing-plans.
 
-After A ships its spec+plan, the next session repeats for B, then C.
-Optional D and E (in `ft/` and `passforge/` repos) are unscheduled.
+After D ships its spec+plan, the archive plan (§ 2) executes.
+Optional E (ft web) and F (passforge vault) are unscheduled and scoped to
+their own repos.
