@@ -58,6 +58,9 @@ export enum BabyMsg {
   DiaperDeleted = 'Diaper deleted',
   ChildAdded = 'Child added',
   ChildUpdated = 'Child updated',
+  SuggestionSnoozed = 'Suggestion snoozed for 30 days',
+  SuggestionEnabled = 'Module enabled',
+  SuggestionDisabled = 'Module disabled',
 }
 
 /** Profile-related messages */

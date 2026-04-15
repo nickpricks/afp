@@ -1,12 +1,18 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useParams, useNavigate, generatePath } from 'react-router-dom';
+import { doc, updateDoc } from 'firebase/firestore';
 
 import { FeedLog } from '@/modules/baby/components/FeedLog';
 import { SleepLog } from '@/modules/baby/components/SleepLog';
 import { GrowthLog } from '@/modules/baby/components/GrowthLog';
 import { DiaperLog } from '@/modules/baby/components/DiaperLog';
+import { SuggestionStrip } from '@/modules/baby/components/SuggestionStrip';
 import { useChildren } from '@/modules/baby/hooks/useChildren';
+import { useSuggestions } from '@/modules/baby/hooks/useSuggestions';
+import { configFieldFor, SuggestionAction } from '@/modules/baby/suggestions';
+import type { SuggestionFeature } from '@/modules/baby/suggestions';
 import { useAuth } from '@/shared/auth/useAuth';
+import { db } from '@/shared/auth/firebase-config';
 import type { Child } from '@/modules/baby/types';
 import { computeAge } from '@/modules/baby/utils';
 import { ROUTES } from '@/constants/routes';
@@ -57,6 +63,8 @@ export function ChildDetail() {
 /** Inner component that renders tabs once the child is resolved */
 function ChildDetailInner({ child, siblings, uid, onBack }: { child: Child; siblings: Child[]; uid: string; onBack: () => void }) {
   const navigate = useNavigate();
+  const { firebaseUser } = useAuth();
+  const suggestions = useSuggestions(child);
   const tabs: TabDef[] = [
     { id: 'dashboard', label: 'Dashboard', visible: true },
     { id: 'feeding', label: 'Feeding', visible: child.config.feeding },
@@ -70,6 +78,20 @@ function ChildDetailInner({ child, siblings, uid, onBack }: { child: Child; sibl
 
   const childId = child.id ?? '';
   const siblingIds = siblings.map((s) => s.id).filter(Boolean) as string[];
+
+  /** Applies a suggestion by updating the child's config flag in Firestore */
+  const applySuggestion = useCallback(
+    async (targetChildId: string, feature: SuggestionFeature) => {
+      if (!firebaseUser) return;
+      const sug = suggestions.find((s) => s.feature === feature);
+      if (!sug) return;
+      const recommendOn = sug.action === SuggestionAction.Enable;
+      const field = configFieldFor(feature);
+      const ref = doc(db, `users/${firebaseUser.uid}/children/${targetChildId}`);
+      await updateDoc(ref, { [`config.${field}`]: recommendOn });
+    },
+    [firebaseUser, suggestions],
+  );
 
   return (
     <div className="flex flex-col gap-4 px-4 py-6">
@@ -108,6 +130,9 @@ function ChildDetailInner({ child, siblings, uid, onBack }: { child: Child; sibl
           </div>
         )
       }
+
+      {/* Age-based suggestion strip */}
+      <SuggestionStrip suggestions={suggestions} onEnable={applySuggestion} />
 
       {/* Tabs */}
       <div className="flex gap-1 overflow-x-auto border-b border-line">

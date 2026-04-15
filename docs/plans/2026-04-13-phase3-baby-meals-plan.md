@@ -129,6 +129,8 @@ export function MealsLog({ child }: Props): JSX.Element {
         >
           <option value="">Portion (optional)</option>
           <option value={MealPortion.None}>None — refused</option>
+          <option value={MealPortion.Bite}>Bite</option>
+          <option value={MealPortion.Little}>Little</option>
           <option value={MealPortion.Some}>Some</option>
           <option value={MealPortion.Most}>Most</option>
           <option value={MealPortion.All}>All</option>

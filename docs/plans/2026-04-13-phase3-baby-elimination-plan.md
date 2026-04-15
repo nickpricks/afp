@@ -10,7 +10,7 @@
 
 **Spec:** [`docs/specs/2026-04-13-phase3-baby-to-kid-design.md`](../specs/2026-04-13-phase3-baby-to-kid-design.md) — read § 5.
 
-**Plan position:** Plan 3 of 9 for Module A. **Depends on Plan 1 (foundation)** — uses `EliminationMode`, `PottyType`, `EliminationEntry`, extended `ChildConfig`.
+**Plan position:** Plan 3 of 9 for Module A. **Depends on Plan 1 (foundation)** — uses `EliminationMode`, `PottyTrainingEvent`, `EliminationEntry`, extended `ChildConfig`.
 
 ---
 
@@ -73,7 +73,7 @@ describe('transformDiaperToElimination', () => {
     const result: EliminationEntry = transformDiaperToElimination(diaper);
     expect(result.mode).toBe(EliminationMode.Diaper);
     expect(result.diaperType).toBe(DiaperType.Wet);
-    expect(result.pottyType).toBeUndefined();
+    expect(result.pottyEvent).toBeUndefined();
     expect(result.id).toBe('d1');
     expect(result.notes).toBe('morning change');
   });
@@ -192,7 +192,7 @@ import { useBabyCollection } from '../hooks/useBabyCollection';
 import {
   EliminationMode,
   DiaperType,
-  PottyType,
+  PottyTrainingEvent,
   type Child,
   type EliminationEntry,
 } from '../types';
@@ -213,7 +213,7 @@ export function EliminationLog({ child }: Props): JSX.Element {
   const [date, setDate] = useState(todayStr());
   const [time, setTime] = useState(nowTime());
   const [diaperType, setDiaperType] = useState<DiaperType>(DiaperType.Wet);
-  const [pottyType, setPottyType] = useState<PottyType>(PottyType.Pee);
+  const [pottyEvent, setPottyEvent] = useState<PottyTrainingEvent>(PottyTrainingEvent.Pee);
   const [notes, setNotes] = useState('');
   const { addToast } = useToast();
 
@@ -234,7 +234,7 @@ export function EliminationLog({ child }: Props): JSX.Element {
     const entry: Omit<EliminationEntry, 'id'> = {
       date, time, mode,
       diaperType: mode === EliminationMode.Diaper ? diaperType : undefined,
-      pottyType: mode === EliminationMode.Potty ? pottyType : undefined,
+      pottyEvent: mode === EliminationMode.Potty ? pottyEvent : undefined,
       timestamp: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       notes,
@@ -283,12 +283,12 @@ export function EliminationLog({ child }: Props): JSX.Element {
           </select>
         )}
         {mode === EliminationMode.Potty && (
-          <select value={pottyType} onChange={e => setPottyType(Number(e.target.value) as PottyType)}>
-            <option value={PottyType.Pee}>Pee</option>
-            <option value={PottyType.Poop}>Poop</option>
-            <option value={PottyType.Both}>Both</option>
-            <option value={PottyType.Accident}>Accident</option>
-            <option value={PottyType.Attempt}>Attempt</option>
+          <select value={pottyEvent} onChange={e => setPottyEvent(Number(e.target.value) as PottyTrainingEvent)}>
+            <option value={PottyTrainingEvent.Pee}>Pee</option>
+            <option value={PottyTrainingEvent.Poop}>Poop</option>
+            <option value={PottyTrainingEvent.Both}>Both</option>
+            <option value={PottyTrainingEvent.Accident}>Accident</option>
+            <option value={PottyTrainingEvent.Attempt}>Attempt</option>
           </select>
         )}
 
@@ -304,7 +304,7 @@ export function EliminationLog({ child }: Props): JSX.Element {
               {entry.date} {entry.time} —{' '}
               {entry.mode === EliminationMode.Diaper
                 ? `Diaper: ${DiaperType[entry.diaperType ?? DiaperType.Wet]}`
-                : `Potty: ${PottyType[entry.pottyType ?? PottyType.Pee]}`}
+                : `Potty: ${PottyTrainingEvent[entry.pottyEvent ?? PottyTrainingEvent.Pee]}`}
             </span>
             <button
               type="button"
@@ -480,7 +480,7 @@ Plan 3 (elimination), Task 3"
 | Check | Result |
 |---|---|
 | Spec coverage | § 5 (Combined Diaper/Potty) — discriminated union, migration, UI behavior table, subcollection rename |
-| Type consistency | `EliminationMode`, `DiaperType`, `PottyType` used consistently; `EliminationEntry` shape matches spec § 12 |
+| Type consistency | `EliminationMode`, `DiaperType`, `PottyTrainingEvent` used consistently; `EliminationEntry` shape matches spec § 12 |
 | Placeholder scan | None — all code complete; admin task has illustrative pattern noted |
 | Test coverage | 2 unit tests (migration transform) + 3 component tests = 5 tests added |
 | Migration safety | Old `diapers/*` not deleted — fully reversible if backfill issues arise |

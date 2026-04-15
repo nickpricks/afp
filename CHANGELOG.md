@@ -4,7 +4,24 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
-## [Unreleased]
+## [pre-0.2.7] — 2026-04-15 (Phase 3 Baby → Kid, Plans 1-2)
+
+### Added
+- **Plan 1 (Foundation)**: 8 new enums (`EliminationMode`, `PottyTrainingEvent`, `MealType`, `MealPortion`, `NeedCategory`, `NeedStatus`, `MilestoneCategory`, `ChildStage`). New types: `EliminationEntry`, `MealEntry`, `NeedEntry`, `Milestone`, `SuggestionSnooze`. Extended `ChildConfig` with optional `meals`, `potty`, `milestones`, `needs`. Extended `Child` with optional `suggestionState`. New `src/modules/baby/stage.ts` with `computeStage()`, `monthsOldFromDob()`, `STAGE_BOUNDARIES`, `SUGGEST_THRESHOLDS`, `SUGGESTION_SNOOZE_DAYS`.
+- **Plan 2 (Suggestions)**: Age-based suggestion system with three rendering surfaces — session toast in `Layout`, `SuggestionBanner` on Dashboard (when Baby module enabled), `SuggestionStrip` in `ChildDetail`. 30-day snooze persistence via `useSnooze` hook writing to `child.suggestionState`. Suggests enabling meals at 9mo, potty at 24mo, disabling feeds after 18mo, disabling diapers after 30mo.
+- **Yoga plan** (`docs/plans/2026-04-15-phase3-body-yoga-plan.md`): Plan 10 — duration-based Body module activity with asana selector (requires brainstorm before implementation).
+
+### Changed
+- `MealPortion` expanded from 5 → 7 values: `None, Bite, Little, Some, Most, All, Extra` — finer granularity between None and Most.
+- `PottyType` → `PottyTrainingEvent` (more accurate — includes both on-potty successes and off-potty accidents). Field in `EliminationEntry` renamed from `pottyType` to `pottyEvent`.
+- `BabyMsg` enum: +3 entries (`SuggestionSnoozed`, `SuggestionEnabled`, `SuggestionDisabled`).
+
+### Docs
+- Spec and plan docs updated to match code: `phase3-baby-to-kid-design.md`, `phase3-baby-foundation-plan.md`, `phase3-baby-meals-plan.md`, `phase3-baby-elimination-plan.md`.
+
+---
+
+## [0.2.6] — 2026-04-15
 
 ### Added
 - Per-user notification system (`users/{uid}/notifications/{id}` subcollection)
@@ -14,6 +31,21 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 - `requestedModules` field on UserProfile for tracking pending requests
 - `adminUid` exposed in auth context from `app/config`
 - Firestore rules for notification read/write/create permissions
+- **Phase 2g E2E interaction tests** (5 flow tests in `e2e/flows.spec.ts`): Budget full expense, Body configure + log floors + log walk, Payment bubble toggle, Body gear reconfigure, Baby add child + log feed — all with reload persistence checks
+- **Shared E2E helpers** (`e2e/helpers.ts`): `ensureBodyConfigured` and `addChild` extracted from `app.spec.ts`
+- **Build bench script** (`scripts/bench.ts`, `bun run build:bench`): measures build time, bundle size (total + largest chunk), unit test duration, E2E test duration
+- **Firestore collectionGroup index** (`firestore.indexes.json`): enables `useAllUsers()` admin query across all user profiles
+- **Firebase data structure documentation** (`docs/firebase-data-structure.md`): full tree view, per-collection field tables, security rules summary, enum reference
+
+### Fixed
+- **Expense form redirect**: `AddExpensePage` navigated to `/expenses` (no matching route) after submit — now correctly uses `ROUTES.BUDGET` (`/budget`). Affected both expense and income submissions.
+
+### Changed
+- **CI Firebase workflow** (`firebase-rules.yml`): now deploys `firestore:rules,firestore:indexes` together (was rules-only), triggered by changes to either file. Added `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` env var to silence Node.js 20 deprecation warnings.
+
+### Documentation
+- **ROADMAP.md**: Phase 2g marked complete (8/8), total progress 184/198 (~95%)
+- **Session 9 verification checklist** (`docs/session9-verify.md`): restructured into Local Dev (15/18 pass), Production (2/8 pass pre-fix), Root Cause Analysis, and Deployment Checklist sections
 
 ---
 
