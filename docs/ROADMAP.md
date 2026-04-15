@@ -17,8 +17,8 @@ Last updated: 2026-04-14
 | Phase 2e (Admin+Viewer) | ✅ Core done | 35/35 | Done: admin pages, view user dashboard, Broadcasts tab, viewer invite flow, role tests, admin claim flow |
 | Notifications | ✅ Done | 20/20 | Per-user notifications, module requests, admin alerts, Broadcasts tab |
 | Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
-| Phase 2g (E2E + Bench) | ❌ Not started | 0/8 | Interactive E2E flows, build/bundle/test benchmarks |
-| **Total** | **~90%** | **176/198** | |
+| Phase 2g (E2E + Bench) | ✅ Done | 8/8 | Interactive E2E flows + build/bundle/test benchmarks |
+| **Total** | **~95%** | **184/198** | |
 
 ---
 
@@ -115,14 +115,14 @@ All P0 items completed.
 
 | | Item | Phase | Status |
 |---|------|-------|--------|
-| 🔨 | E2E: Budget full expense flow (fill form → submit → verify in list) | 2g | Not started |
-| 🔨 | E2E: Body configure → log floors → switch tab → log walk → verify | 2g | Not started |
-| 🔨 | E2E: Payment bubble toggle (select → deselect → verify styling) | 2g | Not started |
-| 🔨 | E2E: Body gear reconfigure (click gear → enable running → save → verify tab) | 2g | Not started |
-| 🔨 | E2E: Baby add child → navigate to child → log feed → verify in recent | 2g | Not started |
-| 🔨 | Bench: build time measurement (vite build with timing) | 2g | Not started |
-| 🔨 | Bench: bundle size report from dist/ | 2g | Not started |
-| 🔨 | Bench: test suite duration tracking (unit + E2E) | 2g | Not started |
+| ~~🔨~~ | ~~E2E: Budget full expense flow (fill form → submit → verify in list)~~ | 2g | DONE |
+| ~~🔨~~ | ~~E2E: Body configure → log floors → switch tab → log walk → verify~~ | 2g | DONE |
+| ~~🔨~~ | ~~E2E: Payment bubble toggle (select → deselect → verify styling)~~ | 2g | DONE |
+| ~~🔨~~ | ~~E2E: Body gear reconfigure (click gear → enable running → save → verify tab)~~ | 2g | DONE |
+| ~~🔨~~ | ~~E2E: Baby add child → navigate to child → log feed → verify in recent~~ | 2g | DONE |
+| ~~🔨~~ | ~~Bench: build time measurement (vite build with timing)~~ | 2g | DONE |
+| ~~🔨~~ | ~~Bench: bundle size report from dist/~~ | 2g | DONE |
+| ~~🔨~~ | ~~Bench: test suite duration tracking (unit + E2E)~~ | 2g | DONE |
 
 ## P3 — Future
 

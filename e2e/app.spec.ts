@@ -1,23 +1,8 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+
+import { ensureBodyConfigured } from './helpers';
 
 // Dev mode: Firebase not configured, all modules enabled, TheAdminNick role, localStorage adapter
-
-/**
- * Saves body config with default selections (Floors + Walking + Running).
- * Must be called before testing body tabs — the config form gates them.
- */
-async function ensureBodyConfigured(page: Page) {
-  await page.goto('/body');
-  // Wait for lazy-loaded route to render — either config form or tabbed interface
-  const configOrTabs = page.getByText(/Configure Body Tracking|Stats/);
-  await expect(configOrTabs.first()).toBeVisible({ timeout: 10000 });
-  // If config form is showing, save it (fresh localStorage = always first visit)
-  const saveBtn = page.getByRole('button', { name: 'Save Configuration' });
-  if (await saveBtn.isVisible()) {
-    await saveBtn.click();
-    await expect(page.getByRole('button', { name: 'Stats' })).toBeVisible();
-  }
-}
 
 test.describe('App shell', () => {
   test('loads and shows dashboard', async ({ page }) => {

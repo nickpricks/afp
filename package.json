@@ -22,7 +22,8 @@
     "setup:env:all": "bun run setup:env && bun run setup:env:prod",
     "clean": "shx rm -rf dist coverage dev-dist .final-countdown-reports",
     "clean:build": "shx rm -rf dist dev-dist",
-    "clean:test": "shx rm -rf coverage test-results playwright-report e2e/screenshots e2e/results"
+    "clean:test": "shx rm -rf coverage test-results playwright-report e2e/screenshots e2e/results",
+    "build:bench": "bun scripts/bench.ts"
   },
   "dependencies": {
     "firebase": "^12.11.0",
