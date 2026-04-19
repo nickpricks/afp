@@ -1,10 +1,11 @@
 import { useState } from 'react';
 
-import { INCOME_SOURCE_LABELS, PAYMENT_METHOD_LABELS } from '@/modules/expenses/categories';
+import { INCOME_SOURCE_LABELS } from '@/modules/expenses/categories';
 import { IncomeSource, PaymentMethod } from '@/shared/types';
 import { CONFIG } from '@/constants/config';
 import { todayStr } from '@/shared/utils/date';
 import { isValidNumber } from '@/shared/utils/validation';
+import { PaymentMethodBubble } from '@/shared/components/PaymentMethodBubble';
 
 /** Quick-access payment methods for income */
 const QUICK_PAYMENT_METHODS: PaymentMethod[] = [
@@ -66,26 +67,6 @@ export function AddIncome({
     }
   }
 
-  /** Renders a payment method bubble button */
-  function renderMethodBubble(method: PaymentMethod) {
-    const label = PAYMENT_METHOD_LABELS[method];
-    const isActive = paymentMethod === method;
-    return (
-      <button
-        key={method}
-        type="button"
-        onClick={() => setPaymentMethod(method)}
-        className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-          isActive
-            ? 'border-accent bg-accent text-fg-on-accent'
-            : 'border-line bg-surface-card text-fg-muted hover:border-accent/50'
-        }`}
-      >
-        {label.emoji} {label.shortLabel}
-      </button>
-    );
-  }
-
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-4">
       <input
@@ -127,8 +108,23 @@ export function AddIncome({
       <div className="flex flex-col gap-1.5">
         <span className="text-xs text-fg-muted">Payment Method</span>
         <div className="flex flex-wrap gap-1.5">
-          {QUICK_PAYMENT_METHODS.map(renderMethodBubble)}
-          {showAllMethods && EXTRA_PAYMENT_METHODS.map(renderMethodBubble)}
+          {QUICK_PAYMENT_METHODS.map((m) => (
+            <PaymentMethodBubble
+              key={m}
+              method={m}
+              isActive={paymentMethod === m}
+              onClick={setPaymentMethod}
+            />
+          ))}
+          {showAllMethods &&
+            EXTRA_PAYMENT_METHODS.map((m) => (
+              <PaymentMethodBubble
+                key={m}
+                method={m}
+                isActive={paymentMethod === m}
+                onClick={setPaymentMethod}
+              />
+            ))}
           {!showAllMethods && (
             <button
               type="button"

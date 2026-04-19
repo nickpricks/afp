@@ -4,6 +4,22 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.12] — 2026-04-19 (Budget UI & Security Fixes)
+
+### Added
+- **PaymentMethodBubble** — Extracted shared UI component for consistent bubble selection.
+- **useVerbose Hook** — Reactive management of verbose logging state across components.
+- **GEMINI.md** — New project-specific foundational mandates for agentic workers.
+
+### Changed
+- **Budget UX Overhaul** — `AddExpense` now uses interactive emoji bubbles for categories (defaults set via `CONFIG.BUDGET_VISIBLE_CATEGORIES`) and additive presets.
+- **Required Selection** — Categories are now `null` by default, requiring explicit user selection before submission; added `BudgetMsg.CategoryRequired` toast validation.
+- **Console Overlay** — Now only renders when "Verbose logs" is enabled on the Debug page.
+
+### Fixed
+- **Theme Persistence** — Corrected Firestore rules to allow non-admin users to update `theme` and `colorMode` in their profiles.
+- **Format & Lint** — Project-wide cleanup of code style and linting issues.
+
 ## [0.2.11] — 2026-04-15 (Phase 3 Plan 7 — Life Journal)
 
 ### Added

@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-04-14
+Last updated: 2026-04-19
 
 ---
 
@@ -12,8 +12,8 @@ Last updated: 2026-04-14
 | Phase 2.0 (Foundation) | ✅ Done | 14/14 | Enums, types, Firestore rules, routes |
 | Phase 2a (Body) | ✅ Core done | 32/34 | Missing: Firestore rule verification (needs deploy) |
 | Phase 2b (Baby) | ✅ Core done | 29/23 | Firestore rules TBD (needs deploy) |
-| Phase 2c (Budget) | ✅ Core done | 30/28 | Firestore rules TBD (needs deploy) |
-| Phase 2d (Profile) | ✅ Core done | 8/9 | Module request buttons added, theme save fix done. Remaining: auth provider linking (needs Firebase) |
+| Phase 2c (Budget) | ✅ Core done | 30/28 | Firestore rules TBD (needs deploy). UI Alignment done (Session 11) |
+| Phase 2d (Profile) | ✅ Core done | 9/9 | Module request buttons added, theme save fix done. Remaining: auth provider linking (needs Firebase) |
 | Phase 2e (Admin+Viewer) | ✅ Core done | 35/35 | Done: admin pages, view user dashboard, Broadcasts tab, viewer invite flow, role tests, admin claim flow |
 | Notifications | ✅ Done | 20/20 | Per-user notifications, module requests, admin alerts, Broadcasts tab |
 | Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
@@ -61,6 +61,9 @@ All P0 items completed.
 
 | | Bug | Module | Severity |
 |---|-----|--------|----------|
+| 🔨 | Dashboard `useAllUsers` permission-denied leak for non-admins | Admin | Medium |
+| 🔨 | Console errors when admin disables a user's active module | Dashboard | Medium |
+| 🔨 | Admin cannot view other users' baby dashboards if their own baby module is disabled | Admin | Medium |
 | ~~🐛~~ | ~~Walking/Running list no pagination~~ | Body | ~~Medium~~ — DONE (ActivityLog 7→30) |
 | 🐛 | Walking/Running list no date grouping | Body | Medium — delete UX now done (x button on all Body lists) |
 | 🐛 | Floors recent list flat styling | Body | Low |
@@ -163,7 +166,36 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 
 ---
 
+## P3 — Phase 3 Implementation Detail
+
+| | Item | Brainstorm | Status |
+|---|------|------------|--------|
+| 🔨 | **Budget: Savings Goals** — target amounts + progress rings | B | Not started |
+| 🔨 | **Budget: Recurring** — subscription automation (needs cron) | B | Not started |
+| 🔨 | **Budget: Net Worth** — asset/liability snapshots + trends | B | Not started |
+| 🔨 | **Budget: Insights** — YoY category analysis + anomalies | B | Not started |
+| 🔨 | **Body: Yoga Tab** — duration input + asana selector | C | Scaffolded |
+| 🔨 | **Body: Scoring Update** — duration-based formula integration | C | Not started |
+| 🔨 | **Body: Challenges** — 30-activity catalog | D | Not started |
+| 🔨 | **Body: Gamification** — badges, streaks, and level-ups | D | Not started |
+| 🔨 | **Body: Usernames** — public registry for sharing/competition | D | Not started |
+| 🔨 | **Baby: Smart Alerts** — active notification for counting moments | Plan 8 | Not started |
+| 🔨 | **Baby: Data Portability** — JSON/CSV export/import | Plan 9 | Not started |
+
+---
+
 ## Done
+
+### 2026-04-19 — Session 13 (Maintenance & Budget UX, v0.2.12)
+
+- [x] **Budget UX Alignment** — Replaced category dropdowns with interactive emoji bubbles; defaults set via `CONFIG.BUDGET_VISIBLE_CATEGORIES`.
+- [x] **Additive Presets** — Budget amount buttons now increment the total instead of overwriting.
+- [x] **Security Fix** — Firestore rules patched to allow non-admin users to persist `theme` and `colorMode`.
+- [x] **Reactive Logs** — Integrated `useVerbose` hook; console overlay pill (`>_`) visibility now toggles instantly.
+- [x] **Console Copy** — Added "Copy" button to `ConsoleOverlay` for easy serialization of debug logs.
+- [x] **Shared UI** — Extracted `PaymentMethodBubble` component for cross-form consistency.
+- [x] **Agent Mandates** — Created `GEMINI.md` at root and established global skills for architectural reviews and exploration.
+- [x] **Versioning** — Bumped to `v0.2.12` in `package.json` and `deploy.yml`.
 
 ### 2026-04-15 — Session 12 (Phase 3 Plan 7 — Life Journal, v0.2.11 actual release)
 

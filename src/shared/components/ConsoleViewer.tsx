@@ -34,18 +34,43 @@ const STORAGE_KEY = 'afp-console-visible';
 /** Renders console entries as a scrollable list */
 function ConsoleEntryList({ entries, clear }: { entries: ConsoleEntry[]; clear: () => void }) {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [entries.length]);
 
+  const handleCopy = () => {
+    const text = entries
+      .map((e) => `${e.timestamp} [${e.level.toUpperCase()}] ${e.args}`)
+      .join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
     <div className="rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-200 dark:border-gray-700">
         <span className="text-xs text-gray-500">Live console output</span>
-        <button type="button" onClick={clear} className="text-xs text-gray-400 hover:text-gray-600">
-          Clear
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={handleCopy}
+            disabled={entries.length === 0}
+            className="text-xs text-gray-400 hover:text-gray-600 disabled:opacity-30"
+          >
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+          <button
+            type="button"
+            onClick={clear}
+            className="text-xs text-gray-400 hover:text-gray-600"
+          >
+            Clear
+          </button>
+        </div>
       </div>
       <div className="overflow-auto max-h-48 p-2 font-mono text-xs">
         {entries.length === 0 && <p className="text-gray-400 italic">No console output yet</p>}

@@ -72,7 +72,7 @@ service cloud.firestore {
             && request.resource.data.modules == resource.data.modules
             && request.resource.data.viewerOf == resource.data.viewerOf)
         || (isOwner(userId)
-            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['requestedModules', 'updatedAt']));
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['requestedModules', 'theme', 'colorMode', 'updatedAt']));
       allow delete: if isHeadminick();
     }
 
