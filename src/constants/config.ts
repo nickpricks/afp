@@ -19,4 +19,6 @@ export const CONFIG = {
   UNDO_DURATION_MS: 10000 as number,
   /** Default daily score goal for the progress ring */
   DAILY_SCORE_GOAL: 50 as number,
+  /** Number of categories visible in the budget form when collapsed */
+  BUDGET_VISIBLE_CATEGORIES: 7 as number,
 } as const;

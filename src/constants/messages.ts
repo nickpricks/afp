@@ -26,6 +26,7 @@ export enum BudgetMsg {
   ExpenseDeleted = 'Expense deleted',
   IncomeAdded = 'Income added',
   IncomeDeleted = 'Income deleted',
+  CategoryRequired = 'Please select a category',
 }
 
 /** Body module messages */

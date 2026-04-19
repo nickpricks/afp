@@ -10,7 +10,8 @@ test.describe('Flow: Budget full expense', () => {
     await page.goto('/budget/add');
     await expect(page.getByPlaceholder('Amount')).toBeVisible({ timeout: 10000 });
 
-    // Fill the form — category defaults to first option, payment method defaults to UPI
+    // Fill the form — select category (Housing), payment method defaults to UPI
+    await page.getByRole('button', { name: /🏠/ }).click();
     await page.getByPlaceholder('Amount').fill('150');
     await page.getByPlaceholder('Note (optional)').fill('Groceries test');
 

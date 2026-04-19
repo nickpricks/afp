@@ -183,7 +183,7 @@ test.describe('Budget', () => {
     await expect(page.getByRole('button', { name: 'Income', exact: true })).toBeVisible();
     // Expense form elements
     await expect(page.locator('input[type="date"]')).toBeVisible();
-    await expect(page.locator('select').first()).toBeVisible();
+    await expect(page.getByText('Category', { exact: true })).toBeVisible();
     await expect(page.getByPlaceholder('Amount')).toBeVisible();
     await expect(page.getByText('Payment Method')).toBeVisible();
   });

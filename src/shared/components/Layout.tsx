@@ -18,6 +18,7 @@ import { LoadingScreen } from '@/shared/components/loading/LoadingScreen';
 import { useMinDelay } from '@/shared/hooks/useMinDelay';
 import { ConsoleOverlay } from '@/shared/components/ConsoleViewer';
 import { useConsoleCapture } from '@/shared/hooks/useConsoleCapture';
+import { useVerbose } from '@/shared/hooks/useVerbose';
 
 /** Root app shell with header, routed content area, tab bar, and PWA update prompt */
 export function Layout() {
@@ -26,6 +27,7 @@ export function Layout() {
   const isAnonymous = firebaseUser?.isAnonymous ?? true;
   const minDelayActive = useMinDelay(isFirebaseConfigured ? 1000 : 0);
   const { entries, clear } = useConsoleCapture();
+  const { verbose } = useVerbose();
   const { activeAlerts, unreadCount, dismiss } = useNotifications();
   const { children } = useChildren();
   const allSuggestions = useAllSuggestions(children);
@@ -141,7 +143,8 @@ export function Layout() {
 
       <TabBar />
       <UpdatePrompt />
-      <ConsoleOverlay entries={entries} clear={clear} />
+
+      {verbose && <ConsoleOverlay entries={entries} clear={clear} />}
     </div>
   );
 }

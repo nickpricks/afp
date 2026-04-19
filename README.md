@@ -64,7 +64,7 @@ src/
     baby/         — BabyLanding, ChildDetail (tabbed), FeedLog, SleepLog, GrowthLog, DiaperLog
   shared/
     auth/         — Firebase auth, invite system, TheAdminNick model
-    components/   — Dashboard, DashboardCard, Layout, TabBar, ModuleGate, AdminGate, AlertBanner, DatePickerModal, SwipeToDelete, DevBench, loading/
+    components/   — Dashboard, DashboardCard, Layout, TabBar, ModuleGate, AdminGate, AlertBanner, DatePickerModal, SwipeToDelete, DevBench, PaymentMethodBubble, loading/
     errors/       — ErrorBoundary, toast notifications (with undo action support)
     hooks/        — useModules, useNotifications, useModuleRequest, useSyncStatus, useMinDelay
     storage/      — StorageAdapter interface + Firebase/localStorage impls
@@ -81,6 +81,8 @@ src/
 
 - **Tap-to-edit** — tap a list entry to populate the form above, button becomes "Update"
 - **Undo delete** — 10s toast with "Undo" action on all deletable lists
+- **Additive presets** — [10] [20] [50] [100] [200] buttons in Budget increment the total amount
+- **Interactive bubbles** — emoji-grid category selection with expandable "View All" logic
 - **Pagination** — all lists use `CONFIG.PAGE_SIZE` (25 default), "Show more" button
 - **Delete UX** — inline `x` on all lists (hover → red, grows), swipe-to-delete on mobile via `SwipeToDelete` wrapper, 10s undo toast
 - **Notifications** — per-user `notifications` subcollection. Module request flow (user → admin), admin alerts/broadcasts with severity banners
