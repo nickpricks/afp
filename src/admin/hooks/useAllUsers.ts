@@ -21,13 +21,14 @@ function extractUid(docPath: string): string {
   return segments[1];
 }
 
-/** Lists all profiled users — admin only */
-export function useAllUsers() {
+/** Lists all profiled users — admin only. Enabled by default but can be disabled to avoid unnecessary listeners. */
+export function useAllUsers(enabled = true) {
   const [users, setUsers] = useState<UserEntry[]>([]);
-  const [loading, setLoading] = useState(isFirebaseConfigured);
+  const [loading, setLoading] = useState(isFirebaseConfigured && enabled);
 
   useEffect(() => {
-    if (!isFirebaseConfigured) {
+    if (!isFirebaseConfigured || !enabled) {
+      setLoading(false);
       return;
     }
 

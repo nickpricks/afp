@@ -8,9 +8,10 @@ Updated: 2026-04-19
 
 | # | What | Where | Fix Status |
 |---|------|-------|------------|
-| 1 | Some errors on user dashboard either in the Admin or Module gate - getAllUserSnapshot - should run only for admin | User Dashboard | |
-| 2 | If admin disables a user's modules, user can see permission console erroes | User Nav/Dashboard | |
-| 3 | If admin diables his own module like say baby module, then he cant see not other users baby dashboard | |
+| 1 | Some errors on user dashboard either in the Admin or Module gate - getAllUserSnapshot - should run only for admin | User Dashboard | ✅ Fixed (v0.2.13) |
+| 2 | If admin disables a user's modules, user can see permission console erroes | User Nav/Dashboard | ✅ Fixed (v0.2.13) |
+| 3 | If admin diables his own module like say baby module, then he cant see not other users baby dashboard | | ✅ Fixed (v0.2.13) |
+
 
 
 ---

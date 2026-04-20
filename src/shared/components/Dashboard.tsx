@@ -1,32 +1,22 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { doc, updateDoc } from 'firebase/firestore';
 
 import { useAuth } from '@/shared/auth/useAuth';
 import { AdminClaim } from '@/shared/components/AdminClaim';
-import { DashboardCard } from '@/shared/components/DashboardCard';
 import { isAppClaimed } from '@/shared/auth/the-admin-nick';
-import { isFirebaseConfigured, db } from '@/shared/auth/firebase-config';
-import { useBodyData } from '@/modules/body/hooks/useBodyData';
-import { useBodyConfig } from '@/modules/body/hooks/useBodyConfig';
-import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
-import { useIncome } from '@/modules/expenses/hooks/useIncome';
-import { useChildren } from '@/modules/baby/hooks/useChildren';
-import { useAllSuggestions } from '@/modules/baby/hooks/useSuggestions';
-import { SuggestionBanner } from '@/modules/baby/components/SuggestionBanner';
-import { configFieldFor, SuggestionAction } from '@/modules/baby/suggestions';
-import type { SuggestionFeature } from '@/modules/baby/suggestions';
-import { computeTotalSpent, computeTotalIncome } from '@/modules/expenses/budget-math';
+import { isFirebaseConfigured } from '@/shared/auth/firebase-config';
+import { BodySummaryCard } from '@/modules/body/components/BodySummaryCard';
+import { BudgetSummaryCard } from '@/modules/expenses/components/BudgetSummaryCard';
+import { BabySummaryCard } from '@/modules/baby/components/BabySummaryCard';
+import { BabyDashboardBanner } from '@/modules/baby/components/BabyDashboardBanner';
 import { useAllUsers } from '@/admin/hooks/useAllUsers';
 import { UserRole, ModuleId } from '@/shared/types';
-import { ROUTES } from '@/constants/routes';
-import { CONFIG } from '@/constants/config';
 import { getGreeting, formatDayDate, todayStr } from '@/shared/utils/date';
 
 /** Role-aware dashboard showing module summary cards */
 export function Dashboard() {
   const { firebaseUser, profile, isTheAdminNick } = useAuth();
-  const { users } = useAllUsers();
+  const { users } = useAllUsers(isTheAdminNick);
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedUid = searchParams.get('viewUser');
   const [appClaimed, setAppClaimed] = useState<boolean | null>(isFirebaseConfigured ? null : true);
@@ -63,35 +53,21 @@ export function Dashboard() {
     ? (users.find((u) => u.uid === targetUid)?.name ?? 'another user')
     : (profile?.name ?? '');
 
-  // Module data — hooks use targetUid for scoping
-  const { config: bodyConfig } = useBodyConfig(targetUid);
-  const { todayRecord } = useBodyData(targetUid);
-  const { expenses } = useExpenses(targetUid);
-  const { income } = useIncome(targetUid);
-  const { children } = useChildren(targetUid);
-  const allSuggestions = useAllSuggestions(children);
-
-  /** Applies a suggestion by updating the target child's config flag */
-  const applySuggestion = useCallback(
-    async (childId: string, feature: SuggestionFeature, action: SuggestionAction) => {
-      if (!firebaseUser) return;
-      const recommendOn = action === SuggestionAction.Enable;
-      const field = configFieldFor(feature);
-      const uidForWrite = targetUid ?? firebaseUser.uid;
-      const ref = doc(db, `users/${uidForWrite}/children/${childId}`);
-      await updateDoc(ref, { [`config.${field}`]: recommendOn });
-    },
-    [firebaseUser, targetUid],
-  );
-
-  const modules = profile?.modules;
+  // Determine which modules are active for the dashboard (own or target's)
+  let activeModules = profile?.modules;
+  if (isTheAdminNick && targetUid && targetUid !== ownUid) {
+    const targetUser = users.find((u) => u.uid === targetUid);
+    if (targetUser?.modules) {
+      activeModules = targetUser.modules;
+    }
+  }
 
   // Fresh database — no admin claimed yet
   if (appClaimed === false) {
     return <AdminClaim />;
   }
 
-  if (!profile || !modules) {
+  if (!profile || !activeModules) {
     return (
       <div className="text-center py-12">
         <p className="text-4xl mb-3">🏠</p>
@@ -100,17 +76,6 @@ export function Dashboard() {
       </div>
     );
   }
-
-  const totalSpent = computeTotalSpent(expenses);
-  const totalIncome = computeTotalIncome(income);
-  const remaining = totalIncome - totalSpent;
-
-  // Baby card: option B — child count
-  const childCount = children.length;
-  const babyMetric =
-    childCount === 0 ? 'No children' : `${childCount} ${childCount === 1 ? 'child' : 'children'}`;
-  const babySubtitle =
-    childCount > 0 ? children.map((c) => c.name).join(', ') : 'Add a child to get started';
 
   return (
     <div className="flex flex-col gap-4">
@@ -151,44 +116,14 @@ export function Dashboard() {
         <p className="text-sm text-fg-muted mt-0.5">{formatDayDate(todayStr())}</p>
       </div>
 
-      {/* Age-based suggestions for baby module */}
-      {modules[ModuleId.Baby] && (
-        <SuggestionBanner suggestions={allSuggestions} onAct={applySuggestion} />
-      )}
+      {/* Age-based suggestions for baby module (target user's config) */}
+      {activeModules[ModuleId.Baby] && <BabyDashboardBanner targetUid={targetUid} />}
 
-      {/* Module cards */}
+      {/* Module cards (target user's config) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {modules[ModuleId.Body] && (
-          <DashboardCard
-            title="Body"
-            icon="💪"
-            metric={String(todayRecord?.total ?? 0)}
-            subtitle={
-              bodyConfig.floors
-                ? `${todayRecord?.up ?? 0} up / ${todayRecord?.down ?? 0} down`
-                : 'No floors configured'
-            }
-            to={ROUTES.BODY}
-          />
-        )}
-        {modules[ModuleId.Budget] && (
-          <DashboardCard
-            title="Budget"
-            icon="💰"
-            metric={`${CONFIG.CURRENCY_SYMBOL}${totalSpent.toLocaleString()}`}
-            subtitle={`Remaining: ${CONFIG.CURRENCY_SYMBOL}${remaining.toLocaleString()}`}
-            to={ROUTES.BUDGET}
-          />
-        )}
-        {modules[ModuleId.Baby] && (
-          <DashboardCard
-            title="Baby"
-            icon="👶"
-            metric={babyMetric}
-            subtitle={babySubtitle}
-            to={ROUTES.BABY}
-          />
-        )}
+        {activeModules[ModuleId.Body] && <BodySummaryCard targetUid={targetUid} />}
+        {activeModules[ModuleId.Budget] && <BudgetSummaryCard targetUid={targetUid} />}
+        {activeModules[ModuleId.Baby] && <BabySummaryCard targetUid={targetUid} />}
       </div>
     </div>
   );
