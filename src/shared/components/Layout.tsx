@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 
 import { SyncStatusIndicator } from '@/shared/components/SyncStatus';

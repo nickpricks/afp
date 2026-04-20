@@ -28,7 +28,6 @@ export function useAllUsers(enabled = true) {
 
   useEffect(() => {
     if (!isFirebaseConfigured || !enabled) {
-      setLoading(false);
       return;
     }
 
@@ -57,7 +56,7 @@ export function useAllUsers(enabled = true) {
     );
 
     return unsubscribe;
-  }, []);
+  }, [enabled]);
 
   return { users, loading };
 }
