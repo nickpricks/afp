@@ -4,6 +4,24 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.13] — 2026-04-20 (Permission & Admin Fixes)
+
+### Added
+- **BabySuggestionsToast** — Extracted global suggestion toast into a conditional component in `Layout.tsx`.
+- **BodySummaryCard** — Encapsulated Body summary card with internal data fetching.
+- **BudgetSummaryCard** — Encapsulated Budget summary card with internal data fetching and math.
+- **BabySummaryCard** — Encapsulated Baby summary card with internal data fetching.
+- **BabyDashboardBanner** — Encapsulated Dashboard suggestion banner with internal data fetching.
+
+### Changed
+- **useAllUsers Hook** — Added `enabled` flag to prevent unauthorized collectionGroup reads.
+- **Dashboard Refactor** — Extracted monolithic hooks into wrapper components; significantly cleaned up logic.
+- **Admin Visibility** — Admin now sees target user's modules on the dashboard even if their own are disabled.
+
+### Fixed
+- **Permission Leaks** — Standard users no longer trigger forbidden listeners for `useAllUsers` or disabled modules.
+- **Console Errors** — Eliminated `permission-denied` noise in the console for non-admins and disabled modules.
+
 ## [0.2.12] — 2026-04-19 (Budget UI & Security Fixes)
 
 ### Added

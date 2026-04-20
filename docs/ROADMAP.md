@@ -61,9 +61,9 @@ All P0 items completed.
 
 | | Bug | Module | Severity |
 |---|-----|--------|----------|
-| 🔨 | Dashboard `useAllUsers` permission-denied leak for non-admins | Admin | Medium |
-| 🔨 | Console errors when admin disables a user's active module | Dashboard | Medium |
-| 🔨 | Admin cannot view other users' baby dashboards if their own baby module is disabled | Admin | Medium |
+| ~~🐛~~ | ~~Dashboard `useAllUsers` permission-denied leak for non-admins~~ | Admin | ~~Medium~~ — DONE (v0.2.13) |
+| ~~🐛~~ | ~~Console errors when admin disables a user's active module~~ | Dashboard | ~~Medium~~ — DONE (v0.2.13) |
+| ~~🐛~~ | ~~Admin cannot view other users' baby dashboards if their own baby module is disabled~~ | Admin | ~~Medium~~ — DONE (v0.2.13) |
 | ~~🐛~~ | ~~Walking/Running list no pagination~~ | Body | ~~Medium~~ — DONE (ActivityLog 7→30) |
 | 🐛 | Walking/Running list no date grouping | Body | Medium — delete UX now done (x button on all Body lists) |
 | 🐛 | Floors recent list flat styling | Body | Low |
