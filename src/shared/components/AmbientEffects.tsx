@@ -15,6 +15,16 @@ function seededRandom(seed: number): number {
   return x - Math.floor(x);
 }
 
+/** Converts a string to a numeric seed */
+function stringToSeed(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
 /**
  * Renders dynamic ambient particles based on the current theme and user-defined intensity.
  * Particles are randomized for position, speed, and size using a stable seeded random
@@ -34,15 +44,21 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
       style: React.CSSProperties;
     }[] = [];
 
+    const themeSeed = stringToSeed(themeId);
+
     theme.effects.forEach((effect) => {
       // Overlays are handled via CSS classes on the root element
       if (effect.type === 'overlay') return;
 
       const count = Math.floor(effect.maxParticles * (intensity / 100));
+      const effectSeed = stringToSeed(effect.id);
+      
+      // Handle comma-separated content lists (e.g. for Patronus animals)
+      const contentOptions = effect.content.split(',');
       
       for (let i = 0; i < count; i++) {
         // Use a stable seed based on theme, effect, and index
-        const baseSeed = i + effect.id.length + themeId.length;
+        const baseSeed = i + effectSeed + themeSeed;
         const r1 = seededRandom(baseSeed + 1);
         const r2 = seededRandom(baseSeed + 2);
         const r3 = seededRandom(baseSeed + 3);
@@ -54,11 +70,15 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
         const r9 = seededRandom(baseSeed + 9);
         const r10 = seededRandom(baseSeed + 10);
 
+        // Pick content from options
+        const contentIndex = Math.floor(r1 * contentOptions.length);
+        const content = contentOptions[contentIndex] || '';
+
         allParticles.push({
           id: `${effect.id}-${i}`,
           effectId: effect.id,
           type: effect.type,
-          content: effect.content,
+          content,
           style: {
             '--fx-left': `${r1 * 100}%`,
             '--fx-top': effect.type === 'twinkle' || effect.type === 'float' ? `${r2 * 100}%` : undefined,
@@ -69,7 +89,7 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
             '--fx-drift-y': `${r7 * 40 - 20}px`,
             '--fx-scale': `${0.8 + r8 * 0.7}`,
             '--fx-opacity': `${0.3 + r9 * 0.5}`,
-            '--fx-size': `${14 + r10 * 8}px`,
+            '--fx-size': `${14 + r10 * 12}px`,
           } as React.CSSProperties,
         });
       }

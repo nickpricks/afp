@@ -75,10 +75,11 @@ src/
 
 ## Themes
 
-10 themes with distinct font pairings and ambient effects. Family Blue (default), Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map (light+dark). Neon Glow, Deep Mariana, Industrial Furnace, Expecto Patronum (dark-only). 8 Google Font families. 9 ambient effects (Charcoal has none). Expandable theme picker in Profile with effect configuration.
+10 themes with distinct font pairings and dynamic ambient effects. Family Blue (default), Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map (light+dark). Neon Glow, Deep Mariana, Industrial Furnace, Expecto Patronum (dark-only). 8 Google Font families. Granular 0-100% intensity slider in Profile controls particle density. Expecto Patronum features unique ghostly spirit animal manifestations.
 
 ## Key Patterns
 
+- **Ambient Effects v2** — Pure React-based particle system with seeded randomization for stable, performant atmospheric effects.
 - **Tap-to-edit** — tap a list entry to populate the form above, button becomes "Update"
 - **Undo delete** — 10s toast with "Undo" action on all deletable lists
 - **Additive presets** — [10] [20] [50] [100] [200] buttons in Budget increment the total amount
@@ -90,7 +91,7 @@ src/
 - **Daily goal builder** — per-activity sliders in config form, presets (🌿💪🔥⚡)
 - **Loading screen** — 3 SVG stick-figure scenes (Climber, Athlete, Reader), random per mount, with brand text reveal
 - **Code splitting** — React.lazy + Suspense on all routes, LoadingScreen as fallback
-- **Message enums** — all toast messages in `constants/messages.ts` enums (BodyMsg, BabyMsg, BudgetMsg, ProfileMsg, AdminMsg), toast types via `ToastType` enum — zero raw strings
+- **Message enums** — all toast messages in `constants/messages.ts` enums (BodyMsg, BabyMsg, BudgetMsg, ProfileMsg, AdminMsg, GreetingMsg), toast types via `ToastType` enum — zero raw strings
 - **DevBench** — dev-only seed panel with 11 generators (Floors, Walk, Run, Cycle, Expense, Income, Settlement, Feed, Sleep, Diaper, Growth) + bulk modes (x100, x1k with day-spread)
 
 ## Docs
@@ -98,11 +99,11 @@ src/
 | Doc | What |
 |---|---|
 | `CLAUDE.md` | AI assistant instructions, architecture, conventions, known issues |
-| `docs/ROADMAP.md` | Phase progress (~90%), prioritized backlog (P0-P3), theme roster |
+| `docs/ROADMAP.md` | Phase progress (~95%), prioritized backlog (P0-P3), theme roster |
 | `docs/firebase-setup.md` | Firebase setup guide |
 | `docs/getting-started.md` | Getting started guide |
-| `docs/specs/` | Design specs (Phase 1, Phase 2, Dashboard, Theme analysis, Loading screen, Themes, Notifications, Phase 3 vision + baby-to-kid) |
-| `docs/plans/` | Implementation plans (Phase 1, Phase 2 per-module, Dashboard, Admin, Viewer, Loading screen, Themes, Notifications, Phase 3 baby) |
+| `docs/specs/` | Design specs (Phase 1, Phase 2, Dashboard, Theme analysis, Loading screen, Themes, Notifications, Phase 3 vision, Enhanced Themes) |
+| `docs/plans/` | Implementation plans (Phase 1, Phase 2 per-module, Dashboard, Admin, Viewer, Loading screen, Themes, Notifications, Phase 3 baby, Enhanced Themes) |
 | `docs/revz/` | Code reviews, coverage analysis, session reviews |
 
 ## License

@@ -4,6 +4,28 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.3.0] — 2026-04-25 (Enhanced Theme System & Refactor)
+
+### Added
+- **Enhanced Ambient Theme System** — Granular 0-100% intensity control for all themes.
+- **AmbientEffects Component** — Dynamic React-based particle renderer with seeded randomization (pure render).
+- **Expecto Patronum Enhancement** — Ghostly spirit animals (spirit animal pool: 🦌, 🐺, 🦅, 🦦, 🐎, 🐈, 🦉, 🐇, 🐕, 🦢, 🦡, 🐉) with silvery glow and manifestation animations.
+- **Reactive Local Dev** — AuthProvider now reactively syncs with `localStorage` in dev mode using a singleton adapter pattern.
+- **GreetingMsg Enum** — Centralized UI greeting strings in `constants/messages.ts`.
+
+### Changed
+- **Granular Slider** — Replaced binary theme info with a 0-100% intensity range slider in Profile.
+- **Behavioral CSS** — Refactored `effects.css` into generic behavior utilities (`fx-fall`, `fx-rise`, `fx-twinkle`, `fx-float`, `fx-sweep`).
+- **Greeting Logic** — Renamed `getGreeting` to `computeGreeting` across the codebase.
+- **GEMINI.md Update** — Added strict mandates for sub-agent worktrees and self-verification sweeps.
+
+### Fixed
+- **Layout Crash** — Added null-safety to `profile.modules` access to prevent crashes on partial profile loads.
+- **Data Loss** — `saveAppearance` now merges with existing profile data to prevent wiping out modules or roles.
+- **Windows Scripts** — Refactored `package.json` build/lint scripts to avoid `&&` chaining issues in PowerShell.
+
+---
+
 ## [0.2.13] — 2026-04-20 (Permission & Admin Fixes)
 
 ### Added

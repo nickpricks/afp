@@ -52,7 +52,11 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-surface text-fg">
-      <AmbientEffects themeId={profile.theme as ThemeId} intensity={profile.effectIntensity} />
+      <AmbientEffects
+        key={profile.theme}
+        themeId={profile.theme as ThemeId}
+        intensity={profile.effectIntensity}
+      />
       <AlertBanner alerts={activeAlerts} onDismiss={dismiss} />
       {profile.modules?.[ModuleId.Baby] && <BabySuggestionsToast />}
       <header className="flex items-center justify-between px-4 py-3 bg-surface-card border-b border-line">

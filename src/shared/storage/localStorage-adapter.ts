@@ -26,8 +26,15 @@ function writeCollection<T>(key: string, items: T[]): void {
   localStorage.setItem(key, JSON.stringify(items));
 }
 
+/** Cache of adapter instances to ensure shared listeners for the same path */
+const ADAPTER_INSTANCES = new Map<string, StorageAdapter>();
+
 /** Creates a localStorage-backed StorageAdapter for dev/offline mode */
 export function createLocalStorageAdapter(basePath: string): StorageAdapter {
+  // Return cached instance if it exists
+  const existing = ADAPTER_INSTANCES.get(basePath);
+  if (existing) return existing;
+
   const listeners = new Map<string, Set<Listener>>();
 
   /** Fires all registered callbacks for a collection with its current data */
@@ -36,7 +43,7 @@ export function createLocalStorageAdapter(basePath: string): StorageAdapter {
     listeners.get(collectionName)?.forEach((cb) => cb(items));
   }
 
-  return {
+  const adapter: StorageAdapter = {
     async getAll<T>(collectionName: string): Promise<Result<T[]>> {
       const items = readCollection<T>(storageKey(basePath, collectionName));
       vlog('[AFP:storage:local] GET_ALL', {
@@ -121,4 +128,7 @@ export function createLocalStorageAdapter(basePath: string): StorageAdapter {
       };
     },
   };
+
+  ADAPTER_INSTANCES.set(basePath, adapter);
+  return adapter;
 }
