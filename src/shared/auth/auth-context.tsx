@@ -13,6 +13,7 @@ import { ModuleId, SyncStatus, UserRole, type UserProfile } from '@/shared/types
 import { auth, db, isFirebaseConfigured } from '@/shared/auth/firebase-config';
 import { DbCollection, DbSubcollection, DbDoc, DbField } from '@/constants/db';
 import { createDefaultProfile } from '@/shared/utils/profile';
+import { createLocalStorageAdapter } from '@/shared/storage/localStorage-adapter';
 
 export interface AuthContextValue {
   firebaseUser: User | null;
@@ -94,36 +95,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!isFirebaseConfigured || !firebaseUser) {
-      return;
+    if (!firebaseUser) return;
+
+    if (isFirebaseConfigured) {
+      const profileRef = doc(
+        db,
+        DbCollection.Users,
+        firebaseUser.uid,
+        DbSubcollection.Profile,
+        DbDoc.Main,
+      );
+
+      return onSnapshot(
+        profileRef,
+        (snapshot) => {
+          if (snapshot.exists()) {
+            setProfile(snapshot.data() as UserProfile);
+            setSyncStatus(SyncStatus.Synced);
+          } else {
+            setProfile(createDefaultProfile('', UserRole.User));
+            setSyncStatus(SyncStatus.Synced);
+          }
+        },
+        (error) => {
+          console.error('[AFP] Profile listener error:', error);
+          setSyncStatus(SyncStatus.Error);
+        },
+      );
+    } else {
+      // In Dev Mode, sync profile from localStorage
+      const adapter = createLocalStorageAdapter(`users/${firebaseUser.uid}`);
+      return adapter.onSnapshot<UserProfile & { id: string }>(
+        DbSubcollection.Profile,
+        (data) => {
+          const mainDoc = data.find((d) => d.id === DbDoc.Main);
+          if (mainDoc) {
+            setProfile(mainDoc);
+          } else {
+            // Initialize local profile if missing
+            const defaultProfile = createDefaultProfile('Dev User', UserRole.TheAdminNick);
+            setProfile(defaultProfile);
+            adapter.save(DbSubcollection.Profile, { ...defaultProfile, id: DbDoc.Main });
+          }
+          setSyncStatus(SyncStatus.Synced);
+        },
+        (error) => {
+          console.error('[AFP] Local profile sync error:', error);
+          setSyncStatus(SyncStatus.Error);
+        },
+      );
     }
-
-    const profileRef = doc(
-      db,
-      DbCollection.Users,
-      firebaseUser.uid,
-      DbSubcollection.Profile,
-      DbDoc.Main,
-    );
-
-    const unsubscribe = onSnapshot(
-      profileRef,
-      (snapshot) => {
-        if (snapshot.exists()) {
-          setProfile(snapshot.data() as UserProfile);
-          setSyncStatus(SyncStatus.Synced);
-        } else {
-          setProfile(createDefaultProfile('', UserRole.User));
-          setSyncStatus(SyncStatus.Synced);
-        }
-      },
-      (error) => {
-        console.error('[AFP] Profile listener error:', error);
-        setSyncStatus(SyncStatus.Error);
-      },
-    );
-
-    return unsubscribe;
   }, [firebaseUser]);
 
   const isTheAdminNick = profile?.role === UserRole.TheAdminNick;

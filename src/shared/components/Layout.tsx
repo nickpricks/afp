@@ -54,7 +54,7 @@ export function Layout() {
     <div className="min-h-screen bg-surface text-fg">
       <AmbientEffects themeId={profile.theme as ThemeId} intensity={profile.effectIntensity} />
       <AlertBanner alerts={activeAlerts} onDismiss={dismiss} />
-      {profile.modules[ModuleId.Baby] && <BabySuggestionsToast />}
+      {profile.modules?.[ModuleId.Baby] && <BabySuggestionsToast />}
       <header className="flex items-center justify-between px-4 py-3 bg-surface-card border-b border-line">
         <Link to="/" className="flex items-center">
           <img src={`${import.meta.env.BASE_URL}favicon.png`} alt="AFP" className="h-6 w-6" />

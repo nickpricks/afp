@@ -61,12 +61,24 @@ Execution follows a strict **Spec-to-Plan** pipeline:
 
 ---
 
-## 5. File Structure Reference
+## 6. Sub-Agent Delegation & Worktree Mandates
 
-*   `src/admin/`: Admin Panel & Invite logic.
-*   `src/constants/`: DB paths, messages, and app config.
-*   `src/modules/`: Feature-specific code.
-*   `src/shared/storage/`: StorageAdapter implementations.
-*   `src/themes/`: CSS theme definitions.
-*   `docs/specs/`: Approved architectural designs.
-*   `docs/plans/`: Executable task lists.
+### 6.1 Worktree Isolation
+When delegating to a sub-agent for complex tasks:
+*   **Mandatory Worktree**: Always create a worktree at `.worktrees/{branch-name}` to isolate changes.
+*   **Context Lockdown**: Sub-agents MUST verify they are working in the worktree path before executing file writes.
+*   **Main Branch Protection**: Never perform multi-file "sweeps" directly on the `master` branch in the root directory.
+
+### 6.2 Self-Verification Sweep
+A sub-agent task is not complete until:
+1.  **Zero Syntax Errors**: The agent has manually checked for common syntax traps (extra brackets, missing imports).
+2.  **Linter Pass**: `bun run lint:eslint` (or equivalent) passes with zero errors.
+3.  **Type Safety**: `bun run typecheck` (tsc) passes with zero errors.
+4.  **React Purity**: Never use impure functions like `Math.random()` or `new Date()` directly in render/useMemo. Use seeded randoms or stable constants.
+
+### 6.3 Cleanup Duty
+Implementation plans are only complete when:
+*   Legacy code/CSS is removed.
+*   The UI matches the requested functionality (no placeholders).
+*   The worktree is ready for a squash-merge.
+

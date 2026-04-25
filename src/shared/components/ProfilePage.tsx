@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import changelogRaw from '../../../CHANGELOG.md?raw';
 import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
@@ -46,9 +46,11 @@ const saveAppearance = async (
   theme: string,
   colorMode: ColorMode,
   effectIntensity: number,
+  existingProfile: any,
 ): Promise<void> => {
   const adapter = createAdapter(`users/${uid}`);
   await adapter.save(DbSubcollection.Profile, {
+    ...(existingProfile || {}),
     id: DbDoc.Main,
     theme,
     colorMode,
@@ -77,6 +79,14 @@ export function ProfilePage() {
   const [colorMode, setColorMode] = useState<ColorMode>(profile?.colorMode ?? 'system');
   const [intensity, setIntensity] = useState<number>(profile?.effectIntensity ?? 50);
 
+  // Sync local state when profile loads/updates from context
+  useEffect(() => {
+    if (profile) {
+      if (profile.colorMode !== undefined) setColorMode(profile.colorMode);
+      if (profile.effectIntensity !== undefined) setIntensity(profile.effectIntensity);
+    }
+  }, [profile?.colorMode, profile?.effectIntensity]);
+
   // Username state
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [usernameInput, setUsernameInput] = useState('');
@@ -94,13 +104,13 @@ export function ProfilePage() {
     (themeId: ThemeId) => {
       applyTheme(themeId, colorMode);
       if (uid) {
-        saveAppearance(uid, themeId, colorMode, intensity).catch(() => {
+        saveAppearance(uid, themeId, colorMode, intensity, profile).catch(() => {
           addToast(ProfileMsg.ThemeSaveFailed, ToastType.Error);
         });
       }
       addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
-    [colorMode, intensity, uid, addToast],
+    [colorMode, intensity, uid, addToast, profile],
   );
 
   const handleColorModeChange = useCallback(
@@ -108,25 +118,25 @@ export function ProfilePage() {
       setColorMode(mode);
       applyTheme(activeThemeId, mode);
       if (uid) {
-        saveAppearance(uid, activeThemeId, mode, intensity).catch(() => {
+        saveAppearance(uid, activeThemeId, mode, intensity, profile).catch(() => {
           addToast(ProfileMsg.ColorModeSaveFailed, ToastType.Error);
         });
       }
       addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
-    [activeThemeId, intensity, uid, addToast],
+    [activeThemeId, intensity, uid, addToast, profile],
   );
 
   const handleIntensityChange = useCallback(
     (newIntensity: number) => {
       setIntensity(newIntensity);
       if (uid) {
-        saveAppearance(uid, activeThemeId, colorMode, newIntensity).catch(() => {
+        saveAppearance(uid, activeThemeId, colorMode, newIntensity, profile).catch(() => {
           // Silent fail for real-time slider to avoid toast spam
         });
       }
     },
-    [activeThemeId, colorMode, uid],
+    [activeThemeId, colorMode, uid, profile],
   );
 
   const handleUsernameSave = useCallback(async () => {
