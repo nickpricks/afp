@@ -94,6 +94,13 @@ export enum ProfileMsg {
   SignOutFailed = 'Sign out failed',
 }
 
+/** UI Greeting messages */
+export enum GreetingMsg {
+  Morning = 'Good morning',
+  Afternoon = 'Good afternoon',
+  Evening = 'Good evening',
+}
+
 /** Admin panel messages */
 export enum AdminMsg {
   AdminClaimed = 'Welcome, Admin! You now control this app.',

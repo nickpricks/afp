@@ -23,7 +23,7 @@ _Stack: React 19 + TypeScript + TSX. Go to follow._
 | 12 | **Hooks in separate files from providers** | `useAuth` in `useAuth.ts`, not `auth-context.tsx`. Context + Provider files export Context and Provider only. Required by react-refresh/fast-refresh. | — |
 | 13 | **Single responsibility — one job, minimal lines** | A function does one job. A file does one concern. If you explain it with "and" — split it. Prefer many small focused files over fewer large ones. If you can't name a function cleanly, it's doing too much. | — |
 | 14 | **Numeric enum trap** | `Object.values(NumericEnum)` returns both values AND reverse-mapped strings. Always filter: `.filter(v => typeof v === 'number')`. Prefer string enums — they don't have this issue. | — |
-| 15 | **`package.json` scripts — no `&&` chaining** | `&&` breaks on Windows PowerShell. Keep scripts separate. Use script composition (one script calls others). | — |
+| 15 | **`package.json` scripts — no `&&` chaining** | `&&` breaks on Windows PowerShell `;;` works. Keep scripts separate. Use script composition (one script calls others) or even better use MakeFile (suggested but not mandatory). | — |
 
 ---
 

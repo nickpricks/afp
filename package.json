@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc --noEmit",
-    "build": "tsc -b && vite build",
-    "lint": "tsc --noEmit && eslint .",
+    "build:tsc": "tsc -b",
+    "build:vite": "vite build",
+    "build": "bun run build:tsc && bun run build:vite",
+    "lint": "bun run typecheck && bun run lint:eslint",
     "lint:eslint": "eslint .",
     "format": "prettier --write 'src/**/*.{ts,tsx}' 'e2e/**/*.ts'",
     "format:check": "prettier --check 'src/**/*.{ts,tsx}' 'e2e/**/*.ts'",

@@ -11,7 +11,7 @@ import { BabySummaryCard } from '@/modules/baby/components/BabySummaryCard';
 import { BabyDashboardBanner } from '@/modules/baby/components/BabyDashboardBanner';
 import { useAllUsers } from '@/admin/hooks/useAllUsers';
 import { UserRole, ModuleId } from '@/shared/types';
-import { getGreeting, formatDayDate, todayStr } from '@/shared/utils/date';
+import { computeGreeting, formatDayDate, todayStr } from '@/shared/utils/date';
 
 /** Role-aware dashboard showing module summary cards */
 export function Dashboard() {
@@ -111,7 +111,7 @@ export function Dashboard() {
       {/* Greeting */}
       <div>
         <h2 className="text-xl font-semibold text-fg">
-          {getGreeting()}, {profile.name || 'there'}
+          {computeGreeting()}, {profile.name || 'there'}
         </h2>
         <p className="text-sm text-fg-muted mt-0.5">{formatDayDate(todayStr())}</p>
       </div>

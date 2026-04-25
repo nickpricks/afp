@@ -4,7 +4,7 @@ Pure utility functions with no React or Firebase dependencies.
 
 ## Files
 
-- **date.ts** — `todayStr()` returns YYYY-MM-DD, `nowTime()` returns HH:MM, `getGreeting()` returns time-of-day greeting, `formatDayDate()` formats a date string as "Wednesday, April 7"
+- **date.ts** — `todayStr()` returns YYYY-MM-DD, `nowTime()` returns HH:MM, `computeGreeting()` returns time-of-day greeting, `formatDayDate()` formats a date string as "Wednesday, April 7"
 - **error.ts** — `toErrorMessage()` extracts a string from an unknown error value
 - **format.ts** — `formatDistance(meters)` formats meters as "1.2 km" or "500 m", `formatDistanceOrDash(meters)` returns "--" for null values. Uses `CONFIG.METERS_PER_KM`
 - **profile.ts** — `createDefaultProfile()` builds a UserProfile with sensible defaults

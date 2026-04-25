@@ -1,3 +1,5 @@
+import { GreetingMsg } from '@/constants/messages';
+
 /** Returns today's local date as YYYY-MM-DD */
 export const todayStr = (): string => {
   const d = new Date();
@@ -10,11 +12,11 @@ export const nowTime = (): string => {
 };
 
 /** Returns a time-of-day greeting */
-export const getGreeting = (): string => {
+export const computeGreeting = (): string => {
   const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 17) return 'Good afternoon';
-  return 'Good evening';
+  if (hour < 12) return GreetingMsg.Morning;
+  if (hour < 17) return GreetingMsg.Afternoon;
+  return GreetingMsg.Evening;
 };
 
 /** Formats a YYYY-MM-DD string as "Wednesday, April 7" */

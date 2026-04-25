@@ -1,27 +1,27 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { getGreeting, formatDayDate } from '@/shared/utils/date';
+import { computeGreeting, formatDayDate } from '@/shared/utils/date';
 import { createDefaultProfile } from '@/shared/utils/profile';
 import { isValidNumber } from '@/shared/utils/validation';
 import { toErrorMessage } from '@/shared/utils/error';
 import { UserRole } from '@/shared/types';
 
-describe('getGreeting', () => {
+describe('computeGreeting', () => {
   it('returns Good morning for hour 8', () => {
     vi.setSystemTime(new Date(2026, 3, 7, 8, 0));
-    expect(getGreeting()).toBe('Good morning');
+    expect(computeGreeting()).toBe('Good morning');
     vi.useRealTimers();
   });
 
   it('returns Good afternoon for hour 14', () => {
     vi.setSystemTime(new Date(2026, 3, 7, 14, 0));
-    expect(getGreeting()).toBe('Good afternoon');
+    expect(computeGreeting()).toBe('Good afternoon');
     vi.useRealTimers();
   });
 
   it('returns Good evening for hour 19', () => {
     vi.setSystemTime(new Date(2026, 3, 7, 19, 0));
-    expect(getGreeting()).toBe('Good evening');
+    expect(computeGreeting()).toBe('Good evening');
     vi.useRealTimers();
   });
 });
