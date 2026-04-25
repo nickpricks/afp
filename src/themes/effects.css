@@ -1,219 +1,77 @@
 /* ═══════════════════════════════════════════════════════════════
-   Ambient Effects — CSS-only atmospheric particles per theme.
-   Scoped to .effect-{name} classes on <html>, applied by applyTheme().
-   Rendered via .fx-ambient container in Layout.
-   All effects respect prefers-reduced-motion.
+   Ambient Effects — Dynamic particle system v2.
+   Behavioral utilities and overlay effects.
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── Family Blue: Snowflakes — gray-blue flakes drifting down ── */
+/* ── Behavioral Animations ── */
 
-@keyframes snowflake-fall {
-  0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
-  8% { opacity: 0.7; }
-  80% { opacity: 0.4; }
-  100% { transform: translateY(100vh) translateX(20px) rotate(360deg); opacity: 0; }
+@keyframes fx-fall {
+  0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+  10% { opacity: var(--fx-opacity, 0.7); }
+  90% { opacity: var(--fx-opacity, 0.7); }
+  100% { transform: translateY(110vh) translateX(var(--fx-drift, 20px)) rotate(var(--fx-rotate, 360deg)); opacity: 0; }
 }
 
-@keyframes snowflake-fall-drift {
-  0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.6; }
-  75% { opacity: 0.3; }
-  100% { transform: translateY(100vh) translateX(-25px) rotate(-270deg); opacity: 0; }
+@keyframes fx-rise {
+  0% { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
+  10% { opacity: var(--fx-opacity, 0.7); }
+  90% { opacity: var(--fx-opacity, 0.7); }
+  100% { transform: translateY(-10vh) translateX(var(--fx-drift, -20px)) rotate(var(--fx-rotate, -180deg)); opacity: 0; }
 }
 
-.effect-snowflakes .fx-ambient::before,
-.effect-snowflakes .fx-ambient::after {
-  content: '❄';
-  position: fixed;
-  top: -20px;
-  pointer-events: none;
-  z-index: 0;
-  font-size: 14px;
-  color: rgba(96, 165, 250, 0.5);
-}
-
-.effect-snowflakes .fx-ambient::before {
-  left: 15%;
-  font-size: 16px;
-  animation: snowflake-fall 5s ease-in infinite;
-}
-
-.effect-snowflakes .fx-ambient::after {
-  left: 65%;
-  font-size: 12px;
-  color: rgba(148, 163, 184, 0.5);
-  animation: snowflake-fall-drift 7s ease-in 2s infinite;
-}
-
-/* ── Garden Path: Leaves — leaf emoji falling with rotation ──── */
-
-@keyframes leaf-fall {
-  0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
-  8% { opacity: 0.8; }
-  75% { opacity: 0.5; }
-  100% { transform: translateY(100vh) translateX(35px) rotate(200deg); opacity: 0; }
-}
-
-@keyframes leaf-fall-drift {
-  0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.7; }
-  80% { opacity: 0.4; }
-  100% { transform: translateY(100vh) translateX(-25px) rotate(-160deg); opacity: 0; }
-}
-
-.effect-leaves .fx-ambient::before,
-.effect-leaves .fx-ambient::after {
-  position: fixed;
-  top: -20px;
-  pointer-events: none;
-  z-index: 0;
-  font-size: 14px;
-}
-
-.effect-leaves .fx-ambient::before {
-  content: '🍂';
-  left: 20%;
-  font-size: 16px;
-  animation: leaf-fall 5.5s ease-in infinite;
-}
-
-.effect-leaves .fx-ambient::after {
-  content: '🍃';
-  left: 70%;
-  font-size: 12px;
-  animation: leaf-fall-drift 7s ease-in 2.5s infinite;
-}
-
-/* ── Lullaby: Stars — golden stars twinkling ─────────────────── */
-
-@keyframes star-twinkle {
+@keyframes fx-twinkle {
   0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
-  30% { opacity: 0.8; transform: scale(1) rotate(20deg); }
-  70% { opacity: 0.6; transform: scale(0.9) rotate(-10deg); }
+  50% { opacity: var(--fx-opacity, 0.8); transform: scale(var(--fx-scale, 1)) rotate(var(--fx-rotate, 20deg)); }
 }
 
-@keyframes star-drift {
-  0%, 100% { opacity: 0; transform: translateY(0) scale(0.4); }
-  20% { opacity: 0.7; transform: translateY(-10px) scale(1.1); }
-  60% { opacity: 0.5; transform: translateY(-25px) scale(0.8); }
+@keyframes fx-float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  20%, 80% { opacity: var(--fx-opacity, 0.6); }
+  50% { transform: translate(var(--fx-drift, 15px), var(--fx-drift-y, -20px)) rotate(var(--fx-rotate, 10deg)); }
 }
 
-.effect-stars .fx-ambient::before,
-.effect-stars .fx-ambient::after {
+@keyframes fx-sweep {
+  0% { transform: translateY(-10vh); opacity: 0; }
+  5% { opacity: var(--fx-opacity, 0.2); }
+  95% { opacity: var(--fx-opacity, 0.2); }
+  100% { transform: translateY(110vh); opacity: 0; }
+}
+
+.fx-particle {
   position: fixed;
   pointer-events: none;
   z-index: 0;
+  left: var(--fx-left);
+  top: var(--fx-top);
+  font-size: var(--fx-size, 16px);
+  will-change: transform, opacity;
+  animation-duration: var(--fx-duration, 5s);
+  animation-delay: var(--fx-delay, 0s);
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
 }
 
-.effect-stars .fx-ambient::before {
-  content: '⭐';
-  top: 20%;
-  left: 20%;
-  font-size: 16px;
-  animation: star-twinkle 3.5s ease infinite;
+.fx-fall { animation-name: fx-fall; }
+.fx-rise { animation-name: fx-rise; }
+.fx-twinkle { animation-name: fx-twinkle; }
+.fx-float { animation-name: fx-float; }
+.fx-sweep { animation-name: fx-sweep; }
+
+/* ── Custom Effect Overrides ── */
+
+/* Scanline should be full-width */
+.effect-scanline {
+  left: 0 !important;
+  right: 0 !important;
+  width: 100vw !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, var(--color-accent, #ffb803), transparent) !important;
+  opacity: 0.1;
 }
 
-.effect-stars .fx-ambient::after {
-  content: '✨';
-  top: 50%;
-  left: 70%;
-  font-size: 12px;
-  animation: star-drift 4.5s ease 1s infinite;
-}
+/* ── Static Overlays ── */
 
-/* ── Rose Quartz: Hearts + Stars — floating hearts, sparkles ── */
-
-@keyframes heart-float {
-  0% { transform: translateY(0) scale(0.5); opacity: 0; }
-  15% { opacity: 0.7; transform: translateY(-10px) scale(1); }
-  60% { opacity: 0.5; transform: translateY(-60px) scale(0.9); }
-  100% { opacity: 0; transform: translateY(-120px) scale(0.6); }
-}
-
-@keyframes star-sparkle-rq {
-  0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
-  40% { opacity: 0.8; transform: scale(1.2) rotate(30deg); }
-  70% { opacity: 0.5; transform: scale(0.8) rotate(-15deg); }
-}
-
-.effect-hearts .fx-ambient::before,
-.effect-hearts .fx-ambient::after {
-  position: fixed;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.effect-hearts .fx-ambient::before {
-  content: '💖';
-  bottom: 25%;
-  left: 20%;
-  font-size: 16px;
-  animation: heart-float 4s ease infinite;
-}
-
-.effect-hearts .fx-ambient::after {
-  content: '✨';
-  top: 25%;
-  left: 80%;
-  font-size: 14px;
-  animation: star-sparkle-rq 3s ease infinite;
-}
-
-/* ── Marauder's Map: Ink — footprint emoji appearing/fading ─── */
-
-@keyframes ink-appear {
-  0%, 100% { opacity: 0; transform: scale(0); }
-  12% { opacity: 0.7; transform: scale(1); }
-  55% { opacity: 0.5; transform: scale(1); }
-  85% { opacity: 0; transform: scale(0.7); }
-}
-
-.effect-ink .fx-ambient::before,
-.effect-ink .fx-ambient::after {
-  content: '👣';
-  position: fixed;
-  pointer-events: none;
-  z-index: 0;
-  font-size: 14px;
-}
-
-.effect-ink .fx-ambient::before {
-  top: 30%;
-  left: 25%;
-  animation: ink-appear 3s ease infinite;
-}
-
-.effect-ink .fx-ambient::after {
-  top: 55%;
-  left: 65%;
-  font-size: 11px;
-  transform: rotate(30deg);
-  animation: ink-appear 3.5s ease 1.5s infinite;
-}
-
-/* ── Neon Glow: Scanline sweep ──────────────────────────────── */
-
-@keyframes scanline-sweep {
-  0% { top: -2px; opacity: 0; }
-  5% { opacity: 0.2; }
-  95% { opacity: 0.06; }
-  100% { top: 100vh; opacity: 0; }
-}
-
-.effect-scanline .fx-ambient::before {
-  content: '';
-  position: fixed;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 184, 3, 0.4), transparent);
-  pointer-events: none;
-  z-index: 0;
-  animation: scanline-sweep 3.5s linear infinite;
-}
-
-/* ── Deep Mariana: CRT scanlines (static overlay) ───────────── */
-
+/* CRT scanlines for Deep Mariana */
 .effect-crt::after {
   content: '';
   position: fixed;
@@ -229,137 +87,12 @@
   );
 }
 
-/* ── Deep Mariana: Rising bubbles ────────────────────────────── */
-
-@keyframes bubble-rise {
-  0% { transform: translateY(0) translateX(0); opacity: 0; }
-  8% { opacity: 0.6; }
-  85% { opacity: 0.3; }
-  100% { transform: translateY(-100vh) translateX(25px); opacity: 0; }
-}
-
-@keyframes bubble-rise-drift {
-  0% { transform: translateY(0) translateX(0); opacity: 0; }
-  10% { opacity: 0.5; }
-  80% { opacity: 0.2; }
-  100% { transform: translateY(-100vh) translateX(-18px); opacity: 0; }
-}
-
-.effect-bubbles .fx-ambient::before,
-.effect-bubbles .fx-ambient::after {
-  content: '';
-  position: fixed;
-  bottom: -10px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 232, 154, 0.35) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.effect-bubbles .fx-ambient::before {
-  width: 7px;
-  height: 7px;
-  left: 20%;
-  animation: bubble-rise 4.5s ease-in infinite;
-}
-
-.effect-bubbles .fx-ambient::after {
-  width: 4px;
-  height: 4px;
-  left: 65%;
-  animation: bubble-rise-drift 5.5s ease-in 1.5s infinite;
-}
-
-/* ── Industrial Furnace: Rising embers ──────────────────────── */
-
-@keyframes ember-rise {
-  0% { transform: translateY(0) translateX(0); opacity: 0; }
-  12% { opacity: 0.9; }
-  45% { opacity: 0.6; }
-  100% { transform: translateY(-100vh) translateX(-18px); opacity: 0; }
-}
-
-@keyframes ember-rise-drift {
-  0% { transform: translateY(0) translateX(0); opacity: 0; }
-  10% { opacity: 0.8; }
-  50% { opacity: 0.4; }
-  100% { transform: translateY(-100vh) translateX(12px); opacity: 0; }
-}
-
-.effect-embers .fx-ambient::before,
-.effect-embers .fx-ambient::after {
-  content: '';
-  position: fixed;
-  bottom: -5px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.effect-embers .fx-ambient::before {
-  width: 3.5px;
-  height: 3.5px;
-  left: 15%;
-  background: #ff6820;
-  animation: ember-rise 3.5s ease-out infinite;
-}
-
-.effect-embers .fx-ambient::after {
-  width: 2px;
-  height: 2px;
-  left: 70%;
-  background: #ffaa30;
-  animation: ember-rise-drift 4.5s ease-out 1s infinite;
-}
-
-/* ── Expecto Patronum: Wisps — silvery mist + ghost sparkles ── */
-
-@keyframes wisp-rise {
-  0% { transform: translateY(0) translateX(0) scaleX(1); opacity: 0; }
-  12% { opacity: 0.45; }
-  50% { transform: translateY(-40vh) translateX(18px) scaleX(1.8); opacity: 0.3; }
-  100% { transform: translateY(-80vh) translateX(-10px) scaleX(2.5); opacity: 0; }
-}
-
-@keyframes ghost-sparkle {
-  0%, 100% { opacity: 0; transform: scale(0.3); }
-  40% { opacity: 0.6; transform: scale(1.1); }
-  70% { opacity: 0.3; transform: scale(0.8); }
-}
-
-.effect-wisps .fx-ambient::before {
-  content: '';
-  position: fixed;
-  bottom: 10%;
-  left: 20%;
-  width: 30px;
-  height: 12px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(184, 212, 232, 0.35) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  animation: wisp-rise 5.5s ease infinite;
-}
-
-.effect-wisps .fx-ambient::after {
-  content: '✨';
-  position: fixed;
-  top: 30%;
-  left: 70%;
-  font-size: 14px;
-  color: rgba(184, 212, 232, 0.5);
-  pointer-events: none;
-  z-index: 0;
-  animation: ghost-sparkle 3.5s ease infinite;
-}
-
 /* ── Reduced motion: disable all effects ────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  .fx-ambient::before,
-  .fx-ambient::after,
+  .fx-particle,
   .effect-crt::after {
     animation: none !important;
-    display: none;
+    display: none !important;
   }
 }

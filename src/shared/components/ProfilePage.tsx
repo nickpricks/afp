@@ -41,12 +41,18 @@ const MODULE_LABELS: Record<ModuleId, string> = {
 };
 
 /** Saves profile appearance fields to the storage adapter */
-const saveAppearance = async (uid: string, theme: string, colorMode: ColorMode): Promise<void> => {
+const saveAppearance = async (
+  uid: string,
+  theme: string,
+  colorMode: ColorMode,
+  effectIntensity: number,
+): Promise<void> => {
   const adapter = createAdapter(`users/${uid}`);
   await adapter.save(DbSubcollection.Profile, {
     id: DbDoc.Main,
     theme,
     colorMode,
+    effectIntensity,
     updatedAt: new Date().toISOString(),
   });
 };
@@ -69,6 +75,7 @@ export function ProfilePage() {
   const activeThemeId = useActiveThemeId();
 
   const [colorMode, setColorMode] = useState<ColorMode>(profile?.colorMode ?? 'system');
+  const [intensity, setIntensity] = useState<number>(profile?.effectIntensity ?? 50);
 
   // Username state
   const [isEditingUsername, setIsEditingUsername] = useState(false);
@@ -87,13 +94,13 @@ export function ProfilePage() {
     (themeId: ThemeId) => {
       applyTheme(themeId, colorMode);
       if (uid) {
-        saveAppearance(uid, themeId, colorMode).catch(() => {
+        saveAppearance(uid, themeId, colorMode, intensity).catch(() => {
           addToast(ProfileMsg.ThemeSaveFailed, ToastType.Error);
         });
       }
       addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
-    [colorMode, uid, addToast],
+    [colorMode, intensity, uid, addToast],
   );
 
   const handleColorModeChange = useCallback(
@@ -101,13 +108,25 @@ export function ProfilePage() {
       setColorMode(mode);
       applyTheme(activeThemeId, mode);
       if (uid) {
-        saveAppearance(uid, activeThemeId, mode).catch(() => {
+        saveAppearance(uid, activeThemeId, mode, intensity).catch(() => {
           addToast(ProfileMsg.ColorModeSaveFailed, ToastType.Error);
         });
       }
       addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
-    [activeThemeId, uid, addToast],
+    [activeThemeId, intensity, uid, addToast],
+  );
+
+  const handleIntensityChange = useCallback(
+    (newIntensity: number) => {
+      setIntensity(newIntensity);
+      if (uid) {
+        saveAppearance(uid, activeThemeId, colorMode, newIntensity).catch(() => {
+          // Silent fail for real-time slider to avoid toast spam
+        });
+      }
+    },
+    [activeThemeId, colorMode, uid],
   );
 
   const handleUsernameSave = useCallback(async () => {
@@ -303,8 +322,10 @@ export function ProfilePage() {
       <AppearanceSection
         activeThemeId={activeThemeId}
         colorMode={colorMode}
+        intensity={intensity}
         onThemeChange={handleThemeChange}
         onColorModeChange={handleColorModeChange}
+        onIntensityChange={handleIntensityChange}
       />
 
       {/* Module Status Section */}
@@ -367,13 +388,17 @@ export function ProfilePage() {
 function AppearanceSection({
   activeThemeId,
   colorMode,
+  intensity,
   onThemeChange,
   onColorModeChange,
+  onIntensityChange,
 }: {
   activeThemeId: ThemeId;
   colorMode: ColorMode;
+  intensity: number;
   onThemeChange: (id: ThemeId) => void;
   onColorModeChange: (mode: ColorMode) => void;
+  onIntensityChange: (intensity: number) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const activeTheme = THEME_DEFINITIONS[activeThemeId];
@@ -466,21 +491,26 @@ function AppearanceSection({
             })}
           </div>
 
-          {/* Effects info */}
-          {activeTheme.effects.length > 0 && (
-            <div className="mt-4 border-t border-line pt-3">
-              <p className="text-sm text-fg">Effects</p>
-              <p className="text-xs text-fg-muted mt-1">
-                {activeTheme.effects.join(', ')} · {activeTheme.defaultParticleCount} particles ·{' '}
-                {activeTheme.defaultParticleSize}
-              </p>
+          {/* Effects Intensity */}
+          <div className="mt-4 border-t border-line pt-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm text-fg">Ambient Effects</p>
+              <span className="text-xs font-mono text-fg-muted">{intensity}%</span>
             </div>
-          )}
-          {activeTheme.effects.length === 0 && (
-            <div className="mt-4 border-t border-line pt-3">
-              <p className="text-xs text-fg-muted">No ambient effects (minimal theme)</p>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              value={intensity}
+              onChange={(e) => onIntensityChange(parseInt(e.target.value, 10))}
+              className="w-full h-1.5 bg-line rounded-lg appearance-none cursor-pointer accent-accent"
+            />
+            <div className="flex justify-between mt-1 px-0.5">
+              <span className="text-[10px] text-fg-muted uppercase tracking-tighter">Off</span>
+              <span className="text-[10px] text-fg-muted uppercase tracking-tighter">Max</span>
             </div>
-          )}
+          </div>
         </div>
       )}
     </section>

@@ -58,8 +58,7 @@ export interface UserProfile {
   viewerOf: string | null;
   theme: string;
   colorMode: 'light' | 'dark' | 'system';
-  effectCount?: number;
-  effectSize?: 'small' | 'medium' | 'large';
+  effectIntensity: number;
   modules: ModuleConfig;
   createdAt: string;
   updatedAt: string;

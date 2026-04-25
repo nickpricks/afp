@@ -51,15 +51,23 @@ const ALL_EFFECTS: ThemeEffect[] = [
   'wisps',
 ];
 
+export type ThemeEffectType = 'fall' | 'rise' | 'twinkle' | 'float' | 'sweep' | 'overlay';
+
+export type ThemeEffectConfig = {
+  id: ThemeEffect;
+  type: ThemeEffectType;
+  content: string;
+  maxParticles: number;
+  baseSpeed: number;
+};
+
 export type ThemeDefinition = {
   id: ThemeId;
   name: string;
   family: string;
   darkOnly: boolean;
   fonts: FontPair;
-  effects: ThemeEffect[];
-  defaultParticleCount: number;
-  defaultParticleSize: 'small' | 'medium' | 'large';
+  effects: ThemeEffectConfig[];
   previewColors: { bg: string; accent: string; text: string };
 };
 
@@ -75,9 +83,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Family',
     darkOnly: false,
     fonts: FONTS_DEFAULT,
-    effects: ['snowflakes'],
-    defaultParticleCount: 5,
-    defaultParticleSize: 'medium',
+    effects: [{ id: 'snowflakes', type: 'fall', content: '❄', maxParticles: 30, baseSpeed: 8 }],
     previewColors: { bg: '#f0f7ff', accent: '#60a5fa', text: '#1e293b' },
   },
   [ThemeId.GardenPath]: {
@@ -86,9 +92,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Nature',
     darkOnly: false,
     fonts: FONTS_GARDEN,
-    effects: ['leaves'],
-    defaultParticleCount: 4,
-    defaultParticleSize: 'medium',
+    effects: [{ id: 'leaves', type: 'fall', content: '🍃', maxParticles: 20, baseSpeed: 10 }],
     previewColors: { bg: '#f4f9f4', accent: '#16a34a', text: '#1a2e1a' },
   },
   [ThemeId.Lullaby]: {
@@ -97,9 +101,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Nursery',
     darkOnly: false,
     fonts: FONTS_NURSERY,
-    effects: ['stars'],
-    defaultParticleCount: 5,
-    defaultParticleSize: 'medium',
+    effects: [{ id: 'stars', type: 'twinkle', content: '✨', maxParticles: 40, baseSpeed: 4 }],
     previewColors: { bg: '#faf6ef', accent: '#e8a44a', text: '#3d3529' },
   },
   [ThemeId.RoseQuartz]: {
@@ -108,9 +110,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Soft',
     darkOnly: false,
     fonts: FONTS_ELEGANT,
-    effects: ['hearts'],
-    defaultParticleCount: 5,
-    defaultParticleSize: 'medium',
+    effects: [{ id: 'hearts', type: 'rise', content: '❤️', maxParticles: 25, baseSpeed: 6 }],
     previewColors: { bg: '#fdf2f8', accent: '#f472b6', text: '#2e1a24' },
   },
   [ThemeId.Charcoal]: {
@@ -120,8 +120,6 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     darkOnly: false,
     fonts: FONTS_MONO,
     effects: [],
-    defaultParticleCount: 0,
-    defaultParticleSize: 'medium',
     previewColors: { bg: '#fafafa', accent: '#71717a', text: '#18181b' },
   },
   [ThemeId.MaraudersMap]: {
@@ -130,9 +128,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Magic',
     darkOnly: false,
     fonts: FONTS_MAGIC,
-    effects: ['ink'],
-    defaultParticleCount: 5,
-    defaultParticleSize: 'medium',
+    effects: [{ id: 'ink', type: 'float', content: '👣', maxParticles: 15, baseSpeed: 12 }],
     previewColors: { bg: '#f5f0e0', accent: '#c8a96e', text: '#3a2e1a' },
   },
   [ThemeId.NeonGlow]: {
@@ -141,9 +137,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Cyberpunk',
     darkOnly: true,
     fonts: FONTS_CYBERPUNK,
-    effects: ['scanline'],
-    defaultParticleCount: 1,
-    defaultParticleSize: 'large',
+    effects: [{ id: 'scanline', type: 'sweep', content: '', maxParticles: 1, baseSpeed: 4 }],
     previewColors: { bg: '#0d0505', accent: '#ffb803', text: '#d0d0d0' },
   },
   [ThemeId.DeepMariana]: {
@@ -152,9 +146,10 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Deep',
     darkOnly: true,
     fonts: FONTS_MONO,
-    effects: ['crt', 'bubbles'],
-    defaultParticleCount: 5,
-    defaultParticleSize: 'medium',
+    effects: [
+      { id: 'crt', type: 'overlay', content: '', maxParticles: 1, baseSpeed: 0 },
+      { id: 'bubbles', type: 'rise', content: '🫧', maxParticles: 30, baseSpeed: 7 },
+    ],
     previewColors: { bg: '#030b12', accent: '#00e89a', text: '#8cb4c8' },
   },
   [ThemeId.IndustrialFurnace]: {
@@ -163,9 +158,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Industrial',
     darkOnly: true,
     fonts: FONTS_MONO,
-    effects: ['embers'],
-    defaultParticleCount: 5,
-    defaultParticleSize: 'medium',
+    effects: [{ id: 'embers', type: 'rise', content: '🔥', maxParticles: 35, baseSpeed: 5 }],
     previewColors: { bg: '#100804', accent: '#ff6820', text: '#c8a888' },
   },
   [ThemeId.ExpectoPatronum]: {
@@ -174,9 +167,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Magic',
     darkOnly: true,
     fonts: FONTS_MAGIC,
-    effects: ['wisps'],
-    defaultParticleCount: 4,
-    defaultParticleSize: 'large',
+    effects: [{ id: 'wisps', type: 'float', content: '🌫️', maxParticles: 10, baseSpeed: 15 }],
     previewColors: { bg: '#080a10', accent: '#b8d4e8', text: '#90a8b8' },
   },
 };
@@ -233,8 +224,10 @@ export function applyTheme(themeId: ThemeId, colorMode: ColorMode): void {
   for (const effect of ALL_EFFECTS) {
     root.classList.remove(`effect-${effect}`);
   }
-  for (const effect of theme.effects) {
-    root.classList.add(`effect-${effect}`);
+  for (const config of theme.effects) {
+    if (config.type === 'overlay') {
+      root.classList.add(`effect-${config.id}`);
+    }
   }
 
   // Apply color mode

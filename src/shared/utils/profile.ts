@@ -17,6 +17,7 @@ export function createDefaultProfile(
     viewerOf: null,
     theme: CONFIG.DEFAULT_THEME,
     colorMode: 'system',
+    effectIntensity: 50,
     modules,
     createdAt: now,
     updatedAt: now,
