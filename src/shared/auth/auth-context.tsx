@@ -110,7 +110,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profileRef,
         (snapshot) => {
           if (snapshot.exists()) {
-            setProfile(snapshot.data() as UserProfile);
+            const data = snapshot.data() as UserProfile;
+            setProfile({
+              ...data,
+              modules: data.modules || DEFAULT_MODULES,
+            });
             setSyncStatus(SyncStatus.Synced);
           } else {
             setProfile(createDefaultProfile('', UserRole.User));
@@ -130,7 +134,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         (data) => {
           const mainDoc = data.find((d) => d.id === DbDoc.Main);
           if (mainDoc) {
-            setProfile(mainDoc);
+            // Ensure modules exist even in older local data
+            setProfile({
+              ...mainDoc,
+              modules: mainDoc.modules || DEFAULT_MODULES,
+            });
           } else {
             // Initialize local profile if missing
             const defaultProfile = createDefaultProfile('Dev User', UserRole.TheAdminNick);

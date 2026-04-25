@@ -55,6 +55,7 @@ const saveAppearance = async (
     theme,
     colorMode,
     effectIntensity,
+    modules: existingProfile?.modules || DEFAULT_MODULES,
     updatedAt: new Date().toISOString(),
   });
 };
