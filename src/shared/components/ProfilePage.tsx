@@ -19,7 +19,7 @@ import {
   type ColorMode,
   type ThemeId,
 } from '@/themes/themes';
-import { ModuleId, ToastType, isErr, ALL_MODULES } from '@/shared/types';
+import { ModuleId, ToastType, isErr, ALL_MODULES, DEFAULT_MODULES } from '@/shared/types';
 import { useModuleRequest } from '@/shared/hooks/useModuleRequest';
 import { CONFIG } from '@/constants/config';
 import { AppPath } from '@/constants/routes';

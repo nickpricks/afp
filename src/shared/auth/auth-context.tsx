@@ -9,7 +9,7 @@ import {
 } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 
-import { ModuleId, SyncStatus, UserRole, type UserProfile } from '@/shared/types';
+import { ModuleId, SyncStatus, UserRole, DEFAULT_MODULES, type UserProfile } from '@/shared/types';
 import { auth, db, isFirebaseConfigured } from '@/shared/auth/firebase-config';
 import { DbCollection, DbSubcollection, DbDoc, DbField } from '@/constants/db';
 import { createDefaultProfile } from '@/shared/utils/profile';
