@@ -4,7 +4,7 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
-## [0.3.0] — 2026-04-25 (Enhanced Theme System & Refactor)
+## [0.2.14] — 2026-04-25 (Enhanced Theme System & Refactor)
 
 ### Added
 - **Enhanced Ambient Theme System** — Granular 0-100% intensity control for all themes.

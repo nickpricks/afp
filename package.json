@@ -1,6 +1,6 @@
 {
   "name": "afp",
-  "version": "0.3.0",
+  "version": "0.2.14",
   "type": "module",
   "private": true,
   "scripts": {
