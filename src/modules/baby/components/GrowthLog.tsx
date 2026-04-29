@@ -10,6 +10,11 @@ import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
 import { DbSubcollection } from '@/constants/db';
 import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
+import { ListControls } from '@/shared/components/ListControls';
+import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { useListControls } from '@/shared/hooks/useListControls';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { paginate, totalPages } from '@/shared/utils/paginate';
 
 /** Growth measurement form with weight, height, head circumference and recent entries */
 export function GrowthLog({
@@ -30,7 +35,7 @@ export function GrowthLog({
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [editEntry, setEditEntry] = useState<GrowthEntry | null>(null);
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const ctrl = useListControls();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [logToAll, setLogToAll] = useState(false);
   const undoRef = useRef(false);
@@ -103,8 +108,12 @@ export function GrowthLog({
     [...growth].filter((g) => g.id !== pendingDeleteId),
     (g) => g.date,
   );
-  const recentGrowth = sortedGrowth.slice(0, limit);
-  const hasMore = sortedGrowth.length > limit;
+  const today = todayStr();
+  const filteredGrowth = filterByDateRange(sortedGrowth, ctrl.timeRange, today, (g) => g.date);
+  const pagesCount = totalPages(filteredGrowth.length, ctrl.pageSize);
+  const recentGrowth = ctrl.showAll
+    ? filteredGrowth
+    : paginate(filteredGrowth, ctrl.page, ctrl.pageSize);
 
   return (
     <div className="flex flex-col gap-6 px-4 py-6">
@@ -197,23 +206,30 @@ export function GrowthLog({
         </div>
       </form>
 
+      {sortedGrowth.length > 0 && (
+        <ListControls
+          timeRange={ctrl.timeRange}
+          onTimeRangeChange={ctrl.setTimeRange}
+          pageSize={ctrl.pageSize}
+          onPageSizeChange={ctrl.setPageSize}
+          page={ctrl.page}
+          totalPages={ctrl.showAll ? 1 : pagesCount}
+          onPageChange={ctrl.setPage}
+        />
+      )}
       <RecentGrowth
         entries={recentGrowth}
         onEdit={startEdit}
         editingId={editEntry?.id ?? null}
         onRemove={handleUndoDelete}
       />
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)}
-          className="text-xs text-accent font-medium py-1 self-center"
-        >
-          Show more ({sortedGrowth.length - limit} remaining)
-        </button>
-      )}
-      {!hasMore && sortedGrowth.length > CONFIG.PAGE_SIZE && (
-        <p className="text-xs text-fg-muted text-center py-1">That's all the growth entries</p>
+      {!ctrl.showAll && (
+        <ListShowMoreFooter
+          totalCount={filteredGrowth.length}
+          shownCount={recentGrowth.length}
+          pageSize={ctrl.pageSize}
+          onShowAll={() => ctrl.setShowAll(true)}
+        />
       )}
     </div>
   );

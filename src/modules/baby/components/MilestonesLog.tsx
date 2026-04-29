@@ -13,6 +13,11 @@ import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
 import { DbSubcollection } from '@/constants/db';
 import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
+import { ListControls } from '@/shared/components/ListControls';
+import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { useListControls } from '@/shared/hooks/useListControls';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { paginate, totalPages } from '@/shared/utils/paginate';
 
 type Props = {
   childId?: string;
@@ -39,7 +44,7 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [editEntry, setEditEntry] = useState<Milestone | null>(null);
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const ctrl = useListControls();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [logToAll, setLogToAll] = useState(false);
   const undoRef = useRef(false);
@@ -134,8 +139,10 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
     [...items].filter((m) => m.id !== pendingDeleteId),
     (m) => `${m.date}T${m.createdAt}`,
   );
-  const visible = sortedAll.slice(0, limit);
-  const hasMore = sortedAll.length > limit;
+  const today = todayStr();
+  const filteredAll = filterByDateRange(sortedAll, ctrl.timeRange, today, (m) => m.date);
+  const pagesCount = totalPages(filteredAll.length, ctrl.pageSize);
+  const visible = ctrl.showAll ? filteredAll : paginate(filteredAll, ctrl.page, ctrl.pageSize);
 
   // Group visible entries by category, preserving the order within each group
   const grouped = new Map<MilestoneCategory, Milestone[]>();
@@ -261,6 +268,18 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
         </p>
       )}
 
+      {sortedAll.length > 0 && (
+        <ListControls
+          timeRange={ctrl.timeRange}
+          onTimeRangeChange={ctrl.setTimeRange}
+          pageSize={ctrl.pageSize}
+          onPageSizeChange={ctrl.setPageSize}
+          page={ctrl.page}
+          totalPages={ctrl.showAll ? 1 : pagesCount}
+          onPageChange={ctrl.setPage}
+        />
+      )}
+
       {ALL_MILESTONE_CATEGORIES.map((cat) => {
         const entries = grouped.get(cat);
         if (!entries || entries.length === 0) return null;
@@ -321,17 +340,13 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
         );
       })}
 
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)}
-          className="text-xs text-accent font-medium py-1 self-center"
-        >
-          Show more ({sortedAll.length - limit} remaining)
-        </button>
-      )}
-      {!hasMore && sortedAll.length > CONFIG.PAGE_SIZE && (
-        <p className="text-xs text-fg-muted text-center py-1">That&apos;s all the milestones</p>
+      {!ctrl.showAll && (
+        <ListShowMoreFooter
+          totalCount={filteredAll.length}
+          shownCount={visible.length}
+          pageSize={ctrl.pageSize}
+          onShowAll={() => ctrl.setShowAll(true)}
+        />
       )}
     </div>
   );

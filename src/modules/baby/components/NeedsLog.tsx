@@ -16,6 +16,11 @@ import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
 import { DbSubcollection } from '@/constants/db';
 import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
+import { ListControls } from '@/shared/components/ListControls';
+import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { useListControls } from '@/shared/hooks/useListControls';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { paginate, totalPages } from '@/shared/utils/paginate';
 
 type Props = {
   childId?: string;
@@ -38,7 +43,7 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [editEntry, setEditEntry] = useState<NeedEntry | null>(null);
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const ctrl = useListControls();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [logToAll, setLogToAll] = useState(false);
   const undoRef = useRef(false);
@@ -138,8 +143,17 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
     [...filtered].filter((n) => n.id !== pendingDeleteId),
     (n) => n.createdAt,
   );
-  const recentEntries = sortedEntries.slice(0, limit);
-  const hasMore = sortedEntries.length > limit;
+  const today = todayStr();
+  const dateFilteredEntries = filterByDateRange(
+    sortedEntries,
+    ctrl.timeRange,
+    today,
+    (n) => n.date,
+  );
+  const pagesCount = totalPages(dateFilteredEntries.length, ctrl.pageSize);
+  const recentEntries = ctrl.showAll
+    ? dateFilteredEntries
+    : paginate(dateFilteredEntries, ctrl.page, ctrl.pageSize);
 
   const filterChips: { label: string; value: NeedStatus | null }[] = [
     { label: 'All', value: null },
@@ -232,6 +246,17 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
         </div>
       </form>
 
+      {sortedEntries.length > 0 && (
+        <ListControls
+          timeRange={ctrl.timeRange}
+          onTimeRangeChange={ctrl.setTimeRange}
+          pageSize={ctrl.pageSize}
+          onPageSizeChange={ctrl.setPageSize}
+          page={ctrl.page}
+          totalPages={ctrl.showAll ? 1 : pagesCount}
+          onPageChange={ctrl.setPage}
+        />
+      )}
       <RecentNeeds
         entries={recentEntries}
         onEdit={startEdit}
@@ -239,17 +264,13 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
         onRemove={handleUndoDelete}
         onChangeStatus={changeStatus}
       />
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)}
-          className="text-xs text-accent font-medium py-1 self-center"
-        >
-          Show more ({sortedEntries.length - limit} remaining)
-        </button>
-      )}
-      {!hasMore && sortedEntries.length > CONFIG.PAGE_SIZE && (
-        <p className="text-xs text-fg-muted text-center py-1">That&apos;s all the needs</p>
+      {!ctrl.showAll && (
+        <ListShowMoreFooter
+          totalCount={dateFilteredEntries.length}
+          shownCount={recentEntries.length}
+          pageSize={ctrl.pageSize}
+          onShowAll={() => ctrl.setShowAll(true)}
+        />
       )}
     </div>
   );

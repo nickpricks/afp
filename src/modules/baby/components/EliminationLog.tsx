@@ -17,6 +17,11 @@ import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
 import { DbSubcollection } from '@/constants/db';
 import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
+import { ListControls } from '@/shared/components/ListControls';
+import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { useListControls } from '@/shared/hooks/useListControls';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { paginate, totalPages } from '@/shared/utils/paginate';
 
 type Props = {
   childId?: string;
@@ -50,7 +55,7 @@ export function EliminationLog({
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [editEntry, setEditEntry] = useState<EliminationEntry | null>(null);
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const ctrl = useListControls();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [logToAll, setLogToAll] = useState(false);
   const undoRef = useRef(false);
@@ -151,8 +156,12 @@ export function EliminationLog({
     [...elimination].filter((e) => e.id !== pendingDeleteId),
     (e) => `${e.date}T${e.time}`,
   );
-  const recentEntries = sortedEntries.slice(0, limit);
-  const hasMore = sortedEntries.length > limit;
+  const today = todayStr();
+  const filteredEntries = filterByDateRange(sortedEntries, ctrl.timeRange, today, (e) => e.date);
+  const pagesCount = totalPages(filteredEntries.length, ctrl.pageSize);
+  const recentEntries = ctrl.showAll
+    ? filteredEntries
+    : paginate(filteredEntries, ctrl.page, ctrl.pageSize);
 
   const showQuickLog = !editEntry && mode === EliminationMode.Diaper;
 
@@ -291,23 +300,30 @@ export function EliminationLog({
         </div>
       </form>
 
+      {sortedEntries.length > 0 && (
+        <ListControls
+          timeRange={ctrl.timeRange}
+          onTimeRangeChange={ctrl.setTimeRange}
+          pageSize={ctrl.pageSize}
+          onPageSizeChange={ctrl.setPageSize}
+          page={ctrl.page}
+          totalPages={ctrl.showAll ? 1 : pagesCount}
+          onPageChange={ctrl.setPage}
+        />
+      )}
       <RecentElimination
         entries={recentEntries}
         onEdit={startEdit}
         editingId={editEntry?.id ?? null}
         onRemove={handleUndoDelete}
       />
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)}
-          className="text-xs text-accent font-medium py-1 self-center"
-        >
-          Show more ({sortedEntries.length - limit} remaining)
-        </button>
-      )}
-      {!hasMore && sortedEntries.length > CONFIG.PAGE_SIZE && (
-        <p className="text-xs text-fg-muted text-center py-1">That&apos;s all the entries</p>
+      {!ctrl.showAll && (
+        <ListShowMoreFooter
+          totalCount={filteredEntries.length}
+          shownCount={recentEntries.length}
+          pageSize={ctrl.pageSize}
+          onShowAll={() => ctrl.setShowAll(true)}
+        />
       )}
     </div>
   );
