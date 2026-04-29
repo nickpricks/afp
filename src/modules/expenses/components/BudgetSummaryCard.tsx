@@ -9,14 +9,14 @@ interface Props {
   targetUid?: string;
 }
 
-/** 
+/**
  * Summary card for the Budget module on the Dashboard.
  * Handles its own data fetching via useExpenses and useIncome.
  */
 export function BudgetSummaryCard({ targetUid }: Props) {
   const { expenses } = useExpenses(targetUid);
   const { income } = useIncome(targetUid);
-  
+
   const totalSpent = computeTotalSpent(expenses);
   const totalIncome = computeTotalIncome(income);
   const remaining = totalIncome - totalSpent;

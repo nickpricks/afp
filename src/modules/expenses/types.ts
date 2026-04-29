@@ -1,4 +1,4 @@
-import type { BudgetView, ExpenseCategory, IncomeSource, PaymentMethod } from '@/shared/types';
+import type { ExpenseCategory, IncomeSource, PaymentMethod, TimeRange } from '@/shared/types';
 
 // NOTE: Directory remains `expenses/` for backwards compat. Module is "Budget" in the UI.
 
@@ -31,7 +31,7 @@ export type Income = {
 
 /** Budget module configuration */
 export type BudgetConfig = {
-  defaultView: BudgetView;
+  defaultView: TimeRange;
   configuredAt: string;
 };
 

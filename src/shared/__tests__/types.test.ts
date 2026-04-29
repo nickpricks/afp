@@ -8,7 +8,7 @@ import {
   ModuleId,
   UserRole,
   ActivityType,
-  BudgetView,
+  TimeRange,
   PaymentMethod,
   ExpenseCategory,
   IncomeSource,
@@ -116,12 +116,12 @@ describe('ActivityType (string enum)', () => {
   });
 });
 
-describe('BudgetView (string enum)', () => {
+describe('TimeRange (string enum)', () => {
   it('has all four view timeframes', () => {
-    expect(BudgetView.Today).toBe('today');
-    expect(BudgetView.Week).toBe('week');
-    expect(BudgetView.Month).toBe('month');
-    expect(BudgetView.All).toBe('all');
+    expect(TimeRange.Today).toBe('today');
+    expect(TimeRange.Week).toBe('week');
+    expect(TimeRange.Month).toBe('month');
+    expect(TimeRange.All).toBe('all');
   });
 });
 

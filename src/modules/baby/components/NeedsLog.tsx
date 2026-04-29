@@ -16,6 +16,12 @@ import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
 import { DbSubcollection } from '@/constants/db';
 import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
+import { ListControls } from '@/shared/components/ListControls';
+import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
+import { useListControls } from '@/shared/hooks/useListControls';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { paginate, totalPages } from '@/shared/utils/paginate';
 
 type Props = {
   childId?: string;
@@ -38,7 +44,7 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [editEntry, setEditEntry] = useState<NeedEntry | null>(null);
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const ctrl = useListControls();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [logToAll, setLogToAll] = useState(false);
   const undoRef = useRef(false);
@@ -138,8 +144,17 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
     [...filtered].filter((n) => n.id !== pendingDeleteId),
     (n) => n.createdAt,
   );
-  const recentEntries = sortedEntries.slice(0, limit);
-  const hasMore = sortedEntries.length > limit;
+  const today = todayStr();
+  const dateFilteredEntries = filterByDateRange(
+    sortedEntries,
+    ctrl.timeRange,
+    today,
+    (n) => n.date,
+  );
+  const pagesCount = totalPages(dateFilteredEntries.length, ctrl.pageSize);
+  const recentEntries = ctrl.showAll
+    ? dateFilteredEntries
+    : paginate(dateFilteredEntries, ctrl.page, ctrl.pageSize);
 
   const filterChips: { label: string; value: NeedStatus | null }[] = [
     { label: 'All', value: null },
@@ -232,24 +247,32 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
         </div>
       </form>
 
+      {sortedEntries.length > 0 && (
+        <ListControls
+          timeRange={ctrl.timeRange}
+          onTimeRangeChange={ctrl.setTimeRange}
+          pageSize={ctrl.pageSize}
+          onPageSizeChange={ctrl.setPageSize}
+          page={ctrl.page}
+          totalPages={ctrl.showAll ? 1 : pagesCount}
+          onPageChange={ctrl.setPage}
+        />
+      )}
       <RecentNeeds
         entries={recentEntries}
+        today={today}
         onEdit={startEdit}
         editingId={editEntry?.id ?? null}
         onRemove={handleUndoDelete}
         onChangeStatus={changeStatus}
       />
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)}
-          className="text-xs text-accent font-medium py-1 self-center"
-        >
-          Show more ({sortedEntries.length - limit} remaining)
-        </button>
-      )}
-      {!hasMore && sortedEntries.length > CONFIG.PAGE_SIZE && (
-        <p className="text-xs text-fg-muted text-center py-1">That&apos;s all the needs</p>
+      {!ctrl.showAll && (
+        <ListShowMoreFooter
+          totalCount={dateFilteredEntries.length}
+          shownCount={recentEntries.length}
+          pageSize={ctrl.pageSize}
+          onShowAll={() => ctrl.setShowAll(true)}
+        />
       )}
     </div>
   );
@@ -258,12 +281,14 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
 /** Renders a sorted list of recent need entries with edit/delete/status-transition actions */
 function RecentNeeds({
   entries,
+  today,
   onEdit,
   editingId,
   onRemove,
   onChangeStatus,
 }: {
   entries: NeedEntry[];
+  today: string;
   onEdit: (e: NeedEntry) => void;
   editingId: string | null;
   onRemove: (id: string) => void;
@@ -271,88 +296,100 @@ function RecentNeeds({
 }) {
   if (entries.length === 0) return null;
 
+  const groups: Record<string, NeedEntry[]> = {};
+  entries.forEach((e) => {
+    (groups[e.date] = groups[e.date] || []).push(e);
+  });
+  const dateKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-medium text-fg-muted">Recent Needs</h3>
-      {entries.map((entry) => {
-        const isActive = editingId === entry.id;
-        return (
-          <button
-            key={entry.id}
-            type="button"
-            onClick={() => onEdit(entry)}
-            className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}
-          >
-            <div className="flex justify-between text-sm">
-              <span className="font-medium text-fg">
-                {entry.title}
-                <span className="ml-2 text-xs text-fg-muted">
-                  {NEED_CATEGORY_LABELS[entry.category]} &middot; {NEED_STATUS_LABELS[entry.status]}
-                </span>
-              </span>
-              <div className="flex items-center gap-2">
-                {entry.status === NeedStatus.Wishlist && (
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeStatus(entry, NeedStatus.Inventory);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.stopPropagation();
-                        onChangeStatus(entry, NeedStatus.Inventory);
-                      }
-                    }}
-                    className="rounded border border-line px-2 py-1 text-xs text-accent hover:bg-accent hover:text-fg-on-accent transition-colors"
-                  >
-                    Bought
+    <div className="flex flex-col">
+      <h3 className="mb-2 text-sm font-medium text-fg-muted">Recent Needs</h3>
+      {dateKeys.map((dateKey) => (
+        <div key={dateKey}>
+          <DateGroupHeader date={dateKey} today={today} />
+          {groups[dateKey]!.map((entry) => {
+            const isActive = editingId === entry.id;
+            return (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => onEdit(entry)}
+                className={`block w-full border-t border-line p-3 text-left transition-colors hover:bg-accent-muted ${isActive ? 'bg-accent-muted border-l-2 border-l-accent' : ''}`}
+              >
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium text-fg">
+                    {entry.title}
+                    <span className="ml-2 text-xs text-fg-muted">
+                      {NEED_CATEGORY_LABELS[entry.category]} &middot;{' '}
+                      {NEED_STATUS_LABELS[entry.status]}
+                    </span>
                   </span>
-                )}
-                {entry.status === NeedStatus.Inventory && (
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeStatus(entry, NeedStatus.Outgrown);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                  <div className="flex items-center gap-2">
+                    {entry.status === NeedStatus.Wishlist && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onChangeStatus(entry, NeedStatus.Inventory);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.stopPropagation();
+                            onChangeStatus(entry, NeedStatus.Inventory);
+                          }
+                        }}
+                        className="rounded border border-line px-2 py-1 text-xs text-accent hover:bg-accent hover:text-fg-on-accent transition-colors"
+                      >
+                        Bought
+                      </span>
+                    )}
+                    {entry.status === NeedStatus.Inventory && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onChangeStatus(entry, NeedStatus.Outgrown);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.stopPropagation();
+                            onChangeStatus(entry, NeedStatus.Outgrown);
+                          }
+                        }}
+                        className="rounded border border-line px-2 py-1 text-xs text-accent hover:bg-accent hover:text-fg-on-accent transition-colors"
+                      >
+                        Outgrew
+                      </span>
+                    )}
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Delete"
+                      onClick={(e) => {
                         e.stopPropagation();
-                        onChangeStatus(entry, NeedStatus.Outgrown);
-                      }
-                    }}
-                    className="rounded border border-line px-2 py-1 text-xs text-accent hover:bg-accent hover:text-fg-on-accent transition-colors"
-                  >
-                    Outgrew
-                  </span>
-                )}
-                <span
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemove(entry.id);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.stopPropagation();
-                      onRemove(entry.id);
-                    }
-                  }}
-                  className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
-                >
-                  x
-                </span>
-              </div>
-            </div>
-            {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}
-          </button>
-        );
-      })}
+                        onRemove(entry.id);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.stopPropagation();
+                          onRemove(entry.id);
+                        }
+                      }}
+                      className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
+                    >
+                      x
+                    </span>
+                  </div>
+                </div>
+                {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}
+              </button>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

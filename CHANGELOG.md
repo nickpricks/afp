@@ -4,6 +4,41 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.15] — 2026-04-29 (Phase 2h — Universal List Controls)
+
+### Added
+- **`TimeRange` enum** — Generalized from the legacy `BudgetView` enum for cross-module use (`Today / Week / Month / All`).
+- **Shared `filterByDateRange`** — Moved from `expenses/budget-math.ts` to `src/shared/utils/filter.ts` with a key-extractor signature so both `date`-keyed and `createdAt`-keyed entries can use it.
+- **`paginate()` + `totalPages()` primitive** — `src/shared/utils/paginate.ts`, fully tested.
+- **`useListControls()` hook** — Per-list session state (time-range, page-size, page, show-all) that auto-resets pagination on filter change.
+- **`<ListControls>` component** — Pill row (time-range filter) + page-size selector `[5, 10, 25, 50, 100, 500]` + page indicator + prev/next + go-to-page input.
+- **`<ListShowMoreFooter>` component** — Bottom escape hatch that switches between `Show all N records` and `Load N remaining` based on remaining count.
+
+### Changed
+- **Wired 11 list surfaces to the new controls** — Body (Floors, ActivityLog), Baby (Feed, Sleep, Growth, Elimination, Meals, Needs, Milestones), Budget (ExpenseList, IncomeList), Admin (Invites). BroadcastsTab pending future work.
+- **Budget ExpenseListPage** — Inline pill-row replaced by shared `<ListControls>`. ExpenseList and IncomeList no longer self-paginate; pagination is owned upstream.
+
+### Removed
+- **`CONFIG.PAGE_SIZE`** — Retired in favor of the `useListControls` hook default (still 25).
+
+### Added (Daily Ledger visual refactor)
+- **`<DateGroupHeader>` component** — Sticky day header with two-tier label (relative `Today`/`Yesterday` in accent + structural `Wed 22 Apr · Wk 17` for older).
+- **`<RowTime>` component** — Tabular-nums HH:mm prefix for list rows.
+- **`<FloorMagnitudeBar>` component** — Inline split bar visualizing floors-up vs floors-down for a day, scaled against the daily goal.
+- **`relativeDateLabel` util** — Two-tier date formatting with ISO week number for cold dates.
+
+### Changed (Daily Ledger visual refactor)
+- **All 11 list surfaces redesigned** — Replaced per-row card markup with hairline `border-t` between rows. Sticky day headers per date group. Day-of-week prepended to every date display. FloorsTab additionally uses the inline magnitude bar.
+- **Theme-agnostic** — All 10 themes inherit correctly via existing CSS variables. Design preview committed: `SAM/design-samples/list-rows-redesign.html`.
+
+### Preserved
+- Swipe-to-delete (mobile), inline `×` delete (desktop), tap-to-populate-form active-row treatment — all unchanged per design constraint.
+
+### Tests
+- 50 new unit tests total: 35 across foundation primitives + components, 15 across visual primitives.
+
+---
+
 ## [0.2.14] — 2026-04-25 (Enhanced Theme System & Refactor)
 
 ### Added

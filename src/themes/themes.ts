@@ -171,7 +171,13 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     fonts: FONTS_MAGIC,
     effects: [
       { id: 'wisps', type: 'rise', content: '🌫️', maxParticles: 3, baseSpeed: 18 },
-      { id: 'patronus', type: 'rise', content: '🦌,🐺,🦅,🦦,🐎,🐈,🦉,🐇,🐕,🦢,🦡,🐉', maxParticles: 6, baseSpeed: 12 },
+      {
+        id: 'patronus',
+        type: 'rise',
+        content: '🦌,🐺,🦅,🦦,🐎,🐈,🦉,🐇,🐕,🦢,🦡,🐉',
+        maxParticles: 6,
+        baseSpeed: 12,
+      },
     ],
     previewColors: { bg: '#080a10', accent: '#b8d4e8', text: '#90a8b8' },
   },

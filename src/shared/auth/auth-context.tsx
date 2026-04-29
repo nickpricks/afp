@@ -140,10 +140,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               modules: mainDoc.modules || DEFAULT_MODULES,
             });
           } else {
-            // Initialize local profile if missing
-            const defaultProfile = createDefaultProfile('Dev User', UserRole.TheAdminNick);
-            setProfile(defaultProfile);
-            adapter.save(DbSubcollection.Profile, { ...defaultProfile, id: DbDoc.Main });
+            // Initialize local profile if missing — match DEV_PROFILE so all modules are enabled
+            setProfile(DEV_PROFILE);
+            adapter.save(DbSubcollection.Profile, { ...DEV_PROFILE, id: DbDoc.Main });
           }
           setSyncStatus(SyncStatus.Synced);
         },

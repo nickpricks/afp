@@ -23,6 +23,12 @@ App shell components for layout, navigation, route guards, dashboard, profile, d
 - **DatePickerModal.tsx** — Modal for picking a backfill date; validates against a configurable min date
 - **SwipeToDelete.tsx** — CSS-only swipe-right-to-delete wrapper for touch devices (80 px threshold)
 - **ConsoleViewer.tsx** — In-app console log viewer component; renders captured `ConsoleEntry` items with level-coded colours
+- **ListControls.tsx** — Universal list controls strip: time-range pills (Today / Week / Month / All) + page-size dropdown (`[5, 10, 25, 50, 100, 500]`) + page jumper with prev/next/go-to-page input. Used by every list view in AFP. Pure controlled component — props in, callbacks out, no internal state
+- **ListShowMoreFooter.tsx** — Bottom escape-hatch button below paginated lists. Label is contextual: `"Show all N records"` when many entries are hidden, `"Load N remaining"` when few are. Renders nothing when nothing is hidden. Click → calls `onShowAll()` to toggle the hook's `showAll` flag
+
+## lists/ subdirectory
+
+List-row primitives shared across grouped/paginated list views. See `lists/README.md`.
 
 ## loading/ subdirectory
 

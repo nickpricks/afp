@@ -13,7 +13,7 @@ interface Props {
   targetUid?: string;
 }
 
-/** 
+/**
  * Wrapper for the SuggestionBanner on the Dashboard.
  * Handles its own data fetching for the target user.
  */
@@ -35,7 +35,5 @@ export function BabyDashboardBanner({ targetUid }: Props) {
     [firebaseUser, targetUid],
   );
 
-  return (
-    <SuggestionBanner suggestions={allSuggestions} onAct={applySuggestion} />
-  );
+  return <SuggestionBanner suggestions={allSuggestions} onAct={applySuggestion} />;
 }

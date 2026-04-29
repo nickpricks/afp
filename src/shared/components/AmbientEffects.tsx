@@ -32,7 +32,7 @@ function stringToSeed(str: string): number {
  */
 export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensity }) => {
   const theme = THEME_DEFINITIONS[themeId];
-  
+
   const particles = useMemo(() => {
     if (!theme || intensity <= 0) return [];
 
@@ -52,10 +52,10 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
 
       const count = Math.floor(effect.maxParticles * (intensity / 100));
       const effectSeed = stringToSeed(effect.id);
-      
+
       // Handle comma-separated content lists (e.g. for Patronus animals)
       const contentOptions = effect.content.split(',');
-      
+
       for (let i = 0; i < count; i++) {
         // Use a stable seed based on theme, effect, and index
         const baseSeed = i + effectSeed + themeSeed;
@@ -81,7 +81,8 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
           content,
           style: {
             '--fx-left': `${r1 * 100}%`,
-            '--fx-top': effect.type === 'twinkle' || effect.type === 'float' ? `${r2 * 100}%` : undefined,
+            '--fx-top':
+              effect.type === 'twinkle' || effect.type === 'float' ? `${r2 * 100}%` : undefined,
             '--fx-delay': `${r3 * -12}s`, // Negative delay starts animation midway
             '--fx-duration': `${effect.baseSpeed + (r4 * 4 - 2)}s`,
             '--fx-rotate': `${r5 * 360}deg`,
@@ -101,14 +102,18 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
   if (particles.length === 0) return null;
 
   return (
-    <div className="fx-ambient-container pointer-events-none fixed inset-0 overflow-hidden select-none z-0" aria-hidden="true">
+    <div
+      className="fx-ambient-container pointer-events-none fixed inset-0 overflow-hidden select-none z-0"
+      aria-hidden="true"
+    >
       {particles.map((p) => (
-        <div
-          key={p.id}
-          className={`fx-particle fx-${p.type} effect-${p.effectId}`}
-          style={p.style}
-        >
-          {p.content || <div className="fx-shape w-full h-full rounded-full" style={{ background: 'currentColor', opacity: 0.4 }} />}
+        <div key={p.id} className={`fx-particle fx-${p.type} effect-${p.effectId}`} style={p.style}>
+          {p.content || (
+            <div
+              className="fx-shape w-full h-full rounded-full"
+              style={{ background: 'currentColor', opacity: 0.4 }}
+            />
+          )}
         </div>
       ))}
     </div>

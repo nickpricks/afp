@@ -71,7 +71,6 @@ vi.mock('@/constants/config', () => ({
     INVITE_CODE_CHARSET: 'abcdefghijklmnopqrstuvwxyz0123456789',
     DEV_INVITES_KEY: 'afp:dev:invites',
     METERS_PER_KM: 1000,
-    PAGE_SIZE: 25,
     UNDO_DURATION_MS: 10000,
     DAILY_SCORE_GOAL: 50,
   },

@@ -72,7 +72,8 @@ describe('NeedsLog — rendering', () => {
 
   it('renders 4 filter chips', () => {
     render(<NeedsLog childId="c1" />);
-    expect(screen.getByRole('button', { name: 'All' })).toBeInTheDocument();
+    // The first "All" is the chip; the second is the TimeRange pill from ListControls
+    expect(screen.getAllByRole('button', { name: 'All' }).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByRole('button', { name: 'Wishlist' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Have' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Outgrown' })).toBeInTheDocument();
@@ -109,10 +110,12 @@ describe('NeedsLog — filter chips', () => {
     expect(screen.queryByText(/Tiny shoes/)).not.toBeInTheDocument();
   });
 
-  it('shows all entries again when All is clicked', () => {
+  it('shows all entries again when the All chip is clicked', () => {
     render(<NeedsLog childId="c1" />);
     fireEvent.click(screen.getByRole('button', { name: 'Wishlist' }));
-    fireEvent.click(screen.getByRole('button', { name: 'All' }));
+    // First "All" is the status chip (DOM order); second is the TimeRange pill
+    const allButtons = screen.getAllByRole('button', { name: 'All' });
+    fireEvent.click(allButtons[0]!);
     expect(screen.getByText(/Winter jacket size 3/)).toBeInTheDocument();
     expect(screen.getByText(/School backpack/)).toBeInTheDocument();
     expect(screen.getByText(/Tiny shoes/)).toBeInTheDocument();

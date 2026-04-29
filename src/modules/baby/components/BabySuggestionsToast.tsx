@@ -7,7 +7,7 @@ import { useToast } from '@/shared/errors/useToast';
 import { AppPath } from '@/constants/routes';
 import { ToastType } from '@/shared/types';
 
-/** 
+/**
  * Hidden component that listens for baby suggestions and shows a global toast.
  * Should only be mounted if the Baby module is enabled.
  */
@@ -22,13 +22,13 @@ export function BabySuggestionsToast() {
     if (toastShownRef.current) return;
     if (allSuggestions.length === 0) return;
     toastShownRef.current = true;
-    
+
     const first = allSuggestions[0]!;
     const message =
       allSuggestions.length === 1
         ? `1 suggestion for ${first.childName}`
         : `${allSuggestions.length} suggestions across your children`;
-        
+
     addToast(message, ToastType.Info, {
       action: { label: 'View', onClick: () => navigate(AppPath.Home) },
       durationMs: 6000,

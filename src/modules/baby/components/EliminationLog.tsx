@@ -17,6 +17,12 @@ import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
 import { DbSubcollection } from '@/constants/db';
 import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
+import { ListControls } from '@/shared/components/ListControls';
+import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
+import { useListControls } from '@/shared/hooks/useListControls';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { paginate, totalPages } from '@/shared/utils/paginate';
 
 type Props = {
   childId?: string;
@@ -50,7 +56,7 @@ export function EliminationLog({
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [editEntry, setEditEntry] = useState<EliminationEntry | null>(null);
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const ctrl = useListControls();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [logToAll, setLogToAll] = useState(false);
   const undoRef = useRef(false);
@@ -151,8 +157,12 @@ export function EliminationLog({
     [...elimination].filter((e) => e.id !== pendingDeleteId),
     (e) => `${e.date}T${e.time}`,
   );
-  const recentEntries = sortedEntries.slice(0, limit);
-  const hasMore = sortedEntries.length > limit;
+  const today = todayStr();
+  const filteredEntries = filterByDateRange(sortedEntries, ctrl.timeRange, today, (e) => e.date);
+  const pagesCount = totalPages(filteredEntries.length, ctrl.pageSize);
+  const recentEntries = ctrl.showAll
+    ? filteredEntries
+    : paginate(filteredEntries, ctrl.page, ctrl.pageSize);
 
   const showQuickLog = !editEntry && mode === EliminationMode.Diaper;
 
@@ -291,91 +301,112 @@ export function EliminationLog({
         </div>
       </form>
 
+      {sortedEntries.length > 0 && (
+        <ListControls
+          timeRange={ctrl.timeRange}
+          onTimeRangeChange={ctrl.setTimeRange}
+          pageSize={ctrl.pageSize}
+          onPageSizeChange={ctrl.setPageSize}
+          page={ctrl.page}
+          totalPages={ctrl.showAll ? 1 : pagesCount}
+          onPageChange={ctrl.setPage}
+        />
+      )}
       <RecentElimination
         entries={recentEntries}
+        today={today}
         onEdit={startEdit}
         editingId={editEntry?.id ?? null}
         onRemove={handleUndoDelete}
       />
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)}
-          className="text-xs text-accent font-medium py-1 self-center"
-        >
-          Show more ({sortedEntries.length - limit} remaining)
-        </button>
-      )}
-      {!hasMore && sortedEntries.length > CONFIG.PAGE_SIZE && (
-        <p className="text-xs text-fg-muted text-center py-1">That&apos;s all the entries</p>
+      {!ctrl.showAll && (
+        <ListShowMoreFooter
+          totalCount={filteredEntries.length}
+          shownCount={recentEntries.length}
+          pageSize={ctrl.pageSize}
+          onShowAll={() => ctrl.setShowAll(true)}
+        />
       )}
     </div>
   );
 }
 
-/** Renders a sorted list of recent elimination entries with edit/delete actions */
+/** Renders a sorted list of recent elimination entries grouped by date */
 function RecentElimination({
   entries,
+  today,
   onEdit,
   editingId,
   onRemove,
 }: {
   entries: EliminationEntry[];
+  today: string;
   onEdit: (e: EliminationEntry) => void;
   editingId: string | null;
   onRemove: (id: string) => void;
 }) {
   if (entries.length === 0) return null;
 
+  const groups: Record<string, EliminationEntry[]> = {};
+  entries.forEach((e) => {
+    (groups[e.date] = groups[e.date] || []).push(e);
+  });
+  const dateKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-medium text-fg-muted">Recent</h3>
-      {entries.map((entry) => {
-        const isActive = editingId === entry.id;
-        const label =
-          entry.mode === EliminationMode.Diaper
-            ? DIAPER_TYPE_LABELS[entry.diaperType ?? DiaperType.Wet]
-            : POTTY_EVENT_LABELS[entry.pottyEvent ?? PottyTrainingEvent.Pee];
-        const modeBadge = entry.mode === EliminationMode.Potty ? '🚽' : '🧷';
-        return (
-          <button
-            key={entry.id}
-            type="button"
-            onClick={() => onEdit(entry)}
-            className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}
-          >
-            <div className="flex justify-between text-sm">
-              <span className="font-medium text-fg">
-                {modeBadge} {label}
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-fg-muted">
-                  {entry.date} {entry.time}
-                </span>
-                <span
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemove(entry.id);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.stopPropagation();
-                      onRemove(entry.id);
-                    }
-                  }}
-                  className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
-                >
-                  x
-                </span>
-              </div>
-            </div>
-            {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}
-          </button>
-        );
-      })}
+    <div className="flex flex-col">
+      <h3 className="mb-2 text-sm font-medium text-fg-muted">Recent</h3>
+      {dateKeys.map((dateKey) => (
+        <div key={dateKey}>
+          <DateGroupHeader date={dateKey} today={today} />
+          {groups[dateKey]!.map((entry) => {
+            const isActive = editingId === entry.id;
+            const label =
+              entry.mode === EliminationMode.Diaper
+                ? DIAPER_TYPE_LABELS[entry.diaperType ?? DiaperType.Wet]
+                : POTTY_EVENT_LABELS[entry.pottyEvent ?? PottyTrainingEvent.Pee];
+            const modeBadge = entry.mode === EliminationMode.Potty ? '🚽' : '🧷';
+            return (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => onEdit(entry)}
+                className={`block w-full border-t border-line p-3 text-left transition-colors hover:bg-accent-muted ${isActive ? 'bg-accent-muted border-l-2 border-l-accent' : ''}`}
+              >
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium text-fg">
+                    {modeBadge} {label}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs tabular-nums text-fg-muted">
+                      {entry.time}
+                    </span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove(entry.id);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.stopPropagation();
+                          onRemove(entry.id);
+                        }
+                      }}
+                      className="font-mono text-sm text-fg-muted transition-all hover:scale-125 hover:font-bold hover:text-red-500"
+                    >
+                      ×
+                    </span>
+                  </div>
+                </div>
+                {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}
+              </button>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

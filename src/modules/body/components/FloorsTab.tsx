@@ -10,6 +10,13 @@ import { ToastType } from '@/shared/types';
 import { useToast } from '@/shared/errors/useToast';
 import { SwipeToDelete } from '@/shared/components/SwipeToDelete';
 import { DatePickerModal } from '@/shared/components/DatePickerModal';
+import { ListControls } from '@/shared/components/ListControls';
+import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
+import { FloorMagnitudeBar } from '@/shared/components/lists/FloorMagnitudeBar';
+import { useListControls } from '@/shared/hooks/useListControls';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { paginate, totalPages } from '@/shared/utils/paginate';
 import { sortNewestFirst } from '@/shared/utils/sort';
 
 /** Formats meters as a readable distance string */
@@ -40,7 +47,7 @@ export function FloorsTab({
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const height = floorHeight || BODY_DEFAULTS.FLOOR_HEIGHT_M;
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const ctrl = useListControls();
   const [pendingDeleteKey, setPendingDeleteKey] = useState<string | null>(null);
   const undoRef = useRef(false);
 
@@ -94,7 +101,9 @@ export function FloorsTab({
     Object.entries(records).filter(([key]) => key !== pendingDeleteKey),
     ([key]) => key,
   );
-  const recentDays = sortedDays.slice(0, limit);
+  const filteredDays = filterByDateRange(sortedDays, ctrl.timeRange, today, ([key]) => key);
+  const pagesCount = totalPages(filteredDays.length, ctrl.pageSize);
+  const recentDays = ctrl.showAll ? filteredDays : paginate(filteredDays, ctrl.page, ctrl.pageSize);
 
   /** Tap handler -- redirects to editing date when in edit mode */
   const handleTap = async (type: 'up' | 'down') => {
@@ -178,34 +187,40 @@ export function FloorsTab({
       )}
 
       {/* Recent days */}
-      {recentDays.length > 0 && (
+      {sortedDays.length > 0 && (
         <div className="flex flex-col gap-2">
           <h3 className="text-xs font-medium text-fg-muted uppercase tracking-wide">Recent</h3>
-          <ul className="flex flex-col gap-1">
-            {recentDays.map(([dateKey, rec]) => {
-              const isActive = dateKey === activeKey;
-              const innerContent = (
-                <div
-                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer ${
-                    isActive
-                      ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border border-line'
-                      : dateKey === today
-                        ? 'bg-surface-card border border-line font-medium'
-                        : 'bg-surface-card border border-line opacity-80'
-                  }`}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => handleRowTap(dateKey)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleRowTap(dateKey);
-                  }}
-                >
-                  <span className={isActive ? 'text-accent font-medium' : 'text-fg-muted'}>
-                    {dateKey}
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <span className="text-fg font-medium">
-                      {rec.up} up / {rec.down} down = {rec.total}
+          <ListControls
+            timeRange={ctrl.timeRange}
+            onTimeRangeChange={ctrl.setTimeRange}
+            pageSize={ctrl.pageSize}
+            onPageSizeChange={ctrl.setPageSize}
+            page={ctrl.page}
+            totalPages={ctrl.showAll ? 1 : pagesCount}
+            onPageChange={ctrl.setPage}
+          />
+          <div className="bg-surface">
+            {(() => {
+              const goal = Math.max(20, ...recentDays.map(([, r]) => r.up + r.down));
+              return recentDays.map(([dateKey, rec]) => {
+                const isActive = dateKey === activeKey;
+                const rowContent = (
+                  <div
+                    className={`grid w-full cursor-pointer grid-cols-[1fr_80px_auto_auto] items-center gap-3 border-l-2 border-t border-line px-4 py-3 transition-colors hover:bg-accent-muted ${
+                      isActive ? 'bg-accent-muted border-l-accent' : 'border-l-transparent'
+                    }`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleRowTap(dateKey)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleRowTap(dateKey);
+                    }}
+                  >
+                    <span className="text-sm text-fg">Floors</span>
+                    <FloorMagnitudeBar up={rec.up} down={rec.down} goal={goal} />
+                    <span className="whitespace-nowrap font-mono text-[13px] tabular-nums">
+                      <span className="font-semibold text-accent">{rec.up} ↑</span>
+                      <span className="ml-2 text-fg-muted">{rec.down} ↓</span>
                     </span>
                     {onDeleteRecord && (
                       <span
@@ -222,39 +237,36 @@ export function FloorsTab({
                             handleDelete(dateKey);
                           }
                         }}
-                        className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
+                        className="font-mono text-sm text-fg-muted transition-all hover:scale-125 hover:font-bold hover:text-red-500"
                       >
-                        x
+                        ×
                       </span>
                     )}
-                  </span>
-                </div>
-              );
+                  </div>
+                );
 
-              return (
-                <li key={dateKey} className="group relative">
-                  {onDeleteRecord ? (
-                    <SwipeToDelete onDelete={() => handleDelete(dateKey)}>
-                      {innerContent}
-                    </SwipeToDelete>
-                  ) : (
-                    innerContent
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-          {sortedDays.length > limit && (
-            <button
-              type="button"
-              onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
-              className="text-xs text-accent font-medium py-1 self-center"
-            >
-              Show more ({sortedDays.length - limit} remaining)
-            </button>
-          )}
-          {sortedDays.length <= limit && sortedDays.length > CONFIG.PAGE_SIZE && (
-            <p className="text-xs text-fg-muted text-center py-1">That's all the days</p>
+                return (
+                  <div key={dateKey}>
+                    <DateGroupHeader date={dateKey} today={today} />
+                    {onDeleteRecord ? (
+                      <SwipeToDelete onDelete={() => handleDelete(dateKey)}>
+                        {rowContent}
+                      </SwipeToDelete>
+                    ) : (
+                      rowContent
+                    )}
+                  </div>
+                );
+              });
+            })()}
+          </div>
+          {!ctrl.showAll && (
+            <ListShowMoreFooter
+              totalCount={filteredDays.length}
+              shownCount={recentDays.length}
+              pageSize={ctrl.pageSize}
+              onShowAll={() => ctrl.setShowAll(true)}
+            />
           )}
         </div>
       )}

@@ -45,7 +45,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Result types**: Every async operation returns `Result<T>`, never void. Use `ok()`, `err()`, `isOk()`, `isErr()` from `@/shared/types`
 - **Error handling**: Toast notifications via `useToast()`, `ErrorBoundary` for React crashes, `SyncStatusIndicator` in header. Toast actions: `addToast(message, type, { action?: { label, onClick }, durationMs? })` — undo delete uses 10s toast with "Undo" button
 - **Tap-to-edit pattern**: All list views use tap-row-to-populate-form. Body: FloorsTab redirects +/- buttons, ActivityLog populates AddActivity. Baby: all 4 logs populate their forms. Budget: edit deferred (form on separate page). Active row: `bg-[var(--accent-muted)] border-l-2 border-l-accent`
-- **List constants**: `CONFIG.PAGE_SIZE` (25) for all paginated lists, `CONFIG.UNDO_DURATION_MS` (10000) for undo delete toasts, `CONFIG.METERS_PER_KM` (1000) for distance conversion — never hardcode these values
+- **List controls**: `CONFIG.UNDO_DURATION_MS` (10000) for undo delete toasts, `CONFIG.METERS_PER_KM` (1000) for distance conversion — never hardcode these values. List pagination is per-list session state via `useListControls()` (default page size 25) plus the shared `<ListControls>` strip (time-range pills + page-size dropdown + page jumper) and `<ListShowMoreFooter>` (`Show all N records` / `Load N remaining` escape hatch). The legacy `CONFIG.PAGE_SIZE` constant has been retired.
 - **Route guards**: `ModuleGate` wraps module routes, `AdminGate` wraps admin routes — redirect to `/` if unauthorized
 - **Admin panel**: Tabbed container (Invites | Users | Broadcasts). `InvitesTab` has copy-link + delete actions. `UsersTab` has color-coded module chips (Body=indigo, Budget=emerald, Baby=pink), role stat bar, toggle switches, accordion expand, "View Dashboard" button per user, module request approve badges. `useAdminActions` hook for Firestore profile writes. Admin can view any user's dashboard via `?viewUser=uid` query param on `/`
 - **Notifications**: Per-user subcollection `users/{uid}/notifications/{id}`. User→admin: module requests (writes to admin's subcollection + own `requestedModules`). Admin→user: alerts/notices with severity, type, and `shownTillDate` expiry. `useNotifications` reads own inbox, `useAdminNotifications` adds send/approve/delete actions. `AlertBanner` renders above header in Layout. `BroadcastsTab` in admin panel for composing alerts. Spec: `docs/specs/2026-04-14-notifications-module-requests-design.md`
@@ -64,6 +64,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Baby hooks**: `useBabyCollection<T>` generic hook in `useBabyCollection.ts`, composed by `useBabyData`. Each subcollection tracks `ready` state independently — sync status only shows `Synced` when all 4 listeners have reported
 - **Generic data hooks**: `useBabyCollection<T>` pattern — reusable hook for subcollection listener + state + save. New modules should follow this pattern instead of duplicating listener boilerplate
 - **Baby list refactor (worth investigating)**: Baby module has 4 inline `RecentXxx` render functions (FeedLog, SleepLog, GrowthLog, DiaperLog) each duplicating list/edit/delete/pagination logic. Body module solved this with a shared `ActivityLog` component. Baby should follow the same pattern — extract a shared `BabyLogList` component to reduce duplication and ensure consistent UX (delete hover, swipe, undo) across all baby logs
+- **Universal list infrastructure** (Phase 2h, `feat/exhibit-b`): Shared list primitives live alongside the components that use them. Hook: `src/shared/hooks/useListControls.ts` (per-list session state — time-range pill, page, page-size; default 25). Components: `src/shared/components/ListControls.tsx`, `ListShowMoreFooter.tsx`, plus `lists/` subdir with `DateGroupHeader.tsx`, `RowTime.tsx`, `FloorMagnitudeBar.tsx` (Floors-only). Utils: `utils/filter.ts` (`filterByDateRange<T>` generic with key-extractor), `utils/paginate.ts` (`paginate`, `totalPages`), `utils/relative-date.ts` (`relativeDateLabel` → `{ relative, structural, week }`). All 11 list surfaces (Floors, Walk/Run/Cycle, Expenses, Income, Feed, Sleep, Growth, Elimination, Meals, Needs, Milestones) follow the Daily Ledger pattern: sticky day-of-week date headers, hairline rows, time-prefix tabular-nums. Swipe-to-delete, inline `×` delete, and tap-to-populate active row preserved across the refactor
 
 ## Theme System
 
@@ -109,7 +110,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 
 Found via grep sweeps — fix in next code hygiene pass:
 
-- **#4 (constants)**: ~~`PAGE_SIZE` hardcoded in 6 files~~ — FIXED (`CONFIG.PAGE_SIZE`). ~~`1000` for m↔km in 6 places~~ — FIXED (`CONFIG.METERS_PER_KM`). Watch for new magic numbers.
+- **#4 (constants)**: ~~`PAGE_SIZE` hardcoded in 6 files~~ — FIXED, then retired (Phase 2h). Replaced by `useListControls` hook default. ~~`1000` for m↔km in 6 places~~ — FIXED (`CONFIG.METERS_PER_KM`). Watch for new magic numbers.
 - ~~**#6 (messages)**: ~15 raw toast strings in components instead of `constants/messages.ts` enums~~ — FIXED: All 18 raw strings moved to enums, `ToastType` enum added for type literals. Only exception: `useBabyCollection` dynamic templates (see Known Issues)
 - **#19 (utils)**: ~~Duplicated `formatDist()`/`formatDistance()`~~ — FIXED: shared `formatDistance()` in `utils/format.ts`. ~~8 inline `.sort()` comparators~~ — FIXED: `sortNewestFirst()` in `utils/sort.ts`
 
@@ -135,8 +136,8 @@ Found via grep sweeps — fix in next code hygiene pass:
 - ~~**Stats score lacks context**~~ — DONE: Score ring with daily goal percentage + zone labels (Session 6)
 - ~~**Stats "THIS WEEK" card cramped**~~ — DONE: Replaced with weekly day bar chart + summary row below (Session 6)
 - ~~**Stats missing Run distance card**~~ — DONE: Run card now shows when `config.running` enabled or `runMeters > 0`.
-- **Floors recent list is flat**: All rows identical styling. Highlight today's row, dim older, consider subtle bar visualization.
-- **Walking/Running list no date grouping**: Activities dump in flat list. Group by date with sticky headers ("Today", "Yesterday", "Apr 4").
+- ~~**Floors recent list is flat**~~ — DONE (Phase 2h): `<FloorMagnitudeBar>` adds inline magnitude visualization; sticky day-of-week date headers via `<DateGroupHeader>` highlight Today/Yesterday.
+- ~~**Walking/Running list no date grouping**~~ — DONE (Phase 2h): All 11 list surfaces use `<DateGroupHeader>` (sticky `Today` / `Yesterday` / `Wed 22 Apr` headers) via the universal Daily Ledger pattern.
 - ~~**Walking tab shows redundant "Walk" label**~~ — DONE: Shows date instead of type label.
 - **Budget list has no summary header**: No daily/weekly total at top of expense list.
 - **Overall contrast low**: Family Blue theme (`#60a5fa` accent on white) feels washed out. Needs stronger card shadows or darker text contrast.

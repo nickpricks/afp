@@ -4,7 +4,7 @@ Cross-cutting infrastructure that modules depend on but don't own.
 
 ## Files
 
-- **types.ts** — Result type (`ok`, `err`, `isOk`, `isErr`), enums (`ModuleId`, `UserRole`, `SyncStatus`, `ActivityType`, `BudgetView`, `PaymentMethod`, `ExpenseCategory`, `IncomeSource`, `FeedType`, `SleepType`, `SleepQuality`, `DiaperType`), and interfaces (`UserProfile`, `ModuleConfig`). `UserProfile` includes optional `effectCount` and `effectSize` fields for theme ambient effects
+- **types.ts** — Result type (`ok`, `err`, `isOk`, `isErr`), enums (`ModuleId`, `UserRole`, `SyncStatus`, `ActivityType`, `TimeRange`, `PaymentMethod`, `ExpenseCategory`, `IncomeSource`, `FeedType`, `SleepType`, `SleepQuality`, `DiaperType`), and interfaces (`UserProfile`, `ModuleConfig`). `UserProfile` includes optional `effectCount` and `effectSize` fields for theme ambient effects
 
 ## Subdirectories
 

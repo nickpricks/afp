@@ -12,6 +12,12 @@ import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
 import { DbSubcollection } from '@/constants/db';
 import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
+import { ListControls } from '@/shared/components/ListControls';
+import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
+import { useListControls } from '@/shared/hooks/useListControls';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { paginate, totalPages } from '@/shared/utils/paginate';
 
 /** Determines whether the feed type uses amount (Bottle/Solid Food) */
 function isAmountType(type: FeedType): boolean {
@@ -37,7 +43,7 @@ export function FeedLog({
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [editEntry, setEditEntry] = useState<FeedEntry | null>(null);
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const ctrl = useListControls();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [logToAll, setLogToAll] = useState(false);
   const undoRef = useRef(false);
@@ -125,8 +131,12 @@ export function FeedLog({
     [...feeds].filter((f) => f.id !== pendingDeleteId),
     (f) => `${f.date}T${f.time}`,
   );
-  const recentFeeds = sortedFeeds.slice(0, limit);
-  const hasMore = sortedFeeds.length > limit;
+  const today = todayStr();
+  const filteredFeeds = filterByDateRange(sortedFeeds, ctrl.timeRange, today, (f) => f.date);
+  const pagesCount = totalPages(filteredFeeds.length, ctrl.pageSize);
+  const recentFeeds = ctrl.showAll
+    ? filteredFeeds
+    : paginate(filteredFeeds, ctrl.page, ctrl.pageSize);
 
   return (
     <div className="flex flex-col gap-6 px-4 py-6">
@@ -221,91 +231,111 @@ export function FeedLog({
         </div>
       </form>
 
+      {sortedFeeds.length > 0 && (
+        <ListControls
+          timeRange={ctrl.timeRange}
+          onTimeRangeChange={ctrl.setTimeRange}
+          pageSize={ctrl.pageSize}
+          onPageSizeChange={ctrl.setPageSize}
+          page={ctrl.page}
+          totalPages={ctrl.showAll ? 1 : pagesCount}
+          onPageChange={ctrl.setPage}
+        />
+      )}
       <RecentFeeds
         entries={recentFeeds}
+        today={today}
         onEdit={startEdit}
         editingId={editEntry?.id ?? null}
         onRemove={handleUndoDelete}
       />
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setLimit((p) => p + CONFIG.PAGE_SIZE)}
-          className="text-xs text-accent font-medium py-1 self-center"
-        >
-          Show more ({sortedFeeds.length - limit} remaining)
-        </button>
-      )}
-      {!hasMore && sortedFeeds.length > CONFIG.PAGE_SIZE && (
-        <p className="text-xs text-fg-muted text-center py-1">That's all the feeds</p>
+      {!ctrl.showAll && (
+        <ListShowMoreFooter
+          totalCount={filteredFeeds.length}
+          shownCount={recentFeeds.length}
+          pageSize={ctrl.pageSize}
+          onShowAll={() => ctrl.setShowAll(true)}
+        />
       )}
     </div>
   );
 }
 
-/** Renders a sorted list of recent feed entries with edit/delete actions */
+/** Renders a sorted list of recent feed entries grouped by date with edit/delete actions */
 function RecentFeeds({
   entries,
+  today,
   onEdit,
   editingId,
   onRemove,
 }: {
   entries: FeedEntry[];
+  today: string;
   onEdit: (e: FeedEntry) => void;
   editingId: string | null;
   onRemove: (id: string) => void;
 }) {
   if (entries.length === 0) return null;
 
+  // Group by date
+  const groups: Record<string, FeedEntry[]> = {};
+  entries.forEach((e) => {
+    (groups[e.date] = groups[e.date] || []).push(e);
+  });
+  const dateKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-medium text-fg-muted">Recent Feeds</h3>
-      {entries.map((entry) => {
-        const isActive = editingId === entry.id;
-        return (
-          <button
-            key={entry.id}
-            type="button"
-            onClick={() => onEdit(entry)}
-            className={`rounded-lg border p-3 text-left transition-colors ${
-              isActive
-                ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line'
-                : 'bg-surface-card border-line'
-            }`}
-          >
-            <div className="flex justify-between text-sm">
-              <span className="font-medium text-fg">{FEED_TYPE_LABELS[entry.type]}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-fg-muted">
-                  {entry.date} {entry.time}
-                </span>
-                <span
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemove(entry.id);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.stopPropagation();
-                      onRemove(entry.id);
-                    }
-                  }}
-                  className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
-                >
-                  x
-                </span>
-              </div>
-            </div>
-            {entry.amount !== null && entry.amount > 0 && (
-              <p className="text-xs text-fg-muted mt-1">{entry.amount} ml/g</p>
-            )}
-            {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}
-          </button>
-        );
-      })}
+    <div className="flex flex-col">
+      <h3 className="mb-2 text-sm font-medium text-fg-muted">Recent Feeds</h3>
+      {dateKeys.map((dateKey) => (
+        <div key={dateKey}>
+          <DateGroupHeader date={dateKey} today={today} />
+          {groups[dateKey]!.map((entry) => {
+            const isActive = editingId === entry.id;
+            return (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => onEdit(entry)}
+                className={`block w-full border-t border-line p-3 text-left transition-colors hover:bg-accent-muted ${
+                  isActive ? 'bg-accent-muted border-l-2 border-l-accent' : ''
+                }`}
+              >
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium text-fg">{FEED_TYPE_LABELS[entry.type]}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs tabular-nums text-fg-muted">
+                      {entry.time}
+                    </span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove(entry.id);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.stopPropagation();
+                          onRemove(entry.id);
+                        }
+                      }}
+                      className="font-mono text-sm text-fg-muted transition-all hover:scale-125 hover:font-bold hover:text-red-500"
+                    >
+                      ×
+                    </span>
+                  </div>
+                </div>
+                {entry.amount !== null && entry.amount > 0 && (
+                  <p className="text-xs text-fg-muted mt-1">{entry.amount} ml/g</p>
+                )}
+                {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}
+              </button>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

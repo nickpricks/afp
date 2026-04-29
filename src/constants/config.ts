@@ -13,8 +13,6 @@ export const CONFIG = {
   DEV_INVITES_KEY: 'afp:dev:invites',
   /** Meters per kilometer — used for m↔km unit conversion */
   METERS_PER_KM: 1000,
-  /** Default page size for all paginated lists */
-  PAGE_SIZE: 25 as number,
   /** Undo delete toast duration in ms */
   UNDO_DURATION_MS: 10000 as number,
   /** Default daily score goal for the progress ring */

@@ -6,7 +6,7 @@ interface Props {
   targetUid?: string;
 }
 
-/** 
+/**
  * Summary card for the Baby module on the Dashboard.
  * Handles its own data fetching via useChildren.
  */

@@ -4,10 +4,12 @@ import { Trash2 } from 'lucide-react';
 import { INCOME_SOURCE_LABELS } from '@/modules/expenses/categories';
 import type { Income } from '@/modules/expenses/types';
 import { sortNewestFirst } from '@/shared/utils/sort';
+import { todayStr } from '@/shared/utils/date';
 import { CONFIG } from '@/constants/config';
 import { useToast } from '@/shared/errors/useToast';
 import { BudgetMsg } from '@/constants/messages';
 import { ToastType } from '@/shared/types';
+import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
 
 /** Displays a paginated list of income entries with undo-able delete */
 export function IncomeList({
@@ -18,7 +20,6 @@ export function IncomeList({
   onDelete: (id: string) => void;
 }) {
   const { addToast } = useToast();
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const undoRef = useRef(false);
 
@@ -26,8 +27,6 @@ export function IncomeList({
     income.filter((e) => e.id !== pendingDeleteId),
     (e) => e.date,
   );
-  const visible = sorted.slice(0, limit);
-  const hasMore = sorted.length > limit;
 
   const handleDelete = (id: string) => {
     undoRef.current = false;
@@ -54,52 +53,47 @@ export function IncomeList({
     return <p className="px-4 py-8 text-center text-fg-muted">No income yet</p>;
   }
 
+  const today = todayStr();
+  const groups: Record<string, Income[]> = {};
+  sorted.forEach((e) => {
+    (groups[e.date] = groups[e.date] || []).push(e);
+  });
+  const dateKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
   return (
-    <div className="flex flex-col gap-2 px-4">
-      <ul className="flex flex-col gap-2">
-        {visible.map((entry) => {
-          const sourceLabel = INCOME_SOURCE_LABELS[entry.source];
-          return (
-            <li
-              key={entry.id}
-              className="flex items-center justify-between rounded-lg border border-line bg-surface-card px-3 py-2"
-            >
-              <div className="flex flex-col gap-0.5">
-                <span className="font-medium text-fg">
-                  {CONFIG.CURRENCY_SYMBOL}
-                  {entry.amount.toLocaleString()}
-                </span>
-                <span className="text-xs text-fg-muted">
-                  {sourceLabel.emoji} {sourceLabel.label}
-                </span>
-                <span className="text-xs text-fg-muted">
-                  {entry.date}
-                  {entry.note ? ` \u2014 ${entry.note}` : ''}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleDelete(entry.id)}
-                className="rounded-lg p-2 text-error hover:bg-surface active:scale-95 transition-transform"
+    <div className="flex flex-col bg-surface">
+      {dateKeys.map((dateKey) => (
+        <div key={dateKey}>
+          <DateGroupHeader date={dateKey} today={today} />
+          {groups[dateKey]!.map((entry) => {
+            const sourceLabel = INCOME_SOURCE_LABELS[entry.source];
+            return (
+              <div
+                key={entry.id}
+                className="flex items-center justify-between border-t border-line px-4 py-3 transition-colors hover:bg-accent-muted"
               >
-                <Trash2 size={16} />
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
-          className="text-xs text-accent font-medium py-2 self-center"
-        >
-          Show more ({sorted.length - limit} remaining)
-        </button>
-      )}
-      {!hasMore && sorted.length > CONFIG.PAGE_SIZE && (
-        <p className="text-xs text-fg-muted text-center py-2">That's all the income</p>
-      )}
+                <div className="flex flex-col gap-0.5">
+                  <span className="font-mono text-base font-semibold tabular-nums text-accent">
+                    {CONFIG.CURRENCY_SYMBOL}
+                    {entry.amount.toLocaleString()}
+                  </span>
+                  <span className="text-xs text-fg-muted">
+                    {sourceLabel.emoji} {sourceLabel.label}
+                  </span>
+                  {entry.note && <span className="text-xs text-fg-muted">\u2014 {entry.note}</span>}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(entry.id)}
+                  className="rounded-lg p-2 text-error hover:bg-surface active:scale-95 transition-transform"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }
