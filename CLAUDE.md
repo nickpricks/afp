@@ -64,6 +64,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Baby hooks**: `useBabyCollection<T>` generic hook in `useBabyCollection.ts`, composed by `useBabyData`. Each subcollection tracks `ready` state independently — sync status only shows `Synced` when all 4 listeners have reported
 - **Generic data hooks**: `useBabyCollection<T>` pattern — reusable hook for subcollection listener + state + save. New modules should follow this pattern instead of duplicating listener boilerplate
 - **Baby list refactor (worth investigating)**: Baby module has 4 inline `RecentXxx` render functions (FeedLog, SleepLog, GrowthLog, DiaperLog) each duplicating list/edit/delete/pagination logic. Body module solved this with a shared `ActivityLog` component. Baby should follow the same pattern — extract a shared `BabyLogList` component to reduce duplication and ensure consistent UX (delete hover, swipe, undo) across all baby logs
+- **Universal list infrastructure** (Phase 2h, `feat/exhibit-b`): Shared list primitives live alongside the components that use them. Hook: `src/shared/hooks/useListControls.ts` (per-list session state — time-range pill, page, page-size; default 25). Components: `src/shared/components/ListControls.tsx`, `ListShowMoreFooter.tsx`, plus `lists/` subdir with `DateGroupHeader.tsx`, `RowTime.tsx`, `FloorMagnitudeBar.tsx` (Floors-only). Utils: `utils/filter.ts` (`filterByDateRange<T>` generic with key-extractor), `utils/paginate.ts` (`paginate`, `totalPages`), `utils/relative-date.ts` (`relativeDateLabel` → `{ relative, structural, week }`). All 11 list surfaces (Floors, Walk/Run/Cycle, Expenses, Income, Feed, Sleep, Growth, Elimination, Meals, Needs, Milestones) follow the Daily Ledger pattern: sticky day-of-week date headers, hairline rows, time-prefix tabular-nums. Swipe-to-delete, inline `×` delete, and tap-to-populate active row preserved across the refactor
 
 ## Theme System
 
@@ -135,8 +136,8 @@ Found via grep sweeps — fix in next code hygiene pass:
 - ~~**Stats score lacks context**~~ — DONE: Score ring with daily goal percentage + zone labels (Session 6)
 - ~~**Stats "THIS WEEK" card cramped**~~ — DONE: Replaced with weekly day bar chart + summary row below (Session 6)
 - ~~**Stats missing Run distance card**~~ — DONE: Run card now shows when `config.running` enabled or `runMeters > 0`.
-- **Floors recent list is flat**: All rows identical styling. Highlight today's row, dim older, consider subtle bar visualization.
-- **Walking/Running list no date grouping**: Activities dump in flat list. Group by date with sticky headers ("Today", "Yesterday", "Apr 4").
+- ~~**Floors recent list is flat**~~ — DONE (Phase 2h): `<FloorMagnitudeBar>` adds inline magnitude visualization; sticky day-of-week date headers via `<DateGroupHeader>` highlight Today/Yesterday.
+- ~~**Walking/Running list no date grouping**~~ — DONE (Phase 2h): All 11 list surfaces use `<DateGroupHeader>` (sticky `Today` / `Yesterday` / `Wed 22 Apr` headers) via the universal Daily Ledger pattern.
 - ~~**Walking tab shows redundant "Walk" label**~~ — DONE: Shows date instead of type label.
 - **Budget list has no summary header**: No daily/weekly total at top of expense list.
 - **Overall contrast low**: Family Blue theme (`#60a5fa` accent on white) feels washed out. Needs stronger card shadows or darker text contrast.

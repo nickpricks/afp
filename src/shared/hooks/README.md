@@ -10,6 +10,7 @@ Shared React hooks used across the app shell and multiple modules.
 - **useNotifications.ts** — Real-time listener on the current user's `notifications` subcollection; returns sorted, deduplicated entries
 - **useModuleRequest.ts** — Dual-writes a module access request to both the user's profile and the admin's notifications subcollection
 - **useConsoleCapture.ts** — Monkey-patches `console.*` methods to capture log entries into React state; used by ConsoleViewer
+- **useListControls.ts** — Bundled session-state hook for list views. Returns `{ timeRange, pageSize, page, showAll }` with corresponding setters. Per-list, never persisted. Defaults: `TimeRange.All`, `pageSize: 25`, `page: 1`, `showAll: false`. Setting `timeRange` resets `page → 1` and `showAll → false`. Setting `pageSize` resets `page → 1`
 
 ## Tests
 
