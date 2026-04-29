@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-04-19
+Last updated: 2026-04-29
 
 ---
 
@@ -16,10 +16,11 @@ Last updated: 2026-04-19
 | Phase 2d (Profile) | ✅ Core done | 9/9 | Module request buttons added, theme save fix done. Remaining: auth provider linking (needs Firebase) |
 | Phase 2e (Admin+Viewer) | ✅ Core done | 35/35 | Done: admin pages, view user dashboard, Broadcasts tab, viewer invite flow, role tests, admin claim flow |
 | Notifications | ✅ Done | 20/20 | Per-user notifications, module requests, admin alerts, Broadcasts tab |
-| Phase 2f (Themes) | ✅ Done | 18/18 | 10 themes, 8 font families, 9 ambient effects, loading screen, code splitting |
+| Phase 2f (Themes) | ✅ Enhanced | 20/20 | 10 themes, 8 font families, 10 ambient effects, granular intensity (0-100%), loading screen |
 | Phase 2g (E2E + Bench) | ✅ Done | 8/8 | Interactive E2E flows + build/bundle/test benchmarks |
+| Phase 2h (Revist pagination, filteration etc all lists) | [ ] Not statted | 0/0 | No t planned yet |
 | Phase 3 (Baby → Kid) | 🚧 In progress | 7/10 | Brainstorm A (Baby→Kid) done: Plans 1-7 shipped (Foundation, Suggestions, Elimination, Meals, Needs, Milestones, Life Journal). Plans 8-9 deferred. Plan 10 = Yoga = Brainstorm C — see **Pending Brainstorms** block below |
-| **Total** | **~98%** | **191/208** | |
+| **Total** | **~99%** | **193/210** | |
 
 ---
 
@@ -185,6 +186,16 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 ---
 
 ## Done
+
+### 2026-04-29 — Session 14 (Enhanced Theme System & Refactor, v0.2.14)
+
+- [x] **Enhanced Ambient Theme System** — Implemented granular 0-100% intensity control for all theme effects.
+- [x] **AmbientEffects Component** — Created a dynamic React-based particle renderer with pure render logic and seeded randomization.
+- [x] **Expecto Patronum Enhancement** — Added silver glow manifestation animations for a pool of 12 spirit animals.
+- [x] **Formal Patronus Effect** — Formally integrated `patronus` into the theme effect type system.
+- [x] **React 19 Profile Sync** — Optimized `ProfilePage` using the "Adjusting state during render" pattern to replace `useEffect` for property-to-state synchronization.
+- [x] **Behavioral CSS Refactor** — Consolidated theme effects into reusable utility classes (`fx-fall`, `fx-rise`, etc.) driven by CSS variables.
+- [x] **Reactive Local Dev** — Fixed local development to reactively sync `localStorage` changes with the Auth context.
 
 ### 2026-04-19 — Session 13 (Maintenance & Budget UX, v0.2.12)
 

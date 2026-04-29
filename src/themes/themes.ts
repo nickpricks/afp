@@ -36,7 +36,8 @@ export type ThemeEffect =
   | 'crt'
   | 'bubbles'
   | 'embers'
-  | 'wisps';
+  | 'wisps'
+  | 'patronus';
 
 const ALL_EFFECTS: ThemeEffect[] = [
   'snowflakes',
@@ -49,6 +50,7 @@ const ALL_EFFECTS: ThemeEffect[] = [
   'bubbles',
   'embers',
   'wisps',
+  'patronus',
 ];
 
 export type ThemeEffectType = 'fall' | 'rise' | 'twinkle' | 'float' | 'sweep' | 'overlay';

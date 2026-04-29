@@ -27,7 +27,6 @@ describe('THEME_DEFINITIONS', () => {
       expect(theme.fonts.display).toBeTruthy();
       expect(theme.fonts.body).toBeTruthy();
       expect(Array.isArray(theme.effects)).toBe(true);
-      expect(typeof theme.defaultParticleCount).toBe('number');
       expect(theme.previewColors.bg).toMatch(/^#/);
       expect(theme.previewColors.accent).toMatch(/^#/);
       expect(theme.previewColors.text).toMatch(/^#/);
@@ -39,7 +38,8 @@ describe('THEME_DEFINITIONS', () => {
   });
 
   it('Deep Mariana has crt + bubbles', () => {
-    expect(THEME_DEFINITIONS[ThemeId.DeepMariana].effects).toEqual(['crt', 'bubbles']);
+    const effects = THEME_DEFINITIONS[ThemeId.DeepMariana].effects.map((e) => e.id);
+    expect(effects).toEqual(['crt', 'bubbles']);
   });
 
   it('6 themes are light+dark, 4 are dark-only', () => {

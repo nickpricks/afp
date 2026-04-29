@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import changelogRaw from '../../../CHANGELOG.md?raw';
 import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
@@ -19,7 +19,7 @@ import {
   type ColorMode,
   type ThemeId,
 } from '@/themes/themes';
-import { ModuleId, ToastType, isErr, ALL_MODULES, DEFAULT_MODULES } from '@/shared/types';
+import { ModuleId, ToastType, isErr, ALL_MODULES, DEFAULT_MODULES, type UserProfile } from '@/shared/types';
 import { useModuleRequest } from '@/shared/hooks/useModuleRequest';
 import { CONFIG } from '@/constants/config';
 import { AppPath } from '@/constants/routes';
@@ -46,7 +46,7 @@ const saveAppearance = async (
   theme: string,
   colorMode: ColorMode,
   effectIntensity: number,
-  existingProfile: any,
+  existingProfile: UserProfile | null,
 ): Promise<void> => {
   const adapter = createAdapter(`users/${uid}`);
   await adapter.save(DbSubcollection.Profile, {
@@ -80,13 +80,20 @@ export function ProfilePage() {
   const [colorMode, setColorMode] = useState<ColorMode>(profile?.colorMode ?? 'system');
   const [intensity, setIntensity] = useState<number>(profile?.effectIntensity ?? 50);
 
-  // Sync local state when profile loads/updates from context
-  useEffect(() => {
-    if (profile) {
-      if (profile.colorMode !== undefined) setColorMode(profile.colorMode);
-      if (profile.effectIntensity !== undefined) setIntensity(profile.effectIntensity);
-    }
-  }, [profile?.colorMode, profile?.effectIntensity]);
+  // Sync local state when profile loads/updates from context (Adjusting state during render)
+  const [prevSync, setPrevSync] = useState({
+    colorMode: profile?.colorMode,
+    intensity: profile?.effectIntensity,
+  });
+
+  if (
+    profile &&
+    (profile.colorMode !== prevSync.colorMode || profile.effectIntensity !== prevSync.intensity)
+  ) {
+    setPrevSync({ colorMode: profile.colorMode, intensity: profile.effectIntensity });
+    if (profile.colorMode !== undefined) setColorMode(profile.colorMode);
+    if (profile.effectIntensity !== undefined) setIntensity(profile.effectIntensity);
+  }
 
   // Username state
   const [isEditingUsername, setIsEditingUsername] = useState(false);
