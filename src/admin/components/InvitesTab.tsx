@@ -8,11 +8,27 @@ import { isOk, ToastType } from '@/shared/types';
 import { AdminMsg } from '@/constants/messages';
 import { CONFIG } from '@/constants/config';
 import type { InviteRecord } from '@/shared/auth/invite';
+import { ListControls } from '@/shared/components/ListControls';
+import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { useListControls } from '@/shared/hooks/useListControls';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { paginate, totalPages } from '@/shared/utils/paginate';
+import { todayStr } from '@/shared/utils/date';
 
 /** Invites management: create + list with copy/delete actions */
 export function InvitesTab() {
   const { invites } = useAdmin();
   const { addToast } = useToast();
+  const ctrl = useListControls();
+
+  const today = todayStr();
+  const filteredInvites = filterByDateRange(invites, ctrl.timeRange, today, (inv) =>
+    inv.createdAt.slice(0, 10),
+  );
+  const pagesCount = totalPages(filteredInvites.length, ctrl.pageSize);
+  const visibleInvites = ctrl.showAll
+    ? filteredInvites
+    : paginate(filteredInvites, ctrl.page, ctrl.pageSize);
 
   /** Copies the invite link to clipboard */
   const handleCopy = useCallback(
@@ -55,8 +71,19 @@ export function InvitesTab() {
 
       {invites.length === 0 && <p className="text-sm text-fg-muted">No invites yet.</p>}
       {invites.length > 0 && (
+        <ListControls
+          timeRange={ctrl.timeRange}
+          onTimeRangeChange={ctrl.setTimeRange}
+          pageSize={ctrl.pageSize}
+          onPageSizeChange={ctrl.setPageSize}
+          page={ctrl.page}
+          totalPages={ctrl.showAll ? 1 : pagesCount}
+          onPageChange={ctrl.setPage}
+        />
+      )}
+      {invites.length > 0 && (
         <ul className="divide-y divide-line rounded-xl bg-surface-card border border-line">
-          {invites.map((inv) => (
+          {visibleInvites.map((inv) => (
             <li key={inv.code} className="flex items-center justify-between px-4 py-3">
               <div className="flex flex-col gap-0.5">
                 <span className="text-sm font-medium text-fg">{inv.name}</span>
@@ -117,6 +144,14 @@ export function InvitesTab() {
             </li>
           ))}
         </ul>
+      )}
+      {invites.length > 0 && !ctrl.showAll && (
+        <ListShowMoreFooter
+          totalCount={filteredInvites.length}
+          shownCount={visibleInvites.length}
+          pageSize={ctrl.pageSize}
+          onShowAll={() => ctrl.setShowAll(true)}
+        />
       )}
     </div>
   );
