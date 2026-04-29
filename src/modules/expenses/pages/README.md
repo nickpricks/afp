@@ -4,7 +4,7 @@ Route-level page components for the Budget module.
 
 ## Files
 
-- **ExpenseListPage.tsx** — Budget landing page with 3 tabs (Expenses, Income, CC). Time-range filter via `BudgetView`, uses `filterByDateRange` from budget-math
+- **ExpenseListPage.tsx** — Budget landing page with 3 tabs (Expenses, Income, CC). Time-range filter via `TimeRange`, uses `filterByDateRange` from budget-math
 - **AddExpensePage.tsx** — Standalone page for adding entries with Expense/Income toggle tabs
 
 ## Conventions

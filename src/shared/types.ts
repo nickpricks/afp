@@ -131,8 +131,8 @@ export enum ActivityType {
   Yoga = 'yoga',
 }
 
-/** Budget list view timeframe */
-export enum BudgetView {
+/** List view timeframe — applies to any list with a date field */
+export enum TimeRange {
   Today = 'today',
   Week = 'week',
   Month = 'month',

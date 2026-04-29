@@ -10,16 +10,16 @@ import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
 import { useIncome } from '@/modules/expenses/hooks/useIncome';
 import { filterByDateRange } from '@/modules/expenses/budget-math';
 import { ROUTES } from '@/constants/routes';
-import { BudgetView } from '@/shared/types';
+import { TimeRange } from '@/shared/types';
 import { todayStr } from '@/shared/utils/date';
 
 type BudgetTab = 'expenses' | 'income' | 'reconcile';
 
-const VIEW_OPTIONS: { id: BudgetView; label: string }[] = [
-  { id: BudgetView.Today, label: 'Today' },
-  { id: BudgetView.Week, label: 'Week' },
-  { id: BudgetView.Month, label: 'Month' },
-  { id: BudgetView.All, label: 'All' },
+const VIEW_OPTIONS: { id: TimeRange; label: string }[] = [
+  { id: TimeRange.Today, label: 'Today' },
+  { id: TimeRange.Week, label: 'Week' },
+  { id: TimeRange.Month, label: 'Month' },
+  { id: TimeRange.All, label: 'All' },
 ];
 
 /** Page wrapper showing budget summary, expense/income toggle, and list */
@@ -27,7 +27,7 @@ export function ExpenseListPage() {
   const { expenses, deleteExpense } = useExpenses();
   const { income, deleteIncome } = useIncome();
   const [activeTab, setActiveTab] = useState<BudgetTab>('expenses');
-  const [view, setView] = useState<BudgetView>(BudgetView.All);
+  const [view, setView] = useState<TimeRange>(TimeRange.All);
 
   const today = todayStr();
   const filteredExpenses = filterByDateRange(expenses, view, today);

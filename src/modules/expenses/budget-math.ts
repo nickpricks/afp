@@ -1,5 +1,5 @@
 import type { Expense, Income } from '@/modules/expenses/types';
-import { BudgetView, PaymentMethod } from '@/shared/types';
+import { PaymentMethod, TimeRange } from '@/shared/types';
 
 /** Computes total income from income entries */
 export const computeTotalIncome = (income: Income[]): number => {
@@ -11,16 +11,16 @@ export const computeTotalSpent = (expenses: Expense[]): number => {
   return expenses.filter((e) => !e.isSettlement).reduce((sum, e) => sum + e.amount, 0);
 };
 
-/** Filters items with a `date` field by BudgetView range relative to a reference date */
+/** Filters items with a `date` field by TimeRange relative to a reference date */
 export const filterByDateRange = <T extends { date: string }>(
   items: T[],
-  view: BudgetView,
+  view: TimeRange,
   today: string,
 ): T[] => {
-  if (view === BudgetView.All) return items;
+  if (view === TimeRange.All) return items;
 
   const todayMs = new Date(today).getTime();
-  const daysMap = { [BudgetView.Today]: 0, [BudgetView.Week]: 6, [BudgetView.Month]: 29 };
+  const daysMap = { [TimeRange.Today]: 0, [TimeRange.Week]: 6, [TimeRange.Month]: 29 };
   const days = daysMap[view];
   const cutoffMs = todayMs - days * 86_400_000;
 
