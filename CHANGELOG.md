@@ -4,6 +4,28 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.15] — 2026-04-29 (Phase 2h — Universal List Controls)
+
+### Added
+- **`TimeRange` enum** — Generalized from the legacy `BudgetView` enum for cross-module use (`Today / Week / Month / All`).
+- **Shared `filterByDateRange`** — Moved from `expenses/budget-math.ts` to `src/shared/utils/filter.ts` with a key-extractor signature so both `date`-keyed and `createdAt`-keyed entries can use it.
+- **`paginate()` + `totalPages()` primitive** — `src/shared/utils/paginate.ts`, fully tested.
+- **`useListControls()` hook** — Per-list session state (time-range, page-size, page, show-all) that auto-resets pagination on filter change.
+- **`<ListControls>` component** — Pill row (time-range filter) + page-size selector `[5, 10, 25, 50, 100, 500]` + page indicator + prev/next + go-to-page input.
+- **`<ListShowMoreFooter>` component** — Bottom escape hatch that switches between `Show all N records` and `Load N remaining` based on remaining count.
+
+### Changed
+- **Wired 11 list surfaces to the new controls** — Body (Floors, ActivityLog), Baby (Feed, Sleep, Growth, Elimination, Meals, Needs, Milestones), Budget (ExpenseList, IncomeList), Admin (Invites). BroadcastsTab pending future work.
+- **Budget ExpenseListPage** — Inline pill-row replaced by shared `<ListControls>`. ExpenseList and IncomeList no longer self-paginate; pagination is owned upstream.
+
+### Removed
+- **`CONFIG.PAGE_SIZE`** — Retired in favor of the `useListControls` hook default (still 25).
+
+### Tests
+- 35 new unit tests across the foundation primitives and components.
+
+---
+
 ## [0.2.14] — 2026-04-25 (Enhanced Theme System & Refactor)
 
 ### Added

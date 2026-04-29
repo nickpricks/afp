@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { TimeRange } from '@/shared/types';
 
@@ -18,19 +18,25 @@ export interface ListControlsHandle extends ListControlsState {
 
 /** Bundled session state for list controls. Per-list, never persisted. */
 export function useListControls(defaults?: Partial<ListControlsState>): ListControlsHandle {
-  const [timeRange, setTimeRange] = useState<TimeRange>(defaults?.timeRange ?? TimeRange.All);
-  const [pageSize, setPageSize] = useState<number>(defaults?.pageSize ?? 25);
+  const [timeRange, setTimeRangeState] = useState<TimeRange>(
+    defaults?.timeRange ?? TimeRange.All,
+  );
+  const [pageSize, setPageSizeState] = useState<number>(defaults?.pageSize ?? 25);
   const [page, setPage] = useState<number>(defaults?.page ?? 1);
   const [showAll, setShowAll] = useState<boolean>(defaults?.showAll ?? false);
 
-  useEffect(() => {
+  /** Time-range change resets pagination and clears the show-all override */
+  const setTimeRange = (range: TimeRange) => {
+    setTimeRangeState(range);
     setPage(1);
     setShowAll(false);
-  }, [timeRange]);
+  };
 
-  useEffect(() => {
+  /** Page-size change resets to page 1 (current page may not exist at the new size) */
+  const setPageSize = (size: number) => {
+    setPageSizeState(size);
     setPage(1);
-  }, [pageSize]);
+  };
 
   return { timeRange, pageSize, page, showAll, setTimeRange, setPageSize, setPage, setShowAll };
 }
