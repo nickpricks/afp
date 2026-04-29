@@ -21,8 +21,21 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 ### Removed
 - **`CONFIG.PAGE_SIZE`** — Retired in favor of the `useListControls` hook default (still 25).
 
+### Added (Daily Ledger visual refactor)
+- **`<DateGroupHeader>` component** — Sticky day header with two-tier label (relative `Today`/`Yesterday` in accent + structural `Wed 22 Apr · Wk 17` for older).
+- **`<RowTime>` component** — Tabular-nums HH:mm prefix for list rows.
+- **`<FloorMagnitudeBar>` component** — Inline split bar visualizing floors-up vs floors-down for a day, scaled against the daily goal.
+- **`relativeDateLabel` util** — Two-tier date formatting with ISO week number for cold dates.
+
+### Changed (Daily Ledger visual refactor)
+- **All 11 list surfaces redesigned** — Replaced per-row card markup with hairline `border-t` between rows. Sticky day headers per date group. Day-of-week prepended to every date display. FloorsTab additionally uses the inline magnitude bar.
+- **Theme-agnostic** — All 10 themes inherit correctly via existing CSS variables. Design preview committed: `SAM/design-samples/list-rows-redesign.html`.
+
+### Preserved
+- Swipe-to-delete (mobile), inline `×` delete (desktop), tap-to-populate-form active-row treatment — all unchanged per design constraint.
+
 ### Tests
-- 35 new unit tests across the foundation primitives and components.
+- 50 new unit tests total: 35 across foundation primitives + components, 15 across visual primitives.
 
 ---
 

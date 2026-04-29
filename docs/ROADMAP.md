@@ -18,9 +18,9 @@ Last updated: 2026-04-29
 | Notifications | ✅ Done | 20/20 | Per-user notifications, module requests, admin alerts, Broadcasts tab |
 | Phase 2f (Themes) | ✅ Enhanced | 20/20 | 10 themes, 8 font families, 10 ambient effects, granular intensity (0-100%), loading screen |
 | Phase 2g (E2E + Bench) | ✅ Done | 8/8 | Interactive E2E flows + build/bundle/test benchmarks |
-| Phase 2h (Universal list controls) | ✅ Done | 12/12 | Time-range filter + per-list page size + page jump + show-all footer across 11 list surfaces (Broadcasts list pending) |
+| Phase 2h (Universal list controls + Daily Ledger) | ✅ Done | 16/16 | Time-range filter + per-list page size + page jump + show-all footer + sticky day headers + magnitude bar (Floors) across 11 list surfaces (Broadcasts list pending) |
 | Phase 3 (Baby → Kid) | 🚧 In progress | 7/10 | Brainstorm A (Baby→Kid) done: Plans 1-7 shipped (Foundation, Suggestions, Elimination, Meals, Needs, Milestones, Life Journal). Plans 8-9 deferred. Plan 10 = Yoga = Brainstorm C — see **Pending Brainstorms** block below |
-| **Total** | **~99%** | **205/222** | |
+| **Total** | **~99%** | **209/226** | |
 
 ---
 
@@ -197,7 +197,12 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 - [x] **`<ListShowMoreFooter>` component** — Contextual `Show all N` / `Load N remaining` button
 - [x] **Wired 11 list surfaces** — Body (Floors, ActivityLog), Baby (Feed, Sleep, Growth, Elimination, Meals, Needs, Milestones), Budget (ExpenseList, IncomeList), Admin (Invites). BroadcastsTab has no list yet — wiring pending future work.
 - [x] **Retired `CONFIG.PAGE_SIZE`** — Replaced by hook default (still 25)
-- [x] Unit tests added: `filter.test.ts` (5), `paginate.test.ts` (8), `useListControls.test.ts` (6), `ListControls.test.tsx` (12), `ListShowMoreFooter.test.tsx` (4)
+- [x] **Daily Ledger visual refactor** — Sticky `<DateGroupHeader>` (Today/Yesterday + structural fallback with ISO week number), `<RowTime>` tabular-nums prefix, `<FloorMagnitudeBar>` inline split bar
+- [x] **`relativeDateLabel` util** — Two-tier date formatting (relative for hot dates, structural for cold)
+- [x] **All 11 list surfaces redesigned** — Replaced per-row card markup with hairline `border-t` between rows, sticky day headers per date group, day-of-week prepended to every date display
+- [x] **Theme-agnostic** — All 10 themes inherit correctly via existing CSS variables. Design preview committed: `SAM/design-samples/list-rows-redesign.html`
+- [x] **Preserved behaviors** — Swipe-to-delete unchanged, inline `×` delete unchanged, tap-to-populate-form active-row treatment unchanged
+- [x] Unit tests added: `filter.test.ts` (5), `paginate.test.ts` (8), `useListControls.test.ts` (6), `ListControls.test.tsx` (12), `ListShowMoreFooter.test.tsx` (4), `relative-date.test.ts` (4), `DateGroupHeader.test.tsx` (3), `RowTime.test.tsx` (3), `FloorMagnitudeBar.test.tsx` (5) — total +50
 
 ### 2026-04-29 — Session 14 (Enhanced Theme System & Refactor, v0.2.14)
 
