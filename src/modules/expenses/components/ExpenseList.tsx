@@ -4,11 +4,13 @@ import { Trash2 } from 'lucide-react';
 import { CATEGORIES, PAYMENT_METHOD_LABELS } from '@/modules/expenses/categories';
 import type { Expense } from '@/modules/expenses/types';
 import { sortNewestFirst } from '@/shared/utils/sort';
+import { todayStr } from '@/shared/utils/date';
 import { CONFIG } from '@/constants/config';
 import { ToastType } from '@/shared/types';
 import type { ExpenseCategory } from '@/shared/types';
 import { useToast } from '@/shared/errors/useToast';
 import { BudgetMsg } from '@/constants/messages';
+import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
 
 /** Formats a category ID and subcategory into a readable label */
 function formatCategory(category: ExpenseCategory, subCat: string): string {
@@ -59,52 +61,62 @@ export function ExpenseList({
     return <p className="px-4 py-8 text-center text-fg-muted">No expenses yet</p>;
   }
 
+  // Group by date for sticky day headers
+  const today = todayStr();
+  const groups: Record<string, Expense[]> = {};
+  sorted.forEach((e) => {
+    (groups[e.date] = groups[e.date] || []).push(e);
+  });
+  const dateKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
   return (
-    <div className="flex flex-col gap-2 px-4">
-      <ul className="flex flex-col gap-2">
-        {sorted.map((expense) => {
-          const pmLabel = PAYMENT_METHOD_LABELS[expense.paymentMethod];
-          return (
-            <li
-              key={expense.id}
-              className="flex items-center justify-between rounded-lg border border-line bg-surface-card px-3 py-2"
-            >
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-fg">
-                    {CONFIG.CURRENCY_SYMBOL}
-                    {expense.amount}
+    <div className="flex flex-col bg-surface">
+      {dateKeys.map((dateKey) => (
+        <div key={dateKey}>
+          <DateGroupHeader date={dateKey} today={today} />
+          {groups[dateKey]!.map((expense) => {
+            const pmLabel = PAYMENT_METHOD_LABELS[expense.paymentMethod];
+            return (
+              <div
+                key={expense.id}
+                className="flex items-center justify-between border-t border-line px-4 py-3 transition-colors hover:bg-accent-muted"
+              >
+                <div className="flex flex-col gap-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-base font-semibold tabular-nums text-accent">
+                      {CONFIG.CURRENCY_SYMBOL}
+                      {expense.amount}
+                    </span>
+                    {pmLabel && (
+                      <span className="rounded bg-surface-card px-1.5 py-0.5 text-[10px] text-fg-muted">
+                        {pmLabel.shortLabel}
+                      </span>
+                    )}
+                    {expense.isSettlement && (
+                      <span className="rounded bg-accent/10 px-1.5 py-0.5 text-[10px] text-accent">
+                        Settlement
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs text-fg-muted">
+                    {formatCategory(expense.category, expense.subCat)}
                   </span>
-                  {pmLabel && (
-                    <span className="rounded bg-surface px-1.5 py-0.5 text-[10px] text-fg-muted">
-                      {pmLabel.shortLabel}
-                    </span>
-                  )}
-                  {expense.isSettlement && (
-                    <span className="rounded bg-accent/10 px-1.5 py-0.5 text-[10px] text-accent">
-                      Settlement
-                    </span>
+                  {expense.note && (
+                    <span className="text-xs text-fg-muted">\u2014 {expense.note}</span>
                   )}
                 </div>
-                <span className="text-xs text-fg-muted">
-                  {formatCategory(expense.category, expense.subCat)}
-                </span>
-                <span className="text-xs text-fg-muted">
-                  {expense.date}
-                  {expense.note ? ` \u2014 ${expense.note}` : ''}
-                </span>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(expense.id)}
+                  className="rounded-lg p-2 text-error hover:bg-surface active:scale-95 transition-transform"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => handleDelete(expense.id)}
-                className="rounded-lg p-2 text-error hover:bg-surface active:scale-95 transition-transform"
-              >
-                <Trash2 size={16} />
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

@@ -18,6 +18,7 @@ import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
 import { useListControls } from '@/shared/hooks/useListControls';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
+import { relativeDateLabel } from '@/shared/utils/relative-date';
 
 type Props = {
   childId?: string;
@@ -293,12 +294,17 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
                   key={m.id}
                   type="button"
                   onClick={() => startEdit(m)}
-                  className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}
+                  className={`block w-full border-t border-line p-3 text-left transition-colors hover:bg-accent-muted ${isActive ? 'bg-accent-muted border-l-2 border-l-accent' : ''}`}
                 >
                   <div className="flex justify-between text-sm">
                     <span className="font-medium text-fg">🌟 {m.title}</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-fg-muted">{m.date}</span>
+                      <span className="font-mono text-xs tabular-nums text-fg-muted">
+                        {(() => {
+                          const lbl = relativeDateLabel(m.date, today);
+                          return lbl.relative ?? lbl.structural;
+                        })()}
+                      </span>
                       {m.mediaUrl && (
                         <a
                           href={m.mediaUrl}

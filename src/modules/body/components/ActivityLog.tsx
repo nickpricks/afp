@@ -10,6 +10,8 @@ import { useToast } from '@/shared/errors/useToast';
 import { SwipeToDelete } from '@/shared/components/SwipeToDelete';
 import { ListControls } from '@/shared/components/ListControls';
 import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
+import { RowTime } from '@/shared/components/lists/RowTime';
 import { useListControls } from '@/shared/hooks/useListControls';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
@@ -77,62 +79,74 @@ export function ActivityLog({
         totalPages={ctrl.showAll ? 1 : pagesCount}
         onPageChange={ctrl.setPage}
       />
-      <ul className="flex flex-col gap-1">
-        {visible.map((a) => {
-          const isActive = editingId === a.id;
-          const rowContent = (
-            <div
-              className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer ${
-                isActive
-                  ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border border-line'
-                  : 'bg-surface-card border border-line'
-              }`}
-              role="button"
-              tabIndex={0}
-              onClick={() => onEdit(a)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') onEdit(a);
-              }}
-            >
-              <span className={isActive ? 'text-accent font-medium' : 'font-medium text-fg'}>
-                {a.date}
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="text-fg-muted">{formatDistanceOrDash(a.distance)}</span>
-                {onDelete && (
-                  <span
+      <ul className="flex flex-col bg-surface">
+        {(() => {
+          // Group visible by date for sticky day headers
+          const groups: Record<string, BodyActivity[]> = {};
+          visible.forEach((a) => {
+            (groups[a.date] = groups[a.date] || []).push(a);
+          });
+          const dateKeys = Object.keys(groups).sort((x, y) => y.localeCompare(x));
+
+          return dateKeys.map((dateKey) => (
+            <li key={dateKey} className="group">
+              <DateGroupHeader date={dateKey} today={today} />
+              {groups[dateKey]!.map((a) => {
+                const isActive = editingId === a.id;
+                const rowContent = (
+                  <div
+                    data-testid="activity-row"
+                    className={`grid w-full cursor-pointer grid-cols-[56px_1fr_auto_auto] items-center gap-3 border-l-2 border-t border-line px-4 py-3 transition-colors hover:bg-accent-muted ${
+                      isActive ? 'bg-accent-muted border-l-accent' : 'border-l-transparent'
+                    }`}
                     role="button"
                     tabIndex={0}
-                    aria-label="Delete"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(a);
-                    }}
+                    onClick={() => onEdit(a)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.stopPropagation();
-                        handleDelete(a);
-                      }
+                      if (e.key === 'Enter') onEdit(a);
                     }}
-                    className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
                   >
-                    x
-                  </span>
-                )}
-              </span>
-            </div>
-          );
+                    <RowTime timestamp={a.timestamp} />
+                    <span className="text-sm text-fg">{a.type}</span>
+                    <span className="whitespace-nowrap text-right font-mono text-sm tabular-nums text-fg-muted">
+                      {formatDistanceOrDash(a.distance)}
+                    </span>
+                    {onDelete && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Delete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(a);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.stopPropagation();
+                            handleDelete(a);
+                          }
+                        }}
+                        className="font-mono text-sm text-fg-muted transition-all hover:scale-125 hover:font-bold hover:text-red-500"
+                      >
+                        ×
+                      </span>
+                    )}
+                  </div>
+                );
 
-          return (
-            <li key={a.id ?? a.createdAt} className="group relative">
-              {onDelete ? (
-                <SwipeToDelete onDelete={() => handleDelete(a)}>{rowContent}</SwipeToDelete>
-              ) : (
-                rowContent
-              )}
+                return (
+                  <div key={a.id ?? a.createdAt}>
+                    {onDelete ? (
+                      <SwipeToDelete onDelete={() => handleDelete(a)}>{rowContent}</SwipeToDelete>
+                    ) : (
+                      rowContent
+                    )}
+                  </div>
+                );
+              })}
             </li>
-          );
-        })}
+          ));
+        })()}
       </ul>
       {!ctrl.showAll && (
         <ListShowMoreFooter

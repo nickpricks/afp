@@ -19,6 +19,7 @@ import { DbSubcollection } from '@/constants/db';
 import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
 import { ListControls } from '@/shared/components/ListControls';
 import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
 import { useListControls } from '@/shared/hooks/useListControls';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
@@ -264,6 +265,7 @@ export function MealsLog({ childId, siblingIds = [], uid = '' }: Props) {
       )}
       <RecentMeals
         entries={recentEntries}
+        today={today}
         onEdit={startEdit}
         editingId={editEntry?.id ?? null}
         onRemove={handleUndoDelete}
@@ -280,72 +282,85 @@ export function MealsLog({ childId, siblingIds = [], uid = '' }: Props) {
   );
 }
 
-/** Renders a sorted list of recent meal entries with edit/delete actions */
+/** Renders a sorted list of recent meal entries grouped by date */
 function RecentMeals({
   entries,
+  today,
   onEdit,
   editingId,
   onRemove,
 }: {
   entries: MealEntry[];
+  today: string;
   onEdit: (e: MealEntry) => void;
   editingId: string | null;
   onRemove: (id: string) => void;
 }) {
   if (entries.length === 0) return null;
 
+  const groups: Record<string, MealEntry[]> = {};
+  entries.forEach((e) => {
+    (groups[e.date] = groups[e.date] || []).push(e);
+  });
+  const dateKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-medium text-fg-muted">Recent Meals</h3>
-      {entries.map((entry) => {
-        const isActive = editingId === entry.id;
-        const portionLabel =
-          entry.portion !== null ? ` · ${MEAL_PORTION_LABELS[entry.portion]}` : '';
-        return (
-          <button
-            key={entry.id}
-            type="button"
-            onClick={() => onEdit(entry)}
-            className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}
-          >
-            <div className="flex justify-between text-sm">
-              <span className="font-medium text-fg">
-                🍽 {MEAL_TYPE_LABELS[entry.type]}: {entry.description}
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-fg-muted">
-                  {entry.date} {entry.time}
-                </span>
-                <span
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemove(entry.id);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.stopPropagation();
-                      onRemove(entry.id);
-                    }
-                  }}
-                  className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
-                >
-                  x
-                </span>
-              </div>
-            </div>
-            {(entry.notes || portionLabel) && (
-              <p className="text-xs text-fg-muted mt-1">
-                {portionLabel.replace(/^ · /, '')}
-                {entry.notes && portionLabel ? ' — ' : ''}
-                {entry.notes}
-              </p>
-            )}
-          </button>
-        );
-      })}
+    <div className="flex flex-col">
+      <h3 className="mb-2 text-sm font-medium text-fg-muted">Recent Meals</h3>
+      {dateKeys.map((dateKey) => (
+        <div key={dateKey}>
+          <DateGroupHeader date={dateKey} today={today} />
+          {groups[dateKey]!.map((entry) => {
+            const isActive = editingId === entry.id;
+            const portionLabel =
+              entry.portion !== null ? ` · ${MEAL_PORTION_LABELS[entry.portion]}` : '';
+            return (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => onEdit(entry)}
+                className={`block w-full border-t border-line p-3 text-left transition-colors hover:bg-accent-muted ${isActive ? 'bg-accent-muted border-l-2 border-l-accent' : ''}`}
+              >
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium text-fg">
+                    🍽 {MEAL_TYPE_LABELS[entry.type]}: {entry.description}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs tabular-nums text-fg-muted">
+                      {entry.time}
+                    </span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove(entry.id);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.stopPropagation();
+                          onRemove(entry.id);
+                        }
+                      }}
+                      className="font-mono text-sm text-fg-muted transition-all hover:scale-125 hover:font-bold hover:text-red-500"
+                    >
+                      ×
+                    </span>
+                  </div>
+                </div>
+                {(entry.notes || portionLabel) && (
+                  <p className="text-xs text-fg-muted mt-1">
+                    {portionLabel.replace(/^ · /, '')}
+                    {entry.notes && portionLabel ? ' — ' : ''}
+                    {entry.notes}
+                  </p>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

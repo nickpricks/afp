@@ -28,8 +28,7 @@ const noop = vi.fn();
 describe('ActivityLog — pagination via useListControls', () => {
   it('shows at most pageSize (25) activities by default', () => {
     render(<ActivityLog activities={makeActivities(35)} onEdit={noop} />);
-    const rows = screen.getAllByRole('listitem');
-    expect(rows.length).toBe(25);
+    expect(screen.getAllByTestId('activity-row').length).toBe(25);
   });
 
   it('renders ListControls time-range pills when paginated', () => {
@@ -58,6 +57,6 @@ describe('ActivityLog — pagination via useListControls', () => {
     const total = 60;
     render(<ActivityLog activities={makeActivities(total)} onEdit={noop} />);
     fireEvent.click(screen.getByRole('button', { name: /Show all \d+ records/ }));
-    expect(screen.getAllByRole('listitem').length).toBe(total);
+    expect(screen.getAllByTestId('activity-row').length).toBe(total);
   });
 });

@@ -18,6 +18,7 @@ import { DbSubcollection } from '@/constants/db';
 import { logToSiblings } from '@/modules/baby/utils/logToSiblings';
 import { ListControls } from '@/shared/components/ListControls';
 import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
 import { useListControls } from '@/shared/hooks/useListControls';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
@@ -259,6 +260,7 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
       )}
       <RecentNeeds
         entries={recentEntries}
+        today={today}
         onEdit={startEdit}
         editingId={editEntry?.id ?? null}
         onRemove={handleUndoDelete}
@@ -279,12 +281,14 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
 /** Renders a sorted list of recent need entries with edit/delete/status-transition actions */
 function RecentNeeds({
   entries,
+  today,
   onEdit,
   editingId,
   onRemove,
   onChangeStatus,
 }: {
   entries: NeedEntry[];
+  today: string;
   onEdit: (e: NeedEntry) => void;
   editingId: string | null;
   onRemove: (id: string) => void;
@@ -292,18 +296,27 @@ function RecentNeeds({
 }) {
   if (entries.length === 0) return null;
 
+  const groups: Record<string, NeedEntry[]> = {};
+  entries.forEach((e) => {
+    (groups[e.date] = groups[e.date] || []).push(e);
+  });
+  const dateKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-medium text-fg-muted">Recent Needs</h3>
-      {entries.map((entry) => {
-        const isActive = editingId === entry.id;
-        return (
-          <button
-            key={entry.id}
-            type="button"
-            onClick={() => onEdit(entry)}
-            className={`rounded-lg border p-3 text-left transition-colors ${isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent border-line' : 'bg-surface-card border-line'}`}
-          >
+    <div className="flex flex-col">
+      <h3 className="mb-2 text-sm font-medium text-fg-muted">Recent Needs</h3>
+      {dateKeys.map((dateKey) => (
+        <div key={dateKey}>
+          <DateGroupHeader date={dateKey} today={today} />
+          {groups[dateKey]!.map((entry) => {
+            const isActive = editingId === entry.id;
+            return (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => onEdit(entry)}
+                className={`block w-full border-t border-line p-3 text-left transition-colors hover:bg-accent-muted ${isActive ? 'bg-accent-muted border-l-2 border-l-accent' : ''}`}
+              >
             <div className="flex justify-between text-sm">
               <span className="font-medium text-fg">
                 {entry.title}
@@ -370,10 +383,12 @@ function RecentNeeds({
                 </span>
               </div>
             </div>
-            {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}
-          </button>
-        );
-      })}
+                {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}
+              </button>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

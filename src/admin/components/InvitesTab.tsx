@@ -10,6 +10,7 @@ import { CONFIG } from '@/constants/config';
 import type { InviteRecord } from '@/shared/auth/invite';
 import { ListControls } from '@/shared/components/ListControls';
 import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
 import { useListControls } from '@/shared/hooks/useListControls';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
@@ -81,18 +82,29 @@ export function InvitesTab() {
           onPageChange={ctrl.setPage}
         />
       )}
-      {invites.length > 0 && (
-        <ul className="divide-y divide-line rounded-xl bg-surface-card border border-line">
-          {visibleInvites.map((inv) => (
-            <li key={inv.code} className="flex items-center justify-between px-4 py-3">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-sm font-medium text-fg">{inv.name}</span>
-                <span className="text-xs text-fg-muted">
-                  {new Date(inv.createdAt).toLocaleDateString()}
-                </span>
-              </div>
+      {invites.length > 0 &&
+        (() => {
+          const groups: Record<string, typeof visibleInvites> = {};
+          visibleInvites.forEach((inv) => {
+            const dateKey = inv.createdAt.slice(0, 10);
+            (groups[dateKey] = groups[dateKey] || []).push(inv);
+          });
+          const dateKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+          return (
+            <div className="overflow-hidden rounded-xl border border-line bg-surface-card">
+              {dateKeys.map((dateKey) => (
+                <div key={dateKey}>
+                  <DateGroupHeader date={dateKey} today={today} />
+                  {groups[dateKey]!.map((inv) => (
+                    <div
+                      key={inv.code}
+                      className="flex items-center justify-between border-t border-line px-4 py-3"
+                    >
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm font-medium text-fg">{inv.name}</span>
+                      </div>
 
-              <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                 {inv.linkedUid && (
                   <span className="rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success">
                     Redeemed
@@ -141,10 +153,13 @@ export function InvitesTab() {
                   </>
                 )}
               </div>
-            </li>
-          ))}
-        </ul>
-      )}
+            </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       {invites.length > 0 && !ctrl.showAll && (
         <ListShowMoreFooter
           totalCount={filteredInvites.length}
