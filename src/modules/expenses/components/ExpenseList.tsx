@@ -25,7 +25,6 @@ export function ExpenseList({
   onDelete: (id: string) => void;
 }) {
   const { addToast } = useToast();
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const undoRef = useRef(false);
 
@@ -33,8 +32,6 @@ export function ExpenseList({
     expenses.filter((e) => e.id !== pendingDeleteId),
     (e) => e.date,
   );
-  const visible = sorted.slice(0, limit);
-  const hasMore = sorted.length > limit;
 
   /** Optimistic delete with 10s undo window */
   const handleDelete = (id: string) => {
@@ -65,7 +62,7 @@ export function ExpenseList({
   return (
     <div className="flex flex-col gap-2 px-4">
       <ul className="flex flex-col gap-2">
-        {visible.map((expense) => {
+        {sorted.map((expense) => {
           const pmLabel = PAYMENT_METHOD_LABELS[expense.paymentMethod];
           return (
             <li
@@ -108,18 +105,6 @@ export function ExpenseList({
           );
         })}
       </ul>
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
-          className="text-xs text-accent font-medium py-2 self-center"
-        >
-          Show more ({sorted.length - limit} remaining)
-        </button>
-      )}
-      {!hasMore && sorted.length > CONFIG.PAGE_SIZE && (
-        <p className="text-xs text-fg-muted text-center py-2">That's all the expenses</p>
-      )}
     </div>
   );
 }

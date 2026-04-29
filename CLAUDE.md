@@ -45,7 +45,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Result types**: Every async operation returns `Result<T>`, never void. Use `ok()`, `err()`, `isOk()`, `isErr()` from `@/shared/types`
 - **Error handling**: Toast notifications via `useToast()`, `ErrorBoundary` for React crashes, `SyncStatusIndicator` in header. Toast actions: `addToast(message, type, { action?: { label, onClick }, durationMs? })` — undo delete uses 10s toast with "Undo" button
 - **Tap-to-edit pattern**: All list views use tap-row-to-populate-form. Body: FloorsTab redirects +/- buttons, ActivityLog populates AddActivity. Baby: all 4 logs populate their forms. Budget: edit deferred (form on separate page). Active row: `bg-[var(--accent-muted)] border-l-2 border-l-accent`
-- **List constants**: `CONFIG.PAGE_SIZE` (25) for all paginated lists, `CONFIG.UNDO_DURATION_MS` (10000) for undo delete toasts, `CONFIG.METERS_PER_KM` (1000) for distance conversion — never hardcode these values
+- **List controls**: `CONFIG.UNDO_DURATION_MS` (10000) for undo delete toasts, `CONFIG.METERS_PER_KM` (1000) for distance conversion — never hardcode these values. List pagination is per-list session state via `useListControls()` (default page size 25) plus the shared `<ListControls>` strip (time-range pills + page-size dropdown + page jumper) and `<ListShowMoreFooter>` (`Show all N records` / `Load N remaining` escape hatch). The legacy `CONFIG.PAGE_SIZE` constant has been retired.
 - **Route guards**: `ModuleGate` wraps module routes, `AdminGate` wraps admin routes — redirect to `/` if unauthorized
 - **Admin panel**: Tabbed container (Invites | Users | Broadcasts). `InvitesTab` has copy-link + delete actions. `UsersTab` has color-coded module chips (Body=indigo, Budget=emerald, Baby=pink), role stat bar, toggle switches, accordion expand, "View Dashboard" button per user, module request approve badges. `useAdminActions` hook for Firestore profile writes. Admin can view any user's dashboard via `?viewUser=uid` query param on `/`
 - **Notifications**: Per-user subcollection `users/{uid}/notifications/{id}`. User→admin: module requests (writes to admin's subcollection + own `requestedModules`). Admin→user: alerts/notices with severity, type, and `shownTillDate` expiry. `useNotifications` reads own inbox, `useAdminNotifications` adds send/approve/delete actions. `AlertBanner` renders above header in Layout. `BroadcastsTab` in admin panel for composing alerts. Spec: `docs/specs/2026-04-14-notifications-module-requests-design.md`
@@ -109,7 +109,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 
 Found via grep sweeps — fix in next code hygiene pass:
 
-- **#4 (constants)**: ~~`PAGE_SIZE` hardcoded in 6 files~~ — FIXED (`CONFIG.PAGE_SIZE`). ~~`1000` for m↔km in 6 places~~ — FIXED (`CONFIG.METERS_PER_KM`). Watch for new magic numbers.
+- **#4 (constants)**: ~~`PAGE_SIZE` hardcoded in 6 files~~ — FIXED, then retired (Phase 2h). Replaced by `useListControls` hook default. ~~`1000` for m↔km in 6 places~~ — FIXED (`CONFIG.METERS_PER_KM`). Watch for new magic numbers.
 - ~~**#6 (messages)**: ~15 raw toast strings in components instead of `constants/messages.ts` enums~~ — FIXED: All 18 raw strings moved to enums, `ToastType` enum added for type literals. Only exception: `useBabyCollection` dynamic templates (see Known Issues)
 - **#19 (utils)**: ~~Duplicated `formatDist()`/`formatDistance()`~~ — FIXED: shared `formatDistance()` in `utils/format.ts`. ~~8 inline `.sort()` comparators~~ — FIXED: `sortNewestFirst()` in `utils/sort.ts`
 

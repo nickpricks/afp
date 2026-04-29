@@ -18,7 +18,6 @@ export function IncomeList({
   onDelete: (id: string) => void;
 }) {
   const { addToast } = useToast();
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const undoRef = useRef(false);
 
@@ -26,8 +25,6 @@ export function IncomeList({
     income.filter((e) => e.id !== pendingDeleteId),
     (e) => e.date,
   );
-  const visible = sorted.slice(0, limit);
-  const hasMore = sorted.length > limit;
 
   const handleDelete = (id: string) => {
     undoRef.current = false;
@@ -57,7 +54,7 @@ export function IncomeList({
   return (
     <div className="flex flex-col gap-2 px-4">
       <ul className="flex flex-col gap-2">
-        {visible.map((entry) => {
+        {sorted.map((entry) => {
           const sourceLabel = INCOME_SOURCE_LABELS[entry.source];
           return (
             <li
@@ -88,18 +85,6 @@ export function IncomeList({
           );
         })}
       </ul>
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
-          className="text-xs text-accent font-medium py-2 self-center"
-        >
-          Show more ({sorted.length - limit} remaining)
-        </button>
-      )}
-      {!hasMore && sorted.length > CONFIG.PAGE_SIZE && (
-        <p className="text-xs text-fg-muted text-center py-2">That's all the income</p>
-      )}
     </div>
   );
 }
