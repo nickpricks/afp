@@ -8,6 +8,12 @@ import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
 import { useToast } from '@/shared/errors/useToast';
 import { SwipeToDelete } from '@/shared/components/SwipeToDelete';
+import { ListControls } from '@/shared/components/ListControls';
+import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { useListControls } from '@/shared/hooks/useListControls';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { paginate, totalPages } from '@/shared/utils/paginate';
+import { todayStr } from '@/shared/utils/date';
 
 /** Displays logged activities sorted newest-first -- tap a row to edit, swipe or X to delete */
 export function ActivityLog({
@@ -22,7 +28,7 @@ export function ActivityLog({
   editingId?: string | null;
 }) {
   const { addToast } = useToast();
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const ctrl = useListControls();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const undoRef = useRef(false);
 
@@ -54,12 +60,23 @@ export function ActivityLog({
     activities.filter((a) => a.id !== pendingDeleteId),
     (a) => a.date,
   );
-  const visible = sorted.slice(0, limit);
-  const hasMore = sorted.length > limit;
+  const today = todayStr();
+  const filtered = filterByDateRange(sorted, ctrl.timeRange, today, (a) => a.date);
+  const pagesCount = totalPages(filtered.length, ctrl.pageSize);
+  const visible = ctrl.showAll ? filtered : paginate(filtered, ctrl.page, ctrl.pageSize);
 
   return (
     <div className="flex flex-col gap-1">
       <h3 className="text-xs font-medium text-fg-muted uppercase tracking-wide">Activities</h3>
+      <ListControls
+        timeRange={ctrl.timeRange}
+        onTimeRangeChange={ctrl.setTimeRange}
+        pageSize={ctrl.pageSize}
+        onPageSizeChange={ctrl.setPageSize}
+        page={ctrl.page}
+        totalPages={ctrl.showAll ? 1 : pagesCount}
+        onPageChange={ctrl.setPage}
+      />
       <ul className="flex flex-col gap-1">
         {visible.map((a) => {
           const isActive = editingId === a.id;
@@ -117,17 +134,13 @@ export function ActivityLog({
           );
         })}
       </ul>
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
-          className="text-xs text-accent font-medium py-1"
-        >
-          Show more ({sorted.length - limit} remaining)
-        </button>
-      )}
-      {!hasMore && sorted.length > CONFIG.PAGE_SIZE && (
-        <p className="text-xs text-fg-muted text-center py-1">That's all the activities</p>
+      {!ctrl.showAll && (
+        <ListShowMoreFooter
+          totalCount={filtered.length}
+          shownCount={visible.length}
+          pageSize={ctrl.pageSize}
+          onShowAll={() => ctrl.setShowAll(true)}
+        />
       )}
     </div>
   );

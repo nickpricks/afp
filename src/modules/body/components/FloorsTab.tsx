@@ -10,6 +10,11 @@ import { ToastType } from '@/shared/types';
 import { useToast } from '@/shared/errors/useToast';
 import { SwipeToDelete } from '@/shared/components/SwipeToDelete';
 import { DatePickerModal } from '@/shared/components/DatePickerModal';
+import { ListControls } from '@/shared/components/ListControls';
+import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
+import { useListControls } from '@/shared/hooks/useListControls';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { paginate, totalPages } from '@/shared/utils/paginate';
 import { sortNewestFirst } from '@/shared/utils/sort';
 
 /** Formats meters as a readable distance string */
@@ -40,7 +45,7 @@ export function FloorsTab({
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const height = floorHeight || BODY_DEFAULTS.FLOOR_HEIGHT_M;
-  const [limit, setLimit] = useState(CONFIG.PAGE_SIZE);
+  const ctrl = useListControls();
   const [pendingDeleteKey, setPendingDeleteKey] = useState<string | null>(null);
   const undoRef = useRef(false);
 
@@ -94,7 +99,11 @@ export function FloorsTab({
     Object.entries(records).filter(([key]) => key !== pendingDeleteKey),
     ([key]) => key,
   );
-  const recentDays = sortedDays.slice(0, limit);
+  const filteredDays = filterByDateRange(sortedDays, ctrl.timeRange, today, ([key]) => key);
+  const pagesCount = totalPages(filteredDays.length, ctrl.pageSize);
+  const recentDays = ctrl.showAll
+    ? filteredDays
+    : paginate(filteredDays, ctrl.page, ctrl.pageSize);
 
   /** Tap handler -- redirects to editing date when in edit mode */
   const handleTap = async (type: 'up' | 'down') => {
@@ -178,9 +187,18 @@ export function FloorsTab({
       )}
 
       {/* Recent days */}
-      {recentDays.length > 0 && (
+      {sortedDays.length > 0 && (
         <div className="flex flex-col gap-2">
           <h3 className="text-xs font-medium text-fg-muted uppercase tracking-wide">Recent</h3>
+          <ListControls
+            timeRange={ctrl.timeRange}
+            onTimeRangeChange={ctrl.setTimeRange}
+            pageSize={ctrl.pageSize}
+            onPageSizeChange={ctrl.setPageSize}
+            page={ctrl.page}
+            totalPages={ctrl.showAll ? 1 : pagesCount}
+            onPageChange={ctrl.setPage}
+          />
           <ul className="flex flex-col gap-1">
             {recentDays.map(([dateKey, rec]) => {
               const isActive = dateKey === activeKey;
@@ -244,17 +262,13 @@ export function FloorsTab({
               );
             })}
           </ul>
-          {sortedDays.length > limit && (
-            <button
-              type="button"
-              onClick={() => setLimit((prev) => prev + CONFIG.PAGE_SIZE)}
-              className="text-xs text-accent font-medium py-1 self-center"
-            >
-              Show more ({sortedDays.length - limit} remaining)
-            </button>
-          )}
-          {sortedDays.length <= limit && sortedDays.length > CONFIG.PAGE_SIZE && (
-            <p className="text-xs text-fg-muted text-center py-1">That's all the days</p>
+          {!ctrl.showAll && (
+            <ListShowMoreFooter
+              totalCount={filteredDays.length}
+              shownCount={recentDays.length}
+              pageSize={ctrl.pageSize}
+              onShowAll={() => ctrl.setShowAll(true)}
+            />
           )}
         </div>
       )}

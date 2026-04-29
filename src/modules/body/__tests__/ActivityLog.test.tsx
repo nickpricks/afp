@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 import { ActivityLog } from '@/modules/body/components/ActivityLog';
 import { ActivityType } from '@/shared/types';
-import { CONFIG } from '@/constants/config';
 import type { BodyActivity } from '@/modules/body/types';
 
 vi.mock('@/shared/errors/useToast', () => ({
@@ -26,31 +25,39 @@ function makeActivities(count: number): BodyActivity[] {
 
 const noop = vi.fn();
 
-describe('ActivityLog — pagination', () => {
-  it('shows at most PAGE_SIZE activities by default', () => {
-    const total = CONFIG.PAGE_SIZE + 10;
-    render(<ActivityLog activities={makeActivities(total)} onEdit={noop} />);
-    const rows = screen.getAllByRole('button');
-    // PAGE_SIZE activity rows + 1 "Show more" button
-    expect(rows.length).toBe(CONFIG.PAGE_SIZE + 1);
+describe('ActivityLog — pagination via useListControls', () => {
+  it('shows at most pageSize (25) activities by default', () => {
+    render(<ActivityLog activities={makeActivities(35)} onEdit={noop} />);
+    const rows = screen.getAllByRole('listitem');
+    expect(rows.length).toBe(25);
   });
 
-  it('shows "Show more" when more than PAGE_SIZE activities', () => {
-    render(<ActivityLog activities={makeActivities(CONFIG.PAGE_SIZE + 5)} onEdit={noop} />);
-    expect(screen.getByRole('button', { name: /show more/i })).toBeInTheDocument();
+  it('renders ListControls time-range pills when paginated', () => {
+    render(<ActivityLog activities={makeActivities(35)} onEdit={noop} />);
+    expect(screen.getByRole('button', { name: 'Today' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Week' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Month' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'All' })).toBeInTheDocument();
   });
 
-  it('does not show "Show more" when PAGE_SIZE or fewer activities', () => {
+  it('shows footer button when total exceeds pageSize', () => {
+    render(<ActivityLog activities={makeActivities(30)} onEdit={noop} />);
+    expect(
+      screen.getByRole('button', { name: /Show all|Load \d+ remaining/ }),
+    ).toBeInTheDocument();
+  });
+
+  it('does not show footer when total fits in one page', () => {
     render(<ActivityLog activities={makeActivities(5)} onEdit={noop} />);
-    expect(screen.queryByRole('button', { name: /show more/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /Show all|Load \d+ remaining/ }),
+    ).not.toBeInTheDocument();
   });
 
-  it('clicking "Show more" loads next page', () => {
-    const total = CONFIG.PAGE_SIZE + 5;
+  it('clicking Show all footer renders the entire filtered list', () => {
+    const total = 60;
     render(<ActivityLog activities={makeActivities(total)} onEdit={noop} />);
-    fireEvent.click(screen.getByRole('button', { name: /show more/i }));
-    const rows = screen.getAllByRole('button');
-    // All activities visible, no "Show more"
-    expect(rows.length).toBe(total);
+    fireEvent.click(screen.getByRole('button', { name: /Show all \d+ records/ }));
+    expect(screen.getAllByRole('listitem').length).toBe(total);
   });
 });
