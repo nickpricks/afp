@@ -1,5 +1,5 @@
 import type { Expense, Income } from '@/modules/expenses/types';
-import { PaymentMethod, TimeRange } from '@/shared/types';
+import { PaymentMethod } from '@/shared/types';
 
 /** Computes total income from income entries */
 export const computeTotalIncome = (income: Income[]): number => {
@@ -9,25 +9,6 @@ export const computeTotalIncome = (income: Income[]): number => {
 /** Computes total spent from expenses, excluding settlements */
 export const computeTotalSpent = (expenses: Expense[]): number => {
   return expenses.filter((e) => !e.isSettlement).reduce((sum, e) => sum + e.amount, 0);
-};
-
-/** Filters items with a `date` field by TimeRange relative to a reference date */
-export const filterByDateRange = <T extends { date: string }>(
-  items: T[],
-  view: TimeRange,
-  today: string,
-): T[] => {
-  if (view === TimeRange.All) return items;
-
-  const todayMs = new Date(today).getTime();
-  const daysMap = { [TimeRange.Today]: 0, [TimeRange.Week]: 6, [TimeRange.Month]: 29 };
-  const days = daysMap[view];
-  const cutoffMs = todayMs - days * 86_400_000;
-
-  return items.filter((item) => {
-    const itemMs = new Date(item.date).getTime();
-    return itemMs >= cutoffMs && itemMs <= todayMs;
-  });
 };
 
 /** Computes outstanding credit card amount (CC + UPI CC expenses minus CC settlements) */

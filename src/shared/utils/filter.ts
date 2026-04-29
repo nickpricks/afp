@@ -1,0 +1,25 @@
+import { TimeRange } from '@/shared/types';
+
+/**
+ * Filters items by a time range relative to a reference date (today).
+ * The extractor returns a YYYY-MM-DD date string for each item.
+ * Range semantics are rolling: Week = last 7 days incl. today, Month = last 30 days.
+ */
+export const filterByDateRange = <T>(
+  items: T[],
+  range: TimeRange,
+  today: string,
+  getDate: (item: T) => string,
+): T[] => {
+  if (range === TimeRange.All) return items;
+
+  const todayMs = new Date(today).getTime();
+  const daysMap = { [TimeRange.Today]: 0, [TimeRange.Week]: 6, [TimeRange.Month]: 29 };
+  const days = daysMap[range];
+  const cutoffMs = todayMs - days * 86_400_000;
+
+  return items.filter((item) => {
+    const itemMs = new Date(getDate(item)).getTime();
+    return itemMs >= cutoffMs && itemMs <= todayMs;
+  });
+};

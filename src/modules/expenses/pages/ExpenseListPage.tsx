@@ -8,10 +8,10 @@ import { IncomeList } from '@/modules/expenses/components/IncomeList';
 import { ReconciliationView } from '@/modules/expenses/components/ReconciliationView';
 import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
 import { useIncome } from '@/modules/expenses/hooks/useIncome';
-import { filterByDateRange } from '@/modules/expenses/budget-math';
 import { ROUTES } from '@/constants/routes';
 import { TimeRange } from '@/shared/types';
 import { todayStr } from '@/shared/utils/date';
+import { filterByDateRange } from '@/shared/utils/filter';
 
 type BudgetTab = 'expenses' | 'income' | 'reconcile';
 
@@ -30,8 +30,8 @@ export function ExpenseListPage() {
   const [view, setView] = useState<TimeRange>(TimeRange.All);
 
   const today = todayStr();
-  const filteredExpenses = filterByDateRange(expenses, view, today);
-  const filteredIncome = filterByDateRange(income, view, today);
+  const filteredExpenses = filterByDateRange(expenses, view, today, (e) => e.date);
+  const filteredIncome = filterByDateRange(income, view, today, (i) => i.date);
 
   return (
     <div className="relative">
