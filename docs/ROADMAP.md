@@ -202,7 +202,9 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 - [x] **All 11 list surfaces redesigned** — Replaced per-row card markup with hairline `border-t` between rows, sticky day headers per date group, day-of-week prepended to every date display
 - [x] **Theme-agnostic** — All 10 themes inherit correctly via existing CSS variables. Design preview committed: `SAM/design-samples/list-rows-redesign.html`
 - [x] **Preserved behaviors** — Swipe-to-delete unchanged, inline `×` delete unchanged, tap-to-populate-form active-row treatment unchanged
-- [x] Unit tests added: `filter.test.ts` (5), `paginate.test.ts` (8), `useListControls.test.ts` (6), `ListControls.test.tsx` (12), `ListShowMoreFooter.test.tsx` (4), `relative-date.test.ts` (4), `DateGroupHeader.test.tsx` (3), `RowTime.test.tsx` (3), `FloorMagnitudeBar.test.tsx` (5) — total +50
+- [x] Unit tests added: `filter.test.ts` (5), `paginate.test.ts` (8), `useListControls.test.ts` (6), `ListControls.test.tsx` (12), `ListShowMoreFooter.test.tsx` (4), `relative-date.test.ts` (4), `DateGroupHeader.test.tsx` (3), `RowTime.test.tsx` (3), `FloorMagnitudeBar.test.tsx` (5) — total +50, plus +1 from updated ActivityLog tests
+- [x] Unit tests: 469 → 520 (+51)
+- [x] E2E tests: 47 (all passing — pre-existing dev-mode profile regression fixed in `auth-context.tsx`)
 
 ### 2026-04-29 — Session 14 (Enhanced Theme System & Refactor, v0.2.14)
 
