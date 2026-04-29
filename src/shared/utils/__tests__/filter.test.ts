@@ -38,11 +38,8 @@ describe('filterByDateRange', () => {
       { id: 'x', createdAt: '2026-04-15T10:00:00.000Z' },
       { id: 'y', createdAt: '2026-04-01T10:00:00.000Z' },
     ];
-    const result = filterByDateRange(
-      isoItems,
-      TimeRange.Week,
-      today,
-      (i) => i.createdAt.slice(0, 10),
+    const result = filterByDateRange(isoItems, TimeRange.Week, today, (i) =>
+      i.createdAt.slice(0, 10),
     );
     expect(result.map((i) => i.id)).toEqual(['x']);
   });

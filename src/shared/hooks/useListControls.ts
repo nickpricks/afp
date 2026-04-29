@@ -18,9 +18,7 @@ export interface ListControlsHandle extends ListControlsState {
 
 /** Bundled session state for list controls. Per-list, never persisted. */
 export function useListControls(defaults?: Partial<ListControlsState>): ListControlsHandle {
-  const [timeRange, setTimeRangeState] = useState<TimeRange>(
-    defaults?.timeRange ?? TimeRange.All,
-  );
+  const [timeRange, setTimeRangeState] = useState<TimeRange>(defaults?.timeRange ?? TimeRange.All);
   const [pageSize, setPageSizeState] = useState<number>(defaults?.pageSize ?? 25);
   const [page, setPage] = useState<number>(defaults?.page ?? 1);
   const [showAll, setShowAll] = useState<boolean>(defaults?.showAll ?? false);

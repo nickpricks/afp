@@ -7,7 +7,7 @@ interface Props {
   targetUid?: string;
 }
 
-/** 
+/**
  * Summary card for the Body module on the Dashboard.
  * Handles its own data fetching via useBodyConfig and useBodyData.
  */

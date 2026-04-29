@@ -103,9 +103,7 @@ export function FloorsTab({
   );
   const filteredDays = filterByDateRange(sortedDays, ctrl.timeRange, today, ([key]) => key);
   const pagesCount = totalPages(filteredDays.length, ctrl.pageSize);
-  const recentDays = ctrl.showAll
-    ? filteredDays
-    : paginate(filteredDays, ctrl.page, ctrl.pageSize);
+  const recentDays = ctrl.showAll ? filteredDays : paginate(filteredDays, ctrl.page, ctrl.pageSize);
 
   /** Tap handler -- redirects to editing date when in edit mode */
   const handleTap = async (type: 'up' | 'down') => {
@@ -209,9 +207,7 @@ export function FloorsTab({
                 const rowContent = (
                   <div
                     className={`grid w-full cursor-pointer grid-cols-[1fr_80px_auto_auto] items-center gap-3 border-l-2 border-t border-line px-4 py-3 transition-colors hover:bg-accent-muted ${
-                      isActive
-                        ? 'bg-accent-muted border-l-accent'
-                        : 'border-l-transparent'
+                      isActive ? 'bg-accent-muted border-l-accent' : 'border-l-transparent'
                     }`}
                     role="button"
                     tabIndex={0}

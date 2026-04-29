@@ -80,9 +80,7 @@ export function IncomeList({
                   <span className="text-xs text-fg-muted">
                     {sourceLabel.emoji} {sourceLabel.label}
                   </span>
-                  {entry.note && (
-                    <span className="text-xs text-fg-muted">\u2014 {entry.note}</span>
-                  )}
+                  {entry.note && <span className="text-xs text-fg-muted">\u2014 {entry.note}</span>}
                 </div>
                 <button
                   type="button"

@@ -41,9 +41,7 @@ describe('ActivityLog — pagination via useListControls', () => {
 
   it('shows footer button when total exceeds pageSize', () => {
     render(<ActivityLog activities={makeActivities(30)} onEdit={noop} />);
-    expect(
-      screen.getByRole('button', { name: /Show all|Load \d+ remaining/ }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Show all|Load \d+ remaining/ })).toBeInTheDocument();
   });
 
   it('does not show footer when total fits in one page', () => {

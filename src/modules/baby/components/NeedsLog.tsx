@@ -317,72 +317,73 @@ function RecentNeeds({
                 onClick={() => onEdit(entry)}
                 className={`block w-full border-t border-line p-3 text-left transition-colors hover:bg-accent-muted ${isActive ? 'bg-accent-muted border-l-2 border-l-accent' : ''}`}
               >
-            <div className="flex justify-between text-sm">
-              <span className="font-medium text-fg">
-                {entry.title}
-                <span className="ml-2 text-xs text-fg-muted">
-                  {NEED_CATEGORY_LABELS[entry.category]} &middot; {NEED_STATUS_LABELS[entry.status]}
-                </span>
-              </span>
-              <div className="flex items-center gap-2">
-                {entry.status === NeedStatus.Wishlist && (
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeStatus(entry, NeedStatus.Inventory);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.stopPropagation();
-                        onChangeStatus(entry, NeedStatus.Inventory);
-                      }
-                    }}
-                    className="rounded border border-line px-2 py-1 text-xs text-accent hover:bg-accent hover:text-fg-on-accent transition-colors"
-                  >
-                    Bought
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium text-fg">
+                    {entry.title}
+                    <span className="ml-2 text-xs text-fg-muted">
+                      {NEED_CATEGORY_LABELS[entry.category]} &middot;{' '}
+                      {NEED_STATUS_LABELS[entry.status]}
+                    </span>
                   </span>
-                )}
-                {entry.status === NeedStatus.Inventory && (
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeStatus(entry, NeedStatus.Outgrown);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                  <div className="flex items-center gap-2">
+                    {entry.status === NeedStatus.Wishlist && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onChangeStatus(entry, NeedStatus.Inventory);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.stopPropagation();
+                            onChangeStatus(entry, NeedStatus.Inventory);
+                          }
+                        }}
+                        className="rounded border border-line px-2 py-1 text-xs text-accent hover:bg-accent hover:text-fg-on-accent transition-colors"
+                      >
+                        Bought
+                      </span>
+                    )}
+                    {entry.status === NeedStatus.Inventory && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onChangeStatus(entry, NeedStatus.Outgrown);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.stopPropagation();
+                            onChangeStatus(entry, NeedStatus.Outgrown);
+                          }
+                        }}
+                        className="rounded border border-line px-2 py-1 text-xs text-accent hover:bg-accent hover:text-fg-on-accent transition-colors"
+                      >
+                        Outgrew
+                      </span>
+                    )}
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Delete"
+                      onClick={(e) => {
                         e.stopPropagation();
-                        onChangeStatus(entry, NeedStatus.Outgrown);
-                      }
-                    }}
-                    className="rounded border border-line px-2 py-1 text-xs text-accent hover:bg-accent hover:text-fg-on-accent transition-colors"
-                  >
-                    Outgrew
-                  </span>
-                )}
-                <span
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemove(entry.id);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.stopPropagation();
-                      onRemove(entry.id);
-                    }
-                  }}
-                  className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
-                >
-                  x
-                </span>
-              </div>
-            </div>
+                        onRemove(entry.id);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.stopPropagation();
+                          onRemove(entry.id);
+                        }
+                      }}
+                      className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
+                    >
+                      x
+                    </span>
+                  </div>
+                </div>
                 {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}
               </button>
             );
