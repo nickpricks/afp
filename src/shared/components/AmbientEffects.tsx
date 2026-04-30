@@ -82,17 +82,21 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
         const r1 = seededRandom(baseSeed + 1);
         const r2 = seededRandom(baseSeed + 2);
         const r3 = seededRandom(baseSeed + 3);
-        const r4 = seededRandom(baseSeed + 4);
         const r5 = seededRandom(baseSeed + 5);
         const r6 = seededRandom(baseSeed + 6);
         const r7 = seededRandom(baseSeed + 7);
-        const r8 = seededRandom(baseSeed + 8);
-        const r9 = seededRandom(baseSeed + 9);
-        const r10 = seededRandom(baseSeed + 10);
 
         // Pick content from options
         const contentIndex = Math.floor(r1 * contentOptions.length);
         const content = contentOptions[contentIndex] || '';
+
+        // Depth-correlated scaling: a single random "depth" value drives scale, opacity,
+        // size, and duration. Bigger = closer = brighter + faster; smaller = farther = dimmer + slower.
+        // The result reads as parallax atmosphere instead of independently-random confetti.
+        // TODO(nick): tune these constants while watching motion in the browser.
+        //   Proposed ranges: scale 0.5-1.5, opacity 0.25-0.8, size 10-26px, duration 1x-2x baseSpeed.
+        const depth = r5;
+        const jitter = (r7 - 0.5) * 0.1; // tiny ±5% noise on duration only
 
         allParticles.push({
           id: `${effect.id}-${i}`,
@@ -104,15 +108,15 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
             '--fx-top':
               effect.type === 'twinkle' || effect.type === 'float' ? `${r2 * 100}%` : undefined,
             '--fx-delay': `${r3 * -12}s`, // Negative delay starts animation midway
-            '--fx-duration': `${effect.baseSpeed + (r4 * 4 - 2)}s`,
-            '--fx-rotate': `${r5 * 360}deg`,
+            '--fx-duration': `${effect.baseSpeed * (2 - depth) * (1 + jitter)}s`,
+            '--fx-rotate': `${depth * 360}deg`,
             '--fx-drift': `${r6 * 40 - 20}px`,
             '--fx-drift-y': `${r7 * 40 - 20}px`,
-            '--fx-scale': `${0.8 + r8 * 0.7}`,
+            '--fx-scale': `${0.5 + depth * 1.0}`,
             // Sweep effects (e.g. scanline) use a deterministic low opacity so the keyframe
-            // doesn't randomly produce a glaring 0.8 line. All others use a randomized range.
-            '--fx-opacity': effect.type === 'sweep' ? '0.15' : `${0.3 + r9 * 0.5}`,
-            '--fx-size': `${14 + r10 * 12}px`,
+            // doesn't randomly produce a glaring 0.8 line. All others derive opacity from depth.
+            '--fx-opacity': effect.type === 'sweep' ? '0.15' : `${0.25 + depth * 0.55}`,
+            '--fx-size': `${10 + depth * 16}px`,
           } as React.CSSProperties,
         });
       }

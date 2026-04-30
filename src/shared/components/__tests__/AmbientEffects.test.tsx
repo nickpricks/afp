@@ -44,3 +44,37 @@ describe('<AmbientEffects>', () => {
     expect(/[🦌🐺🦅🦦🐎🐈🦉🐇🐕🦢🦡🐉]/u.test(text)).toBe(true);
   });
 });
+
+describe('depth-correlated scaling', () => {
+  beforeEach(() => {
+    vi.stubGlobal('matchMedia', (q: string) => ({
+      matches: false,
+      media: q,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+  });
+
+  it('scale and opacity correlate (close particles are bigger AND brighter)', () => {
+    const { container } = render(<AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} />);
+    const particles = container.querySelectorAll('.fx-particle');
+    expect(particles.length).toBeGreaterThan(0);
+
+    // Sample 5 particles, sort by scale ascending, verify opacity is also non-decreasing.
+    const samples = Array.from(particles)
+      .slice(0, 5)
+      .map((el) => {
+        const style = (el as HTMLElement).style;
+        return {
+          scale: parseFloat(style.getPropertyValue('--fx-scale')),
+          opacity: parseFloat(style.getPropertyValue('--fx-opacity')),
+        };
+      });
+
+    samples.sort((a, b) => a.scale - b.scale);
+    for (let i = 1; i < samples.length; i++) {
+      // Allow tiny floating-point slack (within 0.01).
+      expect(samples[i].opacity).toBeGreaterThanOrEqual(samples[i - 1].opacity - 0.01);
+    }
+  });
+});
