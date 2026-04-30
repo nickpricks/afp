@@ -18,3 +18,43 @@
   --error: #f87171;
   --warning: #fbbf24;
 }
+
+/* ── Phase 2i — Atmosphere: silver mist + starlight ─────────── */
+body.theme-expecto-patronum::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(184, 212, 232, 0.04) 30%,
+    rgba(184, 212, 232, 0.02) 50%,
+    rgba(184, 212, 232, 0.05) 70%,
+    transparent 100%
+  );
+  animation: patronum-mist 45s ease-in-out infinite alternate;
+}
+
+body.theme-expecto-patronum::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    radial-gradient(circle at 15% 25%, rgba(255, 255, 255, 0.8) 0.5px, transparent 1px),
+    radial-gradient(circle at 80% 60%, rgba(255, 255, 255, 0.6) 0.5px, transparent 1px),
+    radial-gradient(circle at 40% 85%, rgba(255, 255, 255, 0.5) 0.5px, transparent 1px),
+    radial-gradient(circle at 90% 15%, rgba(255, 255, 255, 0.7) 0.5px, transparent 1px);
+}
+
+@keyframes patronum-mist {
+  from { background-position: 0% 0%; }
+  to   { background-position: 0% 6%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-expecto-patronum::before { animation: none; }
+}
