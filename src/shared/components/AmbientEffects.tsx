@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { THEME_DEFINITIONS, ThemeId } from '@/themes/themes';
+import { GlyphPrimitive } from '@/shared/components/glyph-primitives';
 
 interface AmbientEffectsProps {
   themeId: ThemeId;
@@ -129,12 +130,7 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
     >
       {particles.map((p) => (
         <div key={p.id} className={`fx-particle fx-${p.type} effect-${p.effectId}`} style={p.style}>
-          {p.content || (
-            <div
-              className="fx-shape w-full h-full rounded-full"
-              style={{ background: 'currentColor', opacity: 0.4 }}
-            />
-          )}
+          {p.content ? p.content : <GlyphPrimitive effectId={p.effectId} />}
         </div>
       ))}
     </div>
