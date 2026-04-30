@@ -37,3 +37,30 @@
   --error: #f87171;
   --warning: #fbbf24;
 }
+
+/* ── Phase 2i — Atmosphere: pearlescent shimmer ─────────────── */
+body.theme-rose-quartz::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background: conic-gradient(
+    from 45deg,
+    rgba(244, 114, 182, 0.08),
+    rgba(254, 226, 240, 0.15),
+    rgba(244, 114, 182, 0.08),
+    rgba(254, 226, 240, 0.15),
+    rgba(244, 114, 182, 0.08)
+  );
+  animation: rose-shimmer 60s linear infinite;
+}
+
+@keyframes rose-shimmer {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-rose-quartz::before { animation: none; }
+}
