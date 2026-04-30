@@ -1,7 +1,21 @@
 import { ActivityType, PaymentMethod, IncomeSource } from '@/shared/types';
 import type { BodyRecord, BodyActivity } from '@/modules/body/types';
-import type { Child, FeedEntry, SleepEntry, DiaperEntry, GrowthEntry } from '@/modules/baby/types';
-import { FeedType, SleepType, SleepQuality, DiaperType } from '@/modules/baby/types';
+import type {
+  Child,
+  FeedEntry,
+  SleepEntry,
+  DiaperEntry,
+  GrowthEntry,
+  MealEntry,
+} from '@/modules/baby/types';
+import {
+  FeedType,
+  SleepType,
+  SleepQuality,
+  DiaperType,
+  MealType,
+  MealPortion,
+} from '@/modules/baby/types';
 import type { Expense, Income } from '@/modules/expenses/types';
 import { getAllCategoryIds, CATEGORIES } from '@/modules/expenses/categories';
 import { todayStr } from '@/shared/utils/date';
@@ -367,6 +381,48 @@ export const benchGrowth = (date?: string): string => {
   };
   push(`afp:users/${UID}/children/${childId}:growth`, entry);
   return `${weight}kg / ${height}cm`;
+};
+
+// ─── Meals / Needs / Milestones generators ──────────────────────────────────
+
+const MEAL_TYPES = [MealType.Breakfast, MealType.Lunch, MealType.Dinner, MealType.Snack];
+const MEAL_PORTIONS = [
+  MealPortion.None,
+  MealPortion.Bite,
+  MealPortion.Little,
+  MealPortion.Some,
+  MealPortion.Most,
+  MealPortion.All,
+  MealPortion.Extra,
+];
+const MEAL_DESCRIPTIONS = [
+  'Oatmeal',
+  'Banana mash',
+  'Rice & dal',
+  'Roti',
+  'Idli',
+  'Apple slice',
+  'Cheese cube',
+  'Yogurt',
+];
+
+/** Adds a random meal entry under the child. */
+export const benchMeal = (date?: string): string => {
+  const childId = ensureChild();
+  const id = crypto.randomUUID();
+  const entry: MealEntry = {
+    id,
+    date: date ?? pick([todayStr(), daysAgo(rand(1, 5))]),
+    time: randTime(),
+    type: pick(MEAL_TYPES),
+    description: pick(MEAL_DESCRIPTIONS),
+    portion: pick(MEAL_PORTIONS),
+    timestamp: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    notes: '',
+  };
+  push(`afp:users/${UID}/children/${childId}:meals`, entry);
+  return id;
 };
 
 // ─── Bulk runner with day-spread ────────────────────────────────────────────
