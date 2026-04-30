@@ -7,6 +7,7 @@ import type {
   DiaperEntry,
   GrowthEntry,
   MealEntry,
+  NeedEntry,
 } from '@/modules/baby/types';
 import {
   FeedType,
@@ -15,6 +16,8 @@ import {
   DiaperType,
   MealType,
   MealPortion,
+  NeedCategory,
+  NeedStatus,
 } from '@/modules/baby/types';
 import type { Expense, Income } from '@/modules/expenses/types';
 import { getAllCategoryIds, CATEGORIES } from '@/modules/expenses/categories';
@@ -422,6 +425,46 @@ export const benchMeal = (date?: string): string => {
     notes: '',
   };
   push(`afp:users/${UID}/children/${childId}:meals`, entry);
+  return id;
+};
+
+const NEED_CATEGORIES = [
+  NeedCategory.Apparel,
+  NeedCategory.Footwear,
+  NeedCategory.School,
+  NeedCategory.Toys,
+  NeedCategory.Books,
+  NeedCategory.Other,
+];
+const NEED_STATUSES = [NeedStatus.Wishlist, NeedStatus.Inventory, NeedStatus.Outgrown];
+const NEED_TITLES = [
+  'Onesie 6m',
+  'Sippy cup',
+  'Crib sheet',
+  'Diaper rash cream',
+  'Teether',
+  'Stroller cover',
+  'Bath toy',
+  'Board book set',
+  'Soft shoes',
+  'Winter hat',
+];
+
+/** Adds a random need entry under the child. */
+export const benchNeed = (date?: string): string => {
+  const childId = ensureChild();
+  const id = crypto.randomUUID();
+  const entry: NeedEntry = {
+    id,
+    date: date ?? pick([todayStr(), daysAgo(rand(1, 30))]),
+    title: pick(NEED_TITLES),
+    category: pick(NEED_CATEGORIES),
+    status: pick(NEED_STATUSES),
+    notes: '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  push(`afp:users/${UID}/children/${childId}:needs`, entry);
   return id;
 };
 

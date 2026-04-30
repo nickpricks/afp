@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { benchMeal, BASE, ensureChild } from '../bench-generators';
+import { benchMeal, benchNeed, BASE, ensureChild } from '../bench-generators';
 
 beforeEach(() => {
   localStorage.clear();
@@ -24,6 +24,16 @@ describe('benchMeal', () => {
     const stored = JSON.parse(localStorage.getItem(key) ?? '[]');
     const entry = stored.find((e: { id: string }) => e.id === id);
     expect(entry.date).toBe('2026-04-15');
+  });
+});
+
+describe('benchNeed', () => {
+  it('creates a need entry under children/{id}/needs', () => {
+    const childId = ensureChild();
+    const id = benchNeed();
+    const key = `afp:users/dev-user/children/${childId}:needs`;
+    const stored = JSON.parse(localStorage.getItem(key) ?? '[]');
+    expect(stored.find((e: { id: string }) => e.id === id)).toBeDefined();
   });
 });
 
