@@ -37,3 +37,24 @@
   --error: #f87171;
   --warning: #fbbf24;
 }
+
+/* ── Phase 2i — Atmosphere: vellum nightlight ───────────────── */
+body.theme-lullaby::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(255, 248, 232, 0.45) 0%, transparent 65%);
+}
+
+body.theme-lullaby::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  /* Faint paper grain via inline SVG noise */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.12'/></svg>");
+  opacity: 0.5;
+}
