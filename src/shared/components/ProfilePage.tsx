@@ -17,6 +17,7 @@ import {
   THEME_DEFINITIONS,
   useActiveThemeId,
   type ColorMode,
+  type ThemeDefinition,
   type ThemeId,
 } from '@/themes/themes';
 import {
@@ -409,6 +410,33 @@ export function ProfilePage() {
   );
 }
 
+/** Mini-mockup theme preview — shows bg, accent stroke, and "Aa" in the theme's display font */
+function ThemeSwatch({ theme, size }: { theme: ThemeDefinition; size: 'sm' | 'md' }) {
+  const sizeClass = size === 'sm' ? 'h-8 w-8' : 'h-10 w-10';
+  const fontSize = size === 'sm' ? 'text-[9px]' : 'text-[11px]';
+  const barWidth = size === 'sm' ? 'w-3.5' : 'w-5';
+  return (
+    <div
+      className={`${sizeClass} flex-shrink-0 flex flex-col items-center justify-center gap-0.5 rounded-lg border border-line`}
+      style={{ background: theme.previewColors.bg }}
+    >
+      <div
+        className={`h-0.5 ${barWidth} rounded-full`}
+        style={{ background: theme.previewColors.accent }}
+      />
+      <span
+        className={`${fontSize} leading-none font-semibold`}
+        style={{
+          color: theme.previewColors.text,
+          fontFamily: `'${theme.fonts.display}', sans-serif`,
+        }}
+      >
+        Aa
+      </span>
+    </div>
+  );
+}
+
 /** Appearance section with expandable theme picker + effect controls */
 function AppearanceSection({
   activeThemeId,
@@ -437,12 +465,7 @@ function AppearanceSection({
       {/* Current theme display + expand button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div
-            className="h-8 w-8 rounded-lg border border-line"
-            style={{
-              background: `linear-gradient(135deg, ${activeTheme.previewColors.bg} 50%, ${activeTheme.previewColors.accent} 50%)`,
-            }}
-          />
+          <ThemeSwatch theme={activeTheme} size="sm" />
           <div>
             <p className="text-sm font-medium text-fg">{activeTheme.name}</p>
             <p className="text-xs text-fg-muted">
@@ -477,12 +500,7 @@ function AppearanceSection({
                       : 'border-line hover:border-accent/50'
                   }`}
                 >
-                  <div
-                    className="h-10 w-10 flex-shrink-0 rounded-lg border border-line"
-                    style={{
-                      background: `linear-gradient(135deg, ${theme.previewColors.bg} 50%, ${theme.previewColors.accent} 50%)`,
-                    }}
-                  />
+                  <ThemeSwatch theme={theme} size="md" />
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-fg">{theme.name}</p>
                     <p className="text-[10px] text-fg-muted">

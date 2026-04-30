@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-04-29
+Last updated: 2026-04-30
 
 ---
 
@@ -19,6 +19,7 @@ Last updated: 2026-04-29
 | Phase 2f (Themes) | ✅ Enhanced | 20/20 | 10 themes, 8 font families, 10 ambient effects, granular intensity (0-100%), loading screen |
 | Phase 2g (E2E + Bench) | ✅ Done | 8/8 | Interactive E2E flows + build/bundle/test benchmarks |
 | Phase 2h (Universal list controls + Daily Ledger) | ✅ Done | 16/16 | Time-range filter + per-list page size + page jump + show-all footer + sticky day headers + magnitude bar (Floors) across 11 list surfaces (Broadcasts list pending) |
+| Phase 2i (Themes 2.0 — Atmosphere & Glyphs) | 🚧 Planning | — | Spec at `docs/specs/2026-04-30-phase2i-themes-2.0-design.md`. Implementation plan next. Phase 2j (Iconography) split as separate future spec. |
 | Phase 3 (Baby → Kid) | 🚧 In progress | 7/10 | Brainstorm A (Baby→Kid) done: Plans 1-7 shipped (Foundation, Suggestions, Elimination, Meals, Needs, Milestones, Life Journal). Plans 8-9 deferred. Plan 10 = Yoga = Brainstorm C — see **Pending Brainstorms** block below |
 | **Total** | **~99%** | **209/226** | |
 
@@ -186,6 +187,16 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 ---
 
 ## Done
+
+### 2026-04-30 — Session 16 (Theme Polish + Phase 2i Brainstorm, v0.2.16)
+
+- [x] **Polish**: `usePrefersReducedMotion` early-return in `AmbientEffects`, `ThemeSwatch` mini-mockup component (theme bg + accent + "Aa" in display font), deterministic sweep-particle opacity (Neon Glow scanline fix), Charcoal silence-by-design note in `src/themes/README.md`
+- [x] **Phase 2i brainstorm**: 7-question design dialogue resolved — atmosphere layers per theme (CSS-only, Charcoal silent), 8 shape-primitive glyphs replacing emoji, Patronus filtered-emoji preserved, depth-correlated particle scaling, 5-button tier slider, DevBench catch-up generators, Theme Tour button
+- [x] **Phase 2i spec written**: `docs/specs/2026-04-30-phase2i-themes-2.0-design.md` (Goals, Architecture, Per-Axis Designs, Testing, Phasing, Risks, Learning-Mode slots)
+- [x] **Phase 2j carve-out**: Per-row category icons (Iconography) split as separate future phase (`0.2.18`). Floors keep existing Unicode `↑`/`↓` arrows; other modules get themed SVG icons later
+- [x] **Version**: 0.2.15 → 0.2.16
+
+---
 
 ### 2026-04-29 — Session 15 (Phase 2h Universal List Controls, v0.2.15)
 

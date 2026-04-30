@@ -60,14 +60,13 @@
 
 /* ── Custom Effect Overrides ── */
 
-/* Scanline should be full-width */
+/* Scanline should be full-width. Opacity is driven by --fx-opacity (set deterministically in AmbientEffects.tsx). */
 .effect-scanline {
   left: 0 !important;
   right: 0 !important;
   width: 100vw !important;
   height: 2px !important;
   background: linear-gradient(90deg, transparent, var(--color-accent, #ffb803), transparent) !important;
-  opacity: 0.1;
 }
 
 /* Patronus Effect - silvery ghostly animal glow */

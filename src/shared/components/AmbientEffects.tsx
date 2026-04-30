@@ -1,9 +1,27 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { THEME_DEFINITIONS, ThemeId } from '@/themes/themes';
 
 interface AmbientEffectsProps {
   themeId: ThemeId;
   intensity: number;
+}
+
+/** Tracks the user's `prefers-reduced-motion` preference reactively */
+function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
+  useEffect(() => {
+    const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handler = (e: MediaQueryListEvent): void => {
+      setReduced(e.matches);
+    };
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+  return reduced;
 }
 
 /**
@@ -32,9 +50,10 @@ function stringToSeed(str: string): number {
  */
 export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensity }) => {
   const theme = THEME_DEFINITIONS[themeId];
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const particles = useMemo(() => {
-    if (!theme || intensity <= 0) return [];
+    if (!theme || intensity <= 0 || prefersReducedMotion) return [];
 
     const allParticles: {
       id: string;
@@ -89,7 +108,9 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
             '--fx-drift': `${r6 * 40 - 20}px`,
             '--fx-drift-y': `${r7 * 40 - 20}px`,
             '--fx-scale': `${0.8 + r8 * 0.7}`,
-            '--fx-opacity': `${0.3 + r9 * 0.5}`,
+            // Sweep effects (e.g. scanline) use a deterministic low opacity so the keyframe
+            // doesn't randomly produce a glaring 0.8 line. All others use a randomized range.
+            '--fx-opacity': effect.type === 'sweep' ? '0.15' : `${0.3 + r9 * 0.5}`,
             '--fx-size': `${14 + r10 * 12}px`,
           } as React.CSSProperties,
         });
@@ -97,7 +118,7 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
     });
 
     return allParticles;
-  }, [theme, themeId, intensity]);
+  }, [theme, themeId, intensity, prefersReducedMotion]);
 
   if (particles.length === 0) return null;
 

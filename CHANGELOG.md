@@ -4,6 +4,24 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.16] — 2026-04-30 (Theme Polish & Phase 2i Spec)
+
+### Added
+- **`usePrefersReducedMotion` hook in `AmbientEffects`** — early-returns when OS-level `prefers-reduced-motion: reduce` is set; particles don't mount for accessibility users.
+- **`ThemeSwatch` mini-mockup component** — Profile theme picker now renders each theme as a real preview: theme bg + accent stroke + "Aa" rendered in the theme's display font and text color. Replaces the diagonal-gradient swatch.
+- **Phase 2i design spec** — `docs/specs/2026-04-30-phase2i-themes-2.0-design.md` captures Themes 2.0 scope: atmosphere layers per theme, shape-primitive glyphs replacing emoji, depth-correlated particle scaling, tier-button intensity slider, DevBench catch-up, Theme Tour. Phase 2j (Iconography) split into a separate future spec (`0.2.18`).
+
+### Changed
+- **Sweep-type particle opacity is now deterministic (0.15)** — Neon Glow scanline no longer randomly renders at 0.8 brightness. Other particle types still use randomized opacity (0.3–0.8).
+
+### Removed
+- **Redundant `opacity: 0.1` rule on `.effect-scanline`** — was being overridden by the keyframe's `var(--fx-opacity)` anyway. Documentation contradiction resolved.
+
+### Documentation
+- **Charcoal silence-by-design** — explicit note in `src/themes/README.md` that the empty effects array is intentional, not a missing implementation. Also flagged that emoji glyphs are a known tonal mismatch targeted for Phase 2i replacement.
+
+---
+
 ## [0.2.15] — 2026-04-29 (Phase 2h — Universal List Controls)
 
 ### Added
