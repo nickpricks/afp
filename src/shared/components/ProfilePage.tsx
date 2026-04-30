@@ -28,6 +28,7 @@ import {
   DEFAULT_MODULES,
   type UserProfile,
 } from '@/shared/types';
+import { IntensityTierPicker } from '@/shared/components/IntensityTierPicker';
 import { useModuleRequest } from '@/shared/hooks/useModuleRequest';
 import { CONFIG } from '@/constants/config';
 import { AppPath } from '@/constants/routes';
@@ -536,23 +537,8 @@ function AppearanceSection({
 
           {/* Effects Intensity */}
           <div className="mt-4 border-t border-line pt-4">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-fg">Ambient Effects</p>
-              <span className="text-xs font-mono text-fg-muted">{intensity}%</span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              step="5"
-              value={intensity}
-              onChange={(e) => onIntensityChange(parseInt(e.target.value, 10))}
-              className="w-full h-1.5 bg-line rounded-lg appearance-none cursor-pointer accent-accent"
-            />
-            <div className="flex justify-between mt-1 px-0.5">
-              <span className="text-[10px] text-fg-muted uppercase tracking-tighter">Off</span>
-              <span className="text-[10px] text-fg-muted uppercase tracking-tighter">Max</span>
-            </div>
+            <p className="mb-2 text-sm text-fg">Ambient Effects</p>
+            <IntensityTierPicker value={intensity} onChange={onIntensityChange} />
           </div>
         </div>
       )}
