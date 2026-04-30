@@ -39,6 +39,11 @@ CSS custom properties per theme, mapped to Tailwind via `@theme` in index.css.
 
 - `__tests__/themes.test.ts` — Theme definitions, migration, and effect configuration
 
+## Design notes
+
+- **Charcoal ships with `effects: []` by design.** It is the deliberate quiet zone for users who want zero ambient motion or decoration — minimal aesthetic, minimal noise. Do not "fix" the empty effects array by adding a default; the absence is the feature.
+- **Per-effect glyphs are emoji today** — this is a known tonal mismatch for several themes (e.g. `❤️` against Playfair Display) and is targeted for replacement with shape primitives in a later phase.
+
 ## Adding a Theme
 
 1. New CSS file in `src/themes/` with light (`.theme-{id}`) and optional dark (`.theme-{id}.dark`) variants

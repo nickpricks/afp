@@ -4,6 +4,54 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.17] — 2026-04-30 (Phase 2i — Themes 2.0: Atmosphere & Glyphs)
+
+### Added
+- **Atmosphere layer per theme** — 9 of 10 themes ship with a CSS-only `body.theme-X::before` (and optional `::after`) atmosphere block running behind content. Charcoal stays silent by design. Each theme honors `prefers-reduced-motion` per-theme. Treatments: Family Blue (cloud drift), Garden Path (dappled light), Lullaby (vellum nightlight), Rose Quartz (pearlescent shimmer), Marauder's Map (parchment + vignette), Neon Glow (CRT raster + chromatic aberration), Deep Mariana (caustic ripples), Industrial Furnace (molten glow), Expecto Patronum (silver mist + starlight).
+- **`<GlyphPrimitive>` registry** — 8 shape-primitive glyph components (Snowflake, Leaf, Star, Heart, InkBlot, Bubble, Ember, Wisp) replace emoji in particle effects. Pure CSS or inline SVG, theme-tinted via `currentColor`. Patronus animals preserved as filtered emoji.
+- **Depth-correlated particle scaling** — `AmbientEffects` refactored: a single random "depth" value drives scale, opacity, size, and duration. Reads as parallax atmosphere instead of independently-random confetti.
+- **`<IntensityTierPicker>`** — 5-button tier row replaces the 0–100 slider in Profile. Off · Subtle · Standard · Lively · Maximum. Atomic clicks match AFP's pill-row pattern.
+- **`bucketIntensity()` util + `INTENSITY_TIERS`** — `src/shared/utils/intensity.ts`. Legacy values bucket on read; no migration script.
+- **DevBench Meals/Needs/Milestones generators** — `benchMeal`, `benchNeed`, `benchMilestone` close the gap with newer baby modules. Anchored at `todayStr()` so sticky day headers (Phase 2h) actually display `Today`/`Yesterday`.
+- **DevBench Theme Tour button** — cycles through all 10 themes with a 3-second hold each. Stop button restores the original theme. `DevBenchInner` extraction pattern keeps hooks unconditional while wrapping the dev-only guard.
+
+### Changed
+- **`THEME_DEFINITIONS.effects[].content`** — set to `''` for the 8 redesigned effects (snowflakes/leaves/stars/hearts/ink/bubbles/embers/wisps). Patronus animals retain their emoji string.
+- **Profile intensity control** — slider replaced by tier-button row.
+
+### Tests
+- 5 new test files: `intensity.test.ts`, `IntensityTierPicker.test.tsx`, `glyph-primitives.test.tsx`, `AmbientEffects.test.tsx`, `bench-generators.test.ts`.
+- Existing `themes.test.ts` extended with content invariants for Phase 2i.
+- Approximately 35+ new test cases covering the foundation primitives, picker, glyph dispatch, depth correlation, content invariants, and bench generators.
+
+### Implementation notes
+- 16 task commits + 1 plan-doc commit since `0.2.16`. Squashable to a single `0.2.17` commit at branch finish per Nick's preference.
+- Atmosphere CSS visual fidelity verified manually via the Theme Tour button (Task 19).
+- Three TODO(nick) learning-mode slots remain in code: `IntensityTier` labels (intensity.ts), depth-scaling constants (AmbientEffects.tsx), Marauder's Map atmosphere CSS values (marauders-map.css).
+
+### Carved out (separate future spec)
+- Phase 2j (`0.2.18`) — Iconography: per-row category icons across Body / Baby / Budget. Floors keep existing Unicode `↑`/`↓` arrows; other modules get themed SVG icons later.
+
+---
+
+## [0.2.16] — 2026-04-30 (Theme Polish & Phase 2i Spec)
+
+### Added
+- **`usePrefersReducedMotion` hook in `AmbientEffects`** — early-returns when OS-level `prefers-reduced-motion: reduce` is set; particles don't mount for accessibility users.
+- **`ThemeSwatch` mini-mockup component** — Profile theme picker now renders each theme as a real preview: theme bg + accent stroke + "Aa" rendered in the theme's display font and text color. Replaces the diagonal-gradient swatch.
+- **Phase 2i design spec** — `docs/specs/2026-04-30-phase2i-themes-2.0-design.md` captures Themes 2.0 scope: atmosphere layers per theme, shape-primitive glyphs replacing emoji, depth-correlated particle scaling, tier-button intensity slider, DevBench catch-up, Theme Tour. Phase 2j (Iconography) split into a separate future spec (`0.2.18`).
+
+### Changed
+- **Sweep-type particle opacity is now deterministic (0.15)** — Neon Glow scanline no longer randomly renders at 0.8 brightness. Other particle types still use randomized opacity (0.3–0.8).
+
+### Removed
+- **Redundant `opacity: 0.1` rule on `.effect-scanline`** — was being overridden by the keyframe's `var(--fx-opacity)` anyway. Documentation contradiction resolved.
+
+### Documentation
+- **Charcoal silence-by-design** — explicit note in `src/themes/README.md` that the empty effects array is intentional, not a missing implementation. Also flagged that emoji glyphs are a known tonal mismatch targeted for Phase 2i replacement.
+
+---
+
 ## [0.2.15] — 2026-04-29 (Phase 2h — Universal List Controls)
 
 ### Added

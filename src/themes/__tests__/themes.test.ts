@@ -97,3 +97,39 @@ describe('resolveThemeId', () => {
     expect(resolveThemeId('nonexistent')).toBe(ThemeId.FamilyBlue);
   });
 });
+
+describe('Phase 2i content invariants', () => {
+  const REDESIGNED_EFFECT_IDS = [
+    'snowflakes',
+    'leaves',
+    'stars',
+    'hearts',
+    'ink',
+    'bubbles',
+    'embers',
+    'wisps',
+  ];
+
+  it('all redesigned effects have empty content', () => {
+    for (const theme of Object.values(THEME_DEFINITIONS)) {
+      for (const effect of theme.effects) {
+        if (REDESIGNED_EFFECT_IDS.includes(effect.id)) {
+          expect(effect.content).toBe('');
+        }
+      }
+    }
+  });
+
+  it('Patronus animal effect keeps its emoji content', () => {
+    const patronus = THEME_DEFINITIONS[ThemeId.ExpectoPatronum].effects.find(
+      (e) => e.id === 'patronus',
+    );
+    expect(patronus).toBeDefined();
+    expect(patronus!.content.length).toBeGreaterThan(0);
+    expect(patronus!.content).toContain(','); // comma-separated animal list
+  });
+
+  it('Charcoal has no effects', () => {
+    expect(THEME_DEFINITIONS[ThemeId.Charcoal].effects).toEqual([]);
+  });
+});

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 import { isFirebaseConfigured } from '@/shared/auth/firebase-config';
 import { useAuth } from '@/shared/auth/useAuth';
@@ -20,7 +20,12 @@ import {
   benchSleep,
   benchDiaper,
   benchGrowth,
+  benchMeal,
+  benchNeed,
+  benchMilestone,
 } from '@/shared/components/bench-generators';
+import { applyTheme, THEME_DEFINITIONS, useActiveThemeId } from '@/themes/themes';
+import type { ThemeId } from '@/themes/themes';
 
 // ─── BenchButton ────────────────────────────────────────────────────────────
 
@@ -121,15 +126,45 @@ function UserProfilePanel() {
   );
 }
 
-// ─── DevBench Component ─────────────────────────────────────────────────────
+// ─── DevBenchInner ──────────────────────────────────────────────────────────
 
-/** Dev-only bench panel — visible only when Firebase is not configured */
-export function DevBench() {
-  if (isFirebaseConfigured) return null;
-
+/** Inner component with hooks — rendered only when Firebase is not configured */
+function DevBenchInner() {
   const bodyConfig = readDoc<BodyConfig>(`${BASE}:body_config`);
   const children = read<Child>(`${BASE}:children`);
   const hasChild = children.length > 0;
+
+  const activeThemeId = useActiveThemeId();
+  const [tourRunning, setTourRunning] = useState(false);
+  const tourTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const originalThemeRef = useRef<ThemeId | null>(null);
+
+  const stopTour = useCallback(() => {
+    if (tourTimeoutRef.current) clearTimeout(tourTimeoutRef.current);
+    tourTimeoutRef.current = null;
+    if (originalThemeRef.current) {
+      applyTheme(originalThemeRef.current, 'system');
+      originalThemeRef.current = null;
+    }
+    setTourRunning(false);
+  }, []);
+
+  const startTour = useCallback(() => {
+    originalThemeRef.current = activeThemeId;
+    const themeIds = Object.values(THEME_DEFINITIONS).map((t) => t.id);
+    setTourRunning(true);
+    let i = 0;
+    const tick = () => {
+      if (i >= themeIds.length) {
+        stopTour();
+        return;
+      }
+      applyTheme(themeIds[i]!, 'system');
+      i++;
+      tourTimeoutRef.current = setTimeout(tick, 3000);
+    };
+    tick();
+  }, [activeThemeId, stopTour]);
 
   const handleClear = () => {
     const keys = Object.keys(localStorage).filter((k) => k.startsWith('afp:'));
@@ -180,7 +215,7 @@ export function DevBench() {
       </div>
 
       {/* Baby section */}
-      <div className="mb-1">
+      <div className="mb-3">
         <p className="text-xs font-semibold text-fg-muted mb-2">
           Baby{hasChild ? ` (${children[0]?.name})` : ''}
         </p>
@@ -189,11 +224,51 @@ export function DevBench() {
           <BenchButton label="+ Sleep" onClick={benchSleep} />
           <BenchButton label="+ Diaper" onClick={benchDiaper} />
           <BenchButton label="+ Growth" onClick={benchGrowth} />
+          <BenchButton label="+ Meal" onClick={benchMeal} />
+          <BenchButton label="+ Need" onClick={benchNeed} />
+          <BenchButton label="+ Milestone" onClick={benchMilestone} />
         </div>
         {!hasChild && (
           <p className="text-xs text-fg-muted mt-1">First press auto-creates a random child</p>
         )}
       </div>
+
+      {/* Theme Tour section */}
+      <section className="border-t border-line pt-4 mt-4">
+        <h3 className="text-sm font-semibold text-fg-muted uppercase tracking-wide mb-2">
+          Theme Tour
+        </h3>
+        <p className="text-xs text-fg-muted mb-2">
+          Cycles through all 10 themes (3s hold each). Press Stop to abort and restore the original
+          theme.
+        </p>
+        {!tourRunning && (
+          <button
+            type="button"
+            onClick={startTour}
+            className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-fg-on-accent"
+          >
+            Start Tour
+          </button>
+        )}
+        {tourRunning && (
+          <button
+            type="button"
+            onClick={stopTour}
+            className="rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600"
+          >
+            Stop Tour
+          </button>
+        )}
+      </section>
     </div>
   );
+}
+
+// ─── DevBench Component ─────────────────────────────────────────────────────
+
+/** Dev-only bench panel — visible only when Firebase is not configured */
+export function DevBench() {
+  if (isFirebaseConfigured) return null;
+  return <DevBenchInner />;
 }

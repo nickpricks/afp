@@ -85,7 +85,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Family',
     darkOnly: false,
     fonts: FONTS_DEFAULT,
-    effects: [{ id: 'snowflakes', type: 'fall', content: '❄', maxParticles: 30, baseSpeed: 8 }],
+    effects: [{ id: 'snowflakes', type: 'fall', content: '', maxParticles: 30, baseSpeed: 8 }],
     previewColors: { bg: '#f0f7ff', accent: '#60a5fa', text: '#1e293b' },
   },
   [ThemeId.GardenPath]: {
@@ -94,7 +94,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Nature',
     darkOnly: false,
     fonts: FONTS_GARDEN,
-    effects: [{ id: 'leaves', type: 'fall', content: '🍃', maxParticles: 20, baseSpeed: 10 }],
+    effects: [{ id: 'leaves', type: 'fall', content: '', maxParticles: 20, baseSpeed: 10 }],
     previewColors: { bg: '#f4f9f4', accent: '#16a34a', text: '#1a2e1a' },
   },
   [ThemeId.Lullaby]: {
@@ -103,7 +103,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Nursery',
     darkOnly: false,
     fonts: FONTS_NURSERY,
-    effects: [{ id: 'stars', type: 'twinkle', content: '✨', maxParticles: 40, baseSpeed: 4 }],
+    effects: [{ id: 'stars', type: 'twinkle', content: '', maxParticles: 40, baseSpeed: 4 }],
     previewColors: { bg: '#faf6ef', accent: '#e8a44a', text: '#3d3529' },
   },
   [ThemeId.RoseQuartz]: {
@@ -112,7 +112,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Soft',
     darkOnly: false,
     fonts: FONTS_ELEGANT,
-    effects: [{ id: 'hearts', type: 'rise', content: '❤️', maxParticles: 25, baseSpeed: 6 }],
+    effects: [{ id: 'hearts', type: 'rise', content: '', maxParticles: 25, baseSpeed: 6 }],
     previewColors: { bg: '#fdf2f8', accent: '#f472b6', text: '#2e1a24' },
   },
   [ThemeId.Charcoal]: {
@@ -130,7 +130,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Magic',
     darkOnly: false,
     fonts: FONTS_MAGIC,
-    effects: [{ id: 'ink', type: 'float', content: '👣', maxParticles: 15, baseSpeed: 12 }],
+    effects: [{ id: 'ink', type: 'float', content: '', maxParticles: 15, baseSpeed: 12 }],
     previewColors: { bg: '#f5f0e0', accent: '#c8a96e', text: '#3a2e1a' },
   },
   [ThemeId.NeonGlow]: {
@@ -150,7 +150,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     fonts: FONTS_MONO,
     effects: [
       { id: 'crt', type: 'overlay', content: '', maxParticles: 1, baseSpeed: 0 },
-      { id: 'bubbles', type: 'rise', content: '🫧', maxParticles: 30, baseSpeed: 7 },
+      { id: 'bubbles', type: 'rise', content: '', maxParticles: 30, baseSpeed: 7 },
     ],
     previewColors: { bg: '#030b12', accent: '#00e89a', text: '#8cb4c8' },
   },
@@ -160,7 +160,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     family: 'Industrial',
     darkOnly: true,
     fonts: FONTS_MONO,
-    effects: [{ id: 'embers', type: 'rise', content: '🔥', maxParticles: 35, baseSpeed: 5 }],
+    effects: [{ id: 'embers', type: 'rise', content: '', maxParticles: 35, baseSpeed: 5 }],
     previewColors: { bg: '#100804', accent: '#ff6820', text: '#c8a888' },
   },
   [ThemeId.ExpectoPatronum]: {
@@ -170,7 +170,7 @@ export const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
     darkOnly: true,
     fonts: FONTS_MAGIC,
     effects: [
-      { id: 'wisps', type: 'rise', content: '🌫️', maxParticles: 3, baseSpeed: 18 },
+      { id: 'wisps', type: 'rise', content: '', maxParticles: 3, baseSpeed: 18 },
       {
         id: 'patronus',
         type: 'rise',

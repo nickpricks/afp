@@ -1,7 +1,26 @@
 import { ActivityType, PaymentMethod, IncomeSource } from '@/shared/types';
 import type { BodyRecord, BodyActivity } from '@/modules/body/types';
-import type { Child, FeedEntry, SleepEntry, DiaperEntry, GrowthEntry } from '@/modules/baby/types';
-import { FeedType, SleepType, SleepQuality, DiaperType } from '@/modules/baby/types';
+import type {
+  Child,
+  FeedEntry,
+  SleepEntry,
+  DiaperEntry,
+  GrowthEntry,
+  MealEntry,
+  NeedEntry,
+  Milestone,
+} from '@/modules/baby/types';
+import {
+  FeedType,
+  SleepType,
+  SleepQuality,
+  DiaperType,
+  MealType,
+  MealPortion,
+  NeedCategory,
+  NeedStatus,
+  MilestoneCategory,
+} from '@/modules/baby/types';
 import type { Expense, Income } from '@/modules/expenses/types';
 import { getAllCategoryIds, CATEGORIES } from '@/modules/expenses/categories';
 import { todayStr } from '@/shared/utils/date';
@@ -367,6 +386,127 @@ export const benchGrowth = (date?: string): string => {
   };
   push(`afp:users/${UID}/children/${childId}:growth`, entry);
   return `${weight}kg / ${height}cm`;
+};
+
+// ─── Meals / Needs / Milestones generators ──────────────────────────────────
+
+const MEAL_TYPES = [MealType.Breakfast, MealType.Lunch, MealType.Dinner, MealType.Snack];
+const MEAL_PORTIONS = [
+  MealPortion.None,
+  MealPortion.Bite,
+  MealPortion.Little,
+  MealPortion.Some,
+  MealPortion.Most,
+  MealPortion.All,
+  MealPortion.Extra,
+];
+const MEAL_DESCRIPTIONS = [
+  'Oatmeal',
+  'Banana mash',
+  'Rice & dal',
+  'Roti',
+  'Idli',
+  'Apple slice',
+  'Cheese cube',
+  'Yogurt',
+];
+
+/** Adds a random meal entry under the child. */
+export const benchMeal = (date?: string): string => {
+  const childId = ensureChild();
+  const id = crypto.randomUUID();
+  const entry: MealEntry = {
+    id,
+    date: date ?? pick([todayStr(), daysAgo(rand(1, 5))]),
+    time: randTime(),
+    type: pick(MEAL_TYPES),
+    description: pick(MEAL_DESCRIPTIONS),
+    portion: pick(MEAL_PORTIONS),
+    timestamp: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    notes: '',
+  };
+  push(`afp:users/${UID}/children/${childId}:meals`, entry);
+  return id;
+};
+
+const NEED_CATEGORIES = [
+  NeedCategory.Apparel,
+  NeedCategory.Footwear,
+  NeedCategory.School,
+  NeedCategory.Toys,
+  NeedCategory.Books,
+  NeedCategory.Other,
+];
+const NEED_STATUSES = [NeedStatus.Wishlist, NeedStatus.Inventory, NeedStatus.Outgrown];
+const NEED_TITLES = [
+  'Onesie 6m',
+  'Sippy cup',
+  'Crib sheet',
+  'Diaper rash cream',
+  'Teether',
+  'Stroller cover',
+  'Bath toy',
+  'Board book set',
+  'Soft shoes',
+  'Winter hat',
+];
+
+/** Adds a random need entry under the child. */
+export const benchNeed = (date?: string): string => {
+  const childId = ensureChild();
+  const id = crypto.randomUUID();
+  const entry: NeedEntry = {
+    id,
+    date: date ?? pick([todayStr(), daysAgo(rand(1, 30))]),
+    title: pick(NEED_TITLES),
+    category: pick(NEED_CATEGORIES),
+    status: pick(NEED_STATUSES),
+    notes: '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  push(`afp:users/${UID}/children/${childId}:needs`, entry);
+  return id;
+};
+
+const MILESTONE_CATEGORIES = [
+  MilestoneCategory.Motor,
+  MilestoneCategory.Language,
+  MilestoneCategory.Social,
+  MilestoneCategory.Cognitive,
+  MilestoneCategory.Hobby,
+  MilestoneCategory.Other,
+];
+const MILESTONE_TITLES = [
+  'First steps',
+  'First word',
+  'First laugh',
+  'First tooth',
+  'Sat unsupported',
+  'Crawled',
+  'Pulled to stand',
+  'Said "mama"',
+  'Pointed',
+  'Waved',
+  'Built a tower of 3 blocks',
+];
+
+/** Adds a random milestone entry under the child. */
+export const benchMilestone = (date?: string): string => {
+  const childId = ensureChild();
+  const id = crypto.randomUUID();
+  const entry: Milestone = {
+    id,
+    date: date ?? pick([todayStr(), daysAgo(rand(7, 365))]),
+    category: pick(MILESTONE_CATEGORIES),
+    title: pick(MILESTONE_TITLES),
+    timestamp: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    notes: '',
+  };
+  push(`afp:users/${UID}/children/${childId}:milestones`, entry);
+  return id;
 };
 
 // ─── Bulk runner with day-spread ────────────────────────────────────────────

@@ -37,3 +37,26 @@
   --error: #f87171;
   --warning: #fbbf24;
 }
+
+/* ── Phase 2i — Atmosphere: dappled light ───────────────────── */
+body.theme-garden-path::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 25% 35%, rgba(187, 247, 178, 0.5) 0%, transparent 30%),
+    radial-gradient(circle at 75% 60%, rgba(254, 243, 167, 0.4) 0%, transparent 35%),
+    radial-gradient(circle at 50% 85%, rgba(187, 247, 178, 0.3) 0%, transparent 25%);
+  animation: garden-dapple 24s ease-in-out infinite alternate;
+}
+
+@keyframes garden-dapple {
+  from { background-position: 0% 0%, 0% 0%, 0% 0%; }
+  to   { background-position: 4% -3%, -3% 4%, 2% 2%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-garden-path::before { animation: none; }
+}
