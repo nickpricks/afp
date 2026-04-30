@@ -41,3 +41,27 @@
   --error: #f87171;
   --warning: #fbbf24;
 }
+
+/* ── Phase 2i — Atmosphere: cloud drift ─────────────────────── */
+body.theme-family-blue::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, #c4dcfd 0%, #e8f1ff 50%, #f0f7ff 100%),
+    radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.7) 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 60%, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
+  animation: family-clouds 40s ease-in-out infinite alternate;
+  opacity: 0.6;
+}
+
+@keyframes family-clouds {
+  from { background-position: 0% 0%, 0% 0%, 0% 0%; }
+  to   { background-position: 0% 0%, 5% 2%, -4% -2%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-family-blue::before { animation: none; }
+}
