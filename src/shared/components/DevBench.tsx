@@ -22,6 +22,7 @@ import {
   benchGrowth,
   benchMeal,
   benchNeed,
+  benchMilestone,
 } from '@/shared/components/bench-generators';
 
 // ─── BenchButton ────────────────────────────────────────────────────────────
@@ -193,6 +194,7 @@ export function DevBench() {
           <BenchButton label="+ Growth" onClick={benchGrowth} />
           <BenchButton label="+ Meal" onClick={benchMeal} />
           <BenchButton label="+ Need" onClick={benchNeed} />
+          <BenchButton label="+ Milestone" onClick={benchMilestone} />
         </div>
         {!hasChild && (
           <p className="text-xs text-fg-muted mt-1">First press auto-creates a random child</p>

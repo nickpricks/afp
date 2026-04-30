@@ -8,6 +8,7 @@ import type {
   GrowthEntry,
   MealEntry,
   NeedEntry,
+  Milestone,
 } from '@/modules/baby/types';
 import {
   FeedType,
@@ -18,6 +19,7 @@ import {
   MealPortion,
   NeedCategory,
   NeedStatus,
+  MilestoneCategory,
 } from '@/modules/baby/types';
 import type { Expense, Income } from '@/modules/expenses/types';
 import { getAllCategoryIds, CATEGORIES } from '@/modules/expenses/categories';
@@ -465,6 +467,45 @@ export const benchNeed = (date?: string): string => {
     updatedAt: new Date().toISOString(),
   };
   push(`afp:users/${UID}/children/${childId}:needs`, entry);
+  return id;
+};
+
+const MILESTONE_CATEGORIES = [
+  MilestoneCategory.Motor,
+  MilestoneCategory.Language,
+  MilestoneCategory.Social,
+  MilestoneCategory.Cognitive,
+  MilestoneCategory.Hobby,
+  MilestoneCategory.Other,
+];
+const MILESTONE_TITLES = [
+  'First steps',
+  'First word',
+  'First laugh',
+  'First tooth',
+  'Sat unsupported',
+  'Crawled',
+  'Pulled to stand',
+  'Said "mama"',
+  'Pointed',
+  'Waved',
+  'Built a tower of 3 blocks',
+];
+
+/** Adds a random milestone entry under the child. */
+export const benchMilestone = (date?: string): string => {
+  const childId = ensureChild();
+  const id = crypto.randomUUID();
+  const entry: Milestone = {
+    id,
+    date: date ?? pick([todayStr(), daysAgo(rand(7, 365))]),
+    category: pick(MILESTONE_CATEGORIES),
+    title: pick(MILESTONE_TITLES),
+    timestamp: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    notes: '',
+  };
+  push(`afp:users/${UID}/children/${childId}:milestones`, entry);
   return id;
 };
 
