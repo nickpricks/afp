@@ -25,8 +25,8 @@ Dev mode works without Firebase — all modules enabled, TheAdminNick role, loca
 | `bun run lint` | Type check + ESLint |
 | `bun run typecheck` | tsc --noEmit only |
 | `bun run lint:eslint` | ESLint only |
-| `bun run test` | Vitest unit tests (557) |
-| `bun run test:e2e` | Playwright E2E tests (77) |
+| `bun run test` | Vitest unit tests (582) |
+| `bun run test:e2e` | Playwright E2E tests (81) |
 | `bun run format` | Prettier format all source files |
 | `bun run format:check` | Prettier check (CI-friendly, no writes) |
 | `bun run test:coverage` | Unit tests with v8 coverage |
@@ -75,7 +75,7 @@ src/
 
 ## Themes
 
-10 themes, each a distinct *room* — atmosphere CSS layer + shape-primitive particles + typography all telling one story. Family Blue (default), Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map (light+dark). Neon Glow, Deep Mariana, Industrial Furnace, Expecto Patronum (dark-only). 8 Google Font families. 5-tier intensity picker (Off / Subtle / Standard / Lively / Maximum) controls particle density. Charcoal stays silent by design (no atmosphere, no particles). Expecto Patronum keeps its filtered-emoji spirit animals; other 8 effects are CSS-or-SVG shape primitives. Per-theme `prefers-reduced-motion` opt-out.
+10 themes, each a distinct *room* — atmosphere CSS layer + shape-primitive particles + typography all telling one story. Family Blue (default), Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map (light+dark). Neon Glow, Deep Mariana, Industrial Furnace, Expecto Patronum (dark-only). 8 Google Font families. **Two tier pickers** in Profile: 5-tier intensity (Off / Subtle / Standard / Lively / Maximum) for quantity, 3-tier size (Small / Medium / Large) for scale — both compound with a viewport-aware multiplier (mobile auto-shrinks particles to 0.65×). Charcoal stays silent by design (no atmosphere, no particles). Expecto Patronum keeps its filtered-emoji spirit animals; other 8 effects are CSS-or-SVG shape primitives rendered at 80% of container to match emoji glyph cells. Per-theme `prefers-reduced-motion` opt-out.
 
 ## Key Patterns
 
