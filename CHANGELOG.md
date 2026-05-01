@@ -4,7 +4,7 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
-## [0.2.17.1] — 2026-05-01 (Phase 2i polish: TODO slots locked)
+## [0.2.17.1] — 2026-05-01 (Phase 2i polish: learning slots filled + E2E coverage)
 
 ### Changed
 - **Locked Phase 2i learning-mode TODO slots** with permanent values + reasoning comments:
@@ -12,8 +12,12 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
   - Depth-scaling constants in `AmbientEffects.tsx` documented with rationale (scale 0.5–1.5, opacity 0.25–0.8, size 10–26px, duration 1×–2× baseSpeed)
   - Marauder's Map atmosphere values committed with explanation of fold-crease geometry and vignette tuning
 
+### Tests
+- **`e2e/themes-2.0.spec.ts`** — 30 new Playwright regression tests codifying Phase 2i invariants: atmosphere CSS per theme, Charcoal silence, glyph dispatch (SVG/CSS not text), Patronus emoji preservation, intensity tier picker behavior, reduced-motion short-circuit, DevBench Theme Tour. E2E suite now 77 tests passing (was 47).
+
 ### Documentation
 - **`src/themes/README.md`** — added Implementation Notes section covering atmosphere CSS contract and depth-scaling math
+- **`e2e/README.md`** — describes new Phase 2i regression file
 
 ---
 
