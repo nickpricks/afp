@@ -7,8 +7,11 @@ export interface IntensityTier {
 /**
  * The 5 intensity tiers backing `<IntensityTierPicker>` and `bucketIntensity()`.
  *
- * TODO(nick): Final wording is your call. Proposal: Off · Subtle · Standard · Lively · Maximum.
- * Could also be theme-flavored (Off · Whisper · Hum · Pulse · Roar) — see spec learning-mode slot.
+ * Labels chosen for: (a) intuitive English ordering — `Subtle` reads quieter than `Standard`,
+ * and `Lively` reads busier; (b) consistency with AFP's pill-row vocabulary (time-range
+ * pills, payment-method labels) which use plain English not theme-flavored slang;
+ * (c) on-disk values stay numeric (`0/25/50/75/100`) so labels can be re-translated
+ * later without a data migration.
  */
 export const INTENSITY_TIERS: readonly IntensityTier[] = [
   { value: 0, label: 'Off' },
