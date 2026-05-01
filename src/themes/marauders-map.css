@@ -39,7 +39,13 @@
 }
 
 /* ── Phase 2i — Atmosphere: aged parchment ──────────────────── */
-/* TODO(nick): Tune fold-line angles, vignette intensity, and sepia tone while watching the actual page. These values are starting points. */
+/*
+ * Two diagonal fold-creases (105deg and 15deg) at low opacity (0.08, 0.06) suggest
+ * a folded-and-unfolded document without becoming visually noisy. The 50% radial
+ * sepia vignette darkens corners to mimic age-induced light fall-off at parchment
+ * edges. All values held very low (max 0.18 alpha) so atmosphere stays *behind*
+ * content, not competing with it.
+ */
 body.theme-marauders-map::before {
   content: '';
   position: fixed;

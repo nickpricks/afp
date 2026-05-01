@@ -50,3 +50,42 @@ CSS custom properties per theme, mapped to Tailwind via `@theme` in index.css.
 2. Import in `src/index.css`
 3. New `ThemeId` enum member
 4. Entry in `THEME_DEFINITIONS` with fonts, effects, preview colors
+
+## Implementation Notes
+
+### Depth-scaling math (AmbientEffects.tsx)
+
+Particle depth is modelled by a single random `depth` value (0–1) per particle, seeded
+deterministically. It drives four properties simultaneously so motion reads as parallax
+atmosphere rather than independently-random confetti:
+
+- **Scale** — `0.5 + depth * 1.0` → 0.5–1.5×
+- **Opacity** — `0.25 + depth * 0.55` → 0.25–0.8
+- **Size** — `10 + depth * 16` → 10–26 px
+- **Duration** — `effect.baseSpeed * (2 - depth)` → 2× for far particles, 1× for close ones,
+  plus ±5% jitter (`(r7 - 0.5) * 0.1`) to prevent mechanical synchronization
+
+### Atmosphere CSS contract
+
+Every animated atmosphere layer follows this boilerplate:
+
+```css
+body.theme-X::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  /* theme-specific gradient / animation */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-X::before { animation: none; }
+}
+```
+
+Themes that need two independent layers add a matching `::after` block (Lullaby, Neon Glow,
+Expecto Patronum). Both blocks must carry `pointer-events: none; z-index: -1` so they never
+intercept clicks or appear above content. The `prefers-reduced-motion` block should disable
+animations without removing the static gradient background, so the atmosphere tint remains
+for users who opt out of motion.

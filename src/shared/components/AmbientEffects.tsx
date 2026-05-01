@@ -93,8 +93,13 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
         // Depth-correlated scaling: a single random "depth" value drives scale, opacity,
         // size, and duration. Bigger = closer = brighter + faster; smaller = farther = dimmer + slower.
         // The result reads as parallax atmosphere instead of independently-random confetti.
-        // TODO(nick): tune these constants while watching motion in the browser.
-        //   Proposed ranges: scale 0.5-1.5, opacity 0.25-0.8, size 10-26px, duration 1x-2x baseSpeed.
+        //
+        // Constants chosen for: (a) scale 0.5–1.5x covers a 3:1 size ratio — large enough
+        // to read as depth, small enough that even "far" particles aren't lost; (b) opacity
+        // 0.25–0.8 keeps far particles visible (>0.2) while close particles never fully
+        // saturate (<1.0); (c) size 10–26px fits typical ambient particle sizing without
+        // dominating content; (d) duration scales 2x for far → 1x for close, with ±5%
+        // jitter to avoid mechanical synchronization across particles.
         const depth = r5;
         const jitter = (r7 - 0.5) * 0.1; // tiny ±5% noise on duration only
 

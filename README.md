@@ -25,8 +25,8 @@ Dev mode works without Firebase — all modules enabled, TheAdminNick role, loca
 | `bun run lint` | Type check + ESLint |
 | `bun run typecheck` | tsc --noEmit only |
 | `bun run lint:eslint` | ESLint only |
-| `bun run test` | Vitest unit tests (520) |
-| `bun run test:e2e` | Playwright E2E tests (47) |
+| `bun run test` | Vitest unit tests (557) |
+| `bun run test:e2e` | Playwright E2E tests (77) |
 | `bun run format` | Prettier format all source files |
 | `bun run format:check` | Prettier check (CI-friendly, no writes) |
 | `bun run test:coverage` | Unit tests with v8 coverage |
@@ -75,11 +75,11 @@ src/
 
 ## Themes
 
-10 themes with distinct font pairings and dynamic ambient effects. Family Blue (default), Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map (light+dark). Neon Glow, Deep Mariana, Industrial Furnace, Expecto Patronum (dark-only). 8 Google Font families. Granular 0-100% intensity slider in Profile controls particle density. Expecto Patronum features unique ghostly spirit animal manifestations.
+10 themes, each a distinct *room* — atmosphere CSS layer + shape-primitive particles + typography all telling one story. Family Blue (default), Garden Path, Lullaby, Rose Quartz, Charcoal, Marauder's Map (light+dark). Neon Glow, Deep Mariana, Industrial Furnace, Expecto Patronum (dark-only). 8 Google Font families. 5-tier intensity picker (Off / Subtle / Standard / Lively / Maximum) controls particle density. Charcoal stays silent by design (no atmosphere, no particles). Expecto Patronum keeps its filtered-emoji spirit animals; other 8 effects are CSS-or-SVG shape primitives. Per-theme `prefers-reduced-motion` opt-out.
 
 ## Key Patterns
 
-- **Ambient Effects v2** — Pure React-based particle system with seeded randomization for stable, performant atmospheric effects.
+- **Themes 2.0 — Atmosphere & Glyphs** — Pure CSS atmosphere layer per theme via `body.theme-X::before`/`::after`. Shape-primitive glyph dispatch (`<GlyphPrimitive>` registry) replaces emoji for 8 effects; Patronus animals preserved as filtered emoji. Depth-correlated particle scaling (single random `depth` drives scale + opacity + size + duration) reads as parallax instead of confetti.
 - **Tap-to-edit** — tap a list entry to populate the form above, button becomes "Update"
 - **Undo delete** — 10s toast with "Undo" action on all deletable lists
 - **Additive presets** — [10] [20] [50] [100] [200] buttons in Budget increment the total amount
@@ -92,14 +92,14 @@ src/
 - **Loading screen** — 3 SVG stick-figure scenes (Climber, Athlete, Reader), random per mount, with brand text reveal
 - **Code splitting** — React.lazy + Suspense on all routes, LoadingScreen as fallback
 - **Message enums** — all toast messages in `constants/messages.ts` enums (BodyMsg, BabyMsg, BudgetMsg, ProfileMsg, AdminMsg, GreetingMsg), toast types via `ToastType` enum — zero raw strings
-- **DevBench** — dev-only seed panel with 11 generators (Floors, Walk, Run, Cycle, Expense, Income, Settlement, Feed, Sleep, Diaper, Growth) + bulk modes (x100, x1k with day-spread)
+- **DevBench** — dev-only seed panel with 14 generators (Floors, Walk, Run, Cycle, Expense, Income, Settlement, Feed, Sleep, Diaper, Growth, Meal, Need, Milestone) + bulk modes (x100, x1k with day-spread). Theme Tour button cycles all 10 themes (3s hold each) for visual regression QA.
 
 ## Docs
 
 | Doc | What |
 |---|---|
 | `CLAUDE.md` | AI assistant instructions, architecture, conventions, known issues |
-| `docs/ROADMAP.md` | Phase progress (~95%), prioritized backlog (P0-P3), theme roster |
+| `docs/ROADMAP.md` | Phase progress (~99%), prioritized backlog (P0-P3), theme roster |
 | `docs/firebase-setup.md` | Firebase setup guide |
 | `docs/getting-started.md` | Getting started guide |
 | `docs/specs/` | Design specs (Phase 1, Phase 2, Dashboard, Theme analysis, Loading screen, Themes, Notifications, Phase 3 vision, Enhanced Themes) |

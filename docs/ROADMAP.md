@@ -188,6 +188,16 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 
 ## Done
 
+### 2026-05-01 — Session 18 (Phase 2i polish: learning slots filled + E2E regression, v0.2.17.1)
+
+- [x] **Locked 3 TODO(nick) learning-mode slots** with permanent values + reasoning comments — `INTENSITY_TIERS` labels (Off/Subtle/Standard/Lively/Maximum) finalized; depth-scaling constants in `AmbientEffects.tsx` documented (scale 0.5–1.5, opacity 0.25–0.8, size 10–26px, duration 1×–2×); Marauder's Map atmosphere values explained (fold-crease geometry + vignette tuning)
+- [x] **30 new E2E regression tests** in `e2e/themes-2.0.spec.ts` codifying Phase 2i invariants — atmosphere per theme, Charcoal silent, glyph dispatch, Patronus preserved, tier picker behavior, reduced-motion respect, Theme Tour. E2E suite grew 47 → 77.
+- [x] **Documentation** — `src/themes/README.md` Implementation Notes section (atmosphere CSS contract + depth-scaling math); `e2e/README.md` updated
+- [x] **Version**: 0.2.17 → 0.2.17.1
+- [x] **Parallel agent dispatch** — Agent A (TODO slots, src/) + Agent B (E2E tests, e2e/) ran in parallel on disjoint file regions; merged via 2 commits + coordinator wrap-up
+
+---
+
 ### 2026-04-30 — Session 17 (Phase 2i Themes 2.0 implementation, v0.2.17)
 
 - [x] **Atmosphere ×9 themes** — Family Blue (cloud drift), Garden Path (dappled light), Lullaby (vellum nightlight), Rose Quartz (pearlescent shimmer), Marauder's Map (parchment + vignette), Neon Glow (CRT raster + chromatic aberration), Deep Mariana (caustic ripples), Industrial Furnace (molten glow), Expecto Patronum (silver mist + starlight). Charcoal silent by design.
