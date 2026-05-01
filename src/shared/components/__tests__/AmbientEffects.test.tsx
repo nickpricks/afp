@@ -78,3 +78,121 @@ describe('depth-correlated scaling', () => {
     }
   });
 });
+
+// Fix 2: viewport-aware size multiplier
+describe('viewport-aware size multiplier', () => {
+  it('applies 0.65x multiplier on mobile viewport (max-width: 640px)', () => {
+    // Mock matchMedia: mobile viewport matches, reduced-motion does not
+    vi.stubGlobal('matchMedia', (q: string) => ({
+      matches: q.includes('max-width: 640px'),
+      media: q,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+
+    const { container } = render(<AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} />);
+    const particles = container.querySelectorAll('.fx-particle');
+    expect(particles.length).toBeGreaterThan(0);
+
+    // All --fx-size values should be scaled by 0.65 (mobile multiplier × effectSize 100/100)
+    // Desktop range: 10–26px → mobile range: 6.5–16.9px → all below 17px
+    Array.from(particles).forEach((el) => {
+      const sizeStr = (el as HTMLElement).style.getPropertyValue('--fx-size');
+      const sizeVal = parseFloat(sizeStr);
+      expect(sizeVal).toBeLessThan(17);
+    });
+  });
+
+  it('applies 1.0x multiplier on desktop viewport', () => {
+    vi.stubGlobal('matchMedia', (q: string) => ({
+      matches: false,
+      media: q,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+
+    const { container } = render(<AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} />);
+    const particles = container.querySelectorAll('.fx-particle');
+    expect(particles.length).toBeGreaterThan(0);
+
+    // Desktop: some particles should be >= 17px (full size range 10–26px)
+    const sizes = Array.from(particles).map((el) =>
+      parseFloat((el as HTMLElement).style.getPropertyValue('--fx-size')),
+    );
+    expect(sizes.some((s) => s >= 17)).toBe(true);
+  });
+});
+
+// Fix 3: effectSize prop
+describe('effectSize prop', () => {
+  beforeEach(() => {
+    vi.stubGlobal('matchMedia', (q: string) => ({
+      matches: false,
+      media: q,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+  });
+
+  it('effectSize=70 produces smaller --fx-size than effectSize=100', () => {
+    const { container: c100 } = render(
+      <AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} effectSize={100} />,
+    );
+    const { container: c70 } = render(
+      <AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} effectSize={70} />,
+    );
+
+    const sizes100 = Array.from(c100.querySelectorAll('.fx-particle')).map((el) =>
+      parseFloat((el as HTMLElement).style.getPropertyValue('--fx-size')),
+    );
+    const sizes70 = Array.from(c70.querySelectorAll('.fx-particle')).map((el) =>
+      parseFloat((el as HTMLElement).style.getPropertyValue('--fx-size')),
+    );
+
+    expect(sizes100.length).toBeGreaterThan(0);
+    expect(sizes70.length).toBeGreaterThan(0);
+
+    const avg100 = sizes100.reduce((a, b) => a + b, 0) / sizes100.length;
+    const avg70 = sizes70.reduce((a, b) => a + b, 0) / sizes70.length;
+    expect(avg70).toBeLessThan(avg100);
+  });
+
+  it('effectSize=100 (default) produces unchanged behavior vs omitting prop', () => {
+    const { container: cDefault } = render(
+      <AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} />,
+    );
+    const { container: c100 } = render(
+      <AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} effectSize={100} />,
+    );
+
+    const firstDefault = Array.from(cDefault.querySelectorAll('.fx-particle')).map((el) =>
+      (el as HTMLElement).style.getPropertyValue('--fx-size'),
+    );
+    const first100 = Array.from(c100.querySelectorAll('.fx-particle')).map((el) =>
+      (el as HTMLElement).style.getPropertyValue('--fx-size'),
+    );
+
+    expect(firstDefault).toEqual(first100);
+  });
+
+  it('effectSize=140 produces larger --fx-size than effectSize=100', () => {
+    const { container: c100 } = render(
+      <AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} effectSize={100} />,
+    );
+    const { container: c140 } = render(
+      <AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} effectSize={140} />,
+    );
+
+    const avg100 =
+      Array.from(c100.querySelectorAll('.fx-particle'))
+        .map((el) => parseFloat((el as HTMLElement).style.getPropertyValue('--fx-size')))
+        .reduce((a, b) => a + b, 0) / c100.querySelectorAll('.fx-particle').length;
+
+    const avg140 =
+      Array.from(c140.querySelectorAll('.fx-particle'))
+        .map((el) => parseFloat((el as HTMLElement).style.getPropertyValue('--fx-size')))
+        .reduce((a, b) => a + b, 0) / c140.querySelectorAll('.fx-particle').length;
+
+    expect(avg140).toBeGreaterThan(avg100);
+  });
+});
