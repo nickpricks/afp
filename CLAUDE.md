@@ -9,6 +9,21 @@ Design spec: `docs/specs/2026-04-01-aprilfoolsjoke-design.md`
 Implementation plan: `docs/plans/2026-04-01-aprilfoolsjoke-phase1.md`
 Firebase setup: `docs/firebase-setup.md`
 
+## Branch Naming
+
+Branches follow a comedic narrative arc around the April Fools origin story — each name is a chapter beat. Pick from the available queue; **don't burn reserved names on routine work** (they announce the saga's ending).
+
+**Used so far** (chronological):
+`the-prank` → `no-joke` → `joke-landed` → `last-laugh` → `the-plan-thickens` → `the-foolproof-alibi` → `exhibit-a` → `alibi-has-holes` (fix) → `exhibit-b` → `the-atmosphere-thickens` → `dialing-it-in` → `the-fine-print`
+
+**Available next** (comedy-flashback queue, pick from these for upcoming branches):
+`what-was-the-joke`, `who-planned-it`, `the-flaw-in-the-plan`, `the-rehearsal`, `the-original-script`, `where-it-all-began`
+
+**Reserved — DO NOT USE on routine PRs** (trial-ending beats, save for the actual saga wrap):
+`cross-examination`, `closing-arguments`, `the-jury-deliberates`, `the-verdict`, `the-sentence`, `sealing-the-record`, `case-closed`
+
+All branches are prefixed `feat/` (or `fix/` for hotfixes). Use `git for-each-ref --sort=creatordate refs/remotes/origin/` to verify the latest used names before picking.
+
 ## Commands
 
 - `bun run dev` — dev server (port 3000)

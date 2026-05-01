@@ -4,6 +4,28 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.17.2] — 2026-05-01 (Phase 2i fine-print: glyph sizing + viewport-aware + size tier picker)
+
+### Added
+- **`<SizeTierPicker>` component** — second tier picker in Profile → Customize, parallel to the intensity picker. Three tiers: `Small (70%) · Medium (100%) · Large (140%)` controlling a multiplier applied to particle size and scale. Atomic clicks, matches AFP's pill-row pattern.
+- **`UserProfile.effectSize: number | undefined`** — persists the user's size preference. Default `100` (Medium); legacy users get the default via read-side fallback (`profile?.effectSize ?? 100`). No migration script.
+- **`bucketEffectSize()` util + `EFFECT_SIZE_TIERS`** — `src/shared/utils/effectSize.ts`. Maps any value to the nearest tier (≤84→70, 85–120→100, 121+→140).
+- **Viewport-aware size multiplier** — `useViewportSizeMultiplier` hook in `AmbientEffects` returns `0.65` on mobile (`max-width: 640px`), `1.0` otherwise. Compounds with the user's `effectSize` tier.
+
+### Changed
+- **Glyph render parity** — SVG and CSS shape glyphs (Snowflake, Leaf, Star, Heart, InkBlot, Bubble, Ember, Wisp, Fallback) now render at 80% of their container instead of 100%. Brings their visible glyph cell into line with how emoji content renders (the existing Patronus path was the reference target). Fixes "leaves look too big on phone" — they were filling 100% of the container while emoji animals filled ~70-80%.
+- **`AmbientEffects` size + scale calculation** — `--fx-size` and `--fx-scale` are now multiplied by `(effectSize / 100) × viewportMultiplier`. Default behavior on desktop unchanged (Medium tier × 1.0 viewport = identity). Mobile defaults shrink to 0.65× automatically.
+
+### Tests
+- **`effectSize.test.ts`** — 10 new tests for `EFFECT_SIZE_TIERS` shape and `bucketEffectSize` boundary behavior
+- **`SizeTierPicker.test.tsx`** — 7 new tests mirroring the IntensityTierPicker test set
+- **`AmbientEffects.test.tsx`** — extended with viewport-multiplier and `effectSize` prop tests
+- **`glyph-primitives.test.tsx`** — extended with 80% sizing assertions
+- **`e2e/the-fine-print.spec.ts`** — 4 new Playwright tests verifying mobile vs desktop `--fx-size` scaling and SizeTierPicker presence
+- Unit suite grew 558 → 582 (+24); E2E grew 77 → 81 (+4)
+
+---
+
 ## [0.2.17.1] — 2026-05-01 (Phase 2i polish: learning slots filled + E2E coverage)
 
 ### Changed

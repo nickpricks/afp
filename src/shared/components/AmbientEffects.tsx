@@ -5,6 +5,7 @@ import { GlyphPrimitive } from '@/shared/components/glyph-primitives';
 interface AmbientEffectsProps {
   themeId: ThemeId;
   intensity: number;
+  effectSize?: number;
 }
 
 /** Tracks the user's `prefers-reduced-motion` preference reactively */
@@ -34,6 +35,22 @@ function seededRandom(seed: number): number {
   return x - Math.floor(x);
 }
 
+/** Returns a particle-size multiplier based on viewport width: 0.65 on mobile, 1.0 on desktop. */
+function useViewportSizeMultiplier(): number {
+  const [multiplier, setMultiplier] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches ? 0.65 : 1.0,
+  );
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 640px)');
+    const handler = (e: MediaQueryListEvent): void => {
+      setMultiplier(e.matches ? 0.65 : 1.0);
+    };
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+  return multiplier;
+}
+
 /** Converts a string to a numeric seed */
 function stringToSeed(str: string): number {
   let hash = 0;
@@ -49,9 +66,14 @@ function stringToSeed(str: string): number {
  * Particles are randomized for position, speed, and size using a stable seeded random
  * to satisfy React's purity requirements.
  */
-export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensity }) => {
+export const AmbientEffects: React.FC<AmbientEffectsProps> = ({
+  themeId,
+  intensity,
+  effectSize = 100,
+}) => {
   const theme = THEME_DEFINITIONS[themeId];
   const prefersReducedMotion = usePrefersReducedMotion();
+  const viewportMultiplier = useViewportSizeMultiplier();
 
   const particles = useMemo(() => {
     if (!theme || intensity <= 0 || prefersReducedMotion) return [];
@@ -102,6 +124,7 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
         // jitter to avoid mechanical synchronization across particles.
         const depth = r5;
         const jitter = (r7 - 0.5) * 0.1; // tiny ±5% noise on duration only
+        const sizeMultiplier = (effectSize / 100) * viewportMultiplier;
 
         allParticles.push({
           id: `${effect.id}-${i}`,
@@ -117,18 +140,18 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({ themeId, intensi
             '--fx-rotate': `${depth * 360}deg`,
             '--fx-drift': `${r6 * 40 - 20}px`,
             '--fx-drift-y': `${r7 * 40 - 20}px`,
-            '--fx-scale': `${0.5 + depth * 1.0}`,
+            '--fx-scale': `${(0.5 + depth * 1.0) * sizeMultiplier}`,
             // Sweep effects (e.g. scanline) use a deterministic low opacity so the keyframe
             // doesn't randomly produce a glaring 0.8 line. All others derive opacity from depth.
             '--fx-opacity': effect.type === 'sweep' ? '0.15' : `${0.25 + depth * 0.55}`,
-            '--fx-size': `${10 + depth * 16}px`,
+            '--fx-size': `${(10 + depth * 16) * sizeMultiplier}px`,
           } as React.CSSProperties,
         });
       }
     });
 
     return allParticles;
-  }, [theme, themeId, intensity, prefersReducedMotion]);
+  }, [theme, themeId, intensity, prefersReducedMotion, viewportMultiplier, effectSize]);
 
   if (particles.length === 0) return null;
 

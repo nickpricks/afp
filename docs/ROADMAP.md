@@ -188,6 +188,19 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 
 ## Done
 
+### 2026-05-01 — Session 19 (Phase 2i fine-print: glyph sizing + viewport-aware + size tier picker, v0.2.17.2)
+
+- [x] **Glyph render parity (80% of container)** — SVG/CSS shapes now render at 80% of their wrapper, matching emoji character-cell padding. Fixes "leaves too big on phone" caused by the SVG/emoji rendering disparity.
+- [x] **Viewport-aware size multiplier** — `useViewportSizeMultiplier` hook auto-shrinks particles to `0.65×` on mobile (`max-width: 640px`). Desktop unchanged.
+- [x] **`<SizeTierPicker>`** — new tier picker in Profile (Small/Medium/Large = 70/100/140 multiplier), persisted as `UserProfile.effectSize`. Compounds with viewport multiplier.
+- [x] **`bucketEffectSize()` util** — handles legacy values; default `100` via consumer fallback. No migration.
+- [x] **`AmbientEffects` math** — `--fx-size` and `--fx-scale` now `(effectSize / 100) × viewportMultiplier × depthRange`.
+- [x] **CLAUDE.md branch-naming convention** — comedy-arc queue + reserved-list documented in repo so future Claude sessions don't burn trial-ending names on routine PRs.
+- [x] **Tests**: +24 unit (558 → 582), +4 E2E (77 → 81)
+- [x] **Version**: 0.2.17.1 → 0.2.17.2 (sub-patch; leaves 0.2.18 reserved for Phase 2j Iconography)
+
+---
+
 ### 2026-05-01 — Session 18 (Phase 2i polish: learning slots filled + E2E regression, v0.2.17.1)
 
 - [x] **Locked 3 TODO(nick) learning-mode slots** with permanent values + reasoning comments — `INTENSITY_TIERS` labels (Off/Subtle/Standard/Lively/Maximum) finalized; depth-scaling constants in `AmbientEffects.tsx` documented (scale 0.5–1.5, opacity 0.25–0.8, size 10–26px, duration 1×–2×); Marauder's Map atmosphere values explained (fold-crease geometry + vignette tuning)

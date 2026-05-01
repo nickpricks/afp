@@ -59,6 +59,7 @@ export interface UserProfile {
   theme: string;
   colorMode: 'light' | 'dark' | 'system';
   effectIntensity: number;
+  effectSize?: number;
   modules: ModuleConfig;
   createdAt: string;
   updatedAt: string;
