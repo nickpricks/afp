@@ -56,6 +56,7 @@ export function Layout() {
         key={profile.theme}
         themeId={profile.theme as ThemeId}
         intensity={profile.effectIntensity}
+        effectSize={profile.effectSize ?? 100}
       />
       <AlertBanner alerts={activeAlerts} onDismiss={dismiss} />
       {profile.modules?.[ModuleId.Baby] && <BabySuggestionsToast />}

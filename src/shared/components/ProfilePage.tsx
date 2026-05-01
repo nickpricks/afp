@@ -29,6 +29,7 @@ import {
   type UserProfile,
 } from '@/shared/types';
 import { IntensityTierPicker } from '@/shared/components/IntensityTierPicker';
+import { SizeTierPicker } from '@/shared/components/SizeTierPicker';
 import { useModuleRequest } from '@/shared/hooks/useModuleRequest';
 import { CONFIG } from '@/constants/config';
 import { AppPath } from '@/constants/routes';
@@ -55,6 +56,7 @@ const saveAppearance = async (
   theme: string,
   colorMode: ColorMode,
   effectIntensity: number,
+  effectSize: number,
   existingProfile: UserProfile | null,
 ): Promise<void> => {
   const adapter = createAdapter(`users/${uid}`);
@@ -64,6 +66,7 @@ const saveAppearance = async (
     theme,
     colorMode,
     effectIntensity,
+    effectSize,
     modules: existingProfile?.modules || DEFAULT_MODULES,
     updatedAt: new Date().toISOString(),
   });
@@ -88,20 +91,29 @@ export function ProfilePage() {
 
   const [colorMode, setColorMode] = useState<ColorMode>(profile?.colorMode ?? 'system');
   const [intensity, setIntensity] = useState<number>(profile?.effectIntensity ?? 50);
+  const [size, setSize] = useState<number>(profile?.effectSize ?? 100);
 
   // Sync local state when profile loads/updates from context (Adjusting state during render)
   const [prevSync, setPrevSync] = useState({
     colorMode: profile?.colorMode,
     intensity: profile?.effectIntensity,
+    size: profile?.effectSize,
   });
 
   if (
     profile &&
-    (profile.colorMode !== prevSync.colorMode || profile.effectIntensity !== prevSync.intensity)
+    (profile.colorMode !== prevSync.colorMode ||
+      profile.effectIntensity !== prevSync.intensity ||
+      profile.effectSize !== prevSync.size)
   ) {
-    setPrevSync({ colorMode: profile.colorMode, intensity: profile.effectIntensity });
+    setPrevSync({
+      colorMode: profile.colorMode,
+      intensity: profile.effectIntensity,
+      size: profile.effectSize,
+    });
     if (profile.colorMode !== undefined) setColorMode(profile.colorMode);
     if (profile.effectIntensity !== undefined) setIntensity(profile.effectIntensity);
+    if (profile.effectSize !== undefined) setSize(profile.effectSize);
   }
 
   // Username state
@@ -121,13 +133,13 @@ export function ProfilePage() {
     (themeId: ThemeId) => {
       applyTheme(themeId, colorMode);
       if (uid) {
-        saveAppearance(uid, themeId, colorMode, intensity, profile).catch(() => {
+        saveAppearance(uid, themeId, colorMode, intensity, size, profile).catch(() => {
           addToast(ProfileMsg.ThemeSaveFailed, ToastType.Error);
         });
       }
       addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
-    [colorMode, intensity, uid, addToast, profile],
+    [colorMode, intensity, size, uid, addToast, profile],
   );
 
   const handleColorModeChange = useCallback(
@@ -135,25 +147,37 @@ export function ProfilePage() {
       setColorMode(mode);
       applyTheme(activeThemeId, mode);
       if (uid) {
-        saveAppearance(uid, activeThemeId, mode, intensity, profile).catch(() => {
+        saveAppearance(uid, activeThemeId, mode, intensity, size, profile).catch(() => {
           addToast(ProfileMsg.ColorModeSaveFailed, ToastType.Error);
         });
       }
       addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
-    [activeThemeId, intensity, uid, addToast, profile],
+    [activeThemeId, intensity, size, uid, addToast, profile],
   );
 
   const handleIntensityChange = useCallback(
     (newIntensity: number) => {
       setIntensity(newIntensity);
       if (uid) {
-        saveAppearance(uid, activeThemeId, colorMode, newIntensity, profile).catch(() => {
+        saveAppearance(uid, activeThemeId, colorMode, newIntensity, size, profile).catch(() => {
           // Silent fail for real-time slider to avoid toast spam
         });
       }
     },
-    [activeThemeId, colorMode, uid, profile],
+    [activeThemeId, colorMode, size, uid, profile],
+  );
+
+  const handleSizeChange = useCallback(
+    (newSize: number) => {
+      setSize(newSize);
+      if (uid) {
+        saveAppearance(uid, activeThemeId, colorMode, intensity, newSize, profile).catch(() => {
+          // Silent fail for real-time picker to avoid toast spam
+        });
+      }
+    },
+    [activeThemeId, colorMode, intensity, uid, profile],
   );
 
   const handleUsernameSave = useCallback(async () => {
@@ -350,9 +374,11 @@ export function ProfilePage() {
         activeThemeId={activeThemeId}
         colorMode={colorMode}
         intensity={intensity}
+        size={size}
         onThemeChange={handleThemeChange}
         onColorModeChange={handleColorModeChange}
         onIntensityChange={handleIntensityChange}
+        onSizeChange={handleSizeChange}
       />
 
       {/* Module Status Section */}
@@ -443,16 +469,20 @@ function AppearanceSection({
   activeThemeId,
   colorMode,
   intensity,
+  size,
   onThemeChange,
   onColorModeChange,
   onIntensityChange,
+  onSizeChange,
 }: {
   activeThemeId: ThemeId;
   colorMode: ColorMode;
   intensity: number;
+  size: number;
   onThemeChange: (id: ThemeId) => void;
   onColorModeChange: (mode: ColorMode) => void;
   onIntensityChange: (intensity: number) => void;
+  onSizeChange: (size: number) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const activeTheme = THEME_DEFINITIONS[activeThemeId];
@@ -539,6 +569,12 @@ function AppearanceSection({
           <div className="mt-4 border-t border-line pt-4">
             <p className="mb-2 text-sm text-fg">Ambient Effects</p>
             <IntensityTierPicker value={intensity} onChange={onIntensityChange} />
+          </div>
+
+          {/* Particle Size */}
+          <div className="mt-4 border-t border-line pt-4">
+            <p className="mb-2 text-sm text-fg">Particle Size</p>
+            <SizeTierPicker value={size} onChange={onSizeChange} />
           </div>
         </div>
       )}
