@@ -5,6 +5,7 @@ Playwright end-to-end tests for AFP.
 ## Structure
 
 - `app.spec.ts` -- 42 tests across 11 describe blocks
+- `themes-2.0.spec.ts` -- Phase 2i regression coverage: atmosphere CSS (all 10 themes), glyph dispatch (SVG vs CSS-div vs emoji), intensity tier picker (Off/Maximum effect on particle count), reduced-motion short-circuit, and DevBench Theme Tour
 
 ## Test Areas
 
