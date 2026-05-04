@@ -4,7 +4,7 @@ UI components for the Budget module (directory is `expenses/` but ModuleId is `B
 
 ## Files
 
-- **AddExpense.tsx** — Expense entry form with category, subcategory, and payment method selection. Amount presets for quick entry
+- **AddExpense.tsx** — Expense entry form with category, subcategory, payment method selection, and amount presets. Conditionally renders `<MetaSubForm>` when category=Vehicle/Fuel, Vehicle/Maintenance, or Travel/* — captures discriminated `meta` and passes it through `onSubmit`. Save-and-stay (no redirect).
 - **AddIncome.tsx** — Income entry form (numeric enum values filtered with `typeof v === 'number'`)
 - **BudgetSummary.tsx** — Summary view of budget totals and breakdowns using `budget-math.ts` computation functions
 - **ExpenseList.tsx** — Scrollable expense list with `sortNewestFirst`. Pagination is owned by the parent `ExpenseListPage` via `useListControls`; this component renders whatever filtered+paginated array it receives. Phase 2h: rows grouped by date under `<DateGroupHeader>` (sticky day-of-week + date), hairline `border-t` between rows, per-row card markup removed in favour of the Daily Ledger pattern
