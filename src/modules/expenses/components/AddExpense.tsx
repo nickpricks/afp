@@ -232,7 +232,12 @@ export function AddExpense({
       </div>
 
       {meta && (
-        <MetaSubForm meta={meta} amount={amount} onChangeMeta={setMeta} onChangeAmount={setAmount} />
+        <MetaSubForm
+          meta={meta}
+          amount={amount}
+          onChangeMeta={setMeta}
+          onChangeAmount={setAmount}
+        />
       )}
 
       <div className="flex flex-col gap-1.5">

@@ -13,7 +13,14 @@ export function MetaSubForm({
   onChangeAmount: (a: string) => void;
 }) {
   if (meta.type === 'fuel') {
-    return <FuelFields meta={meta} amount={amount} onChange={onChangeMeta} onChangeAmount={onChangeAmount} />;
+    return (
+      <FuelFields
+        meta={meta}
+        amount={amount}
+        onChange={onChangeMeta}
+        onChangeAmount={onChangeAmount}
+      />
+    );
   }
   if (meta.type === 'travel') {
     return <TravelFields meta={meta} onChange={onChangeMeta} />;
@@ -33,7 +40,11 @@ function FuelFields({
   onChangeAmount: (a: string) => void;
 }) {
   /** Fills in the third value when two of {liters, pricePerLiter, amount} are present */
-  function autoDerive(next: FuelMeta, lastEdited: 'liters' | 'price' | 'amount', amountStr: string) {
+  function autoDerive(
+    next: FuelMeta,
+    lastEdited: 'liters' | 'price' | 'amount',
+    amountStr: string,
+  ) {
     const liters = next.liters;
     const price = next.pricePerLiter;
     const amt = Number(amountStr);
@@ -99,7 +110,10 @@ function FuelFields({
               step="1"
               value={meta.odometer ?? ''}
               onChange={(e) =>
-                onChange({ ...meta, odometer: e.target.value === '' ? null : Number(e.target.value) })
+                onChange({
+                  ...meta,
+                  odometer: e.target.value === '' ? null : Number(e.target.value),
+                })
               }
               className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
             />
@@ -113,7 +127,10 @@ function FuelFields({
               step="1"
               value={meta.tripOdo ?? ''}
               onChange={(e) =>
-                onChange({ ...meta, tripOdo: e.target.value === '' ? null : Number(e.target.value) })
+                onChange({
+                  ...meta,
+                  tripOdo: e.target.value === '' ? null : Number(e.target.value),
+                })
               }
               className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
             />

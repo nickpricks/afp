@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-04-30
+Last updated: 2026-05-04
 
 ---
 
@@ -172,6 +172,13 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 
 | | Item | Brainstorm | Status |
 |---|------|------------|--------|
+| ✅ | **Budget: Auto tab** — fuel, travel, maintenance tracking | Phase 2c | DONE (v0.2.18) |
+| 🔨 | **Budget: Rolling-average mileage cards** — 5-fill + lifetime rolling avg (km/L, cost/km) | Phase 2c | Deferred |
+| 🔨 | **Budget: Mileage divergence panel** — computed vs displayed mileage reconciliation UI | Phase 2c | Deferred |
+| 🔨 | **Budget: Multi-vehicle support** — select active vehicle per entry; profile stores vehicle roster | Phase 2c | Deferred |
+| 🔨 | **Budget: Service-due notification** — via existing `useNotifications` module (admin alert or user alert) | Phase 2c | Deferred |
+| 🔨 | **Budget: Operator/airline tracking** — structured origin/destination + airline/operator for travel entries | Phase 2c | Deferred |
+| 🔨 | **Budget: Charts** — cost-per-km trend, monthly fuel cost, cost-per-trip | Phase 2c | Deferred |
 | 🔨 | **Budget: Savings Goals** — target amounts + progress rings | B | Not started |
 | 🔨 | **Budget: Recurring** — subscription automation (needs cron) | B | Not started |
 | 🔨 | **Budget: Net Worth** — asset/liability snapshots + trends | B | Not started |
@@ -187,6 +194,21 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 ---
 
 ## Done
+
+### 2026-05-04 — Session 20 (Budget — Auto tab: fuel, travel, maintenance, v0.2.18)
+
+- [x] **Discriminated `meta` union on `Expense`** — `FuelMeta`, `TravelMeta`, `MaintenanceMeta` types capture vehicle/travel/service data; backwards compatible with `meta: undefined`
+- [x] **Auto tab in Budget module** — New tab with quick-add buttons (Fuel/Trip/Service), inline meta sub-form, service-due banner (auto-clears on new maintenance entry)
+- [x] **`fuel-math.ts` module** — Pure helpers: `computeMileage`, `latestOdometer`, `dueMaintenance`, `isServiceDue`
+- [x] **`meta-utils.ts` module** — `metaKindFor` discriminator, `defaultMeta` factory
+- [x] **`updateExpense` hook** — Enables tap-to-populate edit on Auto tab
+- [x] **Tap-to-populate edit pattern** — Row selection → form pre-population → Update button; matches Body module
+- [x] **Save-and-stay UX** — Adding Fuel/Travel from main form clears and stays; no redirect
+- [x] **Enum entries in `BudgetMsg`** — All toast strings (logging, validation, service-due alerts) live in enum
+- [x] **Backwards compatibility** — Existing expenses parse without `meta` field
+- [x] **Version**: 0.2.17.2 → 0.2.18
+
+---
 
 ### 2026-05-01 — Session 19 (Phase 2i fine-print: glyph sizing + viewport-aware + size tier picker, v0.2.17.2)
 

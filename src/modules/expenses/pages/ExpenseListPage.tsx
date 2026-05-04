@@ -57,10 +57,26 @@ export function ExpenseListPage() {
       )}
 
       <div className="mx-4 mb-3 flex rounded-lg border border-line bg-surface-card p-1">
-        <TabButton label="Expenses" isActive={activeTab === 'expenses'} onClick={() => setActiveTab('expenses')} />
-        <TabButton label="Income" isActive={activeTab === 'income'} onClick={() => setActiveTab('income')} />
-        <TabButton label="Auto" isActive={activeTab === 'auto'} onClick={() => setActiveTab('auto')} />
-        <TabButton label="CC" isActive={activeTab === 'reconcile'} onClick={() => setActiveTab('reconcile')} />
+        <TabButton
+          label="Expenses"
+          isActive={activeTab === 'expenses'}
+          onClick={() => setActiveTab('expenses')}
+        />
+        <TabButton
+          label="Income"
+          isActive={activeTab === 'income'}
+          onClick={() => setActiveTab('income')}
+        />
+        <TabButton
+          label="Auto"
+          isActive={activeTab === 'auto'}
+          onClick={() => setActiveTab('auto')}
+        />
+        <TabButton
+          label="CC"
+          isActive={activeTab === 'reconcile'}
+          onClick={() => setActiveTab('reconcile')}
+        />
       </div>
 
       {activeTab === 'expenses' && (

@@ -1,6 +1,12 @@
 import { useState } from 'react';
 
-import type { Expense, ExpenseMeta, FuelMeta, TravelMeta, MaintenanceMeta } from '@/modules/expenses/types';
+import type {
+  Expense,
+  ExpenseMeta,
+  FuelMeta,
+  TravelMeta,
+  MaintenanceMeta,
+} from '@/modules/expenses/types';
 import { ExpenseCategory, ToastType } from '@/shared/types';
 import { todayStr } from '@/shared/utils/date';
 import { sortNewestFirst } from '@/shared/utils/sort';

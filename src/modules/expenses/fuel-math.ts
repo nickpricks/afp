@@ -1,9 +1,4 @@
-import type {
-  Expense,
-  ExpenseMeta,
-  FuelMeta,
-  MaintenanceMeta,
-} from '@/modules/expenses/types';
+import type { Expense, ExpenseMeta, FuelMeta, MaintenanceMeta } from '@/modules/expenses/types';
 
 /** Returns the per-fill mileage (km/L) — only honest when fullTank is true and tripOdo+liters present */
 export function computeMileage(meta: FuelMeta): number | null {
@@ -28,8 +23,9 @@ export function latestOdometer(expenses: Expense[]): number | null {
 /** Returns the most recent maintenance meta that has a non-null nextService */
 export function dueMaintenance(expenses: Expense[]): MaintenanceMeta | null {
   const maint = expenses
-    .filter((e): e is Expense & { meta: MaintenanceMeta } =>
-      e.meta?.type === 'maintenance' && e.meta.nextService != null,
+    .filter(
+      (e): e is Expense & { meta: MaintenanceMeta } =>
+        e.meta?.type === 'maintenance' && e.meta.nextService != null,
     )
     .slice()
     .sort((a, b) => b.date.localeCompare(a.date));
