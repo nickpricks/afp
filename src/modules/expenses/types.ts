@@ -2,6 +2,36 @@ import type { ExpenseCategory, IncomeSource, PaymentMethod, TimeRange } from '@/
 
 // NOTE: Directory remains `expenses/` for backwards compat. Module is "Budget" in the UI.
 
+/** Fuel-fill metadata captured for Vehicle/Fuel expenses */
+export type FuelMeta = {
+  type: 'fuel';
+  liters: number;
+  pricePerLiter: number;
+  odometer: number | null;
+  tripOdo: number | null;
+  displayedMileage: number | null;
+  fullTank: boolean;
+};
+
+/** Trip metadata captured for Travel expenses */
+export type TravelMeta = {
+  type: 'travel';
+  origin: string;
+  destination: string;
+  distance: number | null;
+};
+
+/** Maintenance metadata captured for Vehicle/Maintenance expenses */
+export type MaintenanceMeta = {
+  type: 'maintenance';
+  odometer: number;
+  nextService: number | null;
+  serviceNotes: string;
+};
+
+/** Discriminated union of category-specific expense metadata */
+export type ExpenseMeta = FuelMeta | TravelMeta | MaintenanceMeta;
+
 /** Single expense record with soft-delete support */
 export type Expense = {
   id: string;
@@ -15,6 +45,7 @@ export type Expense = {
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
+  meta?: ExpenseMeta;
 };
 
 /** Single income record */
