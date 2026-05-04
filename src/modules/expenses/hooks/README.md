@@ -4,7 +4,7 @@ Data hooks for the Budget module. Real-time Firestore listeners for expenses and
 
 ## Files
 
-- **useExpenses.ts** — Expense collection listener with add/update/delete operations. Uses `DbSubcollection.Expenses`
+- **useExpenses.ts** — Expense collection listener with add/update/delete operations. `addExpense` accepts optional `meta: ExpenseMeta` for fuel/travel/maintenance tracking. Exports `updateExpense` callback for full expense replacement. Uses `DbSubcollection.Expenses`
 - **useIncome.ts** — Income collection listener with add/update/delete operations. Uses `DbSubcollection.Income`
 
 ## Conventions

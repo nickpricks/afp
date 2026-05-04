@@ -4,12 +4,23 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { useToast } from '@/shared/errors/useToast';
 import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
-import type { Expense } from '@/modules/expenses/types';
+import type { Expense, ExpenseMeta } from '@/modules/expenses/types';
 import { validateExpense } from '@/modules/expenses/validation';
 import { SyncStatus, isOk, ToastType, PaymentMethod } from '@/shared/types';
 import type { ExpenseCategory } from '@/shared/types';
 import { BudgetMsg } from '@/constants/messages';
 import { DbSubcollection, userPath } from '@/constants/db';
+
+type ExpenseInput = {
+  date: string;
+  category: ExpenseCategory;
+  subCat: string;
+  amount: number;
+  paymentMethod?: PaymentMethod;
+  isSettlement?: boolean;
+  note: string;
+  meta?: ExpenseMeta;
+};
 
 /** Provides expense CRUD operations with real-time sync and soft-delete */
 export function useExpenses(targetUid?: string) {
@@ -49,15 +60,7 @@ export function useExpenses(targetUid?: string) {
 
   /** Validates and persists a new expense, showing a toast on success or failure */
   const addExpense = useCallback(
-    async (input: {
-      date: string;
-      category: ExpenseCategory;
-      subCat: string;
-      amount: number;
-      paymentMethod?: PaymentMethod;
-      isSettlement?: boolean;
-      note: string;
-    }) => {
+    async (input: ExpenseInput) => {
       if (readOnly) return false;
       const validation = validateExpense(input);
       if (!isOk(validation)) {
@@ -81,6 +84,7 @@ export function useExpenses(targetUid?: string) {
         isDeleted: false,
         createdAt: now,
         updatedAt: now,
+        ...(input.meta ? { meta: input.meta } : {}),
       };
 
       const result = await adapter.save(DbSubcollection.Expenses, { ...expense });
@@ -89,7 +93,33 @@ export function useExpenses(targetUid?: string) {
         return false;
       }
 
-      addToast(BudgetMsg.ExpenseAdded, ToastType.Success);
+      addToast(toastForAdd(input.meta), ToastType.Success);
+      return true;
+    },
+    [addToast, readOnly],
+  );
+
+  /** Validates and persists an updated expense (full replace by id) */
+  const updateExpense = useCallback(
+    async (expense: Expense) => {
+      if (readOnly) return false;
+      const validation = validateExpense(expense);
+      if (!isOk(validation)) {
+        addToast(validation.error, ToastType.Error);
+        return false;
+      }
+
+      const adapter = adapterRef.current;
+      if (!adapter) return false;
+
+      const updated: Expense = { ...expense, updatedAt: new Date().toISOString() };
+      const result = await adapter.save(DbSubcollection.Expenses, { ...updated });
+      if (!isOk(result)) {
+        addToast(result.error, ToastType.Error);
+        return false;
+      }
+
+      addToast(toastForUpdate(expense.meta), ToastType.Success);
       return true;
     },
     [addToast, readOnly],
@@ -118,5 +148,23 @@ export function useExpenses(targetUid?: string) {
     [addToast, readOnly],
   );
 
-  return { expenses, addExpense, deleteExpense };
+  return { expenses, addExpense, updateExpense, deleteExpense };
+}
+
+/** Returns the appropriate toast message for an add operation based on meta type */
+function toastForAdd(meta: ExpenseMeta | undefined): BudgetMsg {
+  if (!meta) return BudgetMsg.ExpenseAdded;
+  if (meta.type === 'fuel') return BudgetMsg.FuelLogged;
+  if (meta.type === 'travel') return BudgetMsg.TripLogged;
+  if (meta.type === 'maintenance') return BudgetMsg.ServiceLogged;
+  return BudgetMsg.ExpenseAdded;
+}
+
+/** Returns the appropriate toast message for an update operation based on meta type */
+function toastForUpdate(meta: ExpenseMeta | undefined): BudgetMsg {
+  if (!meta) return BudgetMsg.ExpenseUpdated;
+  if (meta.type === 'fuel') return BudgetMsg.FuelUpdated;
+  if (meta.type === 'travel') return BudgetMsg.TripUpdated;
+  if (meta.type === 'maintenance') return BudgetMsg.ServiceUpdated;
+  return BudgetMsg.ExpenseUpdated;
 }

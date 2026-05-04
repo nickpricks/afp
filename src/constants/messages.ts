@@ -29,7 +29,17 @@ export enum InviteMsg {
 /** Budget module messages */
 export enum BudgetMsg {
   ExpenseAdded = 'Expense added',
+  ExpenseUpdated = 'Expense updated',
   ExpenseDeleted = 'Expense deleted',
+  FuelLogged = 'Fuel logged',
+  FuelUpdated = 'Fuel updated',
+  FuelDeleted = 'Fuel entry deleted',
+  TripLogged = 'Trip logged',
+  TripUpdated = 'Trip updated',
+  TripDeleted = 'Trip deleted',
+  ServiceLogged = 'Service logged',
+  ServiceUpdated = 'Service updated',
+  ServiceDeleted = 'Service deleted',
   IncomeAdded = 'Income added',
   IncomeDeleted = 'Income deleted',
   CategoryRequired = 'Please select a category',
