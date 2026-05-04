@@ -1,7 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-import { MetaSubForm, defaultMeta, metaKindFor } from '@/modules/expenses/components/MetaSubForm';
+import { MetaSubForm } from '@/modules/expenses/components/MetaSubForm';
+import { metaKindFor, defaultMeta } from '@/modules/expenses/meta-utils';
 import { ExpenseCategory } from '@/shared/types';
 import type { FuelMeta, TravelMeta, MaintenanceMeta } from '@/modules/expenses/types';
 
