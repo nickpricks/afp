@@ -14,10 +14,10 @@ Firebase setup: `docs/firebase-setup.md`
 Branches follow a comedic narrative arc around the April Fools origin story — each name is a chapter beat. Pick from the available queue; **don't burn reserved names on routine work** (they announce the saga's ending).
 
 **Used so far** (chronological):
-`the-prank` → `no-joke` → `joke-landed` → `last-laugh` → `the-plan-thickens` → `the-foolproof-alibi` → `exhibit-a` → `alibi-has-holes` (fix) → `exhibit-b` → `the-atmosphere-thickens` → `dialing-it-in` → `the-fine-print`
+`the-prank` → `no-joke` → `joke-landed` → `last-laugh` → `the-plan-thickens` → `the-foolproof-alibi` → `exhibit-a` → `alibi-has-holes` (fix) → `exhibit-b` → `the-atmosphere-thickens` → `dialing-it-in` → `the-fine-print` → `who-planned-it`
 
 **Available next** (comedy-flashback queue, pick from these for upcoming branches):
-`what-was-the-joke`, `who-planned-it`, `the-flaw-in-the-plan`, `the-rehearsal`, `the-original-script`, `where-it-all-began`
+`what-was-the-joke`, `the-flaw-in-the-plan`, `the-rehearsal`, `the-original-script`, `where-it-all-began`
 
 **Reserved — DO NOT USE on routine PRs** (trial-ending beats, save for the actual saga wrap):
 `cross-examination`, `closing-arguments`, `the-jury-deliberates`, `the-verdict`, `the-sentence`, `sealing-the-record`, `case-closed`
