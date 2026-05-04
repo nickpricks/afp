@@ -8,6 +8,7 @@ Budget module (directory is `expenses/`, ModuleId is `Budget`). Expense + income
 - **categories.ts** — 15 category definitions with emoji labels and subcategories. `PAYMENT_METHOD_LABELS`, `INCOME_SOURCE_LABELS`, `getAllCategoryIds`, `getSubCategories` helpers
 - **validation.ts** — `validateExpense` returns `Result<void>` using `ValidationMsg` enum for error messages. Also validates optional `meta` union via internal `validateMeta` helper.
 - **budget-math.ts** — Pure computation functions: `computeTotalIncome`, `computeTotalSpent`, `computeCCOutstanding`, `filterByDateRange`
+- **fuel-math.ts** — Pure functions for fuel mileage and service-due derivations: `computeMileage`, `latestOdometer`, `dueMaintenance`, `isServiceDue`
 
 ## Directories
 
