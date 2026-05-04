@@ -9,6 +9,7 @@ UI components for the Budget module (directory is `expenses/` but ModuleId is `B
 - **BudgetSummary.tsx** — Summary view of budget totals and breakdowns using `budget-math.ts` computation functions
 - **ExpenseList.tsx** — Scrollable expense list with `sortNewestFirst`. Pagination is owned by the parent `ExpenseListPage` via `useListControls`; this component renders whatever filtered+paginated array it receives. Phase 2h: rows grouped by date under `<DateGroupHeader>` (sticky day-of-week + date), hairline `border-t` between rows, per-row card markup removed in favour of the Daily Ledger pattern
 - **IncomeList.tsx** — Scrollable income list. Same Daily Ledger treatment as ExpenseList: upstream pagination, grouped by date with `<DateGroupHeader>`, hairline borders between rows
+- **MetaSubForm.tsx** — Conditional sub-form rendering Fuel / Travel / Maintenance fields based on `(category, subCat)`. Owns the two-of-three input math for fuel (liters + price → amount). Used by `AddExpense.tsx` and `AutoTab.tsx`. Helpers: `metaKindFor()` and `defaultMeta()`.
 - **ReconciliationView.tsx** — Credit card reconciliation: outstanding balance, payment tracking
 
 ## Conventions
