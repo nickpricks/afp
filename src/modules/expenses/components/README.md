@@ -11,6 +11,7 @@ UI components for the Budget module (directory is `expenses/` but ModuleId is `B
 - **IncomeList.tsx** — Scrollable income list. Same Daily Ledger treatment as ExpenseList: upstream pagination, grouped by date with `<DateGroupHeader>`, hairline borders between rows
 - **MetaSubForm.tsx** — Conditional sub-form rendering Fuel / Travel / Maintenance fields based on `(category, subCat)`. Owns the two-of-three input math for fuel (liters + price → amount). Used by `AddExpense.tsx` and `AutoTab.tsx`.
 - **ReconciliationView.tsx** — Credit card reconciliation: outstanding balance, payment tracking
+- **ServiceDueBanner.tsx** — Derived yellow banner shown at the top of the Auto tab when `latestOdometer ≥ mostRecentMaintenance.nextService`. In-memory dismiss only; auto-clears when a fresh maintenance entry with future `nextService` is logged.
 
 ## Conventions
 
