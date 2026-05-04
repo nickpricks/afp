@@ -13,6 +13,7 @@ Design specifications and analysis documents for AFP.
 - `2026-04-13-phase3-vision-design.md` -- Phase 3 vision design spec (Baby→Kid, budget investments, body gamification)
 - `2026-04-13-phase3-baby-to-kid-design.md` -- Baby-to-kid evolution design spec (milestones, meals, potty training, vaccinations)
 - `2026-04-14-notifications-module-requests-design.md` -- Notifications and module requests design spec
+- `2026-05-04-fuel-travel-maintenance-design.md` -- Fuel/Travel/Maintenance Auto tab design spec (discriminated `meta` union, two-way entry, service-due banner)
 
 ## Conventions
 

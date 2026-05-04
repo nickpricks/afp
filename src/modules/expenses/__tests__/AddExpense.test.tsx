@@ -127,3 +127,57 @@ describe('AddExpense — payment method bubbles', () => {
     expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ paymentMethod: null }));
   });
 });
+
+describe('AddExpense — meta sub-form integration', () => {
+  it('reveals the Fuel sub-form when Vehicle/Fuel is selected', () => {
+    renderWithToast(<AddExpense onSubmit={noop} />);
+
+    // Vehicle is within the first 7 visible categories — no "View All" needed
+    const viewAll = screen.queryByRole('button', { name: /View All/ });
+    if (viewAll) fireEvent.click(viewAll);
+
+    fireEvent.click(screen.getByRole('button', { name: /🚗/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fuel' }));
+
+    expect(screen.getByText(/Fuel details/)).toBeInTheDocument();
+  });
+
+  it('passes meta through to onSubmit when Vehicle/Fuel + values are filled', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
+    renderWithToast(<AddExpense onSubmit={onSubmit} />);
+
+    const viewAll = screen.queryByRole('button', { name: /View All/ });
+    if (viewAll) fireEvent.click(viewAll);
+
+    fireEvent.click(screen.getByRole('button', { name: /🚗/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fuel' }));
+
+    // Amount + meta fields
+    fireEvent.change(screen.getByPlaceholderText('Amount'), { target: { value: '4000' } });
+
+    const fuelSection = screen.getByText(/Fuel details/).closest('div')!;
+    const litersInput = fuelSection.querySelectorAll('input[type="number"]')[0] as HTMLInputElement;
+    const priceInput = fuelSection.querySelectorAll('input[type="number"]')[1] as HTMLInputElement;
+    fireEvent.change(litersInput, { target: { value: '40' } });
+    fireEvent.change(priceInput, { target: { value: '100' } });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /Add Expense|Add Settlement/ }));
+    });
+
+    expect(onSubmit).toHaveBeenCalled();
+    const call = onSubmit.mock.calls[0]![0];
+    expect(call.meta).toBeDefined();
+    expect(call.meta?.type).toBe('fuel');
+    expect(call.meta?.liters).toBe(40);
+    expect(call.meta?.pricePerLiter).toBe(100);
+  });
+
+  it('does not reveal a meta sub-form for non-Vehicle/Travel categories', () => {
+    renderWithToast(<AddExpense onSubmit={noop} />);
+    fireEvent.click(screen.getByRole('button', { name: /🍽️/ }));
+    expect(screen.queryByText(/Fuel details/)).toBeNull();
+    expect(screen.queryByText(/Trip details/)).toBeNull();
+    expect(screen.queryByText(/Service details/)).toBeNull();
+  });
+});

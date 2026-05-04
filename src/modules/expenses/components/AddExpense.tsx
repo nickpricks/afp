@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { CATEGORIES, getAllCategoryIds, getSubCategories } from '@/modules/expenses/categories';
 import { PaymentMethod, ExpenseCategory } from '@/shared/types';
+import type { ExpenseMeta } from '@/modules/expenses/types';
 import { CONFIG } from '@/constants/config';
 import { todayStr } from '@/shared/utils/date';
 import { isValidNumber } from '@/shared/utils/validation';
@@ -9,6 +10,8 @@ import { PaymentMethodBubble } from '@/shared/components/PaymentMethodBubble';
 import { useToast } from '@/shared/errors/useToast';
 import { ToastType } from '@/shared/types';
 import { BudgetMsg } from '@/constants/messages';
+import { MetaSubForm } from '@/modules/expenses/components/MetaSubForm';
+import { defaultMeta, metaKindFor } from '@/modules/expenses/meta-utils';
 
 /** Quick-access payment methods shown by default */
 const QUICK_PAYMENT_METHODS: PaymentMethod[] = [
@@ -28,7 +31,7 @@ const EXTRA_PAYMENT_METHODS: PaymentMethod[] = [
   PaymentMethod.BankAccountNeft,
 ];
 
-/** Form for adding a new expense with category, subcategory, amount, payment method, and note */
+/** Form for adding a new expense; includes optional meta sub-form for Vehicle/Travel */
 export function AddExpense({
   onSubmit,
 }: {
@@ -40,6 +43,7 @@ export function AddExpense({
     paymentMethod: PaymentMethod | null;
     isSettlement: boolean;
     note: string;
+    meta?: ExpenseMeta;
   }) => Promise<boolean>;
 }) {
   const [date, setDate] = useState(todayStr);
@@ -51,6 +55,10 @@ export function AddExpense({
   );
   const [showAllMethods, setShowAllMethods] = useState(false);
   const [note, setNote] = useState('');
+  const [meta, setMeta] = useState<ExpenseMeta | null>(null);
+  // Track previous (category, subCat) via refs so event handlers can sync meta without useEffect.
+  const prevCategoryRef = useRef<ExpenseCategory | null>(null);
+  const prevSubCatRef = useRef<string>('');
 
   const { addToast } = useToast();
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -60,6 +68,19 @@ export function AddExpense({
   const parsedAmount = Number(amount);
   const isDisabled = !amount || !isValidNumber(parsedAmount) || category === null;
   const isSettlement = category === ExpenseCategory.Finance && subCat === 'Credit Card Payment';
+
+  /** Syncs meta state when (category, subCat) changes — called from click handlers, not useEffect */
+  function syncMeta(nextCat: ExpenseCategory | null, nextSub: string) {
+    const kind = metaKindFor(nextCat, nextSub);
+    if (kind === null) {
+      setMeta(null);
+    } else if (meta === null || meta.type !== kind) {
+      const next = defaultMeta(kind);
+      if (next) setMeta(next);
+    }
+    prevCategoryRef.current = nextCat;
+    prevSubCatRef.current = nextSub;
+  }
 
   /** Handles form submission, clears fields on success */
   async function handleSubmit(e: React.FormEvent) {
@@ -77,12 +98,14 @@ export function AddExpense({
       paymentMethod,
       isSettlement,
       note,
+      meta: meta ?? undefined,
     });
 
     if (success) {
       setAmount('');
       setNote('');
       setSubCat('');
+      setMeta(null);
     }
   }
 
@@ -125,6 +148,7 @@ export function AddExpense({
                 onClick={() => {
                   setCategory(id);
                   setSubCat('');
+                  syncMeta(id, '');
                 }}
                 className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                   isActive
@@ -150,7 +174,11 @@ export function AddExpense({
                 <button
                   key={sc}
                   type="button"
-                  onClick={() => setSubCat(isActive ? '' : sc)}
+                  onClick={() => {
+                    const next = isActive ? '' : sc;
+                    setSubCat(next);
+                    syncMeta(category, next);
+                  }}
                   className={`rounded-lg border px-2.5 py-1 text-[11px] transition-colors ${
                     isActive
                       ? 'border-accent bg-accent/10 text-accent'
@@ -202,6 +230,15 @@ export function AddExpense({
           </button>
         ))}
       </div>
+
+      {meta && (
+        <MetaSubForm
+          meta={meta}
+          amount={amount}
+          onChangeMeta={setMeta}
+          onChangeAmount={setAmount}
+        />
+      )}
 
       <div className="flex flex-col gap-1.5">
         <span className="text-xs text-fg-muted">Payment Method</span>

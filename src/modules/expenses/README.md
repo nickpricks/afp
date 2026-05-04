@@ -4,10 +4,12 @@ Budget module (directory is `expenses/`, ModuleId is `Budget`). Expense + income
 
 ## Files
 
-- **types.ts** — `Expense`, `Income`, `BudgetConfig`, `CategoryDefinition`, `LabelDefinition` type definitions
+- **types.ts** — `Expense`, `Income`, `BudgetConfig`, `CategoryDefinition`, `LabelDefinition`, and `ExpenseMeta` discriminated union type definitions
 - **categories.ts** — 15 category definitions with emoji labels and subcategories. `PAYMENT_METHOD_LABELS`, `INCOME_SOURCE_LABELS`, `getAllCategoryIds`, `getSubCategories` helpers
-- **validation.ts** — `validateExpense` returns `Result<void>` using `ValidationMsg` enum for error messages
+- **validation.ts** — `validateExpense` returns `Result<void>` using `ValidationMsg` enum for error messages. Also validates optional `meta` union via internal `validateMeta` helper.
 - **budget-math.ts** — Pure computation functions: `computeTotalIncome`, `computeTotalSpent`, `computeCCOutstanding`, `filterByDateRange`
+- **fuel-math.ts** — Pure functions for fuel mileage and service-due derivations: `computeMileage`, `latestOdometer`, `dueMaintenance`, `isServiceDue`
+- **meta-utils.ts** — Helpers for the meta sub-form: `metaKindFor()` and `defaultMeta()`
 
 ## Directories
 
@@ -22,3 +24,13 @@ Budget module (directory is `expenses/`, ModuleId is `Budget`). Expense + income
 - `__tests__/summary.test.ts` — Budget math computations
 - `__tests__/AddExpense.test.tsx` — Add expense form rendering
 - `__tests__/ReconciliationView.test.tsx` — Reconciliation display
+
+## Expense meta (Phase 2j)
+
+`Expense` carries an optional discriminated `meta` union for category-specific data:
+
+- **`FuelMeta`** — Vehicle/Fuel expenses. Liters, ₹/L, optional odometer, trip ODO, dashboard mileage, full-tank flag.
+- **`TravelMeta`** — Travel/* expenses. Origin, destination, optional distance.
+- **`MaintenanceMeta`** — Vehicle/Maintenance expenses. Odometer, optional next-service ODO, service notes.
+
+Existing expenses without `meta` continue to work; backwards-compatible by design.

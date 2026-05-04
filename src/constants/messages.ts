@@ -10,6 +10,12 @@ export enum ValidationMsg {
   UsernameTooShort = 'Username must be at least 3 characters',
   UsernameTooLong = 'Username must be at most 20 characters',
   UsernameInvalid = 'Username can only contain letters, numbers, and underscores',
+  FuelLitersPositive = 'Liters must be greater than zero',
+  FuelPricePerLiterPositive = 'Price per liter must be greater than zero',
+  TravelOriginRequired = 'Origin is required',
+  TravelDestinationRequired = 'Destination is required',
+  MaintenanceOdometerPositive = 'Odometer must be greater than zero',
+  UnknownMetaType = 'Unknown expense meta type',
 }
 
 /** Invite-related messages */
@@ -23,7 +29,17 @@ export enum InviteMsg {
 /** Budget module messages */
 export enum BudgetMsg {
   ExpenseAdded = 'Expense added',
+  ExpenseUpdated = 'Expense updated',
   ExpenseDeleted = 'Expense deleted',
+  FuelLogged = 'Fuel logged',
+  FuelUpdated = 'Fuel updated',
+  FuelDeleted = 'Fuel entry deleted',
+  TripLogged = 'Trip logged',
+  TripUpdated = 'Trip updated',
+  TripDeleted = 'Trip deleted',
+  ServiceLogged = 'Service logged',
+  ServiceUpdated = 'Service updated',
+  ServiceDeleted = 'Service deleted',
   IncomeAdded = 'Income added',
   IncomeDeleted = 'Income deleted',
   CategoryRequired = 'Please select a category',

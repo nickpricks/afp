@@ -27,6 +27,7 @@ Implementation plans for AFP. One file per phase or feature.
 - `2026-04-13-phase3-baby-elimination-plan.md` -- Phase 3 Baby elimination/removal plan for infant-only features
 - `2026-04-14-notifications-module-requests-plan.md` -- Notifications and module requests implementation plan
 - `2026-04-15-phase3-body-yoga-plan.md` -- Phase 3 Body module Yoga tab (Plan 10) — duration-based activity with asana selector
+- `2026-05-04-fuel-travel-maintenance.md` -- Phase 2j: Auto tab implementation plan (10 TDD tasks — types, validation, hook, fuel-math, MetaSubForm, ServiceDueBanner, AutoTab, AddExpense wiring, ExpenseListPage, CHANGELOG)
 
 ## Conventions
 

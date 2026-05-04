@@ -4,6 +4,27 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.18] — 2026-05-04 (Budget — Auto tab: fuel, travel, maintenance)
+
+### Added
+- **Budget — Auto tab** (`feat/who-planned-it` series). New tab inside Budget module for Vehicle + Travel expenses with quick-add buttons (⛽ Add Fuel · 🚕 Add Trip · 🔧 Service), inline meta sub-form, and a derived service-due banner. Tap-to-populate edit pattern matching Body module. All toast strings live in `BudgetMsg` enum.
+- **Discriminated `meta` union on `Expense`** — New type system for optional metadata: `FuelMeta` (liters, pricePerLiter, odometer, tripOdo, displayedMileage, fullTank), `TravelMeta` (origin, destination, distance), `MaintenanceMeta` (odometer, nextService). Existing expenses without `meta` continue to work unchanged.
+- **`fuel-math.ts` module** — Pure computation helpers: `computeMileage(legStart, legEnd)`, `latestOdometer(expenses)`, `dueMaintenance(expenses, lastServiceOdo?)`, `isServiceDue(nextService)`. No storage coupling.
+- **`updateExpense` hook in `useExpenses`** — Complements existing `addExpense`/`deleteExpense`. Enables tap-to-populate edit on Auto tab (row → form pre-population → Update button).
+- **`meta-utils.ts` module** — `metaKindFor(meta)` discriminator, `defaultMeta(kind)` factory. Extracted to avoid react-refresh warnings when meta union types are used inline in component render.
+
+### Conventions honored
+- Tap-to-populate edit (no inline-row editing) on the Auto tab — matches Body module UX.
+- Save-and-stay (no redirect) when adding Fuel/Travel from main `AddExpense` form — user stays in context.
+- All toast strings live in `BudgetMsg` enum; no raw strings.
+- Backwards compatibility — existing expenses (with `meta: undefined`) parse and render without error.
+
+### Spec / Plan
+- Spec: `docs/specs/2026-05-04-fuel-travel-maintenance-design.md`
+- Plan: `docs/plans/2026-05-04-fuel-travel-maintenance.md` (Tasks 1–10)
+
+---
+
 ## [0.2.17.2] — 2026-05-01 (Phase 2i fine-print: glyph sizing + viewport-aware + size tier picker)
 
 ### Added

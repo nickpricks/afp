@@ -5,7 +5,7 @@ Self-contained feature modules. Each module owns its types, hooks, components, a
 ## Modules
 
 - **body/** — Body/fitness tracking: floors (daily aggregate), walk/run/cycle activities, SVG score ring with daily goal, weekly bar chart
-- **expenses/** — Budget module (directory is `expenses/`, ModuleId is `Budget`). Expense + income tracking, 15 categories, payment methods, reconciliation
+- **expenses/** — Budget module (directory is `expenses/`, ModuleId is `Budget`). Expense + income tracking, 15 categories, payment methods, reconciliation. **Auto tab** (0.2.18) for Vehicle + Travel with discriminated `meta` union (`FuelMeta | TravelMeta | MaintenanceMeta`), service-due banner, and pure derivations in `fuel-math.ts`.
 - **baby/** — Baby tracking: multi-child via nested subcollections (feeds, sleep, growth, diapers)
 
 ## Conventions
