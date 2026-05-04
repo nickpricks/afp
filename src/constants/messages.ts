@@ -10,6 +10,12 @@ export enum ValidationMsg {
   UsernameTooShort = 'Username must be at least 3 characters',
   UsernameTooLong = 'Username must be at most 20 characters',
   UsernameInvalid = 'Username can only contain letters, numbers, and underscores',
+  FuelLitersPositive = 'Liters must be greater than zero',
+  FuelPricePerLiterPositive = 'Price per liter must be greater than zero',
+  TravelOriginRequired = 'Origin is required',
+  TravelDestinationRequired = 'Destination is required',
+  MaintenanceOdometerPositive = 'Odometer must be greater than zero',
+  UnknownMetaType = 'Unknown expense meta type',
 }
 
 /** Invite-related messages */

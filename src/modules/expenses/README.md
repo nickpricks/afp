@@ -6,7 +6,7 @@ Budget module (directory is `expenses/`, ModuleId is `Budget`). Expense + income
 
 - **types.ts** — `Expense`, `Income`, `BudgetConfig`, `CategoryDefinition`, `LabelDefinition`, and `ExpenseMeta` discriminated union type definitions
 - **categories.ts** — 15 category definitions with emoji labels and subcategories. `PAYMENT_METHOD_LABELS`, `INCOME_SOURCE_LABELS`, `getAllCategoryIds`, `getSubCategories` helpers
-- **validation.ts** — `validateExpense` returns `Result<void>` using `ValidationMsg` enum for error messages
+- **validation.ts** — `validateExpense` returns `Result<void>` using `ValidationMsg` enum for error messages. Also validates optional `meta` union via internal `validateMeta` helper.
 - **budget-math.ts** — Pure computation functions: `computeTotalIncome`, `computeTotalSpent`, `computeCCOutstanding`, `filterByDateRange`
 
 ## Directories

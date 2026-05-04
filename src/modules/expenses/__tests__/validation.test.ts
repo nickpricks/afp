@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 
 import { validateExpense, validateIncome } from '@/modules/expenses/validation';
 import { isOk, isErr, ExpenseCategory, IncomeSource } from '@/shared/types';
+import type { FuelMeta, TravelMeta, MaintenanceMeta } from '@/modules/expenses/types';
+import { ValidationMsg } from '@/constants/messages';
 
 /** Extracts only numeric values from a numeric TypeScript enum */
 const numericValues = <T extends Record<string, string | number>>(e: T): number[] =>
@@ -128,5 +130,132 @@ describe('validateIncome', () => {
     const result = validateIncome({ date: '2026-04-02', source: IncomeSource.Salary, amount: -50 });
     expect(isErr(result)).toBe(true);
     if (isErr(result)) expect(result.error).toBe('Amount must be greater than zero');
+  });
+});
+
+describe('validateExpense — fuel meta', () => {
+  const baseInput = {
+    date: '2026-05-04',
+    category: ExpenseCategory.Vehicle,
+    amount: 4000,
+  };
+
+  it('accepts a valid fuel meta', () => {
+    const meta: FuelMeta = {
+      type: 'fuel',
+      liters: 40,
+      pricePerLiter: 100,
+      odometer: 12000,
+      tripOdo: 500,
+      displayedMileage: 14.2,
+      fullTank: true,
+    };
+    expect(isOk(validateExpense({ ...baseInput, meta }))).toBe(true);
+  });
+
+  it('rejects fuel meta with zero liters', () => {
+    const meta: FuelMeta = {
+      type: 'fuel',
+      liters: 0,
+      pricePerLiter: 100,
+      odometer: null,
+      tripOdo: null,
+      displayedMileage: null,
+      fullTank: false,
+    };
+    const r = validateExpense({ ...baseInput, meta });
+    expect(isOk(r)).toBe(false);
+    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.FuelLitersPositive);
+  });
+
+  it('rejects fuel meta with zero pricePerLiter', () => {
+    const meta: FuelMeta = {
+      type: 'fuel',
+      liters: 40,
+      pricePerLiter: 0,
+      odometer: null,
+      tripOdo: null,
+      displayedMileage: null,
+      fullTank: false,
+    };
+    const r = validateExpense({ ...baseInput, meta });
+    expect(isOk(r)).toBe(false);
+    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.FuelPricePerLiterPositive);
+  });
+});
+
+describe('validateExpense — travel meta', () => {
+  const baseInput = {
+    date: '2026-05-04',
+    category: ExpenseCategory.Travel,
+    amount: 250,
+  };
+
+  it('accepts a valid travel meta', () => {
+    const meta: TravelMeta = {
+      type: 'travel',
+      origin: 'BLR',
+      destination: 'MAA',
+      distance: 8,
+    };
+    expect(isOk(validateExpense({ ...baseInput, meta }))).toBe(true);
+  });
+
+  it('rejects travel meta with empty origin', () => {
+    const meta: TravelMeta = { type: 'travel', origin: '', destination: 'MAA', distance: null };
+    const r = validateExpense({ ...baseInput, meta });
+    expect(isOk(r)).toBe(false);
+    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.TravelOriginRequired);
+  });
+
+  it('rejects travel meta with empty destination', () => {
+    const meta: TravelMeta = { type: 'travel', origin: 'BLR', destination: '', distance: null };
+    const r = validateExpense({ ...baseInput, meta });
+    expect(isOk(r)).toBe(false);
+    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.TravelDestinationRequired);
+  });
+});
+
+describe('validateExpense — maintenance meta', () => {
+  const baseInput = {
+    date: '2026-05-04',
+    category: ExpenseCategory.Vehicle,
+    amount: 5000,
+  };
+
+  it('accepts a valid maintenance meta', () => {
+    const meta: MaintenanceMeta = {
+      type: 'maintenance',
+      odometer: 12500,
+      nextService: 22500,
+      serviceNotes: 'Engine oil + filter',
+    };
+    expect(isOk(validateExpense({ ...baseInput, meta }))).toBe(true);
+  });
+
+  it('rejects maintenance meta with zero odometer', () => {
+    const meta: MaintenanceMeta = {
+      type: 'maintenance',
+      odometer: 0,
+      nextService: null,
+      serviceNotes: '',
+    };
+    const r = validateExpense({ ...baseInput, meta });
+    expect(isOk(r)).toBe(false);
+    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.MaintenanceOdometerPositive);
+  });
+});
+
+describe('validateExpense — no meta', () => {
+  it('accepts an expense with meta=undefined (existing behavior)', () => {
+    expect(
+      isOk(
+        validateExpense({
+          date: '2026-05-04',
+          category: ExpenseCategory.Food,
+          amount: 100,
+        }),
+      ),
+    ).toBe(true);
   });
 });
