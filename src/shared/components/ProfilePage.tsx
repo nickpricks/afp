@@ -30,12 +30,21 @@ import {
 } from '@/shared/types';
 import { IntensityTierPicker } from '@/shared/components/IntensityTierPicker';
 import { SizeTierPicker } from '@/shared/components/SizeTierPicker';
+import { EFFECT_SIZE_DEFAULT } from '@/shared/utils/effectSize';
 import { useModuleRequest } from '@/shared/hooks/useModuleRequest';
 import { CONFIG } from '@/constants/config';
 import { AppPath } from '@/constants/routes';
 import { ProfileMsg, ValidationMsg } from '@/constants/messages';
 import { createAdapter } from '@/shared/storage/create-adapter';
 import { DbSubcollection, DbDoc } from '@/constants/db';
+import { verr } from '@/shared/utils/verbose';
+
+/** Appearance fields persisted via {@link saveAppearance}. Derived from {@link UserProfile} so a
+ * new dimension on the profile is a one-line union change instead of a positional-arg fan-out. */
+type AppearanceSettings = Pick<
+  UserProfile,
+  'theme' | 'colorMode' | 'effectIntensity' | 'effectSize'
+>;
 
 const THEME_LIST = Object.values(THEME_DEFINITIONS);
 const COLOR_MODES: { value: ColorMode; label: string }[] = [
@@ -53,21 +62,15 @@ const MODULE_LABELS: Record<ModuleId, string> = {
 /** Saves profile appearance fields to the storage adapter */
 const saveAppearance = async (
   uid: string,
-  theme: string,
-  colorMode: ColorMode,
-  effectIntensity: number,
-  effectSize: number,
+  settings: AppearanceSettings,
   existingProfile: UserProfile | null,
 ): Promise<void> => {
   const adapter = createAdapter(`users/${uid}`);
   await adapter.save(DbSubcollection.Profile, {
     ...(existingProfile || {}),
     id: DbDoc.Main,
-    theme,
-    colorMode,
-    effectIntensity,
-    effectSize,
-    modules: existingProfile?.modules || DEFAULT_MODULES,
+    ...settings,
+    modules: existingProfile?.modules ?? DEFAULT_MODULES,
     updatedAt: new Date().toISOString(),
   });
 };
@@ -91,7 +94,7 @@ export function ProfilePage() {
 
   const [colorMode, setColorMode] = useState<ColorMode>(profile?.colorMode ?? 'system');
   const [intensity, setIntensity] = useState<number>(profile?.effectIntensity ?? 50);
-  const [size, setSize] = useState<number>(profile?.effectSize ?? 100);
+  const [size, setSize] = useState<number>(profile?.effectSize ?? EFFECT_SIZE_DEFAULT);
 
   // Sync local state when profile loads/updates from context (Adjusting state during render)
   const [prevSync, setPrevSync] = useState({
@@ -133,7 +136,12 @@ export function ProfilePage() {
     (themeId: ThemeId) => {
       applyTheme(themeId, colorMode);
       if (uid) {
-        saveAppearance(uid, themeId, colorMode, intensity, size, profile).catch(() => {
+        saveAppearance(
+          uid,
+          { theme: themeId, colorMode, effectIntensity: intensity, effectSize: size },
+          profile,
+        ).catch((err) => {
+          verr('[AFP:profile:save]', 'theme', err);
           addToast(ProfileMsg.ThemeSaveFailed, ToastType.Error);
         });
       }
@@ -147,7 +155,12 @@ export function ProfilePage() {
       setColorMode(mode);
       applyTheme(activeThemeId, mode);
       if (uid) {
-        saveAppearance(uid, activeThemeId, mode, intensity, size, profile).catch(() => {
+        saveAppearance(
+          uid,
+          { theme: activeThemeId, colorMode: mode, effectIntensity: intensity, effectSize: size },
+          profile,
+        ).catch((err) => {
+          verr('[AFP:profile:save]', 'colorMode', err);
           addToast(ProfileMsg.ColorModeSaveFailed, ToastType.Error);
         });
       }
@@ -160,8 +173,14 @@ export function ProfilePage() {
     (newIntensity: number) => {
       setIntensity(newIntensity);
       if (uid) {
-        saveAppearance(uid, activeThemeId, colorMode, newIntensity, size, profile).catch(() => {
-          // Silent fail for real-time slider to avoid toast spam
+        saveAppearance(
+          uid,
+          { theme: activeThemeId, colorMode, effectIntensity: newIntensity, effectSize: size },
+          profile,
+        ).catch((err) => {
+          // Silent toward the user (slider drag fires onChange ~50×/sec — toasting would DoS the UI).
+          // But always log: a permission regression on this write would otherwise be invisible.
+          verr('[AFP:profile:save]', 'effectIntensity', err);
         });
       }
     },
@@ -172,8 +191,13 @@ export function ProfilePage() {
     (newSize: number) => {
       setSize(newSize);
       if (uid) {
-        saveAppearance(uid, activeThemeId, colorMode, intensity, newSize, profile).catch(() => {
-          // Silent fail for real-time picker to avoid toast spam
+        saveAppearance(
+          uid,
+          { theme: activeThemeId, colorMode, effectIntensity: intensity, effectSize: newSize },
+          profile,
+        ).catch((err) => {
+          // Silent toward the user (matches handleIntensityChange rationale); always logged.
+          verr('[AFP:profile:save]', 'effectSize', err);
         });
       }
     },

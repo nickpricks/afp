@@ -19,4 +19,7 @@ export const CONFIG = {
   DAILY_SCORE_GOAL: 50 as number,
   /** Number of categories visible in the budget form when collapsed */
   BUDGET_VISIBLE_CATEGORIES: 7 as number,
+  /** Mobile breakpoint in px. Matches Tailwind's `sm:` breakpoint. Used by viewport-aware
+   * hooks (`useViewportSizeMultiplier`) and any future feature that conditions on small screens. */
+  MOBILE_BREAKPOINT_PX: 640 as number,
 } as const;

@@ -1,29 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { THEME_DEFINITIONS, ThemeId } from '@/themes/themes';
 import { GlyphPrimitive } from '@/shared/components/glyph-primitives';
+import { EFFECT_SIZE_DEFAULT } from '@/shared/utils/effectSize';
+import { useMatchMedia } from '@/shared/hooks/useMatchMedia';
+import { useViewportSizeMultiplier } from '@/shared/hooks/useViewportSizeMultiplier';
 
 interface AmbientEffectsProps {
   themeId: ThemeId;
   intensity: number;
   effectSize?: number;
-}
-
-/** Tracks the user's `prefers-reduced-motion` preference reactively */
-function usePrefersReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(
-    () =>
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-  );
-  useEffect(() => {
-    const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const handler = (e: MediaQueryListEvent): void => {
-      setReduced(e.matches);
-    };
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, []);
-  return reduced;
 }
 
 /**
@@ -33,22 +18,6 @@ function usePrefersReducedMotion(): boolean {
 function seededRandom(seed: number): number {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
-}
-
-/** Returns a particle-size multiplier based on viewport width: 0.65 on mobile, 1.0 on desktop. */
-function useViewportSizeMultiplier(): number {
-  const [multiplier, setMultiplier] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches ? 0.65 : 1.0,
-  );
-  useEffect(() => {
-    const mql = window.matchMedia('(max-width: 640px)');
-    const handler = (e: MediaQueryListEvent): void => {
-      setMultiplier(e.matches ? 0.65 : 1.0);
-    };
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, []);
-  return multiplier;
 }
 
 /** Converts a string to a numeric seed */
@@ -69,10 +38,10 @@ function stringToSeed(str: string): number {
 export const AmbientEffects: React.FC<AmbientEffectsProps> = ({
   themeId,
   intensity,
-  effectSize = 100,
+  effectSize = EFFECT_SIZE_DEFAULT,
 }) => {
   const theme = THEME_DEFINITIONS[themeId];
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const prefersReducedMotion = useMatchMedia('(prefers-reduced-motion: reduce)');
   const viewportMultiplier = useViewportSizeMultiplier();
 
   const particles = useMemo(() => {
@@ -140,7 +109,10 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({
             '--fx-rotate': `${depth * 360}deg`,
             '--fx-drift': `${r6 * 40 - 20}px`,
             '--fx-drift-y': `${r7 * 40 - 20}px`,
-            '--fx-scale': `${(0.5 + depth * 1.0) * sizeMultiplier}`,
+            // `--fx-scale` is the depth axis only — viewport-independent, used in `transform: scale()`
+            // for parallax illusion. The size multiplier (viewport + user tier) lives on `--fx-size`
+            // exclusively to avoid compounding (mobile would otherwise be 0.65 × 0.65 = 0.42 of desktop).
+            '--fx-scale': `${0.5 + depth * 1.0}`,
             // Sweep effects (e.g. scanline) use a deterministic low opacity so the keyframe
             // doesn't randomly produce a glaring 0.8 line. All others derive opacity from depth.
             '--fx-opacity': effect.type === 'sweep' ? '0.15' : `${0.25 + depth * 0.55}`,
