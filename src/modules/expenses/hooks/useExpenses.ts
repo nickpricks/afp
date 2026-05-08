@@ -16,11 +16,25 @@ type ExpenseInput = {
   category: ExpenseCategory;
   subCat: string;
   amount: number;
-  paymentMethod?: PaymentMethod;
+  /** `null` indicates the user explicitly de-selected the payment method via the form's
+   * toggle pattern. Validated explicitly in {@link useExpenses} — never silently defaulted. */
+  paymentMethod: PaymentMethod | null;
   isSettlement?: boolean;
   note: string;
   meta?: ExpenseMeta;
 };
+
+/** Add/update toast lookup keyed on the meta discriminator. Adding a new meta variant means
+ * adding one row here — no parallel switch updates. The `default` shape covers the no-meta case. */
+const META_TOAST: Record<ExpenseMeta['type'] | 'default', { add: BudgetMsg; update: BudgetMsg }> = {
+  fuel: { add: BudgetMsg.FuelLogged, update: BudgetMsg.FuelUpdated },
+  travel: { add: BudgetMsg.TripLogged, update: BudgetMsg.TripUpdated },
+  maintenance: { add: BudgetMsg.ServiceLogged, update: BudgetMsg.ServiceUpdated },
+  default: { add: BudgetMsg.ExpenseAdded, update: BudgetMsg.ExpenseUpdated },
+};
+
+const metaToast = (meta: ExpenseMeta | undefined, action: 'add' | 'update'): BudgetMsg =>
+  META_TOAST[meta?.type ?? 'default'][action];
 
 /** Provides expense CRUD operations with real-time sync and soft-delete */
 export function useExpenses(targetUid?: string) {
@@ -62,6 +76,10 @@ export function useExpenses(targetUid?: string) {
   const addExpense = useCallback(
     async (input: ExpenseInput) => {
       if (readOnly) return false;
+      if (input.paymentMethod === null) {
+        addToast(BudgetMsg.PaymentMethodRequired, ToastType.Error);
+        return false;
+      }
       const validation = validateExpense(input);
       if (!isOk(validation)) {
         addToast(validation.error, ToastType.Error);
@@ -78,7 +96,7 @@ export function useExpenses(targetUid?: string) {
         category: input.category,
         subCat: input.subCat,
         amount: input.amount,
-        paymentMethod: input.paymentMethod ?? PaymentMethod.UpiBankAccount,
+        paymentMethod: input.paymentMethod,
         isSettlement: input.isSettlement ?? false,
         note: input.note,
         isDeleted: false,
@@ -93,7 +111,7 @@ export function useExpenses(targetUid?: string) {
         return false;
       }
 
-      addToast(toastForAdd(input.meta), ToastType.Success);
+      addToast(metaToast(input.meta, 'add'), ToastType.Success);
       return true;
     },
     [addToast, readOnly],
@@ -119,7 +137,7 @@ export function useExpenses(targetUid?: string) {
         return false;
       }
 
-      addToast(toastForUpdate(expense.meta), ToastType.Success);
+      addToast(metaToast(expense.meta, 'update'), ToastType.Success);
       return true;
     },
     [addToast, readOnly],
@@ -149,22 +167,4 @@ export function useExpenses(targetUid?: string) {
   );
 
   return { expenses, addExpense, updateExpense, deleteExpense };
-}
-
-/** Returns the appropriate toast message for an add operation based on meta type */
-function toastForAdd(meta: ExpenseMeta | undefined): BudgetMsg {
-  if (!meta) return BudgetMsg.ExpenseAdded;
-  if (meta.type === 'fuel') return BudgetMsg.FuelLogged;
-  if (meta.type === 'travel') return BudgetMsg.TripLogged;
-  if (meta.type === 'maintenance') return BudgetMsg.ServiceLogged;
-  return BudgetMsg.ExpenseAdded;
-}
-
-/** Returns the appropriate toast message for an update operation based on meta type */
-function toastForUpdate(meta: ExpenseMeta | undefined): BudgetMsg {
-  if (!meta) return BudgetMsg.ExpenseUpdated;
-  if (meta.type === 'fuel') return BudgetMsg.FuelUpdated;
-  if (meta.type === 'travel') return BudgetMsg.TripUpdated;
-  if (meta.type === 'maintenance') return BudgetMsg.ServiceUpdated;
-  return BudgetMsg.ExpenseUpdated;
 }

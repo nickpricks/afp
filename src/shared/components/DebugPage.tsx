@@ -53,7 +53,7 @@ export function DebugPage() {
       <table className="w-full border-collapse">
         <tbody>
           {checks.map(({ label, value, expected }) => {
-            const display = typeof value === 'boolean' ? (value ? 'true' : 'false') : String(value);
+            const display = String(value);
             const isPassing = expected === undefined || value === expected;
 
             return (

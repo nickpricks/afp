@@ -27,10 +27,7 @@ export function AddExpensePage() {
     isSettlement: boolean;
     note: string;
   }): Promise<boolean> {
-    const success = await addExpense({
-      ...input,
-      paymentMethod: input.paymentMethod ?? undefined,
-    });
+    const success = await addExpense(input);
     if (success) {
       navigate(ROUTES.BUDGET, { replace: true });
     }

@@ -26,6 +26,7 @@ import {
   isErr,
   ALL_MODULES,
   DEFAULT_MODULES,
+  type Result,
   type UserProfile,
 } from '@/shared/types';
 import { IntensityTierPicker } from '@/shared/components/IntensityTierPicker';
@@ -36,7 +37,7 @@ import { CONFIG } from '@/constants/config';
 import { AppPath } from '@/constants/routes';
 import { ProfileMsg, ValidationMsg } from '@/constants/messages';
 import { createAdapter } from '@/shared/storage/create-adapter';
-import { DbSubcollection, DbDoc } from '@/constants/db';
+import { DbSubcollection, DbDoc, userPath } from '@/constants/db';
 import { verr } from '@/shared/utils/verbose';
 
 /** Appearance fields persisted via {@link saveAppearance}. Derived from {@link UserProfile} so a
@@ -59,14 +60,15 @@ const MODULE_LABELS: Record<ModuleId, string> = {
   [ModuleId.Baby]: 'Baby Tracker',
 };
 
-/** Saves profile appearance fields to the storage adapter */
+/** Saves profile appearance fields to the storage adapter. Returns the adapter Result so callers
+ * can detect a failed write — `Promise<void>` would silently swallow `Result.ok=false`. */
 const saveAppearance = async (
   uid: string,
   settings: AppearanceSettings,
   existingProfile: UserProfile | null,
-): Promise<void> => {
-  const adapter = createAdapter(`users/${uid}`);
-  await adapter.save(DbSubcollection.Profile, {
+): Promise<Result<void>> => {
+  const adapter = createAdapter(userPath(uid));
+  return adapter.save(DbSubcollection.Profile, {
     ...(existingProfile || {}),
     id: DbDoc.Main,
     ...settings,
@@ -75,10 +77,14 @@ const saveAppearance = async (
   });
 };
 
-/** Saves username to the user profile */
-const saveUsernameToProfile = async (uid: string, username: string | undefined): Promise<void> => {
-  const adapter = createAdapter(`users/${uid}`);
-  await adapter.save(DbSubcollection.Profile, {
+/** Saves username to the user profile. Returns the adapter Result so the multi-step
+ * username flow (release → claim → save) can detect a torn state on the third step. */
+const saveUsernameToProfile = async (
+  uid: string,
+  username: string | undefined,
+): Promise<Result<void>> => {
+  const adapter = createAdapter(userPath(uid));
+  return adapter.save(DbSubcollection.Profile, {
     id: DbDoc.Main,
     username: username ?? null,
     updatedAt: new Date().toISOString(),
@@ -140,10 +146,17 @@ export function ProfilePage() {
           uid,
           { theme: themeId, colorMode, effectIntensity: intensity, effectSize: size },
           profile,
-        ).catch((err) => {
-          verr('[AFP:profile:save]', 'theme', err);
-          addToast(ProfileMsg.ThemeSaveFailed, ToastType.Error);
-        });
+        )
+          .then((result) => {
+            if (isErr(result)) {
+              verr('[AFP:profile:save]', 'theme', result.error);
+              addToast(ProfileMsg.ThemeSaveFailed, ToastType.Error);
+            }
+          })
+          .catch((err) => {
+            verr('[AFP:profile:save]', 'theme', err);
+            addToast(ProfileMsg.ThemeSaveFailed, ToastType.Error);
+          });
       }
       addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
@@ -159,10 +172,17 @@ export function ProfilePage() {
           uid,
           { theme: activeThemeId, colorMode: mode, effectIntensity: intensity, effectSize: size },
           profile,
-        ).catch((err) => {
-          verr('[AFP:profile:save]', 'colorMode', err);
-          addToast(ProfileMsg.ColorModeSaveFailed, ToastType.Error);
-        });
+        )
+          .then((result) => {
+            if (isErr(result)) {
+              verr('[AFP:profile:save]', 'colorMode', result.error);
+              addToast(ProfileMsg.ColorModeSaveFailed, ToastType.Error);
+            }
+          })
+          .catch((err) => {
+            verr('[AFP:profile:save]', 'colorMode', err);
+            addToast(ProfileMsg.ColorModeSaveFailed, ToastType.Error);
+          });
       }
       addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
@@ -173,15 +193,18 @@ export function ProfilePage() {
     (newIntensity: number) => {
       setIntensity(newIntensity);
       if (uid) {
+        // Silent toward the user (slider drag fires onChange ~50×/sec — toasting would DoS the UI).
+        // But always log a Result.ok=false or thrown error: a permission regression on this write
+        // would otherwise be invisible.
         saveAppearance(
           uid,
           { theme: activeThemeId, colorMode, effectIntensity: newIntensity, effectSize: size },
           profile,
-        ).catch((err) => {
-          // Silent toward the user (slider drag fires onChange ~50×/sec — toasting would DoS the UI).
-          // But always log: a permission regression on this write would otherwise be invisible.
-          verr('[AFP:profile:save]', 'effectIntensity', err);
-        });
+        )
+          .then((result) => {
+            if (isErr(result)) verr('[AFP:profile:save]', 'effectIntensity', result.error);
+          })
+          .catch((err) => verr('[AFP:profile:save]', 'effectIntensity', err));
       }
     },
     [activeThemeId, colorMode, size, uid, profile],
@@ -191,14 +214,16 @@ export function ProfilePage() {
     (newSize: number) => {
       setSize(newSize);
       if (uid) {
+        // Silent toward the user (matches handleIntensityChange rationale); always logged.
         saveAppearance(
           uid,
           { theme: activeThemeId, colorMode, effectIntensity: intensity, effectSize: newSize },
           profile,
-        ).catch((err) => {
-          // Silent toward the user (matches handleIntensityChange rationale); always logged.
-          verr('[AFP:profile:save]', 'effectSize', err);
-        });
+        )
+          .then((result) => {
+            if (isErr(result)) verr('[AFP:profile:save]', 'effectSize', result.error);
+          })
+          .catch((err) => verr('[AFP:profile:save]', 'effectSize', err));
       }
     },
     [activeThemeId, colorMode, intensity, uid, profile],
@@ -246,7 +271,18 @@ export function ProfilePage() {
       return;
     }
 
-    await saveUsernameToProfile(uid, trimmed);
+    const saveResult = await saveUsernameToProfile(uid, trimmed);
+    if (isErr(saveResult)) {
+      // Torn state: usernames/{trimmed} now claimed but profile.username still old.
+      // Best-effort cleanup: release the just-claimed name so the user can retry without collision.
+      verr('[AFP:profile:save]', 'username', saveResult.error);
+      void releaseUsername(trimmed, uid);
+      setUsernameError(ProfileMsg.UsernameSaveFailed);
+      setIsSavingUsername(false);
+      savingRef.current = false;
+      return;
+    }
+
     addToast(ProfileMsg.UsernameClaimed, ToastType.Success);
     setIsEditingUsername(false);
     setUsernameInput('');
@@ -263,8 +299,15 @@ export function ProfilePage() {
     if (isErr(result)) {
       addToast(ProfileMsg.UsernameReleaseFailed, ToastType.Error);
     } else {
-      await saveUsernameToProfile(uid, undefined);
-      addToast(ProfileMsg.UsernameReleased, ToastType.Success);
+      const saveResult = await saveUsernameToProfile(uid, undefined);
+      if (isErr(saveResult)) {
+        // Torn state: usernames/{old} released but profile.username still references it.
+        // Surface the save failure; retry will re-attempt without re-releasing.
+        verr('[AFP:profile:save]', 'username:clear', saveResult.error);
+        addToast(ProfileMsg.UsernameSaveFailed, ToastType.Error);
+      } else {
+        addToast(ProfileMsg.UsernameReleased, ToastType.Success);
+      }
     }
 
     setIsSavingUsername(false);

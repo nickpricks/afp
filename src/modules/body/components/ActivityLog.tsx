@@ -136,11 +136,10 @@ export function ActivityLog({
 
                 return (
                   <div key={a.id ?? a.createdAt}>
-                    {onDelete ? (
+                    {onDelete && (
                       <SwipeToDelete onDelete={() => handleDelete(a)}>{rowContent}</SwipeToDelete>
-                    ) : (
-                      rowContent
                     )}
+                    {!onDelete && rowContent}
                   </div>
                 );
               })}

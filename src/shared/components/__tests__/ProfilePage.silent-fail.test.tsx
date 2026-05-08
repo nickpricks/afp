@@ -122,7 +122,7 @@ describe('ProfilePage silent-fail contract', () => {
   });
 
   it('size picker: when adapter.save succeeds, neither toast nor error is logged', async () => {
-    mocks.mockSave.mockResolvedValue(undefined);
+    mocks.mockSave.mockResolvedValue({ ok: true, data: undefined });
 
     render(
       <MemoryRouter>
@@ -139,5 +139,30 @@ describe('ProfilePage silent-fail contract', () => {
     // but it should NOT see our '[AFP:profile:save]' prefix).
     const errorArgs = mocks.consoleErrorSpy.mock.calls.flat();
     expect(errorArgs.some((a) => String(a).includes('[AFP:profile:save]'))).toBe(false);
+  });
+
+  it('size picker: when adapter.save returns Result.ok=false, logs the error and stays silent toward user', async () => {
+    // The Result-discipline contract: a save that resolves with `{ ok: false }` must be logged
+    // through verr() so a permission regression is visible in the console, while the slider
+    // path stays silent toward the user (matching the rejection path).
+    mocks.mockSave.mockResolvedValue({ ok: false, error: 'permission-denied' });
+
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
+    clickSmallTier();
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(mocks.consoleErrorSpy).toHaveBeenCalled();
+    const loggedArgs = mocks.consoleErrorSpy.mock.calls.flat();
+    expect(loggedArgs.some((a) => String(a).includes('[AFP:profile:save]'))).toBe(true);
+    expect(loggedArgs.some((a) => String(a).includes('effectSize'))).toBe(true);
+    expect(loggedArgs.some((a) => String(a).includes('permission-denied'))).toBe(true);
+
+    // User-facing surface stays silent on slider/picker save failure.
+    expect(mocks.mockAddToast).not.toHaveBeenCalled();
   });
 });
