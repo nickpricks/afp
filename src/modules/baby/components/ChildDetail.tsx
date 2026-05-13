@@ -15,6 +15,7 @@ import { EliminationLog } from '@/modules/baby/components/EliminationLog';
 import { MealsLog } from '@/modules/baby/components/MealsLog';
 import { NeedsLog } from '@/modules/baby/components/NeedsLog';
 import { MilestonesLog } from '@/modules/baby/components/MilestonesLog';
+import { PresentsLog } from '@/modules/baby/components/PresentsLog';
 import { LifeJournalView } from '@/modules/baby/components/LifeJournalView';
 import { SuggestionStrip } from '@/modules/baby/components/SuggestionStrip';
 import { useChildren } from '@/modules/baby/hooks/useChildren';
@@ -37,7 +38,8 @@ type TabId =
   | 'diapers'
   | 'meals'
   | 'needs'
-  | 'milestones';
+  | 'milestones'
+  | 'presents';
 
 /** Tab definition with id, label, and visibility flag */
 type TabDef = { id: TabId; label: string; visible: boolean };
@@ -110,6 +112,7 @@ function ChildDetailInner({
     { id: 'meals', label: 'Meals', visible: child.config.meals ?? false },
     { id: 'needs', label: 'Needs', visible: child.config.needs ?? false },
     { id: 'milestones', label: 'Milestones', visible: child.config.milestones ?? false },
+    { id: 'presents', label: 'Presents', visible: child.config.presents ?? false },
   ];
 
   const visibleTabs = tabs.filter((t) => t.visible);
@@ -202,6 +205,9 @@ function ChildDetailInner({
       {activeTab === 'needs' && <NeedsLog childId={childId} siblingIds={siblingIds} uid={uid} />}
       {activeTab === 'milestones' && (
         <MilestonesLog childId={childId} siblingIds={siblingIds} uid={uid} />
+      )}
+      {activeTab === 'presents' && (
+        <PresentsLog childId={childId} siblingIds={siblingIds} uid={uid} />
       )}
     </div>
   );
@@ -314,6 +320,14 @@ export function DashboardTab({
             icon="🌟"
             description="Firsts + achievements"
             onClick={() => onNavigate('milestones')}
+          />
+        )}
+        {child.config.presents && (
+          <SummaryCard
+            label="Presents"
+            icon="🎁"
+            description="Gifts + money"
+            onClick={() => onNavigate('presents')}
           />
         )}
       </div>
