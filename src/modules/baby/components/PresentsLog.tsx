@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 
 import { useBabyCollection } from '@/modules/baby/hooks/useBabyCollection';
 import type { GiftEntry, FinanceEntry } from '@/modules/baby/types';
@@ -11,16 +11,18 @@ import {
 } from '@/modules/baby/constants';
 import { todayStr } from '@/shared/utils/date';
 import { useToast } from '@/shared/errors/useToast';
-import { CONFIG } from '@/constants/config';
 import { sortNewestFirst } from '@/shared/utils/sort';
 import { ToastType } from '@/shared/types';
+import { BabyMsg } from '@/constants/messages';
 import { DbSubcollection } from '@/constants/db';
 import { ListControls } from '@/shared/components/ListControls';
 import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
 import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
+import { SwipeToDelete } from '@/shared/components/SwipeToDelete';
 import { useListControls } from '@/shared/hooks/useListControls';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
+import { CONFIG } from '@/constants/config';
 
 type Props = {
   childId?: string;
@@ -30,32 +32,33 @@ type Props = {
 
 type PresentType = 'finances' | 'gifts';
 
-/** Presents tracking (Gifts + Finances) — sub-tabs, status lifecycle, tap-to-edit, undo-delete */
-export function PresentsLog({ childId, siblingIds = [], uid = '' }: Props) {
+/** Presents tracking (Gifts + Finances) — sub-tabs, status lifecycle, tap-to-edit, swipe/undo-delete */
+export function PresentsLog({ childId, uid }: Props) {
   const [activeSubTab, setActiveSubTab] = useState<PresentType>('finances');
   const { addToast } = useToast();
-  
-  // Finances
+
   const finances = useBabyCollection<FinanceEntry>(
     childId ?? null,
     DbSubcollection.Finances,
-    'Finance Entry'
+    'Finance Entry',
+    uid,
   );
-  
-  // Gifts
   const gifts = useBabyCollection<GiftEntry>(
     childId ?? null,
     DbSubcollection.Gifts,
-    'Gift'
+    'Gift',
+    uid,
   );
 
-  const ctrl = useListControls();
+  const financesCtrl = useListControls();
+  const giftsCtrl = useListControls();
+  const ctrl = activeSubTab === 'finances' ? financesCtrl : giftsCtrl;
+
   const [editFinance, setEditFinance] = useState<FinanceEntry | null>(null);
   const [editGift, setEditGift] = useState<GiftEntry | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Form fields
-  const [title, setTitle] = useState(''); // description for finance, title for gift
+  const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [giver, setGiver] = useState('');
   const [occasion, setOccasion] = useState('');
@@ -90,10 +93,26 @@ export function PresentsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setNotes(entry.notes);
   };
 
+  const handleDeleteFinance = (entry: FinanceEntry) => {
+    finances.remove(entry.id);
+    addToast(BabyMsg.PresentFinanceDeleted, ToastType.Success, {
+      action: { label: 'Undo', onClick: () => finances.log(entry) },
+      durationMs: CONFIG.UNDO_DURATION_MS,
+    });
+  };
+
+  const handleDeleteGift = (entry: GiftEntry) => {
+    gifts.remove(entry.id);
+    addToast(BabyMsg.PresentGiftDeleted, ToastType.Success, {
+      action: { label: 'Undo', onClick: () => gifts.log(entry) },
+      durationMs: CONFIG.UNDO_DURATION_MS,
+    });
+  };
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) {
-      addToast('Description/Title is required', ToastType.Error);
+      addToast(BabyMsg.PresentTitleRequired, ToastType.Error);
       return;
     }
     setSaving(true);
@@ -120,6 +139,7 @@ export function PresentsLog({ childId, siblingIds = [], uid = '' }: Props) {
           occasion,
           status: FinanceStatus.Received,
           notes,
+          timestamp: now,
           createdAt: now,
           updatedAt: now,
         });
@@ -142,6 +162,7 @@ export function PresentsLog({ childId, siblingIds = [], uid = '' }: Props) {
           occasion,
           status: GiftStatus.Received,
           notes,
+          timestamp: now,
           createdAt: now,
           updatedAt: now,
         });
@@ -152,7 +173,7 @@ export function PresentsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setSaving(false);
   }
 
-  const items = activeSubTab === 'finances' ? finances.items : gifts.items;
+  const items = (activeSubTab === 'finances' ? finances.items : gifts.items) as (FinanceEntry | GiftEntry)[];
   const sortedEntries = sortNewestFirst(items, (n) => n.createdAt);
   const today = todayStr();
   const dateFilteredEntries = filterByDateRange(
@@ -173,14 +194,20 @@ export function PresentsLog({ childId, siblingIds = [], uid = '' }: Props) {
         <div className="flex rounded-lg border border-line bg-surface-card p-1">
           <button
             type="button"
-            onClick={() => { setActiveSubTab('finances'); resetForm(); }}
+            onClick={() => {
+              setActiveSubTab('finances');
+              resetForm();
+            }}
             className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${activeSubTab === 'finances' ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'}`}
           >
             Finances
           </button>
           <button
             type="button"
-            onClick={() => { setActiveSubTab('gifts'); resetForm(); }}
+            onClick={() => {
+              setActiveSubTab('gifts');
+              resetForm();
+            }}
             className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${activeSubTab === 'gifts' ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'}`}
           >
             Gifts
@@ -207,23 +234,22 @@ export function PresentsLog({ childId, siblingIds = [], uid = '' }: Props) {
         <div className="flex flex-col gap-3">
           <input
             type="text"
-            placeholder={activeSubTab === 'finances' ? "Description (e.g. Birthday Cash)" : "Gift Title (e.g. Lego Set)"}
+            placeholder={activeSubTab === 'finances' ? 'Description (e.g. Birthday Cash)' : 'Gift Title (e.g. Lego Set)'}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
           />
-          
           {activeSubTab === 'finances' && (
             <input
               type="number"
               step="0.01"
+              min="0.01"
               placeholder="Amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
             />
           )}
-
           <div className="flex gap-2">
             <input
               type="text"
@@ -240,7 +266,6 @@ export function PresentsLog({ childId, siblingIds = [], uid = '' }: Props) {
               className="flex-1 px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
             />
           </div>
-
           <input
             type="text"
             placeholder="Notes (optional)"
@@ -255,7 +280,7 @@ export function PresentsLog({ childId, siblingIds = [], uid = '' }: Props) {
           disabled={saving}
           className="w-full py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50"
         >
-          {saving ? 'Saving...' : (editFinance || editGift ? 'Update' : `Add ${activeSubTab === 'finances' ? 'Finance' : 'Gift'}`)}
+          {saving ? 'Saving...' : editFinance || editGift ? 'Update' : `Add ${activeSubTab === 'finances' ? 'Finance' : 'Gift'}`}
         </button>
       </form>
 
@@ -277,16 +302,16 @@ export function PresentsLog({ childId, siblingIds = [], uid = '' }: Props) {
           today={today}
           onEdit={startEditFinance}
           editingId={editFinance?.id ?? null}
-          onRemove={finances.remove}
+          onDelete={handleDeleteFinance}
           onStatusChange={(entry, status) => finances.update({ ...entry, status })}
         />
       ) : (
         <GiftList
-          entries={visibleEntries as GiftEntry[]}
+          entries={visibleEntries as unknown as GiftEntry[]}
           today={today}
           onEdit={startEditGift}
           editingId={editGift?.id ?? null}
-          onRemove={gifts.remove}
+          onDelete={handleDeleteGift}
           onStatusChange={(entry, status) => gifts.update({ ...entry, status })}
         />
       )}
@@ -308,55 +333,68 @@ function FinanceList({
   today,
   onEdit,
   editingId,
-  onRemove,
+  onDelete,
   onStatusChange,
 }: {
   entries: FinanceEntry[];
   today: string;
   onEdit: (e: FinanceEntry) => void;
   editingId: string | null;
-  onRemove: (id: string) => void;
+  onDelete: (e: FinanceEntry) => void;
   onStatusChange: (e: FinanceEntry, s: FinanceStatus) => void;
 }) {
   if (entries.length === 0) return null;
   const groups = groupEntriesByDate(entries);
-  
+
   return (
-    <div className="flex flex-col gap-2">
-      {Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(date => (
-        <div key={date}>
-          <DateGroupHeader date={date} today={today} />
-          {groups[date].map(entry => (
-            <div key={entry.id} className={`flex flex-col border-b border-line p-3 gap-1 hover:bg-surface-card transition-colors ${editingId === entry.id ? 'bg-accent-muted border-l-2 border-l-accent' : ''}`}>
-              <div className="flex justify-between items-start">
-                <div onClick={() => onEdit(entry)} className="cursor-pointer">
-                  <p className="font-medium text-fg">{entry.description}</p>
-                  <p className="text-xs text-fg-muted">
-                    {entry.giver} · {entry.occasion}
-                  </p>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                  <p className="font-bold text-accent">₹{entry.amount.toLocaleString()}</p>
-                  <div className="flex items-center gap-1">
-                    <select 
-                      value={entry.status}
-                      onChange={(e) => onStatusChange(entry, parseInt(e.target.value))}
-                      className="text-[10px] bg-surface-card border border-line rounded px-1 py-0.5 text-fg-muted outline-none"
-                    >
-                      {ALL_FINANCE_STATUSES.map(s => (
-                        <option key={s} value={s}>{FINANCE_STATUS_LABELS[s]}</option>
-                      ))}
-                    </select>
-                    <button onClick={() => onRemove(entry.id)} className="text-xs text-fg-muted hover:text-red-500 ml-2">x</button>
+    <ul className="flex flex-col gap-2 list-none">
+      {Object.keys(groups)
+        .sort((a, b) => b.localeCompare(a))
+        .map((date) => (
+          <li key={date}>
+            <DateGroupHeader date={date} today={today} />
+            {(groups[date] ?? []).map((entry) => (
+              <SwipeToDelete key={entry.id} onDelete={() => onDelete(entry)}>
+                <div
+                  className={`bg-surface flex flex-col border-b border-line p-3 gap-1 hover:bg-surface-card transition-colors ${editingId === entry.id ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent' : ''}`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div onClick={() => onEdit(entry)} className="cursor-pointer flex-1">
+                      <p className="font-medium text-fg">{entry.description}</p>
+                      <p className="text-xs text-fg-muted">
+                        {entry.giver} · {entry.occasion}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <p className="font-bold text-accent">₹{entry.amount.toLocaleString()}</p>
+                      <div className="flex items-center gap-1">
+                        <select
+                          value={entry.status}
+                          onChange={(e) => onStatusChange(entry, parseInt(e.target.value))}
+                          className="text-[10px] bg-surface-card border border-line rounded px-1 py-0.5 text-fg-muted outline-none"
+                        >
+                          {ALL_FINANCE_STATUSES.map((s) => (
+                            <option key={s} value={s}>
+                              {FINANCE_STATUS_LABELS[s]}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={() => onDelete(entry)}
+                          className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold ml-2"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
                   </div>
+                  {entry.notes && <p className="text-xs text-fg-muted italic">{entry.notes}</p>}
                 </div>
-              </div>
-              {entry.notes && <p className="text-xs text-fg-muted italic">{entry.notes}</p>}
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
+              </SwipeToDelete>
+            ))}
+          </li>
+        ))}
+    </ul>
   );
 }
 
@@ -365,52 +403,65 @@ function GiftList({
   today,
   onEdit,
   editingId,
-  onRemove,
+  onDelete,
   onStatusChange,
 }: {
   entries: GiftEntry[];
   today: string;
   onEdit: (e: GiftEntry) => void;
   editingId: string | null;
-  onRemove: (id: string) => void;
+  onDelete: (e: GiftEntry) => void;
   onStatusChange: (e: GiftEntry, s: GiftStatus) => void;
 }) {
   if (entries.length === 0) return null;
   const groups = groupEntriesByDate(entries);
 
   return (
-    <div className="flex flex-col gap-2">
-      {Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(date => (
-        <div key={date}>
-          <DateGroupHeader date={date} today={today} />
-          {groups[date].map(entry => (
-            <div key={entry.id} className={`flex flex-col border-b border-line p-3 gap-1 hover:bg-surface-card transition-colors ${editingId === entry.id ? 'bg-accent-muted border-l-2 border-l-accent' : ''}`}>
-              <div className="flex justify-between items-start">
-                <div onClick={() => onEdit(entry)} className="cursor-pointer">
-                  <p className="font-medium text-fg">{entry.title}</p>
-                  <p className="text-xs text-fg-muted">
-                    {entry.giver} · {entry.occasion}
-                  </p>
+    <ul className="flex flex-col gap-2 list-none">
+      {Object.keys(groups)
+        .sort((a, b) => b.localeCompare(a))
+        .map((date) => (
+          <li key={date}>
+            <DateGroupHeader date={date} today={today} />
+            {(groups[date] ?? []).map((entry) => (
+              <SwipeToDelete key={entry.id} onDelete={() => onDelete(entry)}>
+                <div
+                  className={`bg-surface flex flex-col border-b border-line p-3 gap-1 hover:bg-surface-card transition-colors ${editingId === entry.id ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent' : ''}`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div onClick={() => onEdit(entry)} className="cursor-pointer flex-1">
+                      <p className="font-medium text-fg">{entry.title}</p>
+                      <p className="text-xs text-fg-muted">
+                        {entry.giver} · {entry.occasion}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <select
+                        value={entry.status}
+                        onChange={(e) => onStatusChange(entry, parseInt(e.target.value))}
+                        className="text-[10px] bg-surface-card border border-line rounded px-1 py-0.5 text-fg-muted outline-none"
+                      >
+                        {ALL_GIFT_STATUSES.map((s) => (
+                          <option key={s} value={s}>
+                            {GIFT_STATUS_LABELS[s]}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => onDelete(entry)}
+                        className="text-xs text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold ml-2"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                  {entry.notes && <p className="text-xs text-fg-muted italic">{entry.notes}</p>}
                 </div>
-                <div className="flex items-center gap-1">
-                  <select 
-                    value={entry.status}
-                    onChange={(e) => onStatusChange(entry, parseInt(e.target.value))}
-                    className="text-[10px] bg-surface-card border border-line rounded px-1 py-0.5 text-fg-muted outline-none"
-                  >
-                    {ALL_GIFT_STATUSES.map(s => (
-                      <option key={s} value={s}>{GIFT_STATUS_LABELS[s]}</option>
-                    ))}
-                  </select>
-                  <button onClick={() => onRemove(entry.id)} className="text-xs text-fg-muted hover:text-red-500 ml-2">x</button>
-                </div>
-              </div>
-              {entry.notes && <p className="text-xs text-fg-muted italic">{entry.notes}</p>}
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
+              </SwipeToDelete>
+            ))}
+          </li>
+        ))}
+    </ul>
   );
 }
 
