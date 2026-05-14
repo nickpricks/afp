@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { CONFIG } from '@/constants/config';
+
 export interface ConsoleEntry {
   id: number;
   level: string;
@@ -46,7 +48,7 @@ function ConsoleEntryList({ entries, clear }: { entries: ConsoleEntry[]; clear: 
       .join('\n');
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), CONFIG.TIMINGS.COPY_FEEDBACK_MS);
     });
   };
 

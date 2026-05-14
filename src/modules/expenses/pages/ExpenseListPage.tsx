@@ -16,6 +16,7 @@ import { useListControls } from '@/shared/hooks/useListControls';
 import { todayStr } from '@/shared/utils/date';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
+import { PaymentMethod } from '@/shared/types';
 
 type BudgetTab = 'expenses' | 'income' | 'auto' | 'reconcile';
 
@@ -94,6 +95,10 @@ export function ExpenseListPage() {
               amount: input.amount,
               note: input.note,
               meta: input.meta,
+              // Auto tab is a quick-add for vehicle expenses with no payment-method picker.
+              // The default is set explicitly here (not silently in the hook) so the choice
+              // is visible at the call site; a future picker would replace this default.
+              paymentMethod: PaymentMethod.UpiBankAccount,
             })
           }
           onUpdate={updateExpense}

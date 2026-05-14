@@ -14,10 +14,10 @@ Firebase setup: `docs/firebase-setup.md`
 Branches follow a comedic narrative arc around the April Fools origin story — each name is a chapter beat. Pick from the available queue; **don't burn reserved names on routine work** (they announce the saga's ending).
 
 **Used so far** (chronological):
-`the-prank` → `no-joke` → `joke-landed` → `last-laugh` → `the-plan-thickens` → `the-foolproof-alibi` → `exhibit-a` → `alibi-has-holes` (fix) → `exhibit-b` → `the-atmosphere-thickens` → `dialing-it-in` → `the-fine-print` → `who-planned-it`
+`the-prank` → `no-joke` → `joke-landed` → `last-laugh` → `the-plan-thickens` → `the-foolproof-alibi` → `exhibit-a` → `alibi-has-holes` (fix) → `exhibit-b` → `the-atmosphere-thickens` → `dialing-it-in` → `the-fine-print` → `the-rehearsal`
 
 **Available next** (comedy-flashback queue, pick from these for upcoming branches):
-`what-was-the-joke`, `the-flaw-in-the-plan`, `the-rehearsal`, `the-original-script`, `where-it-all-began`
+`what-was-the-joke`, `who-planned-it`, `the-flaw-in-the-plan`, `the-original-script`, `where-it-all-began`
 
 **Reserved — DO NOT USE on routine PRs** (trial-ending beats, save for the actual saga wrap):
 `cross-examination`, `closing-arguments`, `the-jury-deliberates`, `the-verdict`, `the-sentence`, `sealing-the-record`, `case-closed`
@@ -40,6 +40,16 @@ All branches are prefixed `feat/` (or `fix/` for hotfixes). Use `git for-each-re
 - `bun run dev -- --port 3005 --host` — dev server on custom port with network access (for Chrome DevTools MCP)
 
 Package manager: **bun** (not npm/yarn). Cross-platform scripts use **shx** (not bash).
+
+## Dependency Posture — Stabilize (decided 2026-05-07)
+
+**Path B: stabilize.** Pin major versions aggressively; prioritize "runs in 5 years with minimal touching" over "stay on the bleeding edge."
+
+- **Don't proactively upgrade major versions** unless an upstream security issue forces it. Locked majors today: React 19, Firebase 12, react-router 7, Vitest 4, Bun 1.x.
+- **Two majors flagged for downgrade** when convenient: Tailwind CSS v4 → v3 LTS (proven plugin ecosystem, mature docs), Vite v8 → v6 (stable plugin compatibility). Tracked but not blocking.
+- **Vendor third-party dependencies** that the project's identity depends on. Google Fonts get vendored via `fontsource-cli` (tracked as a pending task) so atmosphere/typography don't break if Google's CDN moves. Same posture for any future CDN-loaded asset.
+- **Minor + patch upgrades are fine** — they're contracted as backwards compatible. Only major bumps need a deliberate decision.
+- **Chase posture rationale was rejected**: AFP is a personal long-lived PWA, not a learn-the-stack portfolio piece. Upgrade-tax cost compounds; preservation of working state compounds in the other direction.
 
 ## Architecture
 
@@ -92,8 +102,8 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Fonts (8 families)**: Syne, Orbitron, JetBrains Mono, Quicksand, Nunito, DM Serif Display, Playfair Display, Cinzel — loaded via Google Fonts `<link>` in `index.html`
 - **Font application**: `applyTheme()` sets `--font-display` and `--font-body` CSS variables on `<html>` from `THEME_DEFINITIONS.fonts`
 - **Ambient effects (9 types)**: snowflakes (Family Blue), leaves (Garden Path), stars (Lullaby), hearts (Rose Quartz), ink/footprints (Marauder's Map), scanline (Neon Glow), crt+bubbles (Deep Mariana), embers (Industrial Furnace), wisps (Expecto Patronum). Charcoal has none (minimal by design)
-- **Effect configuration**: Per-theme defaults in `THEME_DEFINITIONS.effects`. User can override particle count (0-10) and size (small/medium/large) in Profile. Stored in `UserProfile`
-- **Theme picker UX**: Inline expandable section in Profile — "Customize Theme" button expands to 2-col mini showcase grid + effect sliders
+- **Effect configuration**: Per-theme defaults in `THEME_DEFINITIONS.effects`. User can override `effectIntensity` (0–100, bucketed to 5 tiers) and `effectSize` (70/100/140 = Small/Medium/Large) in Profile. Stored on `UserProfile`. Mobile viewport auto-shrinks via `useViewportSizeMultiplier` (0.65× under `CONFIG.MOBILE_BREAKPOINT_PX`); compounds with `effectSize` on `--fx-size` only (`--fx-scale` is depth-only to avoid double-multiplier)
+- **Theme picker UX**: Inline expandable section in Profile — "Customize" button expands to 2-col mini showcase grid + intensity tier picker (5 buttons) + size tier picker (3 buttons)
 - Theme class derived via `themeClass(id)` — never hardcode `theme-{name}` strings
 - `CONFIG.DEFAULT_THEME` is typed as `ThemeId` — compile-time checked
 - `applyTheme(themeId, colorMode)` applies to `<html>`, `useActiveThemeId()` reads it
@@ -121,6 +131,14 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Tests**: vitest in `__tests__/` dirs. `src/test-setup.ts` loads jest-dom matchers. Test files excluded from tsconfig. E2E in `e2e/` (excluded from vitest).
 - **Refs for async callbacks**: When `useCallback` needs current state in an async flow, use a ref (`fooRef.current`) alongside `useState` — avoids stale closures
 - **Prettier**: Formatting owned by Prettier (`.prettierrc`). `bun run format` to format all, `bun run format:check` for CI. ESLint via `eslint-config-prettier` — no formatting rules in ESLint
+- **Tier picker idiom — `bucketX(value) + X_TIERS`**: For any user-facing dimension that the UI exposes as discrete tiers but storage holds as raw numeric values (intensity 0–100, particle effect size 70–140, future motion speed, etc.), follow the established pattern in `src/shared/utils/intensity.ts` + `effectSize.ts`:
+  1. Export a `readonly` array of `{ value: number; label: string }` tiers (`INTENSITY_TIERS`, `EFFECT_SIZE_TIERS`)
+  2. Export a `bucketX(value: number | undefined): number` function that maps any numeric value to the nearest tier value (derive boundaries from tier midpoints — `Math.floor((LOW + MID) / 2)` etc. — so renaming a tier value updates the buckets automatically)
+  3. The UI picker (`<IntensityTierPicker>`, `<SizeTierPicker>`) uses `bucketX(stored)` for the active-state highlight — legacy values bucket on read; no migration script needed
+  4. The consumer that actually applies the value (e.g. `<AmbientEffects>`) reads either the raw stored value (drift accepted) or the bucketed value (display + render align — see `Layout.tsx` passing `bucketEffectSize(profile.effectSize)`)
+  5. Tier labels are derived from the constant in tests/E2E too (`INTENSITY_TIERS[2].label` instead of `'Standard'`) so renames don't break tests
+- **Firebase import boundary** (invariant — same severity as "no `||` for env vars"): No file outside `src/shared/storage/` and `src/shared/auth/` may import from `firebase/*`. The `StorageAdapter` interface is the only sanctioned conduit. Today's privileged paths (transactions, collection-group queries, batched writes) leak Firebase straight to call sites; the day Firebase divorce becomes necessary, the search-and-replace surface should be one file, not forty. ESLint enforcement (`no-restricted-imports`) tracked as a future Chanakya task; documenting the rule here unblocks new work from drifting further.
+- **Numeric enum stability** (invariant — same severity): `PaymentMethod`, `ExpenseCategory`, `IncomeSource`, `FeedType`, `SleepType`, `SleepQuality`, `DiaperType`, etc. are stored as integers in Firestore. **Never insert a member.** **Always append.** Renaming a member's label is fine; renumbering its value is a migration. Inserting at position 3 silently re-categorizes every historical row that was written when position 3 meant something else. When in doubt, append at the end and accept a non-sequential ordering — data integrity beats source-code aesthetics.
 
 ## 20-Point Audit Violations (from `docs/revz/nick-review-20-points.md`)
 

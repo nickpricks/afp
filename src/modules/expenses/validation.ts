@@ -69,7 +69,9 @@ export function validateIncome(input: {
     return err(ValidationMsg.DateFormat);
   }
 
-  const validSources = Object.values(IncomeSource);
+  const validSources = Object.values(IncomeSource).filter(
+    (v): v is number => typeof v === 'number',
+  );
   if (!validSources.includes(input.source)) {
     return err(ValidationMsg.UnknownIncomeSource);
   }

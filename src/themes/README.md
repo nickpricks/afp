@@ -42,7 +42,8 @@ CSS custom properties per theme, mapped to Tailwind via `@theme` in index.css.
 ## Design notes
 
 - **Charcoal ships with `effects: []` by design.** It is the deliberate quiet zone for users who want zero ambient motion or decoration — minimal aesthetic, minimal noise. Do not "fix" the empty effects array by adding a default; the absence is the feature.
-- **Per-effect glyphs are emoji today** — this is a known tonal mismatch for several themes (e.g. `❤️` against Playfair Display) and is targeted for replacement with shape primitives in a later phase.
+- **Glyphs are shape primitives via `<GlyphPrimitive>`** for 8 effects (snowflakes/leaves as SVG, stars/hearts/ink/bubbles/embers/wisps as pure CSS). Patronus animals stay as filtered emoji because their silvery filter abstracts them out of any direct register clash with the theme typography. Glyphs render at `GLYPH_INNER_SIZE` (80%) of the particle container to match the visual cell padding of emoji content.
+- **Atmosphere ×9 themes** ship a CSS-only `body.theme-X::before` (and optional `::after`) layer running behind content. Charcoal stays silent. Each theme honors `prefers-reduced-motion` per-theme.
 
 ## Adding a Theme
 

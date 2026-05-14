@@ -123,8 +123,8 @@ One document per user. Created on invite redemption or admin claim.
 | `viewerOf` | string \| null | `null` | Target UID (viewer role only) |
 | `theme` | string | `"family-blue"` | Active theme ID |
 | `colorMode` | string | `"system"` | `"light"`, `"dark"`, or `"system"` |
-| `effectCount` | number | `5` | Ambient effect particle count (0-10) |
-| `effectSize` | string | `"medium"` | `"small"`, `"medium"`, or `"large"` |
+| `effectIntensity` | number | `50` | Ambient particle quantity (0–100, bucketed via `bucketIntensity()` to Off/Subtle/Standard/Lively/Maximum tiers on display) |
+| `effectSize` | number \| undefined | `100` | Ambient particle size multiplier (70/100/140 = Small/Medium/Large; legacy or absent values resolve to `EFFECT_SIZE_DEFAULT` via `bucketEffectSize()` in `Layout.tsx`) |
 | `modules` | map | `{ body: true, budget: true, baby: false }` | Module access (admin-controlled) |
 | `requestedModules` | array | `["baby"]` | Modules user has requested access to |
 | `createdAt` | string | `"2026-04-10T12:00:00Z"` | ISO 8601 |

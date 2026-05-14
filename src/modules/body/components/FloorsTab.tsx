@@ -248,13 +248,12 @@ export function FloorsTab({
                 return (
                   <div key={dateKey}>
                     <DateGroupHeader date={dateKey} today={today} />
-                    {onDeleteRecord ? (
+                    {onDeleteRecord && (
                       <SwipeToDelete onDelete={() => handleDelete(dateKey)}>
                         {rowContent}
                       </SwipeToDelete>
-                    ) : (
-                      rowContent
                     )}
+                    {!onDeleteRecord && rowContent}
                   </div>
                 );
               });

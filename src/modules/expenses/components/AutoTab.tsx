@@ -84,7 +84,7 @@ export function AutoTab({
     if (!meta || !formKind) return;
     const amt = Number(amount);
     if (!amt || amt <= 0) {
-      addToast(BudgetMsg.CategoryRequired, ToastType.Error);
+      addToast(BudgetMsg.AmountRequired, ToastType.Error);
       return;
     }
 
