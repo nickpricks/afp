@@ -4,6 +4,28 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.20] — 2026-05-14 (Kids Presents v2 — gifts + finances per child + Budget aggregation)
+
+> Skipped 0.2.19 — that slot is claimed by `feat/the-rehearsal` (unmerged).
+
+### Added
+
+- **Kids Presents v2** — finishing pass on the kids presents feature. Two new subcollections under each child: `gifts` (physical objects) and `finances` (money). Per-child tracking via a new `🎁` tab in `ChildDetail` (icon-only label by design). New "Kids" tab in `ExpenseListPage` (`/budget`), gated on `profile.modules.baby`, showing a read-only aggregate of all kids' money with a "Total Kid Wealth" pill (sum of `Received + Saved`, excludes `Spent`). Spent→Expense bridge via a confirm modal (`ConfirmExpenseModal`): marking a finance entry as Spent prompts the user to log a matching Budget expense. Viewer-mode supported (linked users see the owner's kids' presents). 24 new tests across `presents-math` (6), `useAllKidsFinances` (5), `KidsFinanceTab` (4), `ConfirmExpenseModal` (5), and `PresentsLog` (4).
+- **AddChild Presents checkbox** — enables the feature per-child during child creation.
+
+### Fixed
+
+- `useAllKidsFinances` now waits for ALL children to report before flipping `loading=false` (previous behavior flashed incomplete totals for multi-kid families).
+- `PresentsLog` no longer leaks `ListControls` page state between Finances and Gifts sub-tabs (per-sub-tab `useListControls` instances).
+- `PresentsLog` delete actions now use `SwipeToDelete` wrapper + 10s undo toast (CLAUDE.md house rule).
+- All `PresentsLog` and `KidsFinanceTab` toast strings now use `BabyMsg.*` / `BudgetMsg.*` enums (no raw strings).
+- `react-hooks/set-state-in-effect` violation in `useAllKidsFinances` resolved via derived `loading` from `useMemo`.
+
+### Notes / Design Discoveries
+
+- **Firestore rules** — no new rule blocks needed. The existing wildcard `match /{sub}/{docId}` inside `users/{userId}/children/{childId}` already protects `gifts` and `finances`.
+- **`linkedExpenseId` deferred** — `useExpenses.addExpense` doesn't surface the created expense id, so the spec's bidirectional Finance↔Expense link is not yet implemented. Spent→Expense bridge still works (expense created, status flipped) but without a back-link. Tracked for a future pass.
+
 ## [0.2.19] — 2026-05-07 (The Rehearsal: review-finding response + doc sweep)
 
 `feat/the-rehearsal` — addressed 23 of 24 review-finding tasks from `docs/revz/2026-05-01-the-fine-print-{march-in,nattu-kaka,sharma-ji}.md` plus 1 Chanakya tactical from `docs/revz/2026-05-01-who-planned-it-chanakya.md`. No user-visible feature changes; one user-visible bug fix (mobile particle size).
@@ -62,12 +84,6 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 - All 23 fine-print review-finding tasks done (P0×4, P1×5, P2×9, P3×4 + #25 resolved upstream). Skipped: none.
 - One Chanakya tactical (#38) included; structural items #27/#30/#32/#33 etc. deferred to future branches per the comedy-arc queue.
 - Branch: `feat/the-rehearsal`. Tag candidate: `v0.2.19`.
-
-### Reviewer reports archived
-- `docs/revz/2026-05-01-the-fine-print-march-in.md` (drill sergeant — 4 SOP violations)
-- `docs/revz/2026-05-01-the-fine-print-nattu-kaka.md` (TS/React blunt mode — 9 punch-list items)
-- `docs/revz/2026-05-01-the-fine-print-sharma-ji.md` (mentor — testing gaps + SOLID + DRY)
-- `docs/revz/2026-05-01-who-planned-it-chanakya.md` (whole-repo strategic — Firebase coupling, data export, schema versioning, dependency posture)
 
 ---
 

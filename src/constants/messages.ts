@@ -43,6 +43,9 @@ export enum BudgetMsg {
   IncomeAdded = 'Income added',
   IncomeDeleted = 'Income deleted',
   CategoryRequired = 'Please select a category',
+  KidsTabEmpty = 'No kid finances yet',
+  KidsExpenseLogged = 'Logged as expense',
+  KidsExpenseLogFailed = 'Failed to log expense',
   PaymentMethodRequired = 'Please select a payment method',
   AmountRequired = 'Please enter a valid amount',
 }
@@ -95,6 +98,13 @@ export enum BabyMsg {
   SuggestionSnoozed = 'Suggestion snoozed for 30 days',
   SuggestionEnabled = 'Module enabled',
   SuggestionDisabled = 'Module disabled',
+  PresentFinanceSaved = 'Finance entry saved',
+  PresentFinanceUpdated = 'Finance entry updated',
+  PresentFinanceDeleted = 'Finance entry deleted',
+  PresentGiftSaved = 'Gift saved',
+  PresentGiftUpdated = 'Gift updated',
+  PresentGiftDeleted = 'Gift deleted',
+  PresentTitleRequired = 'Description/Title is required',
 }
 
 /** Profile-related messages */

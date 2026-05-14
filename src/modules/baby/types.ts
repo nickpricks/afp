@@ -80,6 +80,21 @@ export enum NeedStatus {
   Outgrown = 2,
 }
 
+/** Gift lifecycle status */
+export enum GiftStatus {
+  Wishlist = 0,
+  Received = 1,
+  Used = 2,
+  Outgrown = 3,
+}
+
+/** Finance entry status */
+export enum FinanceStatus {
+  Received = 0,
+  Saved = 1,
+  Spent = 2,
+}
+
 /** Milestone category — developmental/life event grouping */
 export enum MilestoneCategory {
   Motor = 0,
@@ -109,6 +124,7 @@ export type ChildConfig = {
   potty?: boolean; // NEW — Potty mode of elimination subcollection
   milestones?: boolean; // NEW — Milestones module (Plan 6)
   needs?: boolean; // NEW — Needs module
+  presents?: boolean; // NEW — Presents module (Finances + Gifts)
 };
 
 /** A child profile in the children collection */
@@ -210,6 +226,36 @@ export type NeedEntry = {
   category: NeedCategory;
   status: NeedStatus;
   notes: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Physical gift entry (objects) */
+export type GiftEntry = {
+  id: string;
+  date: string;
+  title: string;
+  giver: string;
+  occasion: string;
+  status: GiftStatus;
+  notes: string;
+  timestamp: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Financial gift entry (money) */
+export type FinanceEntry = {
+  id: string;
+  date: string;
+  amount: number;
+  description: string;
+  giver: string;
+  occasion: string;
+  status: FinanceStatus;
+  notes: string;
+  linkedExpenseId?: string;
+  timestamp: string;
   createdAt: string;
   updatedAt: string;
 };
