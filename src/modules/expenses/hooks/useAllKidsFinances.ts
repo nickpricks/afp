@@ -10,50 +10,56 @@ export type KidsFinanceEntry = FinanceEntry & {
   childName: string;
 };
 
-/** Aggregates financial entries across all children */
-export function useAllKidsFinances() {
-  const { children, loading: kidsLoading } = useChildren();
+/** Aggregates financial entries across all children. Optional targetUid for viewer mode. */
+export function useAllKidsFinances(targetUid?: string) {
+  const { children, loading: kidsLoading } = useChildren(targetUid);
   const { firebaseUser } = useAuth();
+  const ownerUid = targetUid ?? firebaseUser?.uid ?? null;
+
   const [entries, setEntries] = useState<KidsFinanceEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (kidsLoading || !firebaseUser) return;
+    if (kidsLoading || !ownerUid) return;
 
-    const unsubscribes: (() => void)[] = [];
+    if (children.length === 0) {
+      setEntries([]);
+      setLoading(false);
+      return;
+    }
+
+    const unsubscribes: Array<() => void> = [];
     const allEntriesMap: Record<string, KidsFinanceEntry[]> = {};
+    const readyMap: Record<string, true> = {};
 
     children.forEach((child) => {
       const childId = child.id!;
-      const adapter = createAdapter(childPath(firebaseUser.uid, childId));
-      
+      const adapter = createAdapter(childPath(ownerUid, childId));
+
       const unsub = adapter.onSnapshot<FinanceEntry>(
         DbSubcollection.Finances,
         (data) => {
-          allEntriesMap[childId] = data.map(e => ({
+          allEntriesMap[childId] = data.map((e) => ({
             ...e,
             childId,
             childName: child.name,
           }));
-          
-          // Merge all entries
-          const merged = Object.values(allEntriesMap).flat();
-          setEntries(merged);
-          setLoading(false);
+          readyMap[childId] = true;
+
+          setEntries(Object.values(allEntriesMap).flat());
+          if (Object.keys(readyMap).length === children.length) {
+            setLoading(false);
+          }
         },
         (error) => {
           console.error(`[AFP] Error fetching finances for child ${childId}:`, error);
-        }
+        },
       );
       unsubscribes.push(unsub);
     });
 
-    if (children.length === 0) {
-      setLoading(false);
-    }
-
-    return () => unsubscribes.forEach(unsub => unsub());
-  }, [children, kidsLoading, firebaseUser]);
+    return () => unsubscribes.forEach((unsub) => unsub());
+  }, [children, kidsLoading, ownerUid]);
 
   return { entries, loading };
 }
