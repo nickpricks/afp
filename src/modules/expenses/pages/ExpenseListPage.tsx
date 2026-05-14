@@ -72,6 +72,11 @@ export function ExpenseListPage() {
           isActive={activeTab === 'income'}
           onClick={() => setActiveTab('income')}
         />
+        <TabButton
+          label="CC"
+          isActive={activeTab === 'reconcile'}
+          onClick={() => setActiveTab('reconcile')}
+        />
         {babyEnabled && (
           <TabButton
             label="Kids"
@@ -83,11 +88,6 @@ export function ExpenseListPage() {
           label="Auto"
           isActive={activeTab === 'auto'}
           onClick={() => setActiveTab('auto')}
-        />
-        <TabButton
-          label="CC"
-          isActive={activeTab === 'reconcile'}
-          onClick={() => setActiveTab('reconcile')}
         />
       </div>
 

@@ -128,7 +128,7 @@ export function PresentsLog({ childId, uid }: Props) {
         status: FinanceStatus.Spent,
         updatedAt: now,
       });
-      addToast(BudgetMsg.KidsExpenseLogged, ToastType.Success);
+      // No outer toast — addExpense already fires BudgetMsg.ExpenseAdded on success.
     } else {
       addToast(BudgetMsg.KidsExpenseLogFailed, ToastType.Error);
     }
@@ -138,7 +138,11 @@ export function PresentsLog({ childId, uid }: Props) {
   /** Called when user chooses to mark as Spent without logging a Budget expense */
   const handleSkipExpense = () => {
     if (!pendingSpent) return;
-    finances.update({ ...pendingSpent, status: FinanceStatus.Spent });
+    finances.update({
+      ...pendingSpent,
+      status: FinanceStatus.Spent,
+      updatedAt: new Date().toISOString(),
+    });
     setPendingSpent(null);
   };
 

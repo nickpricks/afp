@@ -4,7 +4,9 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
-## [Unreleased]
+## [0.2.20] — 2026-05-14 (Kids Presents v2 — gifts + finances per child + Budget aggregation)
+
+> Skipped 0.2.19 — that slot is claimed by `feat/the-rehearsal` (unmerged).
 
 ### Added
 
