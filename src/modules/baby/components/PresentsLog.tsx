@@ -120,6 +120,7 @@ export function PresentsLog({ childId, uid }: Props) {
       category: ExpenseCategory.Gifts,
       subCat: '',
       amount: pendingSpent.amount,
+      paymentMethod: null,
       note: pendingSpent.description,
     });
     if (success) {
