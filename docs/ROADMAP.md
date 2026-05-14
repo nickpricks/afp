@@ -19,7 +19,7 @@ Last updated: 2026-05-14
 | Phase 2f (Themes) | ✅ Enhanced | 20/20 | 10 themes, 8 font families, 10 ambient effects, granular intensity (0-100%), loading screen |
 | Phase 2g (E2E + Bench) | ✅ Done | 8/8 | Interactive E2E flows + build/bundle/test benchmarks |
 | Phase 2h (Universal list controls + Daily Ledger) | ✅ Done | 16/16 | Time-range filter + per-list page size + page jump + show-all footer + sticky day headers + magnitude bar (Floors) across 11 list surfaces (Broadcasts list pending) |
-| Phase 2i (Themes 2.0 — Atmosphere & Glyphs) | ✅ Done | 20/20 | Atmosphere ×9 themes (Charcoal silent), 8 shape-primitive glyphs, depth-correlated scaling, tier-button slider, DevBench catch-up + Theme Tour. Phase 2j (Iconography) split as separate future spec. |
+| Phase 2i (Themes 2.0 — Atmosphere & Glyphs) | ✅ Done | 20/20 | Atmosphere ×9 themes (Charcoal silent), 8 shape-primitive glyphs, depth-correlated scaling, intensity tier picker (5) + size tier picker (3), viewport-aware multiplier, DevBench catch-up + Theme Tour. Phase 2j (Iconography) split as separate future spec. |
 | Phase 3 (Baby → Kid) | 🚧 In progress | 7/10 | Brainstorm A (Baby→Kid) done: Plans 1-7 shipped (Foundation, Suggestions, Elimination, Meals, Needs, Milestones, Life Journal). Plans 8-9 deferred. Plan 10 = Yoga = Brainstorm C — see **Pending Brainstorms** block below |
 | Phase 3 (Baby → Kids Presents v2) | ✅ Done | —/— | Kids Presents feature shipped 2026-05-14: per-child gift/finance tracking, Kids tab in Budget, Spent→Expense bridge, viewer mode. See spec + implementation plan. |
 | **Total** | **~99%** | **209/226** | |
@@ -209,6 +209,20 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 - [x] **Spec / Plan** — `docs/specs/2026-05-14-kids-presents-design-v2.md` + `docs/plans/2026-05-14-kids-presents-*.md` (13 tasks shipped)
 
 ---
+
+### 2026-05-07 — Session 21 (The Rehearsal: review-finding response + doc sweep, v0.2.19)
+
+`feat/the-rehearsal` — addressed 23 of 24 review-finding tasks from `docs/revz/2026-05-01-the-fine-print-{march-in,nattu-kaka,sharma-ji}.md` plus 1 Chanakya tactical (#38). No new feature scope; one user-visible bug fix (mobile particle size).
+
+- [x] **Real bug fixed** — `--fx-scale` × `--fx-size` double-multiplier compounding (sharma-ji). Mobile now renders particles at 0.65× of desktop (was 0.42× — 23% short of intended). `--fx-scale` is depth-only; `--fx-size` carries the multiplier.
+- [x] **P0 magic-number consensus** (3-of-3 reviewer agreement): `EFFECT_SIZE_DEFAULT` constant + 3 callsites, `bucketEffectSize` boundaries derived from tier midpoints, viewport multiplier constants extracted, `||` → `??` on `existingProfile?.modules`
+- [x] **P1 API hygiene**: `saveAppearance` → options-object signature (`AppearanceSettings = Pick<UserProfile, 'theme' | 'colorMode' | 'effectIntensity' | 'effectSize'>`); silent-fail saves now log via `verr('[AFP:profile:save]', …)`; `useMatchMedia` extracted; `useViewportSizeMultiplier` promoted to `src/shared/hooks/`; `GLYPH_INNER_SIZE = '80%'` constant
+- [x] **P2 audits + refactors + tests**: bucket-on-display drift fixed via consumer-side `bucketEffectSize` in `Layout.tsx`; `GlyphWrapper` collapsed to single-percentage layer; glyph styles hoisted to module-level consts; `expect.poll` replaces `waitForTimeout(300)`; new `effectSize-roundtrip.test.ts`, `ProfilePage.silent-fail.test.tsx`, reduced-motion×size interaction tests, picker→effect E2E
+- [x] **P3 polish**: `stubMatchMedia(mode)` helper hoisted in AmbientEffects.test.tsx; E2E theme/intensity/size labels derived from constants; `bucketX + X_TIERS` idiom documented in CLAUDE.md; `MOBILE_BREAKPOINT_PX` promoted to `constants/config.ts`
+- [x] **Chanakya tactical #38** — `VITE_APP_VERSION` derived from `package.json` in deploy.yml. Prevents the 3-version literal drift Chanakya flagged.
+- [x] **Doc sweep — 11 files** — root `README.md`, `CLAUDE.md`, `docs/firebase-data-structure.md`, 8 per-directory READMEs updated to current Phase 2i terminology. Removed obsolete "per-effect glyphs are emoji today" note (false since v0.2.17). Fixed `effectCount` → `effectIntensity` + `effectSize` typed as number across data-structure docs. `bucketX + X_TIERS` idiom documented.
+- [x] **Tests**: 637 → 648 unit (+11), 81 → 82 E2E (+1)
+- [x] **Version**: 0.2.18 → 0.2.19
 
 ### 2026-05-04 — Session 20 (Budget — Auto tab: fuel, travel, maintenance, v0.2.18)
 

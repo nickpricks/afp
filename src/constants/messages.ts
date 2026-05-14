@@ -46,6 +46,8 @@ export enum BudgetMsg {
   KidsTabEmpty = 'No kid finances yet',
   KidsExpenseLogged = 'Logged as expense',
   KidsExpenseLogFailed = 'Failed to log expense',
+  PaymentMethodRequired = 'Please select a payment method',
+  AmountRequired = 'Please enter a valid amount',
 }
 
 /** Body module messages */
@@ -112,6 +114,7 @@ export enum ProfileMsg {
   UsernameTaken = 'Username is already taken',
   UsernameClaimFailed = 'Failed to claim username',
   UsernameReleaseFailed = 'Failed to release username',
+  UsernameSaveFailed = 'Failed to save username — please retry',
   ThemeSaved = 'Theme updated',
   ThemeSaveFailed = 'Failed to save theme',
   ColorModeSaveFailed = 'Failed to save color mode',

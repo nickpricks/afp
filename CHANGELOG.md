@@ -26,6 +26,65 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 - **Firestore rules** — no new rule blocks needed. The existing wildcard `match /{sub}/{docId}` inside `users/{userId}/children/{childId}` already protects `gifts` and `finances`.
 - **`linkedExpenseId` deferred** — `useExpenses.addExpense` doesn't surface the created expense id, so the spec's bidirectional Finance↔Expense link is not yet implemented. Spent→Expense bridge still works (expense created, status flipped) but without a back-link. Tracked for a future pass.
 
+## [0.2.19] — 2026-05-07 (The Rehearsal: review-finding response + doc sweep)
+
+`feat/the-rehearsal` — addressed 23 of 24 review-finding tasks from `docs/revz/2026-05-01-the-fine-print-{march-in,nattu-kaka,sharma-ji}.md` plus 1 Chanakya tactical from `docs/revz/2026-05-01-who-planned-it-chanakya.md`. No user-visible feature changes; one user-visible bug fix (mobile particle size).
+
+### Fixed
+- **`--fx-scale` × `--fx-size` double-multiplier** (sharma-ji tight-coupling). `sizeMultiplier` was applied to BOTH `--fx-scale` (used in `transform: scale()`) AND `--fx-size` (used as `font-size`). On mobile this compounded: 0.65 × 0.65 = 0.42 of desktop, not the intended 0.65. Fix: `--fx-scale` is now depth-only (parallax illusion, viewport-independent); `--fx-size` carries the multiplier (absolute pixels).
+- **Bucket-on-display drift** (sharma-ji data-integrity). For stored values that aren't tier-exact (e.g., legacy `effectSize: 60`), `<SizeTierPicker>` highlighted "Small" but `<AmbientEffects>` rendered the raw 60 (drift up to 14%). Fix: `Layout.tsx` now passes `bucketEffectSize(profile.effectSize)` so render and display align. Storage stays raw.
+
+### Changed — magic-number cleanup (P0 — all 3 reviewers consensus)
+- **`EFFECT_SIZE_DEFAULT` exported from `effectSize.ts`** — replaces 3 hardcoded `100` literals in `AmbientEffects.tsx`, `Layout.tsx`, `ProfilePage.tsx`.
+- **`bucketEffectSize` boundaries derived from tier midpoints** — `Math.floor((SMALL+MEDIUM)/2)` and `Math.ceil((MEDIUM+LARGE)/2)` instead of hardcoded `<= 84` / `>= 121`. Renaming a tier value updates the buckets automatically. Existing test contract preserved.
+- **Viewport multiplier constants extracted** — `MOBILE_PARTICLE_MULTIPLIER`, `DESKTOP_PARTICLE_MULTIPLIER`, `MOBILE_BREAKPOINT_PX` (now in `CONFIG.MOBILE_BREAKPOINT_PX`, matches Tailwind's `sm:`).
+- **`||` → `??`** on `existingProfile?.modules` in `ProfilePage.tsx:69`.
+
+### Changed — API hygiene (P1)
+- **`saveAppearance` → options-object signature** (march-in / nattu-kaka / sharma-ji SOLID). Was `(uid, theme, colorMode, intensity, size, profile)` — 6 positional params, swap-bug risk on the two `number` types. Now `(uid, settings: AppearanceSettings, existing)` where `AppearanceSettings = Pick<UserProfile, 'theme' | 'colorMode' | 'effectIntensity' | 'effectSize'>`. Future appearance dimensions are a one-line union change instead of a positional fan-out.
+- **Silent-fail saves now log via `verr('[AFP:profile:save]', field, err)`** — slider/picker rejections still don't toast (would DoS the UI on drag), but `verr` always logs to `console.error` so a Firestore permission regression isn't invisible.
+- **`useMatchMedia(query)` extracted** to `src/shared/hooks/useMatchMedia.ts`. Generic CSS media-query subscriber; `usePrefersReducedMotion` and `useViewportSizeMultiplier` consume it directly.
+- **`useViewportSizeMultiplier` promoted** to `src/shared/hooks/useViewportSizeMultiplier.ts`. Single-responsibility hook, viewport→multiplier transform.
+- **`GLYPH_INNER_SIZE = '80%'` constant** in `glyph-primitives.tsx` replaces 16 inline `'80%'` / `"80%"` literals.
+
+### Changed — refactors (P2)
+- **`GlyphWrapper` simplified to single-percentage layer** — wrapper at 80% of particle container, inner shapes at 100% of wrapper. Was wrapper-100% × inner-80% (double-percent indirection). Visually identical, less mental layering.
+- **Glyph styles hoisted to module-level consts** — `STAR_STYLE`, `HEART_LEFT_LOBE_STYLE`, etc. Avoids per-render fresh-object allocation when N=20+ particles are mounted.
+
+### Changed — test hygiene (P3)
+- **`stubMatchMedia(mode)` helper** in `AmbientEffects.test.tsx` — single hoisted helper replaces 8 duplicated `vi.stubGlobal('matchMedia', …)` blocks across 5 describe groups.
+- **E2E theme/intensity/size labels derived** from `INTENSITY_TIERS` / `EFFECT_SIZE_TIERS` constants. Renaming a tier no longer breaks tests.
+- **`waitForTimeout(300)` replaced with `expect.poll(sampleAvgSize)`** in `e2e/the-fine-print.spec.ts`. Deterministic; faster on healthy systems, no flake on slow CI.
+
+### Changed — Chanakya tactical
+- **`VITE_APP_VERSION` derived from `package.json`** in `.github/workflows/deploy.yml`. New step exports `VITE_APP_VERSION=v$(node -p "...")` to `$GITHUB_ENV`. Prevents the 3-version literal drift Chanakya flagged.
+
+### Added
+- **`useMatchMedia.ts`** — generic CSS media-query subscriber (returns `false` outside browser environments).
+- **`useViewportSizeMultiplier.ts`** — `0.65` on mobile, `1.0` on desktop. Built on `useMatchMedia`.
+- **`EFFECT_SIZE_DEFAULT`** — exported from `effectSize.ts`, derived from `EFFECT_SIZE_TIERS[1].value` (Medium = 100).
+- **`CONFIG.MOBILE_BREAKPOINT_PX`** — 640, matches Tailwind's `sm:` breakpoint.
+- **`bucketX + X_TIERS` design idiom documented in CLAUDE.md** — formal pattern for any tier-exposed-but-raw-stored UI dimension. Both `INTENSITY_TIERS`/`bucketIntensity` and `EFFECT_SIZE_TIERS`/`bucketEffectSize` follow it.
+
+### Tests
+- **Unit**: 637 → 648 (+11)
+  - **`effectSize-roundtrip.test.ts`** (new, 5 tests) — locks `UserProfile.effectSize` persistence: round-trip via localStorage adapter, legacy-absent-field path, idempotent tier round-trip, non-tier value buckets-on-display.
+  - **`ProfilePage.silent-fail.test.tsx`** (new, 2 tests) — locks the contract: when `adapter.save` rejects, `verr` is called with the prefix; no user-facing toast fires.
+  - **AmbientEffects reduced-motion × effectSize interaction** (4 new parametric tests) — guards against future regressions where size logic runs before reduced-motion check.
+- **E2E**: 81 → 82 (+1)
+  - **Picker → AmbientEffects pipeline** — clicks `Large`, navigates to dashboard, polls `--fx-size` until larger than Medium baseline. Locks the user-flow path that wasn't covered by the viewport-scaling test.
+
+### Documentation
+- **Comprehensive README/docs sweep** — 11 files updated to reflect Phase 2i + the-rehearsal terminology: root `README.md`, `CLAUDE.md`, `docs/firebase-data-structure.md`, 8 per-directory READMEs (`shared/`, `shared/hooks/`, `shared/components/`, `shared/utils/`, `shared/storage/`, `constants/`, `themes/`, `e2e/`).
+- **Removed obsolete claim** in `src/themes/README.md`: "Per-effect glyphs are emoji today" (false since Phase 2i shipped 8 shape primitives in v0.2.17).
+- **Fixed terminology drift**: `effectCount` → `effectIntensity` and `effectSize` typed as number not string in `docs/firebase-data-structure.md`; "effect sliders" → "intensity + size tier pickers" throughout.
+
+### Implementation notes
+- 22 modified + 4 new files (~370 insertions / ~240 deletions).
+- All 23 fine-print review-finding tasks done (P0×4, P1×5, P2×9, P3×4 + #25 resolved upstream). Skipped: none.
+- One Chanakya tactical (#38) included; structural items #27/#30/#32/#33 etc. deferred to future branches per the comedy-arc queue.
+- Branch: `feat/the-rehearsal`. Tag candidate: `v0.2.19`.
+
 ---
 
 ## [0.2.18] — 2026-05-04 (Budget — Auto tab: fuel, travel, maintenance)

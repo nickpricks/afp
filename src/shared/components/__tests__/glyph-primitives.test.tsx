@@ -39,46 +39,50 @@ describe('<GlyphPrimitive>', () => {
     expect(container.querySelector('svg')).toBeNull();
   });
 
-  // Fix 1: SVG glyphs render at 80% of container
-  it('snowflake SVG has width="80%"', () => {
+  // Glyph wrapper occupies 80% of the particle container; inner shapes fill the wrapper.
+  // Single-percentage layer (post-#15 refactor): wrapper carries the 80%, inner shapes are 100%.
+
+  it('snowflake wrapper is 80% with SVG filling 100%', () => {
     const { container } = render(<GlyphPrimitive effectId="snowflakes" />);
+    const wrapper = container.querySelector('[style*="display: flex"]') as HTMLElement | null;
+    expect(wrapper?.style.width).toBe('80%');
+    expect(wrapper?.style.height).toBe('80%');
     const svg = container.querySelector('svg');
     expect(svg).not.toBeNull();
-    expect(svg?.getAttribute('width')).toBe('80%');
-    expect(svg?.getAttribute('height')).toBe('80%');
+    expect(svg?.getAttribute('width')).toBe('100%');
+    expect(svg?.getAttribute('height')).toBe('100%');
   });
 
-  it('leaf SVG has width="80%"', () => {
+  it('leaf wrapper is 80% with SVG filling 100%', () => {
     const { container } = render(<GlyphPrimitive effectId="leaves" />);
+    const wrapper = container.querySelector('[style*="display: flex"]') as HTMLElement | null;
+    expect(wrapper?.style.width).toBe('80%');
+    expect(wrapper?.style.height).toBe('80%');
     const svg = container.querySelector('svg');
     expect(svg).not.toBeNull();
-    expect(svg?.getAttribute('width')).toBe('80%');
-    expect(svg?.getAttribute('height')).toBe('80%');
+    expect(svg?.getAttribute('width')).toBe('100%');
+    expect(svg?.getAttribute('height')).toBe('100%');
   });
 
-  // Fix 1: CSS glyphs have a flex centering wrapper and inner 80% element
-  it('heart has a flex centering wrapper (outer div full-size, inner div 80%)', () => {
+  it('heart wrapper is 80% with relative inner div filling 100%', () => {
     const { container } = render(<GlyphPrimitive effectId="hearts" />);
-    // The outer wrapper is the first child of the GlyphPrimitive root
-    const outerWrapper = container.querySelector('[style*="display: flex"]');
-    expect(outerWrapper).not.toBeNull();
-    // The relative inner div that holds the two lobes should be 80%
-    const innerDiv = outerWrapper?.querySelector(
-      '[style*="position: relative"]',
-    ) as HTMLElement | null;
-    expect(innerDiv).not.toBeNull();
-    expect(innerDiv?.style.width).toBe('80%');
-    expect(innerDiv?.style.height).toBe('80%');
+    const wrapper = container.querySelector('[style*="display: flex"]') as HTMLElement | null;
+    expect(wrapper?.style.width).toBe('80%');
+    expect(wrapper?.style.height).toBe('80%');
+    const inner = wrapper?.querySelector('[style*="position: relative"]') as HTMLElement | null;
+    expect(inner).not.toBeNull();
+    expect(inner?.style.width).toBe('100%');
+    expect(inner?.style.height).toBe('100%');
   });
 
-  it('star has a flex centering wrapper and inner 80% element', () => {
+  it('star wrapper is 80% with inner shape filling 100%', () => {
     const { container } = render(<GlyphPrimitive effectId="stars" />);
-    const outerWrapper = container.querySelector('[style*="display: flex"]');
-    expect(outerWrapper).not.toBeNull();
-    // The inner shape div should be 80%
-    const innerDiv = outerWrapper?.querySelector('div') as HTMLElement | null;
-    expect(innerDiv).not.toBeNull();
-    expect(innerDiv?.style.width).toBe('80%');
-    expect(innerDiv?.style.height).toBe('80%');
+    const wrapper = container.querySelector('[style*="display: flex"]') as HTMLElement | null;
+    expect(wrapper?.style.width).toBe('80%');
+    expect(wrapper?.style.height).toBe('80%');
+    const inner = wrapper?.querySelector('div') as HTMLElement | null;
+    expect(inner).not.toBeNull();
+    expect(inner?.style.width).toBe('100%');
+    expect(inner?.style.height).toBe('100%');
   });
 });
