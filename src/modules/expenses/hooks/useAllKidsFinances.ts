@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useChildren } from '@/modules/baby/hooks/useChildren';
 import { useAuth } from '@/shared/auth/useAuth';
 import { createAdapter } from '@/shared/storage/create-adapter';
@@ -17,20 +17,31 @@ export function useAllKidsFinances(targetUid?: string) {
   const ownerUid = targetUid ?? firebaseUser?.uid ?? null;
 
   const [entries, setEntries] = useState<KidsFinanceEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  // readyIds tracks which child listeners have fired at least once.
+  const [readyIds, setReadyIds] = useState<ReadonlySet<string>>(new Set());
+
+  const childrenKey = useMemo(() => children.map((c) => c.id).join(','), [children]);
+
+  // Derive loading from observable state — no setState in effect body needed.
+  // - Still waiting on children list: loading
+  // - No uid yet: loading
+  // - No children: not loading (nothing to wait for)
+  // - Some children: loading until every child id has at least one snapshot
+  const loading = useMemo(() => {
+    if (kidsLoading || !ownerUid) return true;
+    if (children.length === 0) return false;
+    const childIds = children.map((c) => c.id!);
+    return !childIds.every((id) => readyIds.has(id));
+  }, [kidsLoading, ownerUid, children, readyIds]);
 
   useEffect(() => {
-    if (kidsLoading || !ownerUid) return;
+    if (kidsLoading || !ownerUid || children.length === 0) return;
 
-    if (children.length === 0) {
-      setEntries([]);
-      setLoading(false);
-      return;
-    }
+    // Reset ready state for this listener batch.
+    setReadyIds(new Set());
 
     const unsubscribes: Array<() => void> = [];
     const allEntriesMap: Record<string, KidsFinanceEntry[]> = {};
-    const readyMap: Record<string, true> = {};
 
     children.forEach((child) => {
       const childId = child.id!;
@@ -44,12 +55,9 @@ export function useAllKidsFinances(targetUid?: string) {
             childId,
             childName: child.name,
           }));
-          readyMap[childId] = true;
 
           setEntries(Object.values(allEntriesMap).flat());
-          if (Object.keys(readyMap).length === children.length) {
-            setLoading(false);
-          }
+          setReadyIds((prev) => new Set([...prev, childId]));
         },
         (error) => {
           console.error(`[AFP] Error fetching finances for child ${childId}:`, error);
@@ -59,7 +67,10 @@ export function useAllKidsFinances(targetUid?: string) {
     });
 
     return () => unsubscribes.forEach((unsub) => unsub());
-  }, [children, kidsLoading, ownerUid]);
+    // childrenKey ensures the effect re-runs when the children array reference changes
+    // without causing re-runs on every render. eslint-disable-next-line is intentional.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [childrenKey, kidsLoading, ownerUid]);
 
   return { entries, loading };
 }
