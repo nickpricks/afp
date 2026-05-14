@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-05-04
+Last updated: 2026-05-14
 
 ---
 
@@ -21,6 +21,7 @@ Last updated: 2026-05-04
 | Phase 2h (Universal list controls + Daily Ledger) | ✅ Done | 16/16 | Time-range filter + per-list page size + page jump + show-all footer + sticky day headers + magnitude bar (Floors) across 11 list surfaces (Broadcasts list pending) |
 | Phase 2i (Themes 2.0 — Atmosphere & Glyphs) | ✅ Done | 20/20 | Atmosphere ×9 themes (Charcoal silent), 8 shape-primitive glyphs, depth-correlated scaling, tier-button slider, DevBench catch-up + Theme Tour. Phase 2j (Iconography) split as separate future spec. |
 | Phase 3 (Baby → Kid) | 🚧 In progress | 7/10 | Brainstorm A (Baby→Kid) done: Plans 1-7 shipped (Foundation, Suggestions, Elimination, Meals, Needs, Milestones, Life Journal). Plans 8-9 deferred. Plan 10 = Yoga = Brainstorm C — see **Pending Brainstorms** block below |
+| Phase 3 (Baby → Kids Presents v2) | ✅ Done | —/— | Kids Presents feature shipped 2026-05-14: per-child gift/finance tracking, Kids tab in Budget, Spent→Expense bridge, viewer mode. See spec + implementation plan. |
 | **Total** | **~99%** | **209/226** | |
 
 ---
@@ -194,6 +195,20 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 ---
 
 ## Done
+
+### 2026-05-14 — Kids Presents v2 (finishing pass, unreleased)
+
+- [x] **Kids Presents v2 feature** — Per-child gift + finance tracking via two new subcollections (`gifts`, `finances`). New `🎁` tab in `ChildDetail` for per-child view.
+- [x] **"Kids" tab in Budget** — Read-only aggregate view on `/budget`, gated on `profile.modules.baby`. Displays all children's combined finances with "Total Kid Wealth" pill (Received + Saved, excludes Spent).
+- [x] **Spent→Expense bridge** — Confirm modal prompts user to log matching Budget expense when marking a finance as Spent. Modal auto-closes on success; undo delete via 10s toast.
+- [x] **Viewer mode support** — Linked users see the owner's kids' presents (read-only).
+- [x] **AddChild checkbox** — Per-child feature toggle during child creation.
+- [x] **24 new unit tests** — `presents-math` (6), `useAllKidsFinances` (5), `KidsFinanceTab` (4), `ConfirmExpenseModal` (5), `PresentsLog` (4).
+- [x] **Design discoveries** — Firestore rules already covered by existing wildcard. `linkedExpenseId` back-link deferred (requires `addExpense` refactor). Per-sub-tab `ListControls` instances prevent pagination state bleed between Finances/Gifts tabs.
+- [x] **House rules honored** — SwipeToDelete + 10s undo on delete, enum-based toast strings (`BabyMsg.*` / `BudgetMsg.*`), fix for `react-hooks/set-state-in-effect`.
+- [x] **Spec / Plan** — `docs/specs/2026-05-14-kids-presents-design-v2.md` + `docs/plans/2026-05-14-kids-presents-*.md` (13 tasks shipped)
+
+---
 
 ### 2026-05-04 — Session 20 (Budget — Auto tab: fuel, travel, maintenance, v0.2.18)
 
