@@ -112,7 +112,7 @@ function ChildDetailInner({
     { id: 'meals', label: 'Meals', visible: child.config.meals ?? false },
     { id: 'needs', label: 'Needs', visible: child.config.needs ?? false },
     { id: 'milestones', label: 'Milestones', visible: child.config.milestones ?? false },
-    { id: 'presents', label: 'Presents', visible: child.config.presents ?? false },
+    { id: 'presents', label: '🎁', visible: child.config.presents ?? false },
   ];
 
   const visibleTabs = tabs.filter((t) => t.visible);
