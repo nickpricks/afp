@@ -10,7 +10,8 @@ vi.mock('@/modules/baby/hooks/useChildren', () => ({
   useChildren: (...args: unknown[]) => mockChildren(...args),
 }));
 
-const onSnapshotCalls: Array<{ sub: string; cb: (data: unknown[]) => void; unsub: () => void }> = [];
+const onSnapshotCalls: Array<{ sub: string; cb: (data: unknown[]) => void; unsub: () => void }> =
+  [];
 vi.mock('@/shared/storage/create-adapter', () => ({
   createAdapter: () => ({
     onSnapshot: (sub: string, cb: (data: unknown[]) => void) => {

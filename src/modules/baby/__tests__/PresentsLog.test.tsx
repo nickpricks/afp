@@ -61,10 +61,7 @@ describe('PresentsLog', () => {
   it('shows error toast when submitting without a title', () => {
     render(<PresentsLog childId="c1" uid="u1" />);
     fireEvent.click(screen.getByRole('button', { name: /add finance/i }));
-    expect(mockAddToast).toHaveBeenCalledWith(
-      'Description/Title is required',
-      expect.anything(),
-    );
+    expect(mockAddToast).toHaveBeenCalledWith('Description/Title is required', expect.anything());
   });
 
   it('calls finances.remove and shows undo toast when delete clicked', () => {

@@ -45,12 +45,7 @@ export function PresentsLog({ childId, uid }: Props) {
     'Finance Entry',
     uid,
   );
-  const gifts = useBabyCollection<GiftEntry>(
-    childId ?? null,
-    DbSubcollection.Gifts,
-    'Gift',
-    uid,
-  );
+  const gifts = useBabyCollection<GiftEntry>(childId ?? null, DbSubcollection.Gifts, 'Gift', uid);
 
   const { addExpense } = useExpenses(uid);
   const [pendingSpent, setPendingSpent] = useState<FinanceEntry | null>(null);
@@ -216,7 +211,10 @@ export function PresentsLog({ childId, uid }: Props) {
     setSaving(false);
   }
 
-  const items = (activeSubTab === 'finances' ? finances.items : gifts.items) as (FinanceEntry | GiftEntry)[];
+  const items = (activeSubTab === 'finances' ? finances.items : gifts.items) as (
+    | FinanceEntry
+    | GiftEntry
+  )[];
   const sortedEntries = sortNewestFirst(items, (n) => n.createdAt);
   const today = todayStr();
   const dateFilteredEntries = filterByDateRange(
@@ -277,7 +275,11 @@ export function PresentsLog({ childId, uid }: Props) {
         <div className="flex flex-col gap-3">
           <input
             type="text"
-            placeholder={activeSubTab === 'finances' ? 'Description (e.g. Birthday Cash)' : 'Gift Title (e.g. Lego Set)'}
+            placeholder={
+              activeSubTab === 'finances'
+                ? 'Description (e.g. Birthday Cash)'
+                : 'Gift Title (e.g. Lego Set)'
+            }
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full px-3 py-2 rounded-lg bg-surface-card border border-line text-fg"
@@ -323,7 +325,11 @@ export function PresentsLog({ childId, uid }: Props) {
           disabled={saving}
           className="w-full py-3 rounded-lg bg-accent text-fg-on-accent font-medium disabled:opacity-50"
         >
-          {saving ? 'Saving...' : editFinance || editGift ? 'Update' : `Add ${activeSubTab === 'finances' ? 'Finance' : 'Gift'}`}
+          {saving
+            ? 'Saving...'
+            : editFinance || editGift
+              ? 'Update'
+              : `Add ${activeSubTab === 'finances' ? 'Finance' : 'Gift'}`}
         </button>
       </form>
 
@@ -347,12 +353,12 @@ export function PresentsLog({ childId, uid }: Props) {
           editingId={editFinance?.id ?? null}
           onDelete={handleDeleteFinance}
           onStatusChange={(entry, status) => {
-              if (status === FinanceStatus.Spent && entry.status !== FinanceStatus.Spent) {
-                setPendingSpent(entry);
-              } else {
-                finances.update({ ...entry, status });
-              }
-            }}
+            if (status === FinanceStatus.Spent && entry.status !== FinanceStatus.Spent) {
+              setPendingSpent(entry);
+            } else {
+              finances.update({ ...entry, status });
+            }
+          }}
         />
       ) : (
         <GiftList
