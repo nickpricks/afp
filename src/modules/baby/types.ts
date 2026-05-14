@@ -239,6 +239,7 @@ export type GiftEntry = {
   occasion: string;
   status: GiftStatus;
   notes: string;
+  timestamp?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -253,6 +254,8 @@ export type FinanceEntry = {
   occasion: string;
   status: FinanceStatus;
   notes: string;
+  linkedExpenseId?: string;
+  timestamp?: string;
   createdAt: string;
   updatedAt: string;
 };
