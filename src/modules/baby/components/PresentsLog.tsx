@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { ConfirmExpenseModal } from '@/modules/baby/components/ConfirmExpenseModal';
 import { useBabyCollection } from '@/modules/baby/hooks/useBabyCollection';
 import type { GiftEntry, FinanceEntry } from '@/modules/baby/types';
 import { GiftStatus, FinanceStatus } from '@/modules/baby/types';
@@ -9,11 +10,12 @@ import {
   FINANCE_STATUS_LABELS,
   ALL_FINANCE_STATUSES,
 } from '@/modules/baby/constants';
+import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
 import { todayStr } from '@/shared/utils/date';
 import { useToast } from '@/shared/errors/useToast';
 import { sortNewestFirst } from '@/shared/utils/sort';
-import { ToastType } from '@/shared/types';
-import { BabyMsg } from '@/constants/messages';
+import { ExpenseCategory, ToastType } from '@/shared/types';
+import { BabyMsg, BudgetMsg } from '@/constants/messages';
 import { DbSubcollection } from '@/constants/db';
 import { ListControls } from '@/shared/components/ListControls';
 import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
@@ -49,6 +51,9 @@ export function PresentsLog({ childId, uid }: Props) {
     'Gift',
     uid,
   );
+
+  const { addExpense } = useExpenses(uid);
+  const [pendingSpent, setPendingSpent] = useState<FinanceEntry | null>(null);
 
   const financesCtrl = useListControls();
   const giftsCtrl = useListControls();
@@ -107,6 +112,44 @@ export function PresentsLog({ childId, uid }: Props) {
       action: { label: 'Undo', onClick: () => gifts.log(entry) },
       durationMs: CONFIG.UNDO_DURATION_MS,
     });
+  };
+
+  /** Called when user confirms logging the present purchase as a Budget expense */
+  const handleConfirmExpense = async () => {
+    if (!pendingSpent) return;
+    const now = new Date().toISOString();
+    // addExpense generates its own id internally and returns boolean.
+    // We cannot retrieve the created expense id, so linkedExpenseId is not set.
+    const success = await addExpense({
+      date: pendingSpent.date,
+      category: ExpenseCategory.Gifts,
+      subCat: '',
+      amount: pendingSpent.amount,
+      note: pendingSpent.description,
+    });
+    if (success) {
+      await finances.update({
+        ...pendingSpent,
+        status: FinanceStatus.Spent,
+        updatedAt: now,
+      });
+      addToast(BudgetMsg.KidsExpenseLogged, ToastType.Success);
+    } else {
+      addToast(BudgetMsg.KidsExpenseLogFailed, ToastType.Error);
+    }
+    setPendingSpent(null);
+  };
+
+  /** Called when user chooses to mark as Spent without logging a Budget expense */
+  const handleSkipExpense = () => {
+    if (!pendingSpent) return;
+    finances.update({ ...pendingSpent, status: FinanceStatus.Spent });
+    setPendingSpent(null);
+  };
+
+  /** Called when user cancels the modal — status stays unchanged */
+  const handleCancelExpense = () => {
+    setPendingSpent(null);
   };
 
   async function handleSubmit(e: React.FormEvent) {
@@ -303,7 +346,13 @@ export function PresentsLog({ childId, uid }: Props) {
           onEdit={startEditFinance}
           editingId={editFinance?.id ?? null}
           onDelete={handleDeleteFinance}
-          onStatusChange={(entry, status) => finances.update({ ...entry, status })}
+          onStatusChange={(entry, status) => {
+              if (status === FinanceStatus.Spent && entry.status !== FinanceStatus.Spent) {
+                setPendingSpent(entry);
+              } else {
+                finances.update({ ...entry, status });
+              }
+            }}
         />
       ) : (
         <GiftList
@@ -322,6 +371,18 @@ export function PresentsLog({ childId, uid }: Props) {
           shownCount={visibleEntries.length}
           pageSize={ctrl.pageSize}
           onShowAll={() => ctrl.setShowAll(true)}
+        />
+      )}
+
+      {pendingSpent && (
+        <ConfirmExpenseModal
+          open={pendingSpent !== null}
+          amount={pendingSpent.amount}
+          description={pendingSpent.description}
+          date={pendingSpent.date}
+          onConfirm={handleConfirmExpense}
+          onSkip={handleSkipExpense}
+          onCancel={handleCancelExpense}
         />
       )}
     </div>
