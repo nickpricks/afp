@@ -110,6 +110,52 @@ describe('MetaSubForm — fuel variant', () => {
     renderFuel();
     expect(screen.getByText('Vehicle data (optional)')).toBeInTheDocument();
   });
+
+  it('blurring liters field calls onChangeAmount when deriveFuelTriple can compute amount', () => {
+    const onChangeMeta = vi.fn();
+    const onChangeAmount = vi.fn();
+    const meta: FuelMeta = {
+      type: ExpenseMetaType.Fuel,
+      liters: 0,
+      pricePerLiter: 100,
+      odometer: null,
+      tripOdo: null,
+      displayedMileage: null,
+      fullTank: false,
+    };
+    render(
+      <MetaSubForm meta={meta} amount="" onChangeMeta={onChangeMeta} onChangeAmount={onChangeAmount} />,
+    );
+    const litersInput = screen.getByLabelText('Liters');
+    fireEvent.change(litersInput, { target: { value: '40' } });
+    fireEvent.blur(litersInput, { target: { value: '40' } });
+    // liters=40, pricePerLiter=100, amount is empty → should derive 4000
+    expect(onChangeAmount).toHaveBeenCalledWith('4000');
+  });
+
+  it('user-typed amount is NOT clobbered when liters blurs (stale-state bug fix)', () => {
+    const onChangeMeta = vi.fn();
+    const onChangeAmount = vi.fn();
+    const meta: FuelMeta = {
+      type: ExpenseMetaType.Fuel,
+      liters: 40,
+      pricePerLiter: 100,
+      odometer: null,
+      tripOdo: null,
+      displayedMileage: null,
+      fullTank: false,
+    };
+    // User has already manually typed amount=5000 (overrides implicit 40*100=4000)
+    render(
+      <MetaSubForm meta={meta} amount="5000" onChangeMeta={onChangeMeta} onChangeAmount={onChangeAmount} />,
+    );
+    const litersInput = screen.getByLabelText('Liters');
+    // User blurs liters without changing it — deriveFuelTriple sees amount=5000 is already set
+    // (ok(amount)=true) so it won't derive a new amount
+    fireEvent.blur(litersInput, { target: { value: '40' } });
+    // onChangeAmount must NOT be called — user's amount is preserved
+    expect(onChangeAmount).not.toHaveBeenCalled();
+  });
 });
 
 describe('MetaSubForm — travel variant', () => {
