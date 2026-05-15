@@ -7,6 +7,7 @@ import {
   PAYMENT_METHOD_LABELS,
   INCOME_SOURCE_LABELS,
   VEHICLE_SUBCAT,
+  TRAVEL_SUBCAT,
 } from '@/modules/expenses/categories';
 import { ExpenseCategory, IncomeSource, PaymentMethod } from '@/shared/types';
 
@@ -88,5 +89,15 @@ describe('VEHICLE_SUBCAT', () => {
     expect(VEHICLE_SUBCAT.Washing).toBe('Washing');
     expect(VEHICLE_SUBCAT.Parking).toBe('Parking');
     expect(VEHICLE_SUBCAT.Insurance).toBe('Insurance');
+  });
+});
+
+describe('TRAVEL_SUBCAT', () => {
+  it('exposes Air, Train, Bus, CabAuto, RoadToll keys with the storage strings the UI uses', () => {
+    expect(TRAVEL_SUBCAT.Air).toBe('Air');
+    expect(TRAVEL_SUBCAT.Train).toBe('Train');
+    expect(TRAVEL_SUBCAT.Bus).toBe('Bus');
+    expect(TRAVEL_SUBCAT.CabAuto).toBe('Cab/Auto');
+    expect(TRAVEL_SUBCAT.RoadToll).toBe('Road Toll');
   });
 });

@@ -12,7 +12,7 @@ import { ExpenseCategory, ToastType } from '@/shared/types';
 import { todayStr } from '@/shared/utils/date';
 import { sortNewestFirst } from '@/shared/utils/sort';
 import { CONFIG } from '@/constants/config';
-import { CATEGORIES, PAYMENT_METHOD_LABELS } from '@/modules/expenses/categories';
+import { CATEGORIES, PAYMENT_METHOD_LABELS, VEHICLE_SUBCAT, TRAVEL_SUBCAT } from '@/modules/expenses/categories';
 import { MetaSubForm } from '@/modules/expenses/components/MetaSubForm';
 import { defaultMeta } from '@/modules/expenses/meta-utils';
 import { ServiceDueBanner } from '@/modules/expenses/components/ServiceDueBanner';
@@ -314,7 +314,7 @@ function renderMaintenanceBadge(meta: MaintenanceMeta): string {
 }
 
 function subCatFor(kind: FormKind): { category: ExpenseCategory; subCat: string } {
-  if (kind === ExpenseMetaType.Fuel) return { category: ExpenseCategory.Vehicle, subCat: 'Fuel' };
-  if (kind === ExpenseMetaType.Travel) return { category: ExpenseCategory.Travel, subCat: 'Cab/Auto' };
-  return { category: ExpenseCategory.Vehicle, subCat: 'Maintenance' };
+  if (kind === ExpenseMetaType.Fuel) return { category: ExpenseCategory.Vehicle, subCat: VEHICLE_SUBCAT.Fuel };
+  if (kind === ExpenseMetaType.Travel) return { category: ExpenseCategory.Travel, subCat: TRAVEL_SUBCAT.CabAuto };
+  return { category: ExpenseCategory.Vehicle, subCat: VEHICLE_SUBCAT.Maintenance };
 }

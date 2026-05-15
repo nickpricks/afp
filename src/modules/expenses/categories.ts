@@ -12,6 +12,17 @@ export const VEHICLE_SUBCAT = {
 /** Union of all Vehicle subcategory string values */
 export type VehicleSubcat = (typeof VEHICLE_SUBCAT)[keyof typeof VEHICLE_SUBCAT];
 
+/** Stable keys for Travel subcategories — used for routing meta + storage. Never localize. */
+export const TRAVEL_SUBCAT = {
+  Air: 'Air',
+  Train: 'Train',
+  Bus: 'Bus',
+  CabAuto: 'Cab/Auto',
+  RoadToll: 'Road Toll',
+} as const;
+/** Union of all Travel subcategory string values */
+export type TravelSubcat = (typeof TRAVEL_SUBCAT)[keyof typeof TRAVEL_SUBCAT];
+
 /** All spending categories keyed by ExpenseCategory enum */
 export const CATEGORIES: Partial<Record<ExpenseCategory, CategoryDefinition>> = {
   [ExpenseCategory.Housing]: {
