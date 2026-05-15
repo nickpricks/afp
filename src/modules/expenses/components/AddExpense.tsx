@@ -4,7 +4,6 @@ import { CATEGORIES, getAllCategoryIds, getSubCategories } from '@/modules/expen
 import { PaymentMethod, ExpenseCategory } from '@/shared/types';
 import type { ExpenseMeta } from '@/modules/expenses/types';
 import { CONFIG } from '@/constants/config';
-import { todayStr } from '@/shared/utils/date';
 import { isValidNumber } from '@/shared/utils/validation';
 import { PaymentMethodBubble } from '@/shared/components/PaymentMethodBubble';
 import { useToast } from '@/shared/errors/useToast';
@@ -12,6 +11,7 @@ import { ToastType } from '@/shared/types';
 import { BudgetMsg } from '@/constants/messages';
 import { MetaSubForm } from '@/modules/expenses/components/MetaSubForm';
 import { defaultMeta, metaKindFor } from '@/modules/expenses/meta-utils';
+import { useExpenseForm } from '@/modules/expenses/hooks/useExpenseForm';
 
 /** Quick-access payment methods shown by default */
 const QUICK_PAYMENT_METHODS: PaymentMethod[] = [
@@ -46,16 +46,11 @@ export function AddExpense({
     meta?: ExpenseMeta;
   }) => Promise<boolean>;
 }) {
-  const [date, setDate] = useState(todayStr);
+  const { date, setDate, amount, setAmount, note, setNote, meta, setMeta, paymentMethod, setPaymentMethod, reset } =
+    useExpenseForm();
   const [category, setCategory] = useState<ExpenseCategory | null>(null);
   const [subCat, setSubCat] = useState('');
-  const [amount, setAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
-    PaymentMethod.UpiBankAccount,
-  );
   const [showAllMethods, setShowAllMethods] = useState(false);
-  const [note, setNote] = useState('');
-  const [meta, setMeta] = useState<ExpenseMeta | null>(null);
 
   const { addToast } = useToast();
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -70,8 +65,8 @@ export function AddExpense({
   function syncMeta(nextCat: ExpenseCategory | null, nextSub: string) {
     const kind = metaKindFor(nextCat, nextSub);
     if (kind === null) {
-      setMeta(null);
-    } else if (meta === null || meta.type !== kind) {
+      setMeta(undefined);
+    } else if (meta === undefined || meta.type !== kind) {
       const next = defaultMeta(kind);
       if (next) setMeta(next);
     }
@@ -97,10 +92,8 @@ export function AddExpense({
     });
 
     if (success) {
-      setAmount('');
-      setNote('');
+      reset();
       setSubCat('');
-      setMeta(null);
     }
   }
 

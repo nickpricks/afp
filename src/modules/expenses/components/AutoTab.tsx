@@ -22,6 +22,7 @@ import { computeMileage } from '@/modules/expenses/fuel-math';
 import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
 import { useToast } from '@/shared/errors/useToast';
 import { ValidationMsg } from '@/constants/messages';
+import { useExpenseForm } from '@/modules/expenses/hooks/useExpenseForm';
 
 type FormKind = ExpenseMetaType;
 
@@ -55,11 +56,8 @@ export function AutoTab({
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formKind, setFormKind] = useState<FormKind | null>(null);
-  const [date, setDate] = useState(todayStr());
-  const [amount, setAmount] = useState('');
-  const [note, setNote] = useState('');
-  const [meta, setMeta] = useState<ExpenseMeta | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.UpiBankAccount);
+  const { date, setDate, amount, setAmount, note, setNote, meta, setMeta, paymentMethod, setPaymentMethod, reset, populate } =
+    useExpenseForm();
   const { addToast } = useToast();
 
   const filtered = expenses.filter(
@@ -68,31 +66,24 @@ export function AutoTab({
   const sorted = sortNewestFirst(filtered, (e) => e.date);
 
   function startQuickAdd(kind: FormKind) {
+    reset();
     setEditingId(null);
     setFormKind(kind);
     setDate(todayStr());
-    setAmount('');
-    setNote('');
-    setMeta(defaultMeta(kind)!);
-    setPaymentMethod(PaymentMethod.UpiBankAccount);
+    setMeta(defaultMeta(kind));
   }
 
   function startEdit(e: Expense) {
     if (!e.meta) return;
     setEditingId(e.id);
     setFormKind(e.meta.type);
-    setDate(e.date);
-    setAmount(String(e.amount));
-    setNote(e.note);
-    setMeta(e.meta);
-    setPaymentMethod(e.paymentMethod);
+    populate(e);
   }
 
   function cancelForm() {
     setEditingId(null);
     setFormKind(null);
-    setMeta(null);
-    setPaymentMethod(PaymentMethod.UpiBankAccount);
+    reset();
   }
 
   async function handleSubmit(ev: React.FormEvent) {
@@ -125,9 +116,9 @@ export function AutoTab({
         category,
         subCat,
         amount: amt,
-        paymentMethod,
+        paymentMethod: paymentMethod ?? PaymentMethod.UpiBankAccount,
         note,
-        meta,
+        meta: meta!,
       });
       if (ok) cancelForm();
     }
