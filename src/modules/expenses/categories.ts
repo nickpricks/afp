@@ -1,6 +1,17 @@
 import { ExpenseCategory, IncomeSource, PaymentMethod } from '@/shared/types';
 import type { CategoryDefinition, LabelDefinition } from '@/modules/expenses/types';
 
+/** Stable keys for Vehicle subcategories — used for routing meta + storage. Never localize. */
+export const VEHICLE_SUBCAT = {
+  Fuel: 'Fuel',
+  Maintenance: 'Maintenance',
+  Washing: 'Washing',
+  Parking: 'Parking',
+  Insurance: 'Insurance',
+} as const;
+/** Union of all Vehicle subcategory string values */
+export type VehicleSubcat = (typeof VEHICLE_SUBCAT)[keyof typeof VEHICLE_SUBCAT];
+
 /** All spending categories keyed by ExpenseCategory enum */
 export const CATEGORIES: Partial<Record<ExpenseCategory, CategoryDefinition>> = {
   [ExpenseCategory.Housing]: {

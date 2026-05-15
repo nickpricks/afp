@@ -6,6 +6,7 @@ import {
   getSubCategories,
   PAYMENT_METHOD_LABELS,
   INCOME_SOURCE_LABELS,
+  VEHICLE_SUBCAT,
 } from '@/modules/expenses/categories';
 import { ExpenseCategory, IncomeSource, PaymentMethod } from '@/shared/types';
 
@@ -77,5 +78,15 @@ describe('INCOME_SOURCE_LABELS', () => {
       expect(INCOME_SOURCE_LABELS[src as IncomeSource].label.length).toBeGreaterThan(0);
       expect(INCOME_SOURCE_LABELS[src as IncomeSource].shortLabel.length).toBeGreaterThan(0);
     }
+  });
+});
+
+describe('VEHICLE_SUBCAT', () => {
+  it('exposes Fuel, Maintenance, Washing, Parking, Insurance keys with the storage strings the UI uses', () => {
+    expect(VEHICLE_SUBCAT.Fuel).toBe('Fuel');
+    expect(VEHICLE_SUBCAT.Maintenance).toBe('Maintenance');
+    expect(VEHICLE_SUBCAT.Washing).toBe('Washing');
+    expect(VEHICLE_SUBCAT.Parking).toBe('Parking');
+    expect(VEHICLE_SUBCAT.Insurance).toBe('Insurance');
   });
 });
