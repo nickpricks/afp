@@ -54,9 +54,32 @@ function fuel(id: string, date: string, odometer: number): Expense {
 }
 
 describe('ServiceDueBanner', () => {
+  it('returns null when expenses array is empty (defensive, no crash)', () => {
+    const { container } = render(<ServiceDueBanner expenses={[]} />);
+    expect(container.firstChild).toBeNull();
+  });
+
   it('renders nothing when there are no expenses', () => {
     const { container } = render(<ServiceDueBanner expenses={[]} />);
     expect(container.firstChild).toBeNull();
+  });
+
+  it('renders nothing when maintenance has nextService but odometer reading is below threshold', () => {
+    // odometer below nextService → not service-due
+    const expenses = [maintenance('m1', '2026-01-01', 5000, 15000)];
+    const { container } = render(<ServiceDueBanner expenses={expenses} />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('renders banner (defensive no-crash) when service is due: latestOdometer >= nextService', () => {
+    // fuel entry pushes odometer above maintenance nextService
+    const expenses = [
+      maintenance('m1', '2026-01-01', 5000, 51000),
+      fuel('f1', '2026-04-01', 51000),
+    ];
+    render(<ServiceDueBanner expenses={expenses} />);
+    expect(screen.getByText(/service due/i)).toBeInTheDocument();
+    expect(screen.getByText(/51,000 km/)).toBeInTheDocument();
   });
 
   it('renders nothing when not service-due', () => {
