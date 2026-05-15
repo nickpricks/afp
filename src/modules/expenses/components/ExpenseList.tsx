@@ -61,7 +61,6 @@ export function ExpenseList({
     return <p className="px-4 py-8 text-center text-fg-muted">No expenses yet</p>;
   }
 
-  // Group by date for sticky day headers
   const today = todayStr();
   const groups: Record<string, Expense[]> = {};
   sorted.forEach((e) => {

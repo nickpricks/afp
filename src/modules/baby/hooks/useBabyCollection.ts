@@ -36,6 +36,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
         setReady(true);
       },
       (error) => {
+        // TODO(sentry): pipe onError to centralized logError once Sentry lands.
         console.error(`[AFP] Baby ${label} listener error:`, error);
       },
     );

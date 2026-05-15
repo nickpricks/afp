@@ -34,6 +34,7 @@ export function useChildren(targetUid?: string) {
         setLoading(false);
       },
       (error) => {
+        // TODO(sentry): pipe onError to centralized logError once Sentry lands.
         console.error('[AFP] Children listener error:', error);
       },
     );

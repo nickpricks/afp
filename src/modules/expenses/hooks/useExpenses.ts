@@ -24,7 +24,7 @@ type ExpenseInput = {
   meta?: ExpenseMeta;
 };
 
-/** Provides expense CRUD operations with real-time sync and soft-delete */
+/** Provides expense CRUD (add/update/soft-delete) with real-time sync. */
 export function useExpenses(targetUid?: string) {
   const { firebaseUser, setSyncStatus } = useAuth();
   const { addToast } = useToast();
@@ -49,6 +49,7 @@ export function useExpenses(targetUid?: string) {
         syncFn(SyncStatus.Synced);
       },
       (error) => {
+        // TODO(sentry): pipe onError to centralized logError once Sentry lands.
         console.error('[AFP] Expenses listener error:', error);
         syncFn(SyncStatus.Error);
       },

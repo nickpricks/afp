@@ -288,7 +288,6 @@ function RecentFeeds({
 }) {
   if (entries.length === 0) return null;
 
-  // Group by date
   const groups: Record<string, FeedEntry[]> = {};
   entries.forEach((e) => {
     (groups[e.date] = groups[e.date] || []).push(e);

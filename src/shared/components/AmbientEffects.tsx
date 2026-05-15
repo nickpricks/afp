@@ -99,16 +99,15 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({
       const contentOptions = effect.content.split(',');
 
       for (let i = 0; i < count; i++) {
-        // Use a stable seed based on theme, effect, and index
         const baseSeed = i + effectSeed + themeSeed;
         const r1 = seededRandom(baseSeed + 1);
         const r2 = seededRandom(baseSeed + 2);
         const r3 = seededRandom(baseSeed + 3);
+        // r4 reserved (renumber if reclaimed)
         const r5 = seededRandom(baseSeed + 5);
         const r6 = seededRandom(baseSeed + 6);
         const r7 = seededRandom(baseSeed + 7);
 
-        // Pick content from options
         const contentIndex = Math.floor(r1 * contentOptions.length);
         const content = contentOptions[contentIndex] || '';
 
@@ -123,7 +122,7 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({
         // dominating content; (d) duration scales 2x for far → 1x for close, with ±5%
         // jitter to avoid mechanical synchronization across particles.
         const depth = r5;
-        const jitter = (r7 - 0.5) * 0.1; // tiny ±5% noise on duration only
+        const jitter = (r7 - 0.5) * 0.1; // jitter applies to duration; r7 is also reused for drift-y below
         const sizeMultiplier = (effectSize / 100) * viewportMultiplier;
 
         allParticles.push({

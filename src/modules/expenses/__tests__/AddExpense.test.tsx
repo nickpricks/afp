@@ -133,7 +133,7 @@ describe('AddExpense — meta sub-form integration', () => {
   it('reveals the Fuel sub-form when Vehicle/Fuel is selected', () => {
     renderWithToast(<AddExpense onSubmit={noop} />);
 
-    // Vehicle is within the first 7 visible categories — no "View All" needed
+    // If Vehicle is hidden behind View All (BUDGET_VISIBLE_CATEGORIES tuning), reveal it first
     const viewAll = screen.queryByRole('button', { name: /View All/ });
     if (viewAll) fireEvent.click(viewAll);
 

@@ -36,6 +36,7 @@ export function useIncome(targetUid?: string) {
         syncFn(SyncStatus.Synced);
       },
       (error) => {
+        // TODO(sentry): pipe onError to centralized logError once Sentry lands.
         console.error('[AFP] Income listener error:', error);
         syncFn(SyncStatus.Error);
       },

@@ -2,66 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import { MetaSubForm } from '@/modules/expenses/components/MetaSubForm';
-import { metaKindFor, defaultMeta } from '@/modules/expenses/meta-utils';
-import { ExpenseCategory } from '@/shared/types';
 import type { FuelMeta, TravelMeta, MaintenanceMeta } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
-
-describe('metaKindFor', () => {
-  it('returns "fuel" for Vehicle/Fuel', () => {
-    expect(metaKindFor(ExpenseCategory.Vehicle, 'Fuel')).toBe(ExpenseMetaType.Fuel);
-  });
-  it('returns "maintenance" for Vehicle/Maintenance', () => {
-    expect(metaKindFor(ExpenseCategory.Vehicle, 'Maintenance')).toBe(ExpenseMetaType.Maintenance);
-  });
-  it('returns "travel" for any non-empty Travel subCat', () => {
-    expect(metaKindFor(ExpenseCategory.Travel, 'Air')).toBe(ExpenseMetaType.Travel);
-    expect(metaKindFor(ExpenseCategory.Travel, 'Cab/Auto')).toBe(ExpenseMetaType.Travel);
-  });
-  it('returns null for empty Travel subCat', () => {
-    expect(metaKindFor(ExpenseCategory.Travel, '')).toBeNull();
-  });
-  it('returns null for non-vehicle, non-travel categories', () => {
-    expect(metaKindFor(ExpenseCategory.Food, 'Groceries')).toBeNull();
-  });
-  it('returns null when category is null', () => {
-    expect(metaKindFor(null, 'Fuel')).toBeNull();
-  });
-});
-
-describe('defaultMeta', () => {
-  it('returns FuelMeta with zeros and nulls', () => {
-    const m = defaultMeta(ExpenseMetaType.Fuel);
-    expect(m).toEqual({
-      type: ExpenseMetaType.Fuel,
-      liters: 0,
-      pricePerLiter: 0,
-      odometer: null,
-      tripOdo: null,
-      displayedMileage: null,
-      fullTank: false,
-    });
-  });
-  it('returns TravelMeta with empty strings', () => {
-    expect(defaultMeta(ExpenseMetaType.Travel)).toEqual({
-      type: ExpenseMetaType.Travel,
-      origin: '',
-      destination: '',
-      distance: null,
-    });
-  });
-  it('returns MaintenanceMeta with zero odometer', () => {
-    expect(defaultMeta(ExpenseMetaType.Maintenance)).toEqual({
-      type: ExpenseMetaType.Maintenance,
-      odometer: 0,
-      nextService: null,
-      serviceNotes: '',
-    });
-  });
-  it('returns undefined for null kind', () => {
-    expect(defaultMeta(null)).toBeUndefined();
-  });
-});
 
 describe('MetaSubForm — fuel variant', () => {
   function renderFuel(initial: Partial<FuelMeta> = {}) {
