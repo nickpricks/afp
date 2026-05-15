@@ -59,7 +59,7 @@ export function dueMaintenance(expenses: Expense[]): MaintenanceMeta | null {
         e.meta?.type === ExpenseMetaType.Maintenance && e.meta.nextService != null,
     )
     .slice()
-    .sort((a, b) => b.date.localeCompare(a.date));
+    .sort((a, b) => (b.meta.odometer ?? 0) - (a.meta.odometer ?? 0));
   return maint[0]?.meta ?? null;
 }
 

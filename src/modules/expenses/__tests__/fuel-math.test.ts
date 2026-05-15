@@ -187,6 +187,18 @@ describe('dueMaintenance', () => {
   });
 });
 
+describe('dueMaintenance — sort by odometer not date', () => {
+  it('returns the highest-odometer maintenance entry regardless of date order', () => {
+    // newer date but lower odometer
+    const lowOdoNewDate = maintenanceExpense('a', '2026-04-01', 30000, 40000);
+    // older date but higher odometer (catch-up log)
+    const highOdoOldDate = maintenanceExpense('b', '2026-03-01', 45000, 55000);
+    const result = dueMaintenance([lowOdoNewDate, highOdoOldDate]);
+    expect(result?.odometer).toBe(45000);
+    expect(result?.nextService).toBe(55000);
+  });
+});
+
 describe('isServiceDue', () => {
   it('returns false when there is no due maintenance', () => {
     expect(isServiceDue([])).toBe(false);
