@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { CATEGORIES, getAllCategoryIds, getSubCategories } from '@/modules/expenses/categories';
 import { PaymentMethod, ExpenseCategory } from '@/shared/types';
@@ -56,9 +56,6 @@ export function AddExpense({
   const [showAllMethods, setShowAllMethods] = useState(false);
   const [note, setNote] = useState('');
   const [meta, setMeta] = useState<ExpenseMeta | null>(null);
-  // Track previous (category, subCat) via refs so event handlers can sync meta without useEffect.
-  const prevCategoryRef = useRef<ExpenseCategory | null>(null);
-  const prevSubCatRef = useRef<string>('');
 
   const { addToast } = useToast();
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -78,8 +75,6 @@ export function AddExpense({
       const next = defaultMeta(kind);
       if (next) setMeta(next);
     }
-    prevCategoryRef.current = nextCat;
-    prevSubCatRef.current = nextSub;
   }
 
   /** Handles form submission, clears fields on success */
