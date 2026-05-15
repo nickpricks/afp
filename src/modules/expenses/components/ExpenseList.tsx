@@ -102,7 +102,7 @@ export function ExpenseList({
                     {formatCategory(expense.category, expense.subCat)}
                   </span>
                   {expense.note && (
-                    <span className="text-xs text-fg-muted">\u2014 {expense.note}</span>
+                    <span className="text-xs text-fg-muted">— {expense.note}</span>
                   )}
                 </div>
                 <button

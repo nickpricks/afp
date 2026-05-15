@@ -20,7 +20,7 @@ import { ServiceDueBanner } from '@/modules/expenses/components/ServiceDueBanner
 import { computeMileage } from '@/modules/expenses/fuel-math';
 import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
 import { useToast } from '@/shared/errors/useToast';
-import { BudgetMsg, ValidationMsg } from '@/constants/messages';
+import { ValidationMsg } from '@/constants/messages';
 
 type FormKind = ExpenseMetaType;
 
