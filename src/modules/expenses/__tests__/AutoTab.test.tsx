@@ -183,6 +183,65 @@ describe('AutoTab — amount validation toast', () => {
   });
 });
 
+describe('AutoTab — paymentMethod capture', () => {
+  it('Auto tab submits with the user-selected paymentMethod (not silently UPI)', async () => {
+    const onAdd = vi.fn().mockResolvedValue(true);
+    withToast(
+      <AutoTab
+        expenses={[]}
+        onAdd={onAdd}
+        onUpdate={vi.fn().mockResolvedValue(true)}
+        onDelete={vi.fn()}
+      />,
+    );
+    // Open fuel form
+    fireEvent.click(screen.getByRole('button', { name: /Add Fuel/ }));
+    expect(screen.getByText(/Fuel details/)).toBeInTheDocument();
+
+    // Fill in amount
+    const amountInput = screen.getByPlaceholderText('Amount');
+    fireEvent.change(amountInput, { target: { value: '4000' } });
+
+    // Click the Cash payment method bubble (emoji 💵)
+    const cashBtn = screen.getByRole('button', { name: /Cash/i });
+    fireEvent.click(cashBtn);
+
+    // Submit
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    // Wait for async submit
+    await screen.findByRole('button', { name: /Add Fuel/ });
+
+    expect(onAdd).toHaveBeenCalledWith(
+      expect.objectContaining({ paymentMethod: PaymentMethod.Cash }),
+    );
+  });
+
+  it('tap-to-edit populates paymentMethod from the existing expense', () => {
+    const expenses = [fuelExpense('e1', '2026-05-01')];
+    // fuelExpense uses PaymentMethod.UpiBankAccount by default
+    const onUpdate = vi.fn().mockResolvedValue(true);
+    withToast(
+      <AutoTab
+        expenses={expenses}
+        onAdd={vi.fn().mockResolvedValue(true)}
+        onUpdate={onUpdate}
+        onDelete={vi.fn()}
+      />,
+    );
+    // Tap row to edit
+    fireEvent.click(screen.getByText(/12,000km/));
+    // The form should now show Update button (edit mode)
+    expect(screen.getByRole('button', { name: 'Update' })).toBeInTheDocument();
+    // UPI payment method bubble should be active (from expense.paymentMethod = UpiBankAccount)
+    // shortLabel for UpiBankAccount is "UPI" — find the active bubble
+    const activeBubbles = screen.getAllByRole('button').filter((b) =>
+      b.className.includes('bg-accent') && b.textContent?.includes('UPI'),
+    );
+    expect(activeBubbles.length).toBeGreaterThan(0);
+  });
+});
+
 describe('AutoTab — incomplete pill', () => {
   it('renders "incomplete" pill when meta is undefined', () => {
     const e: Expense = {

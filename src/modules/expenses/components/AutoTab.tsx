@@ -9,7 +9,8 @@ import type {
 } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
 import { assertNever } from '@/shared/utils/types';
-import { ExpenseCategory, ToastType } from '@/shared/types';
+import { ExpenseCategory, PaymentMethod, ToastType } from '@/shared/types';
+import { PaymentMethodBubble } from '@/shared/components/PaymentMethodBubble';
 import { todayStr } from '@/shared/utils/date';
 import { sortNewestFirst } from '@/shared/utils/sort';
 import { CONFIG } from '@/constants/config';
@@ -24,6 +25,14 @@ import { ValidationMsg } from '@/constants/messages';
 
 type FormKind = ExpenseMetaType;
 
+/** Payment methods most relevant for vehicle/travel entries */
+const AUTO_PAYMENT_METHODS: PaymentMethod[] = [
+  PaymentMethod.UpiBankAccount,
+  PaymentMethod.Cash,
+  PaymentMethod.UpiCreditCard,
+  PaymentMethod.CreditCard,
+];
+
 /** Auto tab — vehicle/travel filtered list, quick-add buttons, inline form, service-due banner */
 export function AutoTab({
   expenses,
@@ -37,6 +46,7 @@ export function AutoTab({
     category: ExpenseCategory;
     subCat: string;
     amount: number;
+    paymentMethod: PaymentMethod;
     note: string;
     meta: ExpenseMeta;
   }) => Promise<boolean>;
@@ -49,6 +59,7 @@ export function AutoTab({
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
   const [meta, setMeta] = useState<ExpenseMeta | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.UpiBankAccount);
   const { addToast } = useToast();
 
   const filtered = expenses.filter(
@@ -63,6 +74,7 @@ export function AutoTab({
     setAmount('');
     setNote('');
     setMeta(defaultMeta(kind)!);
+    setPaymentMethod(PaymentMethod.UpiBankAccount);
   }
 
   function startEdit(e: Expense) {
@@ -73,12 +85,14 @@ export function AutoTab({
     setAmount(String(e.amount));
     setNote(e.note);
     setMeta(e.meta);
+    setPaymentMethod(e.paymentMethod);
   }
 
   function cancelForm() {
     setEditingId(null);
     setFormKind(null);
     setMeta(null);
+    setPaymentMethod(PaymentMethod.UpiBankAccount);
   }
 
   async function handleSubmit(ev: React.FormEvent) {
@@ -111,6 +125,7 @@ export function AutoTab({
         category,
         subCat,
         amount: amt,
+        paymentMethod,
         note,
         meta,
       });
@@ -180,6 +195,21 @@ export function AutoTab({
             onChangeMeta={setMeta}
             onChangeAmount={setAmount}
           />
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs text-fg-muted">Payment Method</span>
+            <div className="flex flex-wrap gap-1.5">
+              {AUTO_PAYMENT_METHODS.map((m) => (
+                <PaymentMethodBubble
+                  key={m}
+                  method={m}
+                  isActive={paymentMethod === m}
+                  onClick={(method) =>
+                    setPaymentMethod(paymentMethod === method ? PaymentMethod.UpiBankAccount : method)
+                  }
+                />
+              ))}
+            </div>
+          </div>
           <input
             type="text"
             placeholder="Note (optional)"

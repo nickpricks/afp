@@ -92,6 +92,7 @@ export function ExpenseListPage() {
               category: input.category,
               subCat: input.subCat,
               amount: input.amount,
+              paymentMethod: input.paymentMethod,
               note: input.note,
               meta: input.meta,
             })
