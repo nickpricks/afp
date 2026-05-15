@@ -18,10 +18,18 @@ export function AutoTabRow({ expense, isActive, onTap, onDelete }: AutoTabRowPro
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       className={`flex items-center justify-between border-t border-line px-4 py-3 transition-colors ${
         isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent' : 'hover:bg-accent-muted'
       }`}
       onClick={onTap}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onTap();
+        }
+      }}
     >
       <div className="flex flex-col gap-0.5">
         <div className="flex items-center gap-2">
