@@ -5,6 +5,7 @@ import {
   latestOdometer,
   dueMaintenance,
   isServiceDue,
+  deriveFuelTriple,
 } from '@/modules/expenses/fuel-math';
 import type { Expense, FuelMeta, MaintenanceMeta } from '@/modules/expenses/types';
 import { ExpenseCategory, PaymentMethod } from '@/shared/types';
@@ -213,5 +214,34 @@ describe('isServiceDue', () => {
   it('returns false when no fuel/maintenance entry has odometer', () => {
     const m = maintenanceExpense('m1', '2026-01-01', 5000, 15000);
     expect(isServiceDue([m])).toBe(false);
+  });
+});
+
+describe('deriveFuelTriple', () => {
+  it('liters+price+(no amount) → fills amount', () => {
+    expect(deriveFuelTriple({ liters: 40, pricePerLiter: 100, amount: 0, lastEdited: 'liters' }))
+      .toEqual({ liters: 40, pricePerLiter: 100, amount: 4000 });
+  });
+  it('liters+amount+(no price) → fills price', () => {
+    expect(deriveFuelTriple({ liters: 40, pricePerLiter: 0, amount: 4000, lastEdited: 'liters' }))
+      .toEqual({ liters: 40, pricePerLiter: 100, amount: 4000 });
+  });
+  it('price+amount+(no liters) → fills liters', () => {
+    expect(deriveFuelTriple({ liters: 0, pricePerLiter: 100, amount: 4000, lastEdited: 'price' }))
+      .toEqual({ liters: 40, pricePerLiter: 100, amount: 4000 });
+  });
+  it('does not clobber user-typed amount when lastEdited === amount', () => {
+    expect(deriveFuelTriple({ liters: 40, pricePerLiter: 100, amount: 5000, lastEdited: 'amount' }))
+      .toEqual({ liters: 40, pricePerLiter: 100, amount: 5000 });
+  });
+  it('skips derivation when any operand is 0 / NaN', () => {
+    expect(deriveFuelTriple({ liters: 0, pricePerLiter: 0, amount: 0, lastEdited: 'liters' }))
+      .toEqual({ liters: 0, pricePerLiter: 0, amount: 0 });
+    expect(deriveFuelTriple({ liters: NaN, pricePerLiter: 100, amount: 0, lastEdited: 'liters' }))
+      .toEqual({ liters: NaN, pricePerLiter: 100, amount: 0 });
+  });
+  it('rejects non-finite derived results (amount/0 = Infinity)', () => {
+    expect(deriveFuelTriple({ liters: 0, pricePerLiter: 0, amount: 4000, lastEdited: 'amount' }))
+      .toEqual({ liters: 0, pricePerLiter: 0, amount: 4000 });
   });
 });
