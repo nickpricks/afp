@@ -10,12 +10,6 @@ import { AutoTab } from '@/modules/expenses/components/AutoTab';
 import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
 import { useIncome } from '@/modules/expenses/hooks/useIncome';
 import { ROUTES } from '@/constants/routes';
-import { ListControls } from '@/shared/components/ListControls';
-import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
-import { useListControls } from '@/shared/hooks/useListControls';
-import { todayStr } from '@/shared/utils/date';
-import { filterByDateRange } from '@/shared/utils/filter';
-import { paginate, totalPages } from '@/shared/utils/paginate';
 
 type BudgetTab = 'expenses' | 'income' | 'auto' | 'reconcile';
 
@@ -24,37 +18,10 @@ export function ExpenseListPage() {
   const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses();
   const { income, deleteIncome } = useIncome();
   const [activeTab, setActiveTab] = useState<BudgetTab>('expenses');
-  const ctrl = useListControls();
-
-  const today = todayStr();
-  const filteredExpenses = filterByDateRange(expenses, ctrl.timeRange, today, (e) => e.date);
-  const filteredIncome = filterByDateRange(income, ctrl.timeRange, today, (i) => i.date);
-
-  const activeFiltered = activeTab === 'income' ? filteredIncome : filteredExpenses;
-  const pagesCount = totalPages(activeFiltered.length, ctrl.pageSize);
-  const visibleExpenses = ctrl.showAll
-    ? filteredExpenses
-    : paginate(filteredExpenses, ctrl.page, ctrl.pageSize);
-  const visibleIncome = ctrl.showAll
-    ? filteredIncome
-    : paginate(filteredIncome, ctrl.page, ctrl.pageSize);
-  const visibleCount = activeTab === 'income' ? visibleIncome.length : visibleExpenses.length;
 
   return (
     <div className="relative">
-      <BudgetSummary expenses={filteredExpenses} income={filteredIncome} />
-
-      {activeTab !== 'auto' && (
-        <ListControls
-          timeRange={ctrl.timeRange}
-          onTimeRangeChange={ctrl.setTimeRange}
-          pageSize={ctrl.pageSize}
-          onPageSizeChange={ctrl.setPageSize}
-          page={ctrl.page}
-          totalPages={ctrl.showAll ? 1 : pagesCount}
-          onPageChange={ctrl.setPage}
-        />
-      )}
+      <BudgetSummary expenses={expenses} income={income} />
 
       <div className="mx-4 mb-3 flex rounded-lg border border-line bg-surface-card p-1">
         <TabButton
@@ -80,9 +47,9 @@ export function ExpenseListPage() {
       </div>
 
       {activeTab === 'expenses' && (
-        <ExpenseList expenses={visibleExpenses} onDelete={deleteExpense} />
+        <ExpenseList expenses={expenses} onDelete={deleteExpense} />
       )}
-      {activeTab === 'income' && <IncomeList income={visibleIncome} onDelete={deleteIncome} />}
+      {activeTab === 'income' && <IncomeList income={income} onDelete={deleteIncome} />}
       {activeTab === 'auto' && (
         <AutoTab
           expenses={expenses}
@@ -101,16 +68,7 @@ export function ExpenseListPage() {
           onDelete={deleteExpense}
         />
       )}
-      {activeTab === 'reconcile' && <ReconciliationView expenses={filteredExpenses} />}
-
-      {(activeTab === 'expenses' || activeTab === 'income') && !ctrl.showAll && (
-        <ListShowMoreFooter
-          totalCount={activeFiltered.length}
-          shownCount={visibleCount}
-          pageSize={ctrl.pageSize}
-          onShowAll={() => ctrl.setShowAll(true)}
-        />
-      )}
+      {activeTab === 'reconcile' && <ReconciliationView expenses={expenses} />}
 
       <Link
         to={ROUTES.BUDGET_ADD}
