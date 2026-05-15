@@ -8,6 +8,7 @@ import type {
   MaintenanceMeta,
 } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
+import { assertNever } from '@/shared/utils/types';
 import { ExpenseCategory, ToastType } from '@/shared/types';
 import { todayStr } from '@/shared/utils/date';
 import { sortNewestFirst } from '@/shared/utils/sort';
@@ -288,9 +289,16 @@ function Row({
 
 function renderBadge(meta: ExpenseMeta | undefined): string | null {
   if (!meta) return null;
-  if (meta.type === ExpenseMetaType.Fuel) return renderFuelBadge(meta);
-  if (meta.type === ExpenseMetaType.Travel) return renderTravelBadge(meta);
-  return renderMaintenanceBadge(meta);
+  switch (meta.type) {
+    case ExpenseMetaType.Fuel:
+      return renderFuelBadge(meta);
+    case ExpenseMetaType.Travel:
+      return renderTravelBadge(meta);
+    case ExpenseMetaType.Maintenance:
+      return renderMaintenanceBadge(meta);
+    default:
+      return assertNever(meta);
+  }
 }
 
 function renderFuelBadge(meta: FuelMeta): string {

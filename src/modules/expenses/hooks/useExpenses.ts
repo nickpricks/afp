@@ -6,6 +6,7 @@ import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { Expense, ExpenseMeta } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
+import { assertNever } from '@/shared/utils/types';
 import { validateExpense } from '@/modules/expenses/validation';
 import { SyncStatus, isOk, ToastType, PaymentMethod } from '@/shared/types';
 import type { ExpenseCategory } from '@/shared/types';
@@ -155,17 +156,29 @@ export function useExpenses(targetUid?: string) {
 /** Returns the appropriate toast message for an add operation based on meta type */
 function toastForAdd(meta: ExpenseMeta | undefined): BudgetMsg {
   if (!meta) return BudgetMsg.ExpenseAdded;
-  if (meta.type === ExpenseMetaType.Fuel) return BudgetMsg.FuelLogged;
-  if (meta.type === ExpenseMetaType.Travel) return BudgetMsg.TripLogged;
-  if (meta.type === ExpenseMetaType.Maintenance) return BudgetMsg.ServiceLogged;
-  return BudgetMsg.ExpenseAdded;
+  switch (meta.type) {
+    case ExpenseMetaType.Fuel:
+      return BudgetMsg.FuelLogged;
+    case ExpenseMetaType.Travel:
+      return BudgetMsg.TripLogged;
+    case ExpenseMetaType.Maintenance:
+      return BudgetMsg.ServiceLogged;
+    default:
+      return assertNever(meta);
+  }
 }
 
 /** Returns the appropriate toast message for an update operation based on meta type */
 function toastForUpdate(meta: ExpenseMeta | undefined): BudgetMsg {
   if (!meta) return BudgetMsg.ExpenseUpdated;
-  if (meta.type === ExpenseMetaType.Fuel) return BudgetMsg.FuelUpdated;
-  if (meta.type === ExpenseMetaType.Travel) return BudgetMsg.TripUpdated;
-  if (meta.type === ExpenseMetaType.Maintenance) return BudgetMsg.ServiceUpdated;
-  return BudgetMsg.ExpenseUpdated;
+  switch (meta.type) {
+    case ExpenseMetaType.Fuel:
+      return BudgetMsg.FuelUpdated;
+    case ExpenseMetaType.Travel:
+      return BudgetMsg.TripUpdated;
+    case ExpenseMetaType.Maintenance:
+      return BudgetMsg.ServiceUpdated;
+    default:
+      return assertNever(meta);
+  }
 }
