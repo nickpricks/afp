@@ -89,9 +89,20 @@ export function SleepLog({
     } else {
       await logSleep(entryData);
       if (logToAll && hasSiblings && uid) {
-        const count = await logToSiblings(uid, siblingIds, DbSubcollection.Sleep, entryData);
-        if (count > 0)
-          addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+        const { ok, failed } = await logToSiblings(
+          uid,
+          siblingIds,
+          DbSubcollection.Sleep,
+          entryData,
+        );
+        if (failed > 0) {
+          addToast(
+            `${ok} of ${ok + failed} copied — ${failed} failed`,
+            ToastType.Error,
+          );
+        } else if (ok > 0) {
+          addToast(`Copied to ${ok} sibling${ok > 1 ? 's' : ''}`, ToastType.Info);
+        }
       }
     }
 
