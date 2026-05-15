@@ -11,10 +11,17 @@ export enum ValidationMsg {
   UsernameTooLong = 'Username must be at most 20 characters',
   UsernameInvalid = 'Username can only contain letters, numbers, and underscores',
   FuelLitersPositive = 'Liters must be greater than zero',
+  FuelLitersInvalid = 'Liters must be a positive number',
   FuelPricePerLiterPositive = 'Price per liter must be greater than zero',
+  FuelPriceInvalid = 'Price per liter must be a positive number',
   TravelOriginRequired = 'Origin is required',
   TravelDestinationRequired = 'Destination is required',
+  TravelDistanceInvalid = 'Travel distance must be a positive number',
   MaintenanceOdometerPositive = 'Odometer must be greater than zero',
+  OdometerInvalid = 'Odometer must be a positive number',
+  NextServiceInvalid = 'Next-service odometer must be a positive number',
+  TripOdoInvalid = 'Trip odometer must be a positive number',
+  DisplayedMileageInvalid = 'Mileage must be a positive number',
   UnknownMetaType = 'Unknown expense meta type',
 }
 

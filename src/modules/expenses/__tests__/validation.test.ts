@@ -166,7 +166,7 @@ describe('validateExpense — fuel meta', () => {
     };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
-    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.FuelLitersPositive);
+    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.FuelLitersInvalid);
   });
 
   it('rejects fuel meta with zero pricePerLiter', () => {
@@ -181,7 +181,7 @@ describe('validateExpense — fuel meta', () => {
     };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
-    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.FuelPricePerLiterPositive);
+    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.FuelPriceInvalid);
   });
 });
 
@@ -243,7 +243,51 @@ describe('validateExpense — maintenance meta', () => {
     };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
-    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.MaintenanceOdometerPositive);
+    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.OdometerInvalid);
+  });
+});
+
+describe('validateMeta — NaN/Infinity rejection', () => {
+  const fuelBase = { date: '2026-05-04', category: ExpenseCategory.Vehicle, amount: 4000 };
+  const maintBase = { date: '2026-05-04', category: ExpenseCategory.Vehicle, amount: 5000 };
+
+  it('rejects NaN liters on fuel meta', () => {
+    const meta: FuelMeta = {
+      type: ExpenseMetaType.Fuel,
+      liters: NaN,
+      pricePerLiter: 100,
+      odometer: null,
+      tripOdo: null,
+      displayedMileage: null,
+      fullTank: false,
+    };
+    const r = validateExpense({ ...fuelBase, meta });
+    expect(isOk(r)).toBe(false);
+  });
+
+  it('rejects Infinity pricePerLiter on fuel meta', () => {
+    const meta: FuelMeta = {
+      type: ExpenseMetaType.Fuel,
+      liters: 40,
+      pricePerLiter: Infinity,
+      odometer: null,
+      tripOdo: null,
+      displayedMileage: null,
+      fullTank: false,
+    };
+    const r = validateExpense({ ...fuelBase, meta });
+    expect(isOk(r)).toBe(false);
+  });
+
+  it('rejects NaN odometer on maintenance meta', () => {
+    const meta: MaintenanceMeta = {
+      type: ExpenseMetaType.Maintenance,
+      odometer: NaN,
+      nextService: 50000,
+      serviceNotes: '',
+    };
+    const r = validateExpense({ ...maintBase, meta });
+    expect(isOk(r)).toBe(false);
   });
 });
 

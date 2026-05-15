@@ -5,6 +5,7 @@ import type { ExpenseMeta } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
 import { DATE_RE } from '@/shared/utils/regex';
 import { ValidationMsg } from '@/constants/messages';
+import { isValidNumber } from '@/shared/utils/validation';
 
 /** Validates expense input fields and optional meta, returning a Result */
 export function validateExpense(input: {
@@ -41,15 +42,21 @@ export function validateExpense(input: {
 function validateMeta(meta: ExpenseMeta): Result<void> {
   switch (meta.type) {
     case ExpenseMetaType.Fuel:
-      if (meta.liters <= 0) return err(ValidationMsg.FuelLitersPositive);
-      if (meta.pricePerLiter <= 0) return err(ValidationMsg.FuelPricePerLiterPositive);
+      if (!isValidNumber(meta.liters)) return err(ValidationMsg.FuelLitersInvalid);
+      if (!isValidNumber(meta.pricePerLiter)) return err(ValidationMsg.FuelPriceInvalid);
+      if (meta.odometer != null && !isValidNumber(meta.odometer)) return err(ValidationMsg.OdometerInvalid);
+      if (meta.tripOdo != null && !isValidNumber(meta.tripOdo)) return err(ValidationMsg.TripOdoInvalid);
+      if (meta.displayedMileage != null && !isValidNumber(meta.displayedMileage))
+        return err(ValidationMsg.DisplayedMileageInvalid);
       return ok(undefined);
     case ExpenseMetaType.Travel:
       if (!meta.origin.trim()) return err(ValidationMsg.TravelOriginRequired);
       if (!meta.destination.trim()) return err(ValidationMsg.TravelDestinationRequired);
+      if (meta.distance != null && !isValidNumber(meta.distance)) return err(ValidationMsg.TravelDistanceInvalid);
       return ok(undefined);
     case ExpenseMetaType.Maintenance:
-      if (meta.odometer <= 0) return err(ValidationMsg.MaintenanceOdometerPositive);
+      if (!isValidNumber(meta.odometer)) return err(ValidationMsg.OdometerInvalid);
+      if (meta.nextService != null && !isValidNumber(meta.nextService)) return err(ValidationMsg.NextServiceInvalid);
       return ok(undefined);
     default:
       return err(ValidationMsg.UnknownMetaType);

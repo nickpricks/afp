@@ -2,6 +2,12 @@ import type { ExpenseMeta, FuelMeta, TravelMeta, MaintenanceMeta } from '@/modul
 import { ExpenseMetaType } from '@/modules/expenses/types';
 import { assertNever } from '@/shared/utils/types';
 
+/** Coerce a string input to a finite number; non-numeric or empty becomes 0. */
+const toFiniteNumber = (s: string): number => {
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+};
+
 /** Conditional meta sub-form — renders Fuel / Travel / Maintenance fields based on meta.type */
 export function MetaSubForm({
   meta,
@@ -74,7 +80,7 @@ function FuelFields({
             min="0"
             step="0.01"
             value={meta.liters || ''}
-            onChange={(e) => onChange({ ...meta, liters: Number(e.target.value) })}
+            onChange={(e) => onChange({ ...meta, liters: toFiniteNumber(e.target.value) })}
             onBlur={() => autoDerive(meta, 'liters', amount)}
             className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
           />
@@ -87,7 +93,7 @@ function FuelFields({
             min="0"
             step="0.01"
             value={meta.pricePerLiter || ''}
-            onChange={(e) => onChange({ ...meta, pricePerLiter: Number(e.target.value) })}
+            onChange={(e) => onChange({ ...meta, pricePerLiter: toFiniteNumber(e.target.value) })}
             onBlur={() => autoDerive(meta, 'price', amount)}
             className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
           />
@@ -226,7 +232,7 @@ function MaintenanceFields({
             min="0"
             step="1"
             value={meta.odometer || ''}
-            onChange={(e) => onChange({ ...meta, odometer: Number(e.target.value) })}
+            onChange={(e) => onChange({ ...meta, odometer: toFiniteNumber(e.target.value) })}
             className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
           />
         </label>
