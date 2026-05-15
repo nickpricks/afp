@@ -9,7 +9,7 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 ### Added
 - **Budget — Auto tab** (`feat/who-planned-it` series). New tab inside Budget module for Vehicle + Travel expenses with quick-add buttons (⛽ Add Fuel · 🚕 Add Trip · 🔧 Service), inline meta sub-form, and a derived service-due banner. Tap-to-populate edit pattern matching Body module. All toast strings live in `BudgetMsg` enum.
 - **Discriminated `meta` union on `Expense`** — New type system for optional metadata: `FuelMeta` (liters, pricePerLiter, odometer, tripOdo, displayedMileage, fullTank), `TravelMeta` (origin, destination, distance), `MaintenanceMeta` (odometer, nextService). Existing expenses without `meta` continue to work unchanged.
-- **`fuel-math.ts` module** — Pure computation helpers: `computeMileage(legStart, legEnd)`, `latestOdometer(expenses)`, `dueMaintenance(expenses, lastServiceOdo?)`, `isServiceDue(nextService)`. No storage coupling.
+- **`fuel-math.ts` module** — Pure computation helpers: `computeMileage(meta: FuelMeta)`, `latestOdometer(expenses: Expense[])`, `dueMaintenance(expenses: Expense[])`, `isServiceDue(expenses: Expense[]): boolean`. No storage coupling.
 - **`updateExpense` hook in `useExpenses`** — Complements existing `addExpense`/`deleteExpense`. Enables tap-to-populate edit on Auto tab (row → form pre-population → Update button).
 - **`meta-utils.ts` module** — `metaKindFor(meta)` discriminator, `defaultMeta(kind)` factory. Extracted to avoid react-refresh warnings when meta union types are used inline in component render.
 
