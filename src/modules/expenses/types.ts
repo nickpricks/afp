@@ -2,6 +2,13 @@ import type { ExpenseCategory, IncomeSource, PaymentMethod, TimeRange } from '@/
 
 // NOTE: Directory remains `expenses/` for backwards compat. Module is "Budget" in the UI.
 
+/** Discriminator tag for Expense.meta variants. */
+export enum ExpenseMetaType {
+  Fuel = 'fuel',
+  Travel = 'travel',
+  Maintenance = 'maintenance',
+}
+
 /** Fuel-fill metadata captured for Vehicle/Fuel expenses */
 export type FuelMeta = {
   type: 'fuel';
