@@ -71,7 +71,10 @@ export function useExpenses(targetUid?: string) {
       }
 
       const adapter = adapterRef.current;
-      if (!adapter) return false;
+      if (!adapter) {
+        addToast(BudgetMsg.AdapterNotReady, ToastType.Error);
+        return false;
+      }
 
       const now = new Date().toISOString();
       const expense: Expense = {
@@ -112,7 +115,10 @@ export function useExpenses(targetUid?: string) {
       }
 
       const adapter = adapterRef.current;
-      if (!adapter) return false;
+      if (!adapter) {
+        addToast(BudgetMsg.AdapterNotReady, ToastType.Error);
+        return false;
+      }
 
       const updated: Expense = { ...expense, updatedAt: new Date().toISOString() };
       const result = await adapter.save(DbSubcollection.Expenses, { ...updated });
@@ -132,7 +138,10 @@ export function useExpenses(targetUid?: string) {
     async (id: string) => {
       if (readOnly) return;
       const adapter = adapterRef.current;
-      if (!adapter) return;
+      if (!adapter) {
+        addToast(BudgetMsg.AdapterNotReady, ToastType.Error);
+        return;
+      }
 
       const result = await adapter.save(DbSubcollection.Expenses, {
         id,

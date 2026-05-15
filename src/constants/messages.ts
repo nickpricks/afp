@@ -50,6 +50,7 @@ export enum BudgetMsg {
   IncomeAdded = 'Income added',
   IncomeDeleted = 'Income deleted',
   CategoryRequired = 'Please select a category',
+  AdapterNotReady = 'Storage not ready — try again in a moment',
 }
 
 /** Body module messages */
