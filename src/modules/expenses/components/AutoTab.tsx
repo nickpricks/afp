@@ -20,7 +20,7 @@ import { ServiceDueBanner } from '@/modules/expenses/components/ServiceDueBanner
 import { computeMileage } from '@/modules/expenses/fuel-math';
 import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
 import { useToast } from '@/shared/errors/useToast';
-import { BudgetMsg } from '@/constants/messages';
+import { BudgetMsg, ValidationMsg } from '@/constants/messages';
 
 type FormKind = ExpenseMetaType;
 
@@ -86,7 +86,7 @@ export function AutoTab({
     if (!meta || !formKind) return;
     const amt = Number(amount);
     if (!amt || amt <= 0) {
-      addToast(BudgetMsg.CategoryRequired, ToastType.Error);
+      addToast(ValidationMsg.AmountPositive, ToastType.Error);
       return;
     }
 

@@ -154,6 +154,35 @@ describe('AutoTab — tap-to-edit', () => {
   });
 });
 
+describe('AutoTab — amount validation toast', () => {
+  it('shows AmountPositive (not CategoryRequired) toast when amount is blank on submit', async () => {
+    const addToastSpy = vi.fn();
+    vi.doMock('@/shared/errors/useToast', () => ({ useToast: () => ({ addToast: addToastSpy }) }));
+
+    // Use ToastProvider to capture real toast calls via the spy injected by context
+    // We test via the real ToastProvider + listening for the toast text in the DOM.
+    withToast(
+      <AutoTab
+        expenses={[]}
+        onAdd={vi.fn().mockResolvedValue(true)}
+        onUpdate={vi.fn().mockResolvedValue(true)}
+        onDelete={vi.fn()}
+      />,
+    );
+    // Open the fuel form (amount starts blank)
+    fireEvent.click(screen.getByRole('button', { name: /Add Fuel/ }));
+    // Fill in required fuel fields so meta is valid, but leave amount blank
+    const litersInput = screen.getByLabelText(/Liters/i);
+    fireEvent.change(litersInput, { target: { value: '40' } });
+    // Submit with blank amount — should show AmountPositive, NOT CategoryRequired
+    const form = screen.getByRole('button', { name: 'Save' });
+    fireEvent.click(form);
+    // Toast appears in DOM via ToastProvider
+    await screen.findByText(/Amount must be greater than zero/i);
+    expect(screen.queryByText(/Please select a category/i)).toBeNull();
+  });
+});
+
 describe('AutoTab — incomplete pill', () => {
   it('renders "incomplete" pill when meta is undefined', () => {
     const e: Expense = {
