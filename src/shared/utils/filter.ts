@@ -20,6 +20,10 @@ export const filterByDateRange = <T>(
 
   return items.filter((item) => {
     const itemMs = new Date(getDate(item)).getTime();
+    if (!Number.isFinite(itemMs)) {
+      console.warn('filterByDateRange: invalid date string', getDate(item));
+      return false;
+    }
     return itemMs >= cutoffMs && itemMs <= todayMs;
   });
 };
