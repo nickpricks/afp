@@ -136,12 +136,12 @@ export function useExpenses(targetUid?: string) {
 
   /** Soft-deletes an expense by marking it as deleted */
   const deleteExpense = useCallback(
-    async (id: string) => {
-      if (readOnly) return;
+    async (id: string): Promise<boolean> => {
+      if (readOnly) return false;
       const adapter = adapterRef.current;
       if (!adapter) {
         addToast(BudgetMsg.AdapterNotReady, ToastType.Error);
-        return;
+        return false;
       }
 
       const result = await adapter.save(DbSubcollection.Expenses, {
@@ -152,10 +152,11 @@ export function useExpenses(targetUid?: string) {
 
       if (!isOk(result)) {
         addToast(result.error, ToastType.Error);
-        return;
+        return false;
       }
 
       addToast(BudgetMsg.ExpenseDeleted, ToastType.Success);
+      return true;
     },
     [addToast, readOnly],
   );

@@ -44,7 +44,7 @@ export function AutoTab({
     meta: ExpenseMeta;
   }) => Promise<boolean>;
   onUpdate: (e: Expense) => Promise<boolean>;
-  onDelete: (id: string) => void;
+  onDelete: (id: string) => Promise<boolean>;
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formKind, setFormKind] = useState<FormKind | null>(null);
