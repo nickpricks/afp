@@ -2,6 +2,7 @@ import { CATEGORIES } from '@/modules/expenses/categories';
 import type { Result } from '@/shared/types';
 import { err, ok, ExpenseCategory, IncomeSource } from '@/shared/types';
 import type { ExpenseMeta } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 import { DATE_RE } from '@/shared/utils/regex';
 import { ValidationMsg } from '@/constants/messages';
 
@@ -39,15 +40,15 @@ export function validateExpense(input: {
 /** Validates the discriminated meta union */
 function validateMeta(meta: ExpenseMeta): Result<void> {
   switch (meta.type) {
-    case 'fuel':
+    case ExpenseMetaType.Fuel:
       if (meta.liters <= 0) return err(ValidationMsg.FuelLitersPositive);
       if (meta.pricePerLiter <= 0) return err(ValidationMsg.FuelPricePerLiterPositive);
       return ok(undefined);
-    case 'travel':
+    case ExpenseMetaType.Travel:
       if (!meta.origin.trim()) return err(ValidationMsg.TravelOriginRequired);
       if (!meta.destination.trim()) return err(ValidationMsg.TravelDestinationRequired);
       return ok(undefined);
-    case 'maintenance':
+    case ExpenseMetaType.Maintenance:
       if (meta.odometer <= 0) return err(ValidationMsg.MaintenanceOdometerPositive);
       return ok(undefined);
     default:

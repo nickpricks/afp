@@ -3,6 +3,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 
 import { AddExpense } from '@/modules/expenses/components/AddExpense';
 import { ToastProvider } from '@/shared/errors/toast-context';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 
 const noop = vi.fn().mockResolvedValue(true);
 
@@ -168,7 +169,7 @@ describe('AddExpense — meta sub-form integration', () => {
     expect(onSubmit).toHaveBeenCalled();
     const call = onSubmit.mock.calls[0]![0];
     expect(call.meta).toBeDefined();
-    expect(call.meta?.type).toBe('fuel');
+    expect(call.meta?.type).toBe(ExpenseMetaType.Fuel);
     expect(call.meta?.liters).toBe(40);
     expect(call.meta?.pricePerLiter).toBe(100);
   });

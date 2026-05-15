@@ -1,4 +1,5 @@
 import type { Expense, ExpenseMeta, FuelMeta, MaintenanceMeta } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 
 /** Inputs for the two-of-three fuel input derivation. */
 export interface FuelTripleInput {
@@ -54,7 +55,7 @@ export function dueMaintenance(expenses: Expense[]): MaintenanceMeta | null {
   const maint = expenses
     .filter(
       (e): e is Expense & { meta: MaintenanceMeta } =>
-        e.meta?.type === 'maintenance' && e.meta.nextService != null,
+        e.meta?.type === ExpenseMetaType.Maintenance && e.meta.nextService != null,
     )
     .slice()
     .sort((a, b) => b.date.localeCompare(a.date));
@@ -73,7 +74,7 @@ export function isServiceDue(expenses: Expense[]): boolean {
 /** Extracts the odometer reading from a meta object, if present */
 function readOdometer(meta: ExpenseMeta | undefined): number | null {
   if (!meta) return null;
-  if (meta.type === 'fuel') return meta.odometer;
-  if (meta.type === 'maintenance') return meta.odometer;
+  if (meta.type === ExpenseMetaType.Fuel) return meta.odometer;
+  if (meta.type === ExpenseMetaType.Maintenance) return meta.odometer;
   return null;
 }

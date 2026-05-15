@@ -4,6 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { AutoTab } from '@/modules/expenses/components/AutoTab';
 import { ToastProvider } from '@/shared/errors/toast-context';
 import type { Expense } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ExpenseCategory, PaymentMethod } from '@/shared/types';
 
 function withToast(ui: React.ReactElement) {
@@ -24,7 +25,7 @@ function fuelExpense(id: string, date: string, odometer = 12000): Expense {
     createdAt: `${date}T10:00:00Z`,
     updatedAt: `${date}T10:00:00Z`,
     meta: {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 100,
       odometer,

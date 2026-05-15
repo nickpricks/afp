@@ -5,17 +5,18 @@ import { MetaSubForm } from '@/modules/expenses/components/MetaSubForm';
 import { metaKindFor, defaultMeta } from '@/modules/expenses/meta-utils';
 import { ExpenseCategory } from '@/shared/types';
 import type { FuelMeta, TravelMeta, MaintenanceMeta } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 
 describe('metaKindFor', () => {
   it('returns "fuel" for Vehicle/Fuel', () => {
-    expect(metaKindFor(ExpenseCategory.Vehicle, 'Fuel')).toBe('fuel');
+    expect(metaKindFor(ExpenseCategory.Vehicle, 'Fuel')).toBe(ExpenseMetaType.Fuel);
   });
   it('returns "maintenance" for Vehicle/Maintenance', () => {
-    expect(metaKindFor(ExpenseCategory.Vehicle, 'Maintenance')).toBe('maintenance');
+    expect(metaKindFor(ExpenseCategory.Vehicle, 'Maintenance')).toBe(ExpenseMetaType.Maintenance);
   });
   it('returns "travel" for any non-empty Travel subCat', () => {
-    expect(metaKindFor(ExpenseCategory.Travel, 'Air')).toBe('travel');
-    expect(metaKindFor(ExpenseCategory.Travel, 'Cab/Auto')).toBe('travel');
+    expect(metaKindFor(ExpenseCategory.Travel, 'Air')).toBe(ExpenseMetaType.Travel);
+    expect(metaKindFor(ExpenseCategory.Travel, 'Cab/Auto')).toBe(ExpenseMetaType.Travel);
   });
   it('returns null for empty Travel subCat', () => {
     expect(metaKindFor(ExpenseCategory.Travel, '')).toBeNull();
@@ -30,9 +31,9 @@ describe('metaKindFor', () => {
 
 describe('defaultMeta', () => {
   it('returns FuelMeta with zeros and nulls', () => {
-    const m = defaultMeta('fuel');
+    const m = defaultMeta(ExpenseMetaType.Fuel);
     expect(m).toEqual({
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 0,
       pricePerLiter: 0,
       odometer: null,
@@ -42,16 +43,16 @@ describe('defaultMeta', () => {
     });
   });
   it('returns TravelMeta with empty strings', () => {
-    expect(defaultMeta('travel')).toEqual({
-      type: 'travel',
+    expect(defaultMeta(ExpenseMetaType.Travel)).toEqual({
+      type: ExpenseMetaType.Travel,
       origin: '',
       destination: '',
       distance: null,
     });
   });
   it('returns MaintenanceMeta with zero odometer', () => {
-    expect(defaultMeta('maintenance')).toEqual({
-      type: 'maintenance',
+    expect(defaultMeta(ExpenseMetaType.Maintenance)).toEqual({
+      type: ExpenseMetaType.Maintenance,
       odometer: 0,
       nextService: null,
       serviceNotes: '',
@@ -67,7 +68,7 @@ describe('MetaSubForm — fuel variant', () => {
     const onChangeMeta = vi.fn();
     const onChangeAmount = vi.fn();
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 0,
       pricePerLiter: 0,
       odometer: null,
@@ -113,7 +114,7 @@ describe('MetaSubForm — fuel variant', () => {
 
 describe('MetaSubForm — travel variant', () => {
   it('renders origin and destination inputs', () => {
-    const meta: TravelMeta = { type: 'travel', origin: 'BLR', destination: 'MAA', distance: null };
+    const meta: TravelMeta = { type: ExpenseMetaType.Travel, origin: 'BLR', destination: 'MAA', distance: null };
     render(<MetaSubForm meta={meta} amount="" onChangeMeta={vi.fn()} onChangeAmount={vi.fn()} />);
     expect(screen.getByDisplayValue('BLR')).toBeInTheDocument();
     expect(screen.getByDisplayValue('MAA')).toBeInTheDocument();
@@ -123,7 +124,7 @@ describe('MetaSubForm — travel variant', () => {
 describe('MetaSubForm — maintenance variant', () => {
   it('renders odometer + next-service inputs and helper text', () => {
     const meta: MaintenanceMeta = {
-      type: 'maintenance',
+      type: ExpenseMetaType.Maintenance,
       odometer: 12500,
       nextService: 22500,
       serviceNotes: '',

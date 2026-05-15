@@ -7,6 +7,7 @@ import type {
   TravelMeta,
   MaintenanceMeta,
 } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ExpenseCategory, ToastType } from '@/shared/types';
 import { todayStr } from '@/shared/utils/date';
 import { sortNewestFirst } from '@/shared/utils/sort';
@@ -20,7 +21,7 @@ import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
 import { useToast } from '@/shared/errors/useToast';
 import { BudgetMsg } from '@/constants/messages';
 
-type FormKind = 'fuel' | 'travel' | 'maintenance';
+type FormKind = ExpenseMetaType;
 
 /** Auto tab — vehicle/travel filtered list, quick-add buttons, inline form, service-due banner */
 export function AutoTab({
@@ -130,21 +131,21 @@ export function AutoTab({
       <div className="mx-4 mb-3 flex gap-2">
         <button
           type="button"
-          onClick={() => startQuickAdd('fuel')}
+          onClick={() => startQuickAdd(ExpenseMetaType.Fuel)}
           className="flex-1 rounded-lg border border-line bg-surface-card px-3 py-2 text-sm font-medium text-fg hover:border-accent/40"
         >
           ⛽ Add Fuel
         </button>
         <button
           type="button"
-          onClick={() => startQuickAdd('travel')}
+          onClick={() => startQuickAdd(ExpenseMetaType.Travel)}
           className="flex-1 rounded-lg border border-line bg-surface-card px-3 py-2 text-sm font-medium text-fg hover:border-accent/40"
         >
           🚕 Add Trip
         </button>
         <button
           type="button"
-          onClick={() => startQuickAdd('maintenance')}
+          onClick={() => startQuickAdd(ExpenseMetaType.Maintenance)}
           className="flex-1 rounded-lg border border-line bg-surface-card px-3 py-2 text-sm font-medium text-fg hover:border-accent/40"
         >
           🔧 Service
@@ -287,8 +288,8 @@ function Row({
 
 function renderBadge(meta: ExpenseMeta | undefined): string | null {
   if (!meta) return null;
-  if (meta.type === 'fuel') return renderFuelBadge(meta);
-  if (meta.type === 'travel') return renderTravelBadge(meta);
+  if (meta.type === ExpenseMetaType.Fuel) return renderFuelBadge(meta);
+  if (meta.type === ExpenseMetaType.Travel) return renderTravelBadge(meta);
   return renderMaintenanceBadge(meta);
 }
 
@@ -313,7 +314,7 @@ function renderMaintenanceBadge(meta: MaintenanceMeta): string {
 }
 
 function subCatFor(kind: FormKind): { category: ExpenseCategory; subCat: string } {
-  if (kind === 'fuel') return { category: ExpenseCategory.Vehicle, subCat: 'Fuel' };
-  if (kind === 'travel') return { category: ExpenseCategory.Travel, subCat: 'Cab/Auto' };
+  if (kind === ExpenseMetaType.Fuel) return { category: ExpenseCategory.Vehicle, subCat: 'Fuel' };
+  if (kind === ExpenseMetaType.Travel) return { category: ExpenseCategory.Travel, subCat: 'Cab/Auto' };
   return { category: ExpenseCategory.Vehicle, subCat: 'Maintenance' };
 }

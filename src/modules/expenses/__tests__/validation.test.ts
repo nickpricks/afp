@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { validateExpense, validateIncome } from '@/modules/expenses/validation';
 import { isOk, isErr, ExpenseCategory, IncomeSource } from '@/shared/types';
 import type { FuelMeta, TravelMeta, MaintenanceMeta } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ValidationMsg } from '@/constants/messages';
 
 /** Extracts only numeric values from a numeric TypeScript enum */
@@ -142,7 +143,7 @@ describe('validateExpense — fuel meta', () => {
 
   it('accepts a valid fuel meta', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 100,
       odometer: 12000,
@@ -155,7 +156,7 @@ describe('validateExpense — fuel meta', () => {
 
   it('rejects fuel meta with zero liters', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 0,
       pricePerLiter: 100,
       odometer: null,
@@ -170,7 +171,7 @@ describe('validateExpense — fuel meta', () => {
 
   it('rejects fuel meta with zero pricePerLiter', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 0,
       odometer: null,
@@ -193,7 +194,7 @@ describe('validateExpense — travel meta', () => {
 
   it('accepts a valid travel meta', () => {
     const meta: TravelMeta = {
-      type: 'travel',
+      type: ExpenseMetaType.Travel,
       origin: 'BLR',
       destination: 'MAA',
       distance: 8,
@@ -202,14 +203,14 @@ describe('validateExpense — travel meta', () => {
   });
 
   it('rejects travel meta with empty origin', () => {
-    const meta: TravelMeta = { type: 'travel', origin: '', destination: 'MAA', distance: null };
+    const meta: TravelMeta = { type: ExpenseMetaType.Travel, origin: '', destination: 'MAA', distance: null };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
     if (!isOk(r)) expect(r.error).toBe(ValidationMsg.TravelOriginRequired);
   });
 
   it('rejects travel meta with empty destination', () => {
-    const meta: TravelMeta = { type: 'travel', origin: 'BLR', destination: '', distance: null };
+    const meta: TravelMeta = { type: ExpenseMetaType.Travel, origin: 'BLR', destination: '', distance: null };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
     if (!isOk(r)) expect(r.error).toBe(ValidationMsg.TravelDestinationRequired);
@@ -225,7 +226,7 @@ describe('validateExpense — maintenance meta', () => {
 
   it('accepts a valid maintenance meta', () => {
     const meta: MaintenanceMeta = {
-      type: 'maintenance',
+      type: ExpenseMetaType.Maintenance,
       odometer: 12500,
       nextService: 22500,
       serviceNotes: 'Engine oil + filter',
@@ -235,7 +236,7 @@ describe('validateExpense — maintenance meta', () => {
 
   it('rejects maintenance meta with zero odometer', () => {
     const meta: MaintenanceMeta = {
-      type: 'maintenance',
+      type: ExpenseMetaType.Maintenance,
       odometer: 0,
       nextService: null,
       serviceNotes: '',

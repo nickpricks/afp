@@ -8,6 +8,7 @@ import {
   deriveFuelTriple,
 } from '@/modules/expenses/fuel-math';
 import type { Expense, FuelMeta, MaintenanceMeta } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ExpenseCategory, PaymentMethod } from '@/shared/types';
 
 function fuelExpense(
@@ -28,7 +29,7 @@ function fuelExpense(
     createdAt: `${date}T10:00:00Z`,
     updatedAt: `${date}T10:00:00Z`,
     meta: {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       odometer: meta.odometer ?? null,
       tripOdo: meta.tripOdo ?? null,
       displayedMileage: meta.displayedMileage ?? null,
@@ -57,14 +58,14 @@ function maintenanceExpense(
     isDeleted: false,
     createdAt: `${date}T10:00:00Z`,
     updatedAt: `${date}T10:00:00Z`,
-    meta: { type: 'maintenance', odometer, nextService, serviceNotes: '' },
+    meta: { type: ExpenseMetaType.Maintenance, odometer, nextService, serviceNotes: '' },
   };
 }
 
 describe('computeMileage', () => {
   it('returns null when fullTank is false', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 100,
       odometer: 12000,
@@ -77,7 +78,7 @@ describe('computeMileage', () => {
 
   it('returns null when tripOdo is missing', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 100,
       odometer: 12000,
@@ -90,7 +91,7 @@ describe('computeMileage', () => {
 
   it('returns null when liters is zero', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 0,
       pricePerLiter: 100,
       odometer: 12000,
@@ -103,7 +104,7 @@ describe('computeMileage', () => {
 
   it('returns tripOdo / liters when fullTank and both present', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 100,
       odometer: 12000,

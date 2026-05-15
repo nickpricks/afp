@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 import { ServiceDueBanner } from '@/modules/expenses/components/ServiceDueBanner';
 import type { Expense } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ExpenseCategory, PaymentMethod } from '@/shared/types';
 
 function maintenance(
@@ -23,7 +24,7 @@ function maintenance(
     isDeleted: false,
     createdAt: `${date}T10:00:00Z`,
     updatedAt: `${date}T10:00:00Z`,
-    meta: { type: 'maintenance', odometer, nextService, serviceNotes: '' },
+    meta: { type: ExpenseMetaType.Maintenance, odometer, nextService, serviceNotes: '' },
   };
 }
 
@@ -41,7 +42,7 @@ function fuel(id: string, date: string, odometer: number): Expense {
     createdAt: `${date}T10:00:00Z`,
     updatedAt: `${date}T10:00:00Z`,
     meta: {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 100,
       odometer,

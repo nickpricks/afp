@@ -1,4 +1,5 @@
 import type { ExpenseMeta, FuelMeta, TravelMeta, MaintenanceMeta } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 
 /** Conditional meta sub-form — renders Fuel / Travel / Maintenance fields based on meta.type */
 export function MetaSubForm({
@@ -12,7 +13,7 @@ export function MetaSubForm({
   onChangeMeta: (m: ExpenseMeta) => void;
   onChangeAmount: (a: string) => void;
 }) {
-  if (meta.type === 'fuel') {
+  if (meta.type === ExpenseMetaType.Fuel) {
     return (
       <FuelFields
         meta={meta}
@@ -22,7 +23,7 @@ export function MetaSubForm({
       />
     );
   }
-  if (meta.type === 'travel') {
+  if (meta.type === ExpenseMetaType.Travel) {
     return <TravelFields meta={meta} onChange={onChangeMeta} />;
   }
   return <MaintenanceFields meta={meta} onChange={onChangeMeta} />;

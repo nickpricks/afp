@@ -1,22 +1,23 @@
 import type { ExpenseMeta } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 import type { ExpenseCategory } from '@/shared/types';
 import { ExpenseCategory as Cat } from '@/shared/types';
 
-type MetaKind = 'fuel' | 'travel' | 'maintenance' | null;
+type MetaKind = ExpenseMetaType | null;
 
 /** Returns the meta kind appropriate for a (category, subCat) pair, or null if none applies */
 export function metaKindFor(category: ExpenseCategory | null, subCat: string): MetaKind {
-  if (category === Cat.Vehicle && subCat === 'Fuel') return 'fuel';
-  if (category === Cat.Vehicle && subCat === 'Maintenance') return 'maintenance';
-  if (category === Cat.Travel && subCat) return 'travel';
+  if (category === Cat.Vehicle && subCat === 'Fuel') return ExpenseMetaType.Fuel;
+  if (category === Cat.Vehicle && subCat === 'Maintenance') return ExpenseMetaType.Maintenance;
+  if (category === Cat.Travel && subCat) return ExpenseMetaType.Travel;
   return null;
 }
 
 /** Returns a default meta object for the given kind */
 export function defaultMeta(kind: MetaKind): ExpenseMeta | undefined {
-  if (kind === 'fuel') {
+  if (kind === ExpenseMetaType.Fuel) {
     return {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 0,
       pricePerLiter: 0,
       odometer: null,
@@ -25,11 +26,11 @@ export function defaultMeta(kind: MetaKind): ExpenseMeta | undefined {
       fullTank: false,
     };
   }
-  if (kind === 'travel') {
-    return { type: 'travel', origin: '', destination: '', distance: null };
+  if (kind === ExpenseMetaType.Travel) {
+    return { type: ExpenseMetaType.Travel, origin: '', destination: '', distance: null };
   }
-  if (kind === 'maintenance') {
-    return { type: 'maintenance', odometer: 0, nextService: null, serviceNotes: '' };
+  if (kind === ExpenseMetaType.Maintenance) {
+    return { type: ExpenseMetaType.Maintenance, odometer: 0, nextService: null, serviceNotes: '' };
   }
   return undefined;
 }

@@ -11,7 +11,7 @@ export enum ExpenseMetaType {
 
 /** Fuel-fill metadata captured for Vehicle/Fuel expenses */
 export type FuelMeta = {
-  type: 'fuel';
+  type: ExpenseMetaType.Fuel;
   liters: number;
   pricePerLiter: number;
   odometer: number | null;
@@ -22,7 +22,7 @@ export type FuelMeta = {
 
 /** Trip metadata captured for Travel expenses */
 export type TravelMeta = {
-  type: 'travel';
+  type: ExpenseMetaType.Travel;
   origin: string;
   destination: string;
   distance: number | null;
@@ -30,7 +30,7 @@ export type TravelMeta = {
 
 /** Maintenance metadata captured for Vehicle/Maintenance expenses */
 export type MaintenanceMeta = {
-  type: 'maintenance';
+  type: ExpenseMetaType.Maintenance;
   odometer: number;
   nextService: number | null;
   serviceNotes: string;
