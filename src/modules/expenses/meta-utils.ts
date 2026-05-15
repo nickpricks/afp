@@ -2,7 +2,7 @@ import type { ExpenseMeta } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
 import type { ExpenseCategory } from '@/shared/types';
 import { ExpenseCategory as Cat } from '@/shared/types';
-import { VEHICLE_SUBCAT } from '@/modules/expenses/categories';
+import { VEHICLE_SUBCAT, TRAVEL_SUBCAT } from '@/modules/expenses/categories';
 
 type MetaKind = ExpenseMetaType | null;
 
@@ -12,6 +12,13 @@ export function metaKindFor(category: ExpenseCategory | null, subCat: string): M
   if (category === Cat.Vehicle && subCat === VEHICLE_SUBCAT.Maintenance) return ExpenseMetaType.Maintenance;
   if (category === Cat.Travel && subCat) return ExpenseMetaType.Travel;
   return null;
+}
+
+/** Returns the category and subcategory for a given meta kind (inverse of metaKindFor) */
+export function subCatFor(kind: ExpenseMetaType): { category: ExpenseCategory; subCat: string } {
+  if (kind === ExpenseMetaType.Fuel) return { category: Cat.Vehicle, subCat: VEHICLE_SUBCAT.Fuel };
+  if (kind === ExpenseMetaType.Travel) return { category: Cat.Travel, subCat: TRAVEL_SUBCAT.CabAuto };
+  return { category: Cat.Vehicle, subCat: VEHICLE_SUBCAT.Maintenance };
 }
 
 /** Returns a default meta object for the given kind */

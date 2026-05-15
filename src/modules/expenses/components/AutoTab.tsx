@@ -1,28 +1,20 @@
 import { useState } from 'react';
 
-import type {
-  Expense,
-  ExpenseMeta,
-  FuelMeta,
-  TravelMeta,
-  MaintenanceMeta,
-} from '@/modules/expenses/types';
+import type { Expense, ExpenseMeta } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
-import { assertNever } from '@/shared/utils/types';
 import { ExpenseCategory, PaymentMethod, ToastType } from '@/shared/types';
 import { PaymentMethodBubble } from '@/shared/components/PaymentMethodBubble';
 import { todayStr } from '@/shared/utils/date';
 import { sortNewestFirst } from '@/shared/utils/sort';
 import { CONFIG } from '@/constants/config';
-import { CATEGORIES, PAYMENT_METHOD_LABELS, VEHICLE_SUBCAT, TRAVEL_SUBCAT } from '@/modules/expenses/categories';
 import { MetaSubForm } from '@/modules/expenses/components/MetaSubForm';
-import { defaultMeta } from '@/modules/expenses/meta-utils';
+import { defaultMeta, subCatFor } from '@/modules/expenses/meta-utils';
 import { ServiceDueBanner } from '@/modules/expenses/components/ServiceDueBanner';
-import { computeMileage } from '@/modules/expenses/fuel-math';
 import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
 import { useToast } from '@/shared/errors/useToast';
 import { ValidationMsg } from '@/constants/messages';
 import { useExpenseForm } from '@/modules/expenses/hooks/useExpenseForm';
+import { AutoTabRow } from '@/modules/expenses/components/AutoTabRow';
 
 type FormKind = ExpenseMetaType;
 
@@ -235,7 +227,7 @@ export function AutoTab({
           <div key={dk}>
             <DateGroupHeader date={dk} today={today} />
             {groups[dk]!.map((e) => (
-              <Row
+              <AutoTabRow
                 key={e.id}
                 expense={e}
                 isActive={e.id === editingId}
@@ -248,102 +240,4 @@ export function AutoTab({
       </div>
     </div>
   );
-}
-
-function Row({
-  expense,
-  isActive,
-  onTap,
-  onDelete,
-}: {
-  expense: Expense;
-  isActive: boolean;
-  onTap: () => void;
-  onDelete: () => void;
-}) {
-  const pmLabel = PAYMENT_METHOD_LABELS[expense.paymentMethod];
-  const catLabel = CATEGORIES[expense.category]?.label ?? '';
-  const badge = renderBadge(expense.meta);
-
-  return (
-    <div
-      className={`flex items-center justify-between border-t border-line px-4 py-3 transition-colors ${
-        isActive ? 'bg-[var(--accent-muted)] border-l-2 border-l-accent' : 'hover:bg-accent-muted'
-      }`}
-      onClick={onTap}
-    >
-      <div className="flex flex-col gap-0.5">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-base font-semibold tabular-nums text-accent">
-            {CONFIG.CURRENCY_SYMBOL}
-            {expense.amount}
-          </span>
-          {pmLabel && (
-            <span className="rounded bg-surface-card px-1.5 py-0.5 text-[10px] text-fg-muted">
-              {pmLabel.shortLabel}
-            </span>
-          )}
-        </div>
-        <span className="text-xs text-fg-muted">
-          {catLabel} {expense.subCat && `> ${expense.subCat}`}
-        </span>
-        {badge && <span className="text-[11px] text-fg-muted">{badge}</span>}
-        {!expense.meta && (
-          <span className="rounded bg-fg-muted/10 px-1.5 py-0.5 text-[10px] text-fg-muted">
-            incomplete
-          </span>
-        )}
-      </div>
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete();
-        }}
-        className="text-fg-muted hover:text-red-500 hover:scale-125 hover:font-bold transition-all"
-      >
-        ×
-      </button>
-    </div>
-  );
-}
-
-function renderBadge(meta: ExpenseMeta | undefined): string | null {
-  if (!meta) return null;
-  switch (meta.type) {
-    case ExpenseMetaType.Fuel:
-      return renderFuelBadge(meta);
-    case ExpenseMetaType.Travel:
-      return renderTravelBadge(meta);
-    case ExpenseMetaType.Maintenance:
-      return renderMaintenanceBadge(meta);
-    default:
-      return assertNever(meta);
-  }
-}
-
-function renderFuelBadge(meta: FuelMeta): string {
-  const parts: string[] = [`⛽ ${meta.liters}L`];
-  if (meta.pricePerLiter > 0) parts.push(`${CONFIG.CURRENCY_SYMBOL}${meta.pricePerLiter}/L`);
-  if (meta.odometer != null) parts.push(`${meta.odometer.toLocaleString()}km`);
-  const mileage = computeMileage(meta);
-  if (mileage != null) parts.push(`${mileage.toFixed(1)} km/L`);
-  return parts.join(' · ');
-}
-
-function renderTravelBadge(meta: TravelMeta): string {
-  const route = `🚕 ${meta.origin} → ${meta.destination}`;
-  return meta.distance != null ? `${route} · ${meta.distance}km` : route;
-}
-
-function renderMaintenanceBadge(meta: MaintenanceMeta): string {
-  const parts = [`🔧 ${meta.odometer.toLocaleString()}km`];
-  if (meta.nextService != null) parts.push(`next ${meta.nextService.toLocaleString()}`);
-  return parts.join(' · ');
-}
-
-function subCatFor(kind: FormKind): { category: ExpenseCategory; subCat: string } {
-  if (kind === ExpenseMetaType.Fuel) return { category: ExpenseCategory.Vehicle, subCat: VEHICLE_SUBCAT.Fuel };
-  if (kind === ExpenseMetaType.Travel) return { category: ExpenseCategory.Travel, subCat: TRAVEL_SUBCAT.CabAuto };
-  return { category: ExpenseCategory.Vehicle, subCat: VEHICLE_SUBCAT.Maintenance };
 }
