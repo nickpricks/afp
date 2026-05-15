@@ -205,6 +205,9 @@ export function AddExpense({
           )}
         </div>
       </div>
+      {amount && !isValidNumber(parsedAmount) && (
+        <p className="text-xs text-red-500 mt-1">Enter a positive number</p>
+      )}
 
       <div className="flex gap-1.5">
         {AMOUNT_PRESETS.map((preset) => (
