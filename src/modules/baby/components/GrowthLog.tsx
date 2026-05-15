@@ -59,8 +59,8 @@ export function GrowthLog({
     const entryData = { date, weight, height, headCircumference, createdAt: now, notes };
 
     if (editEntry) {
-      await updateGrowth({ ...editEntry, date, weight, height, headCircumference, notes });
-      setEditEntry(null);
+      const ok = await updateGrowth({ ...editEntry, date, weight, height, headCircumference, notes });
+      if (ok) setEditEntry(null);
     } else {
       await logGrowth(entryData);
       if (logToAll && hasSiblings && uid) {

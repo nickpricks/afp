@@ -47,16 +47,18 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
   }, [uid, childId, subcollection, label]);
 
   const log = useCallback(
-    async (data: Omit<T, 'id'>) => {
-      if (readOnly) return;
+    async (data: Omit<T, 'id'>): Promise<boolean> => {
+      if (readOnly) return false;
       const adapter = adapterRef.current;
-      if (!adapter) return;
+      if (!adapter) return false;
       const entry = { ...data, id: crypto.randomUUID() } as T;
       const result = await adapter.save(subcollection, entry);
       if (isOk(result)) {
         addToast(`${label} logged`, ToastType.Success);
+        return true;
       } else {
         addToast(result.error, ToastType.Error);
+        return false;
       }
     },
     [addToast, subcollection, label, readOnly],
@@ -64,15 +66,17 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
 
   /** Removes an entry by ID */
   const remove = useCallback(
-    async (id: string) => {
-      if (readOnly) return;
+    async (id: string): Promise<boolean> => {
+      if (readOnly) return false;
       const adapter = adapterRef.current;
-      if (!adapter) return;
+      if (!adapter) return false;
       const result = await adapter.remove(subcollection, id);
       if (isOk(result)) {
         addToast(`${label} deleted`, ToastType.Success);
+        return true;
       } else {
         addToast(result.error, ToastType.Error);
+        return false;
       }
     },
     [addToast, subcollection, label, readOnly],
@@ -80,15 +84,17 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
 
   /** Updates an existing entry by ID */
   const update = useCallback(
-    async (data: T) => {
-      if (readOnly) return;
+    async (data: T): Promise<boolean> => {
+      if (readOnly) return false;
       const adapter = adapterRef.current;
-      if (!adapter) return;
+      if (!adapter) return false;
       const result = await adapter.save(subcollection, data);
       if (isOk(result)) {
         addToast(`${label} updated`, ToastType.Success);
+        return true;
       } else {
         addToast(result.error, ToastType.Error);
+        return false;
       }
     },
     [addToast, subcollection, label, readOnly],

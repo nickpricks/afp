@@ -5,9 +5,9 @@ import { NeedsLog } from '@/modules/baby/components/NeedsLog';
 import { NeedCategory, NeedStatus } from '@/modules/baby/types';
 import type { NeedEntry } from '@/modules/baby/types';
 
-const mockLog = vi.fn(async () => undefined);
-const mockUpdate = vi.fn(async () => undefined);
-const mockRemove = vi.fn(async () => undefined);
+const mockLog = vi.fn(async () => true);
+const mockUpdate = vi.fn(async () => true);
+const mockRemove = vi.fn(async () => true);
 const mockAddToast = vi.fn();
 
 const sampleWishlist: NeedEntry = {

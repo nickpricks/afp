@@ -5,9 +5,9 @@ import { MilestonesLog } from '@/modules/baby/components/MilestonesLog';
 import { MilestoneCategory } from '@/modules/baby/types';
 import type { Milestone } from '@/modules/baby/types';
 
-const mockLog = vi.fn(async () => undefined);
-const mockUpdate = vi.fn(async () => undefined);
-const mockRemove = vi.fn(async () => undefined);
+const mockLog = vi.fn(async () => true);
+const mockUpdate = vi.fn(async () => true);
+const mockRemove = vi.fn(async () => true);
 const mockAddToast = vi.fn();
 
 const sampleMotor: Milestone = {

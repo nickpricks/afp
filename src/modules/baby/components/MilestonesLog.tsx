@@ -99,8 +99,8 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
     };
 
     if (editEntry) {
-      await update({ ...editEntry, ...entryData });
-      setEditEntry(null);
+      const ok = await update({ ...editEntry, ...entryData });
+      if (ok) setEditEntry(null);
     } else {
       await log(entryData);
       if (logToAll && hasSiblings && uid) {

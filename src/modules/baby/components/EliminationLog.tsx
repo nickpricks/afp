@@ -93,8 +93,8 @@ export function EliminationLog({
     const entryData = buildEntryData();
 
     if (editEntry) {
-      await updateElimination({ ...editEntry, ...entryData });
-      setEditEntry(null);
+      const ok = await updateElimination({ ...editEntry, ...entryData });
+      if (ok) setEditEntry(null);
     } else {
       await logElimination(entryData);
       if (logToAll && hasSiblings && uid) {

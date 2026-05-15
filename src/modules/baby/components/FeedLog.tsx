@@ -75,7 +75,7 @@ export function FeedLog({
     };
 
     if (editEntry) {
-      await updateFeed({
+      const ok = await updateFeed({
         ...editEntry,
         date,
         time,
@@ -83,7 +83,7 @@ export function FeedLog({
         amount: isAmountType(type) ? amount : null,
         notes,
       });
-      setEditEntry(null);
+      if (ok) setEditEntry(null);
     } else {
       await logFeed(entryData);
       if (logToAll && hasSiblings && uid) {

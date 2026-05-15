@@ -5,9 +5,9 @@ import { MealsLog } from '@/modules/baby/components/MealsLog';
 import { MealType, MealPortion } from '@/modules/baby/types';
 import type { MealEntry } from '@/modules/baby/types';
 
-const mockLog = vi.fn(async () => undefined);
-const mockUpdate = vi.fn(async () => undefined);
-const mockRemove = vi.fn(async () => undefined);
+const mockLog = vi.fn(async () => true);
+const mockUpdate = vi.fn(async () => true);
+const mockRemove = vi.fn(async () => true);
 const mockAddToast = vi.fn();
 
 const sampleMeal: MealEntry = {

@@ -5,9 +5,9 @@ import { EliminationLog } from '@/modules/baby/components/EliminationLog';
 import { EliminationMode, DiaperType, PottyTrainingEvent } from '@/modules/baby/types';
 import type { EliminationEntry } from '@/modules/baby/types';
 
-const mockLogElimination = vi.fn();
-const mockUpdateElimination = vi.fn();
-const mockRemoveElimination = vi.fn();
+const mockLogElimination = vi.fn(async () => true);
+const mockUpdateElimination = vi.fn(async () => true);
+const mockRemoveElimination = vi.fn(async () => true);
 const mockAddToast = vi.fn();
 
 const sampleDiaperEntry: EliminationEntry = {
@@ -39,17 +39,17 @@ vi.mock('@/modules/baby/hooks/useBabyData', () => ({
     growth: [],
     diapers: [],
     elimination: [sampleDiaperEntry, samplePottyEntry],
-    logFeed: vi.fn(),
-    updateFeed: vi.fn(),
+    logFeed: vi.fn(async () => true),
+    updateFeed: vi.fn(async () => true),
     removeFeed: vi.fn(),
-    logSleep: vi.fn(),
-    updateSleep: vi.fn(),
+    logSleep: vi.fn(async () => true),
+    updateSleep: vi.fn(async () => true),
     removeSleep: vi.fn(),
-    logGrowth: vi.fn(),
-    updateGrowth: vi.fn(),
+    logGrowth: vi.fn(async () => true),
+    updateGrowth: vi.fn(async () => true),
     removeGrowth: vi.fn(),
-    logDiaper: vi.fn(),
-    updateDiaper: vi.fn(),
+    logDiaper: vi.fn(async () => true),
+    updateDiaper: vi.fn(async () => true),
     removeDiaper: vi.fn(),
     logElimination: mockLogElimination,
     updateElimination: mockUpdateElimination,

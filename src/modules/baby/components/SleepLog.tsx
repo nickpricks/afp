@@ -84,8 +84,8 @@ export function SleepLog({
     };
 
     if (editEntry) {
-      await updateSleep({ ...editEntry, date, startTime, endTime, type, quality, notes });
-      setEditEntry(null);
+      const ok = await updateSleep({ ...editEntry, date, startTime, endTime, type, quality, notes });
+      if (ok) setEditEntry(null);
     } else {
       await logSleep(entryData);
       if (logToAll && hasSiblings && uid) {

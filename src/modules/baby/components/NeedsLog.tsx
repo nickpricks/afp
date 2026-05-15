@@ -76,14 +76,14 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
     const now = new Date().toISOString();
 
     if (editEntry) {
-      await update({
+      const ok = await update({
         ...editEntry,
         title: title.trim(),
         category,
         notes,
         updatedAt: now,
       });
-      setEditEntry(null);
+      if (ok) setEditEntry(null);
     } else {
       const entryData = {
         date: todayStr(),
@@ -111,11 +111,13 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
   /** Moves an entry to a new status */
   async function changeStatus(need: NeedEntry, newStatus: NeedStatus) {
     const now = new Date().toISOString();
-    await update({ ...need, status: newStatus, updatedAt: now });
-    if (newStatus === NeedStatus.Inventory) {
-      addToast(BabyMsg.NeedMovedToInventory, ToastType.Success);
-    } else if (newStatus === NeedStatus.Outgrown) {
-      addToast(BabyMsg.NeedMovedToOutgrown, ToastType.Success);
+    const ok = await update({ ...need, status: newStatus, updatedAt: now });
+    if (ok) {
+      if (newStatus === NeedStatus.Inventory) {
+        addToast(BabyMsg.NeedMovedToInventory, ToastType.Success);
+      } else if (newStatus === NeedStatus.Outgrown) {
+        addToast(BabyMsg.NeedMovedToOutgrown, ToastType.Success);
+      }
     }
   }
 
