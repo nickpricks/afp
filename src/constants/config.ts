@@ -19,4 +19,6 @@ export const CONFIG = {
   DAILY_SCORE_GOAL: 50 as number,
   /** Number of categories visible in the budget form when collapsed */
   BUDGET_VISIBLE_CATEGORIES: 7 as number,
+  /** Available page-size options for the universal list controls */
+  LIST_PAGE_SIZE_OPTIONS: [5, 10, 25, 50, 100, 500] as const,
 } as const;

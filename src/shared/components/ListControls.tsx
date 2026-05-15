@@ -1,6 +1,7 @@
 import { ChangeEvent, FocusEvent, useState } from 'react';
 
 import { TimeRange } from '@/shared/types';
+import { CONFIG } from '@/constants/config';
 
 const TIME_RANGES: { id: TimeRange; label: string }[] = [
   { id: TimeRange.Today, label: 'Today' },
@@ -9,7 +10,6 @@ const TIME_RANGES: { id: TimeRange; label: string }[] = [
   { id: TimeRange.All, label: 'All' },
 ];
 
-const PAGE_SIZE_OPTIONS = [5, 10, 25, 50, 100, 500];
 
 interface Props {
   timeRange: TimeRange;
@@ -72,7 +72,7 @@ export function ListControls(props: Props) {
               }
               className="rounded border border-line bg-surface-card px-1 py-0.5 text-fg"
             >
-              {PAGE_SIZE_OPTIONS.map((size) => (
+              {CONFIG.LIST_PAGE_SIZE_OPTIONS.map((size) => (
                 <option key={size} value={size}>
                   {size}
                 </option>
