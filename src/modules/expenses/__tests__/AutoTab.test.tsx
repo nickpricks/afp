@@ -262,9 +262,46 @@ describe('AutoTab — incomplete pill', () => {
         expenses={[e]}
         onAdd={vi.fn().mockResolvedValue(true)}
         onUpdate={vi.fn().mockResolvedValue(true)}
-        onDelete={vi.fn()}
+        onDelete={vi.fn().mockResolvedValue(true)}
       />,
     );
     expect(screen.getByText('incomplete')).toBeInTheDocument();
+  });
+});
+
+describe('AutoTab — pagination deviation sanity', () => {
+  it('renders without throwing with 500 expenses (pagination-deviation sanity check)', () => {
+    const expenses: Expense[] = Array.from({ length: 500 }, (_, i) => ({
+      id: `e${i}`,
+      date: '2026-04-01',
+      category: ExpenseCategory.Vehicle,
+      subCat: 'Fuel',
+      amount: 100,
+      paymentMethod: PaymentMethod.UpiBankAccount,
+      isSettlement: false,
+      note: '',
+      isDeleted: false,
+      createdAt: '2026-04-01T10:00:00Z',
+      updatedAt: '2026-04-01T10:00:00Z',
+      meta: {
+        type: ExpenseMetaType.Fuel,
+        liters: 40,
+        pricePerLiter: 100,
+        odometer: null,
+        tripOdo: null,
+        displayedMileage: null,
+        fullTank: false,
+      },
+    }));
+    expect(() =>
+      withToast(
+        <AutoTab
+          expenses={expenses}
+          onAdd={vi.fn().mockResolvedValue(true)}
+          onUpdate={vi.fn().mockResolvedValue(true)}
+          onDelete={vi.fn().mockResolvedValue(true)}
+        />,
+      ),
+    ).not.toThrow();
   });
 });

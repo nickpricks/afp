@@ -116,6 +116,8 @@ export function AutoTab({
     }
   }
 
+  // Auto tab deviates from the universal-list pattern: small vehicle history
+  // doesn't need time-range/page chrome. Revisit if users cross ~500 entries.
   const today = todayStr();
   const groups: Record<string, Expense[]> = {};
   sorted.forEach((e) => {
