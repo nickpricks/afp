@@ -9,6 +9,7 @@ import { BodySummaryCard } from '@/modules/body/components/BodySummaryCard';
 import { BudgetSummaryCard } from '@/modules/expenses/components/BudgetSummaryCard';
 import { BabySummaryCard } from '@/modules/baby/components/BabySummaryCard';
 import { BabyDashboardBanner } from '@/modules/baby/components/BabyDashboardBanner';
+import { ActivityTrackerCard } from '@/shared/components/ActivityTrackerCard';
 import { useAllUsers } from '@/admin/hooks/useAllUsers';
 import { UserRole, ModuleId } from '@/shared/types';
 import { computeGreeting, formatDayDate, todayStr } from '@/shared/utils/date';
@@ -125,6 +126,13 @@ export function Dashboard() {
         {activeModules[ModuleId.Budget] && <BudgetSummaryCard targetUid={targetUid} />}
         {activeModules[ModuleId.Baby] && <BabySummaryCard targetUid={targetUid} />}
       </div>
+
+      {/* Live tracking POC (only for own data and if body enabled) */}
+      {!targetUid && activeModules[ModuleId.Body] && (
+        <div className="mt-2">
+          <ActivityTrackerCard />
+        </div>
+      )}
     </div>
   );
 }
