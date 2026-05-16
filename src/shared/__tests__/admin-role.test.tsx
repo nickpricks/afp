@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 import { Dashboard } from '@/shared/components/Dashboard';
 import { UserRole } from '@/shared/types';
+import { LiveActivityProvider } from '@/modules/body/context/LiveActivityContext';
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -135,7 +136,9 @@ vi.mock('@/shared/errors/useToast', () => ({
 function renderDashboard() {
   return render(
     <MemoryRouter initialEntries={['/']}>
-      <Dashboard />
+      <LiveActivityProvider>
+        <Dashboard />
+      </LiveActivityProvider>
     </MemoryRouter>,
   );
 }

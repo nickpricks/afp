@@ -162,4 +162,5 @@ export enum NotificationMsg {
 export enum ProviderMsg {
   AuthRequired = 'useAuth must be used within an AuthProvider',
   ToastRequired = 'useToast must be used within a ToastProvider',
+  LiveActivityRequired = 'useLiveActivityContext must be used within a LiveActivityProvider',
 }
