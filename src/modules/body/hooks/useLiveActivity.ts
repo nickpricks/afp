@@ -2,6 +2,22 @@ import { useState, useRef, useCallback } from 'react';
 import { vlog, vwarn, verr } from '@/shared/utils/verbose';
 import { ActivityType } from '@/shared/types';
 
+/** Configuration constants for live activity tracking sensors */
+const LIVE_ACTIVITY_CONFIG = {
+  EARTH_RADIUS_M: 6371e3,
+  MIN_GPS_ACCURACY_M: 50,
+  MIN_DISTANCE_M: 2,
+  MAX_ALTITUDE_ACCURACY_M: 20,
+  MIN_ALTITUDE_DIFF_M: 0.5,
+  METERS_PER_FLOOR: 3,
+  STEP_ACCEL_THRESHOLD: 12,
+  PRESSURE_DIFF_HPA_PER_FLOOR: 0.36,
+  PRESSURE_SENSOR_FREQ_HZ: 1,
+  TIMER_INTERVAL_MS: 1000,
+  GPS_REFRESH_TIMEOUT_MS: 10000,
+  GPS_MAX_AGE_MS: 0,
+} as const;
+
 export type SessionState = 'idle' | 'ready' | 'tracking';
 
 export type LiveActivityMetrics = {
@@ -42,13 +58,13 @@ export function useLiveActivity() {
   const lastPressureRef = useRef<number | null>(null);
   const motionHandlerRef = useRef<((e: DeviceMotionEvent) => void) | null>(null);
 
-  // Track cumulative elevation changes from GPS (3m = 1 floor)
+  // Track cumulative elevation changes from GPS
   const elevationGainRef = useRef<number>(0);
   const elevationLossRef = useRef<number>(0);
 
-  /** Calculate distance between two points in meters */
-  const calcDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-    const R = 6371e3; // Earth radius in meters
+  /** Compute distance between two points in meters */
+  const computeDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = LIVE_ACTIVITY_CONFIG.EARTH_RADIUS_M;
     const φ1 = (lat1 * Math.PI) / 180;
     const φ2 = (lat2 * Math.PI) / 180;
     const Δφ = ((lat2 - lat1) * Math.PI) / 180;
@@ -97,7 +113,7 @@ export function useLiveActivity() {
           }));
 
           if (lastPosRef.current) {
-            const dist = calcDistance(
+            const dist = computeDistance(
               lastPosRef.current.latitude,
               lastPosRef.current.longitude,
               pos.coords.latitude,
@@ -105,32 +121,36 @@ export function useLiveActivity() {
             );
 
             // Distance tracking
-            // Only add if accuracy is decent and distance is meaningful (> 2m)
-            if (pos.coords.accuracy < 50 && dist > 2) {
+            if (
+              pos.coords.accuracy < LIVE_ACTIVITY_CONFIG.MIN_GPS_ACCURACY_M &&
+              dist > LIVE_ACTIVITY_CONFIG.MIN_DISTANCE_M
+            ) {
               setMetrics((prev) => ({ ...prev, distanceMeters: prev.distanceMeters + dist }));
             }
 
             // Elevation tracking (Fallback if no PressureSensor)
-            // Use GPS altitude if available and reasonably accurate (e.g. < 20m error)
             if (
               !('PressureSensor' in window) &&
               pos.coords.altitude !== null &&
               lastPosRef.current.altitude !== null &&
-              (pos.coords.altitudeAccuracy ?? 100) < 20
+              (pos.coords.altitudeAccuracy ?? 100) < LIVE_ACTIVITY_CONFIG.MAX_ALTITUDE_ACCURACY_M
             ) {
               const altDiff = pos.coords.altitude - lastPosRef.current.altitude;
 
               // Only count meaningful altitude changes to filter out GPS jitter
-              if (Math.abs(altDiff) > 0.5) {
+              if (Math.abs(altDiff) > LIVE_ACTIVITY_CONFIG.MIN_ALTITUDE_DIFF_M) {
                 if (altDiff > 0) {
                   elevationGainRef.current += altDiff;
                 } else {
                   elevationLossRef.current += Math.abs(altDiff);
                 }
 
-                // 3 meters = 1 floor
-                const newFloorsUp = Math.floor(elevationGainRef.current / 3);
-                const newFloorsDown = Math.floor(elevationLossRef.current / 3);
+                const newFloorsUp = Math.floor(
+                  elevationGainRef.current / LIVE_ACTIVITY_CONFIG.METERS_PER_FLOOR,
+                );
+                const newFloorsDown = Math.floor(
+                  elevationLossRef.current / LIVE_ACTIVITY_CONFIG.METERS_PER_FLOOR,
+                );
 
                 setMetrics((prev) => ({
                   ...prev,
@@ -167,7 +187,7 @@ export function useLiveActivity() {
       if (!acc) return;
       const total = Math.sqrt((acc.x ?? 0) ** 2 + (acc.y ?? 0) ** 2 + (acc.z ?? 0) ** 2);
       // Simple threshold for a "step" impact
-      if (total > 12) {
+      if (total > LIVE_ACTIVITY_CONFIG.STEP_ACCEL_THRESHOLD) {
         setMetrics((prev) => ({ ...prev, steps: prev.steps + 1 }));
       }
     };
@@ -178,15 +198,16 @@ export function useLiveActivity() {
     if ('PressureSensor' in window) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const sensor = new (window as any).PressureSensor({ frequency: 1 });
+        const sensor = new (window as any).PressureSensor({
+          frequency: LIVE_ACTIVITY_CONFIG.PRESSURE_SENSOR_FREQ_HZ,
+        });
         sensor.addEventListener('reading', () => {
           if (lastPressureRef.current !== null) {
             const diff = sensor.pressure - lastPressureRef.current;
-            // 0.12 hPa approx 1 meter. 3m = 0.36 hPa
-            if (diff < -0.36) {
+            if (diff < -LIVE_ACTIVITY_CONFIG.PRESSURE_DIFF_HPA_PER_FLOOR) {
               // Pressure drop = altitude gain
               setMetrics((prev) => ({ ...prev, floorsUp: prev.floorsUp + 1 }));
-            } else if (diff > 0.36) {
+            } else if (diff > LIVE_ACTIVITY_CONFIG.PRESSURE_DIFF_HPA_PER_FLOOR) {
               setMetrics((prev) => ({ ...prev, floorsDown: prev.floorsDown + 1 }));
             }
           }
@@ -216,9 +237,11 @@ export function useLiveActivity() {
     timerRef.current = window.setInterval(() => {
       setMetrics((prev) => ({
         ...prev,
-        durationSeconds: Math.floor((Date.now() - (prev.startTime ?? Date.now())) / 1000),
+        durationSeconds: Math.floor(
+          (Date.now() - (prev.startTime ?? Date.now())) / LIVE_ACTIVITY_CONFIG.TIMER_INTERVAL_MS,
+        ),
       }));
-    }, 1000);
+    }, LIVE_ACTIVITY_CONFIG.TIMER_INTERVAL_MS);
   }, [metrics.type]);
 
   /** Stop all sensors and timer */
@@ -278,7 +301,11 @@ export function useLiveActivity() {
           vlog('[LiveActivity] GPS Refreshed');
         },
         (err) => verr('[LiveActivity] GPS Refresh error', err),
-        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 },
+        {
+          enableHighAccuracy: true,
+          maximumAge: LIVE_ACTIVITY_CONFIG.GPS_MAX_AGE_MS,
+          timeout: LIVE_ACTIVITY_CONFIG.GPS_REFRESH_TIMEOUT_MS,
+        },
       );
     } else {
       vwarn('[LiveActivity] Geolocation API not available in navigator');

@@ -5,6 +5,7 @@ import {
   type SessionState,
 } from '@/modules/body/hooks/useLiveActivity';
 import { ActivityType } from '@/shared/types';
+import { ProviderMsg } from '@/constants/messages';
 
 type LiveActivityContextType = {
   sessionState: SessionState;
@@ -49,7 +50,7 @@ export function LiveActivityProvider({ children }: { children: React.ReactNode }
 export function useLiveActivityContext() {
   const context = useContext(LiveActivityContext);
   if (!context) {
-    throw new Error('useLiveActivityContext must be used within a LiveActivityProvider');
+    throw new Error(ProviderMsg.LiveActivityRequired);
   }
   return context;
 }

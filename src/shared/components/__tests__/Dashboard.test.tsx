@@ -110,12 +110,15 @@ vi.mock('@/admin/hooks/useAllUsers', () => ({
 
 // Import after mocks
 import { Dashboard } from '@/shared/components/Dashboard';
+import { LiveActivityProvider } from '@/modules/body/context/LiveActivityContext';
 
 describe('Dashboard', () => {
   it('shows greeting with user name', () => {
     render(
       <MemoryRouter>
-        <Dashboard />
+        <LiveActivityProvider>
+          <Dashboard />
+        </LiveActivityProvider>
       </MemoryRouter>,
     );
     expect(screen.getByText(/Nick/)).toBeInTheDocument();
@@ -124,7 +127,9 @@ describe('Dashboard', () => {
   it('shows time-of-day greeting', () => {
     render(
       <MemoryRouter>
-        <Dashboard />
+        <LiveActivityProvider>
+          <Dashboard />
+        </LiveActivityProvider>
       </MemoryRouter>,
     );
     expect(screen.getByText(/Good (morning|afternoon|evening)/)).toBeInTheDocument();
@@ -133,7 +138,9 @@ describe('Dashboard', () => {
   it('shows Body card when body module enabled', () => {
     render(
       <MemoryRouter>
-        <Dashboard />
+        <LiveActivityProvider>
+          <Dashboard />
+        </LiveActivityProvider>
       </MemoryRouter>,
     );
     expect(screen.getByText('Body')).toBeInTheDocument();
@@ -142,7 +149,9 @@ describe('Dashboard', () => {
   it('shows Budget card when budget module enabled', () => {
     render(
       <MemoryRouter>
-        <Dashboard />
+        <LiveActivityProvider>
+          <Dashboard />
+        </LiveActivityProvider>
       </MemoryRouter>,
     );
     expect(screen.getByText('Budget')).toBeInTheDocument();
@@ -151,7 +160,9 @@ describe('Dashboard', () => {
   it('does not show Baby card when baby module disabled', () => {
     render(
       <MemoryRouter>
-        <Dashboard />
+        <LiveActivityProvider>
+          <Dashboard />
+        </LiveActivityProvider>
       </MemoryRouter>,
     );
     expect(screen.queryByText('Baby')).not.toBeInTheDocument();
@@ -160,7 +171,9 @@ describe('Dashboard', () => {
   it('shows date in greeting area', () => {
     render(
       <MemoryRouter>
-        <Dashboard />
+        <LiveActivityProvider>
+          <Dashboard />
+        </LiveActivityProvider>
       </MemoryRouter>,
     );
     expect(
@@ -171,7 +184,9 @@ describe('Dashboard', () => {
   it('shows body score from todayRecord', () => {
     render(
       <MemoryRouter>
-        <Dashboard />
+        <LiveActivityProvider>
+          <Dashboard />
+        </LiveActivityProvider>
       </MemoryRouter>,
     );
     expect(screen.getByText('42')).toBeInTheDocument();
@@ -180,7 +195,9 @@ describe('Dashboard', () => {
   it('shows budget spend', () => {
     render(
       <MemoryRouter>
-        <Dashboard />
+        <LiveActivityProvider>
+          <Dashboard />
+        </LiveActivityProvider>
       </MemoryRouter>,
     );
     expect(screen.getByText('₹500')).toBeInTheDocument();
