@@ -1,3 +1,8 @@
+/** Cross-cutting messages shared across modules */
+export enum CommonMsg {
+  ReadOnlyMode = 'Read-only mode — sign in as this user to edit',
+}
+
 /** Validation error messages */
 export enum ValidationMsg {
   DateRequired = 'Date is required',

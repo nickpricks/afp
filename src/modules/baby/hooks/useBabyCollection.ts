@@ -6,6 +6,7 @@ import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import { isOk, ToastType } from '@/shared/types';
 import { childPath } from '@/constants/db';
+import { CommonMsg } from '@/constants/messages';
 
 /** Generic hook for a baby subcollection nested under a child — handles listener, state, and save */
 export function useBabyCollection<T extends Record<string, unknown> & { id: string }>(
@@ -50,7 +51,10 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
   /** Saves a new entry with a generated UUID and shows a success/error toast */
   const log = useCallback(
     async (data: Omit<T, 'id'>): Promise<boolean> => {
-      if (readOnly) return false;
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       const adapter = adapterRef.current;
       if (!adapter) return false;
       const entry = { ...data, id: crypto.randomUUID() } as T;
@@ -69,7 +73,10 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
   /** Removes an entry by ID */
   const remove = useCallback(
     async (id: string): Promise<boolean> => {
-      if (readOnly) return false;
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       const adapter = adapterRef.current;
       if (!adapter) return false;
       const result = await adapter.remove(subcollection, id);
@@ -87,7 +94,10 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
   /** Updates an existing entry by ID */
   const update = useCallback(
     async (data: T): Promise<boolean> => {
-      if (readOnly) return false;
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       const adapter = adapterRef.current;
       if (!adapter) return false;
       const result = await adapter.save(subcollection, data);

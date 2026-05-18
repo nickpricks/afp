@@ -132,55 +132,57 @@ export function ProfilePage() {
   const email = firebaseUser?.email ?? profile?.email ?? null;
   const photoURL = firebaseUser?.photoURL ?? null;
 
-  /** Applies a new theme and persists appearance to storage. */
+  /** Applies a new theme and persists appearance — toast reflects save outcome, not optimistic. */
   const handleThemeChange = useCallback(
-    (themeId: ThemeId) => {
+    async (themeId: ThemeId) => {
       applyTheme(themeId, colorMode);
-      if (uid) {
-        saveAppearance(uid, themeId, colorMode, intensity, size, profile).catch(() => {
-          addToast(ProfileMsg.ThemeSaveFailed, ToastType.Error);
-        });
+      if (!uid) return;
+      try {
+        await saveAppearance(uid, themeId, colorMode, intensity, size, profile);
+        addToast(ProfileMsg.ThemeSaved, ToastType.Success);
+      } catch {
+        addToast(ProfileMsg.ThemeSaveFailed, ToastType.Error);
       }
-      addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
     [colorMode, intensity, size, uid, addToast, profile],
   );
 
-  /** Applies a new color mode and persists appearance to storage. */
+  /** Applies a new color mode and persists appearance — toast reflects save outcome, not optimistic. */
   const handleColorModeChange = useCallback(
-    (mode: ColorMode) => {
+    async (mode: ColorMode) => {
       setColorMode(mode);
       applyTheme(activeThemeId, mode);
-      if (uid) {
-        saveAppearance(uid, activeThemeId, mode, intensity, size, profile).catch(() => {
-          addToast(ProfileMsg.ColorModeSaveFailed, ToastType.Error);
-        });
+      if (!uid) return;
+      try {
+        await saveAppearance(uid, activeThemeId, mode, intensity, size, profile);
+        addToast(ProfileMsg.ThemeSaved, ToastType.Success);
+      } catch {
+        addToast(ProfileMsg.ColorModeSaveFailed, ToastType.Error);
       }
-      addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
     [activeThemeId, intensity, size, uid, addToast, profile],
   );
 
-  /** Persists updated effect intensity — silent-fail to avoid slider-spam toasts. */
+  /** Persists updated effect intensity. No UI toast (slider spam), but logged for debugging. */
   const handleIntensityChange = useCallback(
     (newIntensity: number) => {
       setIntensity(newIntensity);
       if (uid) {
-        saveAppearance(uid, activeThemeId, colorMode, newIntensity, size, profile).catch(() => {
-          // Silent fail for real-time slider to avoid toast spam
+        saveAppearance(uid, activeThemeId, colorMode, newIntensity, size, profile).catch((err) => {
+          console.warn('[AFP] handleIntensityChange save failed:', err);
         });
       }
     },
     [activeThemeId, colorMode, size, uid, profile],
   );
 
-  /** Persists updated effect size — silent-fail to avoid picker-spam toasts. */
+  /** Persists updated effect size. No UI toast (picker spam), but logged for debugging. */
   const handleSizeChange = useCallback(
     (newSize: number) => {
       setSize(newSize);
       if (uid) {
-        saveAppearance(uid, activeThemeId, colorMode, intensity, newSize, profile).catch(() => {
-          // Silent fail for real-time picker to avoid toast spam
+        saveAppearance(uid, activeThemeId, colorMode, intensity, newSize, profile).catch((err) => {
+          console.warn('[AFP] handleSizeChange save failed:', err);
         });
       }
     },

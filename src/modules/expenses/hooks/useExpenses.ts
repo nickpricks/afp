@@ -10,7 +10,7 @@ import { assertNever } from '@/shared/utils/types';
 import { validateExpense } from '@/modules/expenses/validation';
 import { SyncStatus, isOk, ToastType, PaymentMethod } from '@/shared/types';
 import type { ExpenseCategory } from '@/shared/types';
-import { BudgetMsg } from '@/constants/messages';
+import { BudgetMsg, CommonMsg } from '@/constants/messages';
 import { DbSubcollection, userPath } from '@/constants/db';
 
 /** Shape of the data passed to addExpense — mirrors Expense minus auto-generated fields */
@@ -66,7 +66,10 @@ export function useExpenses(targetUid?: string) {
   /** Validates and persists a new expense, showing a toast on success or failure */
   const addExpense = useCallback(
     async (input: ExpenseInput) => {
-      if (readOnly) return false;
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       const validation = validateExpense(input);
       if (!isOk(validation)) {
         addToast(validation.error, ToastType.Error);
@@ -110,7 +113,10 @@ export function useExpenses(targetUid?: string) {
   /** Validates and persists an updated expense (full replace by id) */
   const updateExpense = useCallback(
     async (expense: Expense) => {
-      if (readOnly) return false;
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       const validation = validateExpense(expense);
       if (!isOk(validation)) {
         addToast(validation.error, ToastType.Error);
@@ -139,7 +145,10 @@ export function useExpenses(targetUid?: string) {
   /** Soft-deletes an expense by marking it as deleted */
   const deleteExpense = useCallback(
     async (id: string): Promise<boolean> => {
-      if (readOnly) return false;
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       const adapter = adapterRef.current;
       if (!adapter) {
         addToast(BudgetMsg.AdapterNotReady, ToastType.Error);
