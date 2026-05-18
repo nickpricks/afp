@@ -115,10 +115,7 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
           entryData,
         );
         if (failed > 0) {
-          addToast(
-            `${ok} of ${ok + failed} copied — ${failed} failed`,
-            ToastType.Error,
-          );
+          addToast(`${ok} of ${ok + failed} copied — ${failed} failed`, ToastType.Error);
         } else if (ok > 0) {
           addToast(`Copied to ${ok} sibling${ok > 1 ? 's' : ''}`, ToastType.Info);
         }

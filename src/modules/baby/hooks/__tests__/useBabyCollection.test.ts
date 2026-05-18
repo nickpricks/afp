@@ -41,13 +41,19 @@ beforeEach(() => {
 describe('useBabyCollection — log()', () => {
   it('returns true when adapter.save succeeds', async () => {
     mockSave.mockResolvedValue(ok(undefined));
-    const { result } = renderHook(() =>
-      useBabyCollection('child-1', 'feeds', 'Feed'),
-    );
+    const { result } = renderHook(() => useBabyCollection('child-1', 'feeds', 'Feed'));
 
     let returned: boolean | undefined;
     await act(async () => {
-      returned = await result.current.log({ date: '2026-05-15', time: '08:00', type: 'bottle', amount: 120, timestamp: '', createdAt: '', notes: '' });
+      returned = await result.current.log({
+        date: '2026-05-15',
+        time: '08:00',
+        type: 'bottle',
+        amount: 120,
+        timestamp: '',
+        createdAt: '',
+        notes: '',
+      });
     });
 
     expect(returned).toBe(true);
@@ -56,13 +62,19 @@ describe('useBabyCollection — log()', () => {
 
   it('returns false and shows error toast when adapter.save fails', async () => {
     mockSave.mockResolvedValue(err('Network error'));
-    const { result } = renderHook(() =>
-      useBabyCollection('child-1', 'feeds', 'Feed'),
-    );
+    const { result } = renderHook(() => useBabyCollection('child-1', 'feeds', 'Feed'));
 
     let returned: boolean | undefined;
     await act(async () => {
-      returned = await result.current.log({ date: '2026-05-15', time: '08:00', type: 'bottle', amount: 120, timestamp: '', createdAt: '', notes: '' });
+      returned = await result.current.log({
+        date: '2026-05-15',
+        time: '08:00',
+        type: 'bottle',
+        amount: 120,
+        timestamp: '',
+        createdAt: '',
+        notes: '',
+      });
     });
 
     expect(returned).toBe(false);
@@ -74,13 +86,20 @@ describe('useBabyCollection — log()', () => {
 describe('useBabyCollection — update()', () => {
   it('returns true when adapter.save succeeds', async () => {
     mockSave.mockResolvedValue(ok(undefined));
-    const { result } = renderHook(() =>
-      useBabyCollection('child-1', 'feeds', 'Feed'),
-    );
+    const { result } = renderHook(() => useBabyCollection('child-1', 'feeds', 'Feed'));
 
     let returned: boolean | undefined;
     await act(async () => {
-      returned = await result.current.update({ id: 'feed-1', date: '2026-05-15', time: '08:00', type: 'bottle', amount: 100, timestamp: '', createdAt: '', notes: '' } as Record<string, unknown> & { id: string });
+      returned = await result.current.update({
+        id: 'feed-1',
+        date: '2026-05-15',
+        time: '08:00',
+        type: 'bottle',
+        amount: 100,
+        timestamp: '',
+        createdAt: '',
+        notes: '',
+      } as Record<string, unknown> & { id: string });
     });
 
     expect(returned).toBe(true);
@@ -89,13 +108,20 @@ describe('useBabyCollection — update()', () => {
 
   it('returns false and shows error toast when adapter.save fails', async () => {
     mockSave.mockResolvedValue(err('Save failed'));
-    const { result } = renderHook(() =>
-      useBabyCollection('child-1', 'feeds', 'Feed'),
-    );
+    const { result } = renderHook(() => useBabyCollection('child-1', 'feeds', 'Feed'));
 
     let returned: boolean | undefined;
     await act(async () => {
-      returned = await result.current.update({ id: 'feed-1', date: '2026-05-15', time: '08:00', type: 'bottle', amount: 100, timestamp: '', createdAt: '', notes: '' } as Record<string, unknown> & { id: string });
+      returned = await result.current.update({
+        id: 'feed-1',
+        date: '2026-05-15',
+        time: '08:00',
+        type: 'bottle',
+        amount: 100,
+        timestamp: '',
+        createdAt: '',
+        notes: '',
+      } as Record<string, unknown> & { id: string });
     });
 
     expect(returned).toBe(false);
@@ -107,9 +133,7 @@ describe('useBabyCollection — update()', () => {
 describe('useBabyCollection — remove()', () => {
   it('returns true when adapter.remove succeeds', async () => {
     mockRemove.mockResolvedValue(ok(undefined));
-    const { result } = renderHook(() =>
-      useBabyCollection('child-1', 'feeds', 'Feed'),
-    );
+    const { result } = renderHook(() => useBabyCollection('child-1', 'feeds', 'Feed'));
 
     let returned: boolean | undefined;
     await act(async () => {
@@ -122,9 +146,7 @@ describe('useBabyCollection — remove()', () => {
 
   it('returns false and shows error toast when adapter.remove fails', async () => {
     mockRemove.mockResolvedValue(err('Delete failed'));
-    const { result } = renderHook(() =>
-      useBabyCollection('child-1', 'feeds', 'Feed'),
-    );
+    const { result } = renderHook(() => useBabyCollection('child-1', 'feeds', 'Feed'));
 
     let returned: boolean | undefined;
     await act(async () => {
@@ -139,9 +161,7 @@ describe('useBabyCollection — remove()', () => {
 /** Validates useBabyCollection log/update/remove all return false when childId is null */
 describe('useBabyCollection — guard conditions', () => {
   it('log() returns false when childId is null', async () => {
-    const { result } = renderHook(() =>
-      useBabyCollection(null, 'feeds', 'Feed'),
-    );
+    const { result } = renderHook(() => useBabyCollection(null, 'feeds', 'Feed'));
 
     let returned: boolean | undefined;
     await act(async () => {
@@ -153,13 +173,15 @@ describe('useBabyCollection — guard conditions', () => {
   });
 
   it('update() returns false when childId is null', async () => {
-    const { result } = renderHook(() =>
-      useBabyCollection(null, 'feeds', 'Feed'),
-    );
+    const { result } = renderHook(() => useBabyCollection(null, 'feeds', 'Feed'));
 
     let returned: boolean | undefined;
     await act(async () => {
-      returned = await result.current.update({ id: 'feed-1', date: '2026-05-15', notes: '' } as Record<string, unknown> & { id: string });
+      returned = await result.current.update({
+        id: 'feed-1',
+        date: '2026-05-15',
+        notes: '',
+      } as Record<string, unknown> & { id: string });
     });
 
     expect(returned).toBe(false);
@@ -167,9 +189,7 @@ describe('useBabyCollection — guard conditions', () => {
   });
 
   it('remove() returns false when childId is null', async () => {
-    const { result } = renderHook(() =>
-      useBabyCollection(null, 'feeds', 'Feed'),
-    );
+    const { result } = renderHook(() => useBabyCollection(null, 'feeds', 'Feed'));
 
     let returned: boolean | undefined;
     await act(async () => {

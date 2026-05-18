@@ -46,10 +46,7 @@ describe('useExpenses adapter-null guards', () => {
     });
 
     expect(returned).toBe(false);
-    expect(mockAddToast).toHaveBeenCalledWith(
-      BudgetMsg.AdapterNotReady,
-      ToastType.Error,
-    );
+    expect(mockAddToast).toHaveBeenCalledWith(BudgetMsg.AdapterNotReady, ToastType.Error);
   });
 
   it('updateExpense toasts AdapterNotReady when adapter is null', async () => {
@@ -73,10 +70,7 @@ describe('useExpenses adapter-null guards', () => {
     });
 
     expect(returned).toBe(false);
-    expect(mockAddToast).toHaveBeenCalledWith(
-      BudgetMsg.AdapterNotReady,
-      ToastType.Error,
-    );
+    expect(mockAddToast).toHaveBeenCalledWith(BudgetMsg.AdapterNotReady, ToastType.Error);
   });
 
   it('deleteExpense toasts AdapterNotReady when adapter is null', async () => {
@@ -86,9 +80,6 @@ describe('useExpenses adapter-null guards', () => {
       await result.current.deleteExpense('exp-1');
     });
 
-    expect(mockAddToast).toHaveBeenCalledWith(
-      BudgetMsg.AdapterNotReady,
-      ToastType.Error,
-    );
+    expect(mockAddToast).toHaveBeenCalledWith(BudgetMsg.AdapterNotReady, ToastType.Error);
   });
 });

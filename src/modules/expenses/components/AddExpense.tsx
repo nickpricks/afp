@@ -46,8 +46,19 @@ export function AddExpense({
     meta?: ExpenseMeta;
   }) => Promise<boolean>;
 }) {
-  const { date, setDate, amount, setAmount, note, setNote, meta, setMeta, paymentMethod, setPaymentMethod, reset } =
-    useExpenseForm();
+  const {
+    date,
+    setDate,
+    amount,
+    setAmount,
+    note,
+    setNote,
+    meta,
+    setMeta,
+    paymentMethod,
+    setPaymentMethod,
+    reset,
+  } = useExpenseForm();
   const [category, setCategory] = useState<ExpenseCategory | null>(null);
   const [subCat, setSubCat] = useState('');
   const [showAllMethods, setShowAllMethods] = useState(false);

@@ -11,9 +11,11 @@ export interface FuelTripleInput {
 }
 
 /** Two-of-three derivation: given any two valid operands, fill the third. Never clobbers user input. */
-export function deriveFuelTriple(
-  input: FuelTripleInput,
-): { liters: number; pricePerLiter: number; amount: number } {
+export function deriveFuelTriple(input: FuelTripleInput): {
+  liters: number;
+  pricePerLiter: number;
+  amount: number;
+} {
   const { liters, pricePerLiter: price, amount, lastEdited } = input;
   const ok = (n: number) => Number.isFinite(n) && n > 0;
   const out = { liters, pricePerLiter: price, amount };

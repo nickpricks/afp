@@ -47,9 +47,7 @@ export function ExpenseListPage() {
         />
       </div>
 
-      {activeTab === 'expenses' && (
-        <ExpenseList expenses={expenses} onDelete={deleteExpense} />
-      )}
+      {activeTab === 'expenses' && <ExpenseList expenses={expenses} onDelete={deleteExpense} />}
       {activeTab === 'income' && <IncomeList income={income} onDelete={deleteIncome} />}
       {activeTab === 'auto' && (
         <AutoTab

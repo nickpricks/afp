@@ -68,7 +68,12 @@ describe('MetaSubForm — fuel variant', () => {
       fullTank: false,
     };
     render(
-      <MetaSubForm meta={meta} amount="" onChangeMeta={onChangeMeta} onChangeAmount={onChangeAmount} />,
+      <MetaSubForm
+        meta={meta}
+        amount=""
+        onChangeMeta={onChangeMeta}
+        onChangeAmount={onChangeAmount}
+      />,
     );
     const litersInput = screen.getByLabelText('Liters');
     fireEvent.change(litersInput, { target: { value: '40' } });
@@ -91,7 +96,12 @@ describe('MetaSubForm — fuel variant', () => {
     };
     // User has already manually typed amount=5000 (overrides implicit 40*100=4000)
     render(
-      <MetaSubForm meta={meta} amount="5000" onChangeMeta={onChangeMeta} onChangeAmount={onChangeAmount} />,
+      <MetaSubForm
+        meta={meta}
+        amount="5000"
+        onChangeMeta={onChangeMeta}
+        onChangeAmount={onChangeAmount}
+      />,
     );
     const litersInput = screen.getByLabelText('Liters');
     // User blurs liters without changing it — deriveFuelTriple sees amount=5000 is already set
@@ -105,7 +115,12 @@ describe('MetaSubForm — fuel variant', () => {
 /** Validates MetaSubForm travel fields render with pre-filled origin/destination */
 describe('MetaSubForm — travel variant', () => {
   it('renders origin and destination inputs', () => {
-    const meta: TravelMeta = { type: ExpenseMetaType.Travel, origin: 'BLR', destination: 'MAA', distance: null };
+    const meta: TravelMeta = {
+      type: ExpenseMetaType.Travel,
+      origin: 'BLR',
+      destination: 'MAA',
+      distance: null,
+    };
     render(<MetaSubForm meta={meta} amount="" onChangeMeta={vi.fn()} onChangeAmount={vi.fn()} />);
     expect(screen.getByDisplayValue('BLR')).toBeInTheDocument();
     expect(screen.getByDisplayValue('MAA')).toBeInTheDocument();

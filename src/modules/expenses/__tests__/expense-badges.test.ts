@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { renderFuelBadge, renderTravelBadge, renderMaintenanceBadge, renderBadge } from '../expense-badges';
+import {
+  renderFuelBadge,
+  renderTravelBadge,
+  renderMaintenanceBadge,
+  renderBadge,
+} from '../expense-badges';
 import { ExpenseMetaType } from '../types';
 import type { FuelMeta, TravelMeta, MaintenanceMeta } from '../types';
 

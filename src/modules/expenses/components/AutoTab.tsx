@@ -48,8 +48,20 @@ export function AutoTab({
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formKind, setFormKind] = useState<FormKind | null>(null);
-  const { date, setDate, amount, setAmount, note, setNote, meta, setMeta, paymentMethod, setPaymentMethod, reset, populate } =
-    useExpenseForm();
+  const {
+    date,
+    setDate,
+    amount,
+    setAmount,
+    note,
+    setNote,
+    meta,
+    setMeta,
+    paymentMethod,
+    setPaymentMethod,
+    reset,
+    populate,
+  } = useExpenseForm();
   const { addToast } = useToast();
 
   const filtered = expenses.filter(
@@ -193,7 +205,9 @@ export function AutoTab({
                   method={m}
                   isActive={paymentMethod === m}
                   onClick={(method) =>
-                    setPaymentMethod(paymentMethod === method ? PaymentMethod.UpiBankAccount : method)
+                    setPaymentMethod(
+                      paymentMethod === method ? PaymentMethod.UpiBankAccount : method,
+                    )
                   }
                 />
               ))}

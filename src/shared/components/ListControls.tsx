@@ -11,7 +11,6 @@ const TIME_RANGES: { id: TimeRange; label: string }[] = [
   { id: TimeRange.All, label: 'All' },
 ];
 
-
 /** Props for ListControls. */
 interface Props {
   timeRange: TimeRange;

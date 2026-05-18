@@ -43,12 +43,9 @@ describe('logToSiblings — partial failure', () => {
       .mockResolvedValueOnce(ok(undefined))
       .mockResolvedValueOnce(err('Timeout'))
       .mockResolvedValueOnce(err('Permission denied'));
-    const result = await logToSiblings(
-      'uid-1',
-      ['sib-1', 'sib-2', 'sib-3'],
-      'feeds',
-      { date: '2026-05-15' },
-    );
+    const result = await logToSiblings('uid-1', ['sib-1', 'sib-2', 'sib-3'], 'feeds', {
+      date: '2026-05-15',
+    });
     expect(result).toEqual({ ok: 1, failed: 2 });
   });
 

@@ -85,7 +85,15 @@ export function SleepLog({
     };
 
     if (editEntry) {
-      const ok = await updateSleep({ ...editEntry, date, startTime, endTime, type, quality, notes });
+      const ok = await updateSleep({
+        ...editEntry,
+        date,
+        startTime,
+        endTime,
+        type,
+        quality,
+        notes,
+      });
       if (ok) setEditEntry(null);
     } else {
       await logSleep(entryData);
@@ -97,10 +105,7 @@ export function SleepLog({
           entryData,
         );
         if (failed > 0) {
-          addToast(
-            `${ok} of ${ok + failed} copied — ${failed} failed`,
-            ToastType.Error,
-          );
+          addToast(`${ok} of ${ok + failed} copied — ${failed} failed`, ToastType.Error);
         } else if (ok > 0) {
           addToast(`Copied to ${ok} sibling${ok > 1 ? 's' : ''}`, ToastType.Info);
         }

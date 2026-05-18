@@ -207,14 +207,24 @@ describe('validateExpense — travel meta', () => {
   });
 
   it('rejects travel meta with empty origin', () => {
-    const meta: TravelMeta = { type: ExpenseMetaType.Travel, origin: '', destination: 'MAA', distance: null };
+    const meta: TravelMeta = {
+      type: ExpenseMetaType.Travel,
+      origin: '',
+      destination: 'MAA',
+      distance: null,
+    };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
     if (!isOk(r)) expect(r.error).toBe(ValidationMsg.TravelOriginRequired);
   });
 
   it('rejects travel meta with empty destination', () => {
-    const meta: TravelMeta = { type: ExpenseMetaType.Travel, origin: 'BLR', destination: '', distance: null };
+    const meta: TravelMeta = {
+      type: ExpenseMetaType.Travel,
+      origin: 'BLR',
+      destination: '',
+      distance: null,
+    };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
     if (!isOk(r)) expect(r.error).toBe(ValidationMsg.TravelDestinationRequired);

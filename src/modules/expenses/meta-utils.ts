@@ -10,7 +10,8 @@ type MetaKind = ExpenseMetaType | null;
 /** Returns the meta kind appropriate for a (category, subCat) pair, or null if none applies */
 export function metaKindFor(category: ExpenseCategory | null, subCat: string): MetaKind {
   if (category === Cat.Vehicle && subCat === VEHICLE_SUBCAT.Fuel) return ExpenseMetaType.Fuel;
-  if (category === Cat.Vehicle && subCat === VEHICLE_SUBCAT.Maintenance) return ExpenseMetaType.Maintenance;
+  if (category === Cat.Vehicle && subCat === VEHICLE_SUBCAT.Maintenance)
+    return ExpenseMetaType.Maintenance;
   if (category === Cat.Travel && subCat) return ExpenseMetaType.Travel;
   return null;
 }
@@ -18,7 +19,8 @@ export function metaKindFor(category: ExpenseCategory | null, subCat: string): M
 /** Returns the category and subcategory for a given meta kind (inverse of metaKindFor) */
 export function subCatFor(kind: ExpenseMetaType): { category: ExpenseCategory; subCat: string } {
   if (kind === ExpenseMetaType.Fuel) return { category: Cat.Vehicle, subCat: VEHICLE_SUBCAT.Fuel };
-  if (kind === ExpenseMetaType.Travel) return { category: Cat.Travel, subCat: TRAVEL_SUBCAT.CabAuto };
+  if (kind === ExpenseMetaType.Travel)
+    return { category: Cat.Travel, subCat: TRAVEL_SUBCAT.CabAuto };
   return { category: Cat.Vehicle, subCat: VEHICLE_SUBCAT.Maintenance };
 }
 

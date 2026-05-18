@@ -243,9 +243,9 @@ describe('AutoTab — paymentMethod capture', () => {
     expect(screen.getByRole('button', { name: 'Update' })).toBeInTheDocument();
     // UPI payment method bubble should be active (from expense.paymentMethod = UpiBankAccount)
     // shortLabel for UpiBankAccount is "UPI" — find the active bubble
-    const activeBubbles = screen.getAllByRole('button').filter((b) =>
-      b.className.includes('bg-accent') && b.textContent?.includes('UPI'),
-    );
+    const activeBubbles = screen
+      .getAllByRole('button')
+      .filter((b) => b.className.includes('bg-accent') && b.textContent?.includes('UPI'));
     expect(activeBubbles.length).toBeGreaterThan(0);
   });
 });

@@ -60,7 +60,14 @@ export function GrowthLog({
     const entryData = { date, weight, height, headCircumference, createdAt: now, notes };
 
     if (editEntry) {
-      const ok = await updateGrowth({ ...editEntry, date, weight, height, headCircumference, notes });
+      const ok = await updateGrowth({
+        ...editEntry,
+        date,
+        weight,
+        height,
+        headCircumference,
+        notes,
+      });
       if (ok) setEditEntry(null);
     } else {
       await logGrowth(entryData);
@@ -72,10 +79,7 @@ export function GrowthLog({
           entryData,
         );
         if (failed > 0) {
-          addToast(
-            `${ok} of ${ok + failed} copied — ${failed} failed`,
-            ToastType.Error,
-          );
+          addToast(`${ok} of ${ok + failed} copied — ${failed} failed`, ToastType.Error);
         } else if (ok > 0) {
           addToast(`Copied to ${ok} sibling${ok > 1 ? 's' : ''}`, ToastType.Info);
         }
