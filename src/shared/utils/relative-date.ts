@@ -12,7 +12,7 @@ export interface DateLabel {
 }
 
 /** Parses 'YYYY-MM-DD' as local midday (avoids UTC-vs-local-TZ off-by-one). */
-function parseLocalDate(s: string): Date {
+export function parseLocalDate(s: string): Date {
   return new Date(s.length === 10 ? s + 'T12:00:00' : s);
 }
 
@@ -26,10 +26,13 @@ const isoWeekNumber = (date: Date): number => {
   return 1 + Math.round(diff / (7 * 86_400_000));
 };
 
-/** Formats a YYYY-MM-DD as a date label with relative + structural parts */
+/** Formats a YYYY-MM-DD as a date label with relative + structural parts. Malformed input yields a safe fallback. */
 export const relativeDateLabel = (date: string, today: string): DateLabel => {
   const d = parseLocalDate(date);
   const t = parseLocalDate(today);
+  if (!Number.isFinite(d.getTime()) || !Number.isFinite(t.getTime())) {
+    return { relative: null, structural: date || '—', week: null };
+  }
   const dayDiff = Math.round((t.getTime() - d.getTime()) / 86_400_000);
 
   const structural = `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
