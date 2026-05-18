@@ -9,6 +9,13 @@ const toFiniteNumber = (s: string): number => {
   return Number.isFinite(n) ? n : 0;
 };
 
+/** Coerce a string input to a finite number or null; empty/non-finite both become null. */
+const toFiniteOrNull = (s: string): number | null => {
+  if (s === '') return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+};
+
 /** Conditional meta sub-form — renders Fuel / Travel / Maintenance fields based on meta.type */
 export function MetaSubForm({
   meta,
@@ -132,12 +139,7 @@ function FuelFields({
               min="0"
               step="1"
               value={meta.odometer ?? ''}
-              onChange={(e) =>
-                onChange({
-                  ...meta,
-                  odometer: e.target.value === '' ? null : Number(e.target.value),
-                })
-              }
+              onChange={(e) => onChange({ ...meta, odometer: toFiniteOrNull(e.target.value) })}
               className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
             />
           </label>
@@ -149,12 +151,7 @@ function FuelFields({
               min="0"
               step="1"
               value={meta.tripOdo ?? ''}
-              onChange={(e) =>
-                onChange({
-                  ...meta,
-                  tripOdo: e.target.value === '' ? null : Number(e.target.value),
-                })
-              }
+              onChange={(e) => onChange({ ...meta, tripOdo: toFiniteOrNull(e.target.value) })}
               className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
             />
           </label>
@@ -167,10 +164,7 @@ function FuelFields({
               step="0.1"
               value={meta.displayedMileage ?? ''}
               onChange={(e) =>
-                onChange({
-                  ...meta,
-                  displayedMileage: e.target.value === '' ? null : Number(e.target.value),
-                })
+                onChange({ ...meta, displayedMileage: toFiniteOrNull(e.target.value) })
               }
               className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
             />
@@ -216,9 +210,7 @@ function TravelFields({ meta, onChange }: { meta: TravelMeta; onChange: (m: Trav
           min="0"
           step="1"
           value={meta.distance ?? ''}
-          onChange={(e) =>
-            onChange({ ...meta, distance: e.target.value === '' ? null : Number(e.target.value) })
-          }
+          onChange={(e) => onChange({ ...meta, distance: toFiniteOrNull(e.target.value) })}
           className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
         />
       </label>
@@ -259,12 +251,7 @@ function MaintenanceFields({
             step="1"
             placeholder="32500"
             value={meta.nextService ?? ''}
-            onChange={(e) =>
-              onChange({
-                ...meta,
-                nextService: e.target.value === '' ? null : Number(e.target.value),
-              })
-            }
+            onChange={(e) => onChange({ ...meta, nextService: toFiniteOrNull(e.target.value) })}
             className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
           />
         </label>
