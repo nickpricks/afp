@@ -6,7 +6,7 @@ import type { Expense } from '@/modules/expenses/types';
 import { sortNewestFirst } from '@/shared/utils/sort';
 import { todayStr } from '@/shared/utils/date';
 import { CONFIG } from '@/constants/config';
-import { ToastType } from '@/shared/types';
+import { ToastType, TimeRange } from '@/shared/types';
 import type { ExpenseCategory } from '@/shared/types';
 import { useToast } from '@/shared/errors/useToast';
 import { BudgetMsg } from '@/constants/messages';
@@ -23,13 +23,17 @@ function formatCategory(category: ExpenseCategory, subCat: string): string {
   return subCat ? `${label} > ${subCat}` : label;
 }
 
-/** Displays a paginated list of expenses with undo-able delete */
+/** Displays a paginated list of expenses with undo-able delete. timeRange is page-shared so summary + list stay in sync. */
 export function ExpenseList({
   expenses,
   onDelete,
+  timeRange,
+  onTimeRangeChange,
 }: {
   expenses: Expense[];
   onDelete: (id: string) => void;
+  timeRange: TimeRange;
+  onTimeRangeChange: (range: TimeRange) => void;
 }) {
   const { addToast } = useToast();
   const ctrl = useListControls();
@@ -41,9 +45,16 @@ export function ExpenseList({
     (e) => e.date,
   );
   const today = todayStr();
-  const filtered = filterByDateRange(sorted, ctrl.timeRange, today, (e) => e.date);
+  const filtered = filterByDateRange(sorted, timeRange, today, (e) => e.date);
   const pagesCount = totalPages(filtered.length, ctrl.pageSize);
   const visible = ctrl.showAll ? filtered : paginate(filtered, ctrl.page, ctrl.pageSize);
+
+  /** Time-range changes also reset pagination at the list layer */
+  const handleTimeRangeChange = (range: TimeRange) => {
+    onTimeRangeChange(range);
+    ctrl.setPage(1);
+    ctrl.setShowAll(false);
+  };
 
   /** Optimistic delete with 10s undo window */
   const handleDelete = (id: string) => {
@@ -80,8 +91,8 @@ export function ExpenseList({
   return (
     <div className="flex flex-col">
       <ListControls
-        timeRange={ctrl.timeRange}
-        onTimeRangeChange={ctrl.setTimeRange}
+        timeRange={timeRange}
+        onTimeRangeChange={handleTimeRangeChange}
         pageSize={ctrl.pageSize}
         onPageSizeChange={ctrl.setPageSize}
         page={ctrl.page}

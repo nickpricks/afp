@@ -10,6 +10,7 @@ import { AutoTab } from '@/modules/expenses/components/AutoTab';
 import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
 import { useIncome } from '@/modules/expenses/hooks/useIncome';
 import { ROUTES } from '@/constants/routes';
+import { TimeRange } from '@/shared/types';
 
 /** Union of budget tab identifiers for the ExpenseListPage tab switcher */
 type BudgetTab = 'expenses' | 'income' | 'auto' | 'reconcile';
@@ -19,10 +20,13 @@ export function ExpenseListPage() {
   const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses();
   const { income, deleteIncome } = useIncome();
   const [activeTab, setActiveTab] = useState<BudgetTab>('expenses');
+  // Shared across BudgetSummary + ExpenseList + IncomeList so summary card matches list contents.
+  // Pagination stays per-list; only the date filter is hoisted.
+  const [timeRange, setTimeRange] = useState<TimeRange>(TimeRange.All);
 
   return (
     <div className="relative">
-      <BudgetSummary expenses={expenses} income={income} />
+      <BudgetSummary expenses={expenses} income={income} timeRange={timeRange} />
 
       <div className="mx-4 mb-3 flex rounded-lg border border-line bg-surface-card p-1">
         <TabButton
@@ -47,8 +51,22 @@ export function ExpenseListPage() {
         />
       </div>
 
-      {activeTab === 'expenses' && <ExpenseList expenses={expenses} onDelete={deleteExpense} />}
-      {activeTab === 'income' && <IncomeList income={income} onDelete={deleteIncome} />}
+      {activeTab === 'expenses' && (
+        <ExpenseList
+          expenses={expenses}
+          onDelete={deleteExpense}
+          timeRange={timeRange}
+          onTimeRangeChange={setTimeRange}
+        />
+      )}
+      {activeTab === 'income' && (
+        <IncomeList
+          income={income}
+          onDelete={deleteIncome}
+          timeRange={timeRange}
+          onTimeRangeChange={setTimeRange}
+        />
+      )}
       {activeTab === 'auto' && (
         <AutoTab
           expenses={expenses}

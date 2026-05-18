@@ -8,7 +8,7 @@ import { todayStr } from '@/shared/utils/date';
 import { CONFIG } from '@/constants/config';
 import { useToast } from '@/shared/errors/useToast';
 import { BudgetMsg } from '@/constants/messages';
-import { ToastType } from '@/shared/types';
+import { ToastType, TimeRange } from '@/shared/types';
 import { DateGroupHeader } from '@/shared/components/lists/DateGroupHeader';
 import { ListControls } from '@/shared/components/ListControls';
 import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
@@ -16,13 +16,17 @@ import { useListControls } from '@/shared/hooks/useListControls';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
 
-/** Displays a paginated list of income entries with undo-able delete */
+/** Displays a paginated list of income entries with undo-able delete. timeRange is page-shared so summary + list stay in sync. */
 export function IncomeList({
   income,
   onDelete,
+  timeRange,
+  onTimeRangeChange,
 }: {
   income: Income[];
   onDelete: (id: string) => void;
+  timeRange: TimeRange;
+  onTimeRangeChange: (range: TimeRange) => void;
 }) {
   const { addToast } = useToast();
   const ctrl = useListControls();
@@ -34,9 +38,16 @@ export function IncomeList({
     (e) => e.date,
   );
   const today = todayStr();
-  const filtered = filterByDateRange(sorted, ctrl.timeRange, today, (i) => i.date);
+  const filtered = filterByDateRange(sorted, timeRange, today, (i) => i.date);
   const pagesCount = totalPages(filtered.length, ctrl.pageSize);
   const visible = ctrl.showAll ? filtered : paginate(filtered, ctrl.page, ctrl.pageSize);
+
+  /** Time-range changes also reset pagination at the list layer */
+  const handleTimeRangeChange = (range: TimeRange) => {
+    onTimeRangeChange(range);
+    ctrl.setPage(1);
+    ctrl.setShowAll(false);
+  };
 
   /** Stage a delete with undo toast; fires actual delete after undo window expires */
   const handleDelete = (id: string) => {
@@ -73,8 +84,8 @@ export function IncomeList({
   return (
     <div className="flex flex-col">
       <ListControls
-        timeRange={ctrl.timeRange}
-        onTimeRangeChange={ctrl.setTimeRange}
+        timeRange={timeRange}
+        onTimeRangeChange={handleTimeRangeChange}
         pageSize={ctrl.pageSize}
         onPageSizeChange={ctrl.setPageSize}
         page={ctrl.page}
