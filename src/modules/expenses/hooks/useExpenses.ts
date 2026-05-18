@@ -19,7 +19,8 @@ type ExpenseInput = {
   category: ExpenseCategory;
   subCat: string;
   amount: number;
-  paymentMethod?: PaymentMethod;
+  /** Required — wrappers must default explicitly. No silent UPI fallback at the hook layer. */
+  paymentMethod: PaymentMethod;
   isSettlement?: boolean;
   note: string;
   meta?: ExpenseMeta;
@@ -85,7 +86,7 @@ export function useExpenses(targetUid?: string) {
         category: input.category,
         subCat: input.subCat,
         amount: input.amount,
-        paymentMethod: input.paymentMethod ?? PaymentMethod.UpiBankAccount,
+        paymentMethod: input.paymentMethod,
         isSettlement: input.isSettlement ?? false,
         note: input.note,
         isDeleted: false,

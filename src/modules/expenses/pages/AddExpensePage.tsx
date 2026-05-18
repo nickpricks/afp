@@ -6,7 +6,8 @@ import { AddIncome } from '@/modules/expenses/components/AddIncome';
 import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
 import { useIncome } from '@/modules/expenses/hooks/useIncome';
 import { ROUTES } from '@/constants/routes';
-import type { ExpenseCategory, IncomeSource, PaymentMethod } from '@/shared/types';
+import { PaymentMethod } from '@/shared/types';
+import type { ExpenseCategory, IncomeSource } from '@/shared/types';
 
 type AddTab = 'expense' | 'income';
 
@@ -29,7 +30,8 @@ export function AddExpensePage() {
   }): Promise<boolean> {
     const success = await addExpense({
       ...input,
-      paymentMethod: input.paymentMethod ?? undefined,
+      // Explicit default at the wrapper layer — null means "user deselected", we save as UPI.
+      paymentMethod: input.paymentMethod ?? PaymentMethod.UpiBankAccount,
     });
     if (success) {
       navigate(ROUTES.BUDGET, { replace: true });

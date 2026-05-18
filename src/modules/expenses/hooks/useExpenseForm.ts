@@ -39,13 +39,18 @@ export function useExpenseForm(props: UseExpenseFormProps = {}) {
   }, [initDate, initPM, props.initialMeta]);
 
   /** Populate form fields from an existing expense for tap-to-edit */
-  const populate = useCallback((e: Expense) => {
-    setDate(e.date);
-    setAmount(String(e.amount));
-    setNote(e.note ?? '');
-    setMeta(e.meta);
-    setPaymentMethod(e.paymentMethod ?? PaymentMethod.UpiBankAccount);
-  }, []);
+  const populate = useCallback(
+    (e: Expense) => {
+      setDate(e.date);
+      setAmount(String(e.amount));
+      setNote(e.note ?? '');
+      setMeta(e.meta);
+      // Honor caller's initPM intent — null if they started with no-default, UPI otherwise.
+      // Defensive ?? for legacy data where paymentMethod might be null/missing despite the type.
+      setPaymentMethod(e.paymentMethod ?? initPM);
+    },
+    [initPM],
+  );
 
   return {
     date,

@@ -204,11 +204,7 @@ export function AutoTab({
                   key={m}
                   method={m}
                   isActive={paymentMethod === m}
-                  onClick={(method) =>
-                    setPaymentMethod(
-                      paymentMethod === method ? PaymentMethod.UpiBankAccount : method,
-                    )
-                  }
+                  onClick={(method) => setPaymentMethod(paymentMethod === method ? null : method)}
                 />
               ))}
             </div>
