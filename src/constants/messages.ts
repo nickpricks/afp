@@ -22,7 +22,6 @@ export enum ValidationMsg {
   NextServiceInvalid = 'Next-service odometer must be a positive number',
   TripOdoInvalid = 'Trip odometer must be a positive number',
   DisplayedMileageInvalid = 'Mileage must be a positive number',
-  UnknownMetaType = 'Unknown expense meta type',
 }
 
 /** Invite-related messages */

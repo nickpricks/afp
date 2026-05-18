@@ -6,6 +6,7 @@ import { ExpenseMetaType } from '@/modules/expenses/types';
 import { DATE_RE } from '@/shared/utils/regex';
 import { ValidationMsg } from '@/constants/messages';
 import { isValidNumber } from '@/shared/utils/validation';
+import { assertNever } from '@/shared/utils/types';
 
 /** Validates expense input fields and optional meta, returning a Result */
 export function validateExpense(input: {
@@ -63,7 +64,7 @@ function validateMeta(meta: ExpenseMeta): Result<void> {
         return err(ValidationMsg.NextServiceInvalid);
       return ok(undefined);
     default:
-      return err(ValidationMsg.UnknownMetaType);
+      return assertNever(meta);
   }
 }
 

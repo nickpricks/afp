@@ -3,6 +3,7 @@ import { ExpenseMetaType } from '@/modules/expenses/types';
 import type { ExpenseCategory } from '@/shared/types';
 import { ExpenseCategory as Cat } from '@/shared/types';
 import { VEHICLE_SUBCAT, TRAVEL_SUBCAT } from '@/modules/expenses/categories';
+import { assertNever } from '@/shared/utils/types';
 
 /** Nullable meta type discriminant — null means no meta applicable */
 type MetaKind = ExpenseMetaType | null;
@@ -18,30 +19,42 @@ export function metaKindFor(category: ExpenseCategory | null, subCat: string): M
 
 /** Returns the category and subcategory for a given meta kind (inverse of metaKindFor) */
 export function subCatFor(kind: ExpenseMetaType): { category: ExpenseCategory; subCat: string } {
-  if (kind === ExpenseMetaType.Fuel) return { category: Cat.Vehicle, subCat: VEHICLE_SUBCAT.Fuel };
-  if (kind === ExpenseMetaType.Travel)
-    return { category: Cat.Travel, subCat: TRAVEL_SUBCAT.CabAuto };
-  return { category: Cat.Vehicle, subCat: VEHICLE_SUBCAT.Maintenance };
+  switch (kind) {
+    case ExpenseMetaType.Fuel:
+      return { category: Cat.Vehicle, subCat: VEHICLE_SUBCAT.Fuel };
+    case ExpenseMetaType.Travel:
+      return { category: Cat.Travel, subCat: TRAVEL_SUBCAT.CabAuto };
+    case ExpenseMetaType.Maintenance:
+      return { category: Cat.Vehicle, subCat: VEHICLE_SUBCAT.Maintenance };
+    default:
+      return assertNever(kind);
+  }
 }
 
-/** Returns a default meta object for the given kind */
+/** Returns a default meta object for the given kind, or undefined for the null kind */
 export function defaultMeta(kind: MetaKind): ExpenseMeta | undefined {
-  if (kind === ExpenseMetaType.Fuel) {
-    return {
-      type: ExpenseMetaType.Fuel,
-      liters: 0,
-      pricePerLiter: 0,
-      odometer: null,
-      tripOdo: null,
-      displayedMileage: null,
-      fullTank: false,
-    };
+  if (kind === null) return undefined;
+  switch (kind) {
+    case ExpenseMetaType.Fuel:
+      return {
+        type: ExpenseMetaType.Fuel,
+        liters: 0,
+        pricePerLiter: 0,
+        odometer: null,
+        tripOdo: null,
+        displayedMileage: null,
+        fullTank: false,
+      };
+    case ExpenseMetaType.Travel:
+      return { type: ExpenseMetaType.Travel, origin: '', destination: '', distance: null };
+    case ExpenseMetaType.Maintenance:
+      return {
+        type: ExpenseMetaType.Maintenance,
+        odometer: 0,
+        nextService: null,
+        serviceNotes: '',
+      };
+    default:
+      return assertNever(kind);
   }
-  if (kind === ExpenseMetaType.Travel) {
-    return { type: ExpenseMetaType.Travel, origin: '', destination: '', distance: null };
-  }
-  if (kind === ExpenseMetaType.Maintenance) {
-    return { type: ExpenseMetaType.Maintenance, odometer: 0, nextService: null, serviceNotes: '' };
-  }
-  return undefined;
 }
