@@ -6,6 +6,7 @@ import { ToastProvider } from '@/shared/errors/toast-context';
 import type { Expense } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ExpenseCategory, PaymentMethod } from '@/shared/types';
+import { VEHICLE_SUBCAT } from '@/modules/expenses/categories';
 
 /** Renders the given element inside a ToastProvider for AutoTab tests */
 function withToast(ui: React.ReactElement) {
@@ -18,7 +19,7 @@ function fuelExpense(id: string, date: string, odometer = 12000): Expense {
     id,
     date,
     category: ExpenseCategory.Vehicle,
-    subCat: 'Fuel',
+    subCat: VEHICLE_SUBCAT.Fuel,
     amount: 4000,
     paymentMethod: PaymentMethod.UpiBankAccount,
     isSettlement: false,
@@ -256,7 +257,7 @@ describe('AutoTab — incomplete pill', () => {
       id: 'old',
       date: '2026-04-01',
       category: ExpenseCategory.Vehicle,
-      subCat: 'Fuel',
+      subCat: VEHICLE_SUBCAT.Fuel,
       amount: 3500,
       paymentMethod: PaymentMethod.UpiBankAccount,
       isSettlement: false,
@@ -284,7 +285,7 @@ describe('AutoTab — pagination deviation sanity', () => {
       id: `e${i}`,
       date: '2026-04-01',
       category: ExpenseCategory.Vehicle,
-      subCat: 'Fuel',
+      subCat: VEHICLE_SUBCAT.Fuel,
       amount: 100,
       paymentMethod: PaymentMethod.UpiBankAccount,
       isSettlement: false,

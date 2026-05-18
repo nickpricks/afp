@@ -10,6 +10,7 @@ import {
 import type { Expense, FuelMeta, MaintenanceMeta } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ExpenseCategory, PaymentMethod } from '@/shared/types';
+import { VEHICLE_SUBCAT } from '@/modules/expenses/categories';
 
 /** Builds a minimal fuel Expense fixture with the given FuelMeta fields */
 function fuelExpense(
@@ -21,7 +22,7 @@ function fuelExpense(
     id,
     date,
     category: ExpenseCategory.Vehicle,
-    subCat: 'Fuel',
+    subCat: VEHICLE_SUBCAT.Fuel,
     amount: meta.liters * meta.pricePerLiter,
     paymentMethod: PaymentMethod.UpiBankAccount,
     isSettlement: false,
@@ -51,7 +52,7 @@ function maintenanceExpense(
     id,
     date,
     category: ExpenseCategory.Vehicle,
-    subCat: 'Maintenance',
+    subCat: VEHICLE_SUBCAT.Maintenance,
     amount: 5000,
     paymentMethod: PaymentMethod.UpiBankAccount,
     isSettlement: false,

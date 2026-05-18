@@ -5,6 +5,7 @@ import { ServiceDueBanner } from '@/modules/expenses/components/ServiceDueBanner
 import type { Expense } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ExpenseCategory, PaymentMethod } from '@/shared/types';
+import { VEHICLE_SUBCAT } from '@/modules/expenses/categories';
 
 /** Builds a minimal maintenance Expense fixture for ServiceDueBanner tests */
 function maintenance(
@@ -17,7 +18,7 @@ function maintenance(
     id,
     date,
     category: ExpenseCategory.Vehicle,
-    subCat: 'Maintenance',
+    subCat: VEHICLE_SUBCAT.Maintenance,
     amount: 5000,
     paymentMethod: PaymentMethod.UpiBankAccount,
     isSettlement: false,
@@ -35,7 +36,7 @@ function fuel(id: string, date: string, odometer: number): Expense {
     id,
     date,
     category: ExpenseCategory.Vehicle,
-    subCat: 'Fuel',
+    subCat: VEHICLE_SUBCAT.Fuel,
     amount: 4000,
     paymentMethod: PaymentMethod.UpiBankAccount,
     isSettlement: false,
