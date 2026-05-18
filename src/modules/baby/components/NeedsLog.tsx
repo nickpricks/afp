@@ -122,10 +122,10 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setSaving(false);
   }
 
-  /** Moves an entry to a new status */
+  /** Moves an entry to a new status — suppresses the hook's generic toast to show a status-specific one */
   async function changeStatus(need: NeedEntry, newStatus: NeedStatus) {
     const now = new Date().toISOString();
-    const ok = await update({ ...need, status: newStatus, updatedAt: now });
+    const ok = await update({ ...need, status: newStatus, updatedAt: now }, { silent: true });
     if (ok) {
       if (newStatus === NeedStatus.Inventory) {
         addToast(BabyMsg.NeedMovedToInventory, ToastType.Success);

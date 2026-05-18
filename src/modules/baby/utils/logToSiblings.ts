@@ -2,6 +2,7 @@ import { createAdapter } from '@/shared/storage/create-adapter';
 import { childPath } from '@/constants/db';
 import { isOk } from '@/shared/types';
 
+/** Tally of sibling fan-out writes: ok = successful, failed = errored (per-sibling) */
 export type SiblingLogResult = { ok: number; failed: number };
 
 /** Logs the same entry to multiple sibling children — returns ok/failed counts, errors logged to console */

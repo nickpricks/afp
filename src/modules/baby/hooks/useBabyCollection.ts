@@ -92,9 +92,9 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
     [addToast, subcollection, label, readOnly],
   );
 
-  /** Updates an existing entry by ID */
+  /** Updates an existing entry by ID. Pass { silent: true } to suppress the generic success toast (caller toasts a more specific message). */
   const update = useCallback(
-    async (data: T): Promise<boolean> => {
+    async (data: T, opts?: { silent?: boolean }): Promise<boolean> => {
       if (readOnly) {
         addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
         return false;
@@ -103,7 +103,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
       if (!adapter) return false;
       const result = await adapter.save(subcollection, data);
       if (isOk(result)) {
-        addToast(`${label} updated`, ToastType.Success);
+        if (!opts?.silent) addToast(`${label} updated`, ToastType.Success);
         return true;
       } else {
         addToast(result.error, ToastType.Error);
