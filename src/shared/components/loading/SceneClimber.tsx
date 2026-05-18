@@ -1,3 +1,4 @@
+/** Animation delay (seconds) for each of the 5 stair-step flash highlights. */
 const STEP_DELAYS = [0, 0.42, 0.96, 1.5, 2.04];
 
 /** SVG stick figure climbing a 5-step staircase — ported from Floor-Tracker */

@@ -111,6 +111,7 @@ vi.mock('@/admin/hooks/useAllUsers', () => ({
 // Import after mocks
 import { Dashboard } from '@/shared/components/Dashboard';
 
+/** Tests for Dashboard greeting, module card rendering, and data pass-through. */
 describe('Dashboard', () => {
   it('shows greeting with user name', () => {
     render(

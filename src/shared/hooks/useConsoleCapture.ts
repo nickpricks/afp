@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import type { ConsoleEntry } from '@/shared/components/ConsoleViewer';
 
+/** All interceptable console method names. */
 type ConsoleLevel =
   | 'log'
   | 'info'
@@ -23,6 +24,7 @@ type ConsoleLevel =
   | 'assert'
   | 'clear';
 
+/** Complete list of console methods patched by useConsoleCapture. */
 const ALL_LEVELS: ConsoleLevel[] = [
   'log',
   'info',

@@ -6,9 +6,12 @@ import { SceneAthlete } from '@/shared/components/loading/SceneAthlete';
 import { SceneReader } from '@/shared/components/loading/SceneReader';
 import { BRAND_TEXT } from '@/shared/components/loading/constants';
 
+/** Functional component type for a loading animation scene. */
 type SceneComponent = React.FC;
+/** All available loading animation scenes — one is chosen at random per mount. */
 const SCENES: SceneComponent[] = [SceneClimber, SceneAthlete, SceneReader];
 
+/** Props for LoadingScreen. */
 interface LoadingScreenProps {
   showText?: boolean;
 }

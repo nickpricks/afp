@@ -3,6 +3,7 @@ import { ChangeEvent, FocusEvent, useState } from 'react';
 import { TimeRange } from '@/shared/types';
 import { CONFIG } from '@/constants/config';
 
+/** Available time-range filter options for list controls. */
 const TIME_RANGES: { id: TimeRange; label: string }[] = [
   { id: TimeRange.Today, label: 'Today' },
   { id: TimeRange.Week, label: 'Week' },
@@ -11,6 +12,7 @@ const TIME_RANGES: { id: TimeRange; label: string }[] = [
 ];
 
 
+/** Props for ListControls. */
 interface Props {
   timeRange: TimeRange;
   onTimeRangeChange: (range: TimeRange) => void;

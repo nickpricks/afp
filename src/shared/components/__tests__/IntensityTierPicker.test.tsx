@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { IntensityTierPicker } from '../IntensityTierPicker';
 
+/** Tests for IntensityTierPicker tier buttons, active state, and onChange. */
 describe('<IntensityTierPicker>', () => {
   it('renders 5 buttons with tier labels', () => {
     render(<IntensityTierPicker value={50} onChange={() => {}} />);

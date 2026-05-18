@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { TimeRange } from '@/shared/types';
 
+/** Snapshot of list control state — time-range, page, page size, show-all override. */
 export interface ListControlsState {
   timeRange: TimeRange;
   pageSize: number;
@@ -9,6 +10,7 @@ export interface ListControlsState {
   showAll: boolean;
 }
 
+/** Full list controls API: state + setters returned by useListControls. */
 export interface ListControlsHandle extends ListControlsState {
   setTimeRange: (range: TimeRange) => void;
   setPageSize: (size: number) => void;

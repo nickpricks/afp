@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
+/** A single captured console message with level, serialized args, and HH:mm:ss.SSS timestamp. */
 export interface ConsoleEntry {
   id: number;
   level: string;
@@ -7,6 +8,7 @@ export interface ConsoleEntry {
   timestamp: string;
 }
 
+/** Tailwind color classes per console level for the live console overlay. */
 const LEVEL_COLORS: Record<string, string> = {
   log: 'text-gray-600 dark:text-gray-400',
   info: 'text-blue-600 dark:text-blue-400',
@@ -29,6 +31,7 @@ const LEVEL_COLORS: Record<string, string> = {
   clear: 'text-gray-400 dark:text-gray-500',
 };
 
+/** localStorage key for console overlay visibility preference. */
 const STORAGE_KEY = 'afp-console-visible';
 
 /** Renders console entries as a scrollable list */

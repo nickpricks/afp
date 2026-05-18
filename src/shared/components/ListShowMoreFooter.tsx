@@ -1,3 +1,4 @@
+/** Props for ListShowMoreFooter. */
 interface Props {
   totalCount: number;
   shownCount: number;

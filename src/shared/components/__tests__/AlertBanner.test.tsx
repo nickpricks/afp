@@ -4,6 +4,7 @@ import { AlertBanner } from '@/shared/components/AlertBanner';
 import { NotificationType, AlertType, Severity } from '@/shared/types';
 import type { Notification } from '@/shared/types';
 
+/** Builds a Notification fixture with sensible defaults for AlertBanner tests. */
 const makeAlert = (overrides: Partial<Notification> = {}): Notification => ({
   id: 'alert-1',
   type: NotificationType.AdminAlert,
@@ -17,6 +18,7 @@ const makeAlert = (overrides: Partial<Notification> = {}): Notification => ({
   ...overrides,
 });
 
+/** Tests for AlertBanner severity rendering and dismiss behavior. */
 describe('AlertBanner', () => {
   it('renders nothing when alerts is empty', () => {
     const { container } = render(<AlertBanner alerts={[]} onDismiss={vi.fn()} />);

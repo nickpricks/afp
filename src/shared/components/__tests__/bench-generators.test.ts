@@ -5,6 +5,7 @@ beforeEach(() => {
   localStorage.clear();
 });
 
+/** Tests for benchMeal localStorage insertion and date param. */
 describe('benchMeal', () => {
   it('creates a meal entry under children/{id}/meals', () => {
     const childId = ensureChild();
@@ -27,6 +28,7 @@ describe('benchMeal', () => {
   });
 });
 
+/** Tests for benchNeed localStorage insertion. */
 describe('benchNeed', () => {
   it('creates a need entry under children/{id}/needs', () => {
     const childId = ensureChild();
@@ -37,6 +39,7 @@ describe('benchNeed', () => {
   });
 });
 
+/** Tests for benchMilestone localStorage insertion. */
 describe('benchMilestone', () => {
   it('creates a milestone entry under children/{id}/milestones', () => {
     const childId = ensureChild();

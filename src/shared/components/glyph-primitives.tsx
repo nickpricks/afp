@@ -11,6 +11,7 @@ import * as React from 'react';
  * Patronus animals are NOT in this registry — they keep their filtered
  * emoji rendering via `effect.content` in THEME_DEFINITIONS.
  */
+/** Props for GlyphPrimitive — the effect ID selects the rendered shape. */
 interface GlyphProps {
   effectId: string;
 }
@@ -30,6 +31,7 @@ const GlyphWrapper = ({ children }: { children: React.ReactNode }): React.ReactE
   </div>
 );
 
+/** SVG snowflake with 8-arm symmetry — used for Family Blue ambient particles. */
 const SnowflakeGlyph = (): React.ReactElement => (
   <GlyphWrapper>
     <svg
@@ -50,6 +52,7 @@ const SnowflakeGlyph = (): React.ReactElement => (
   </GlyphWrapper>
 );
 
+/** SVG leaf teardrop — used for Garden Path ambient particles. */
 const LeafGlyph = (): React.ReactElement => (
   <GlyphWrapper>
     <svg viewBox="0 0 24 24" width="80%" height="80%" fill="currentColor" opacity="0.7">
@@ -58,6 +61,7 @@ const LeafGlyph = (): React.ReactElement => (
   </GlyphWrapper>
 );
 
+/** Radial-gradient glow circle — used for Lullaby star particles. */
 const StarGlyph = (): React.ReactElement => (
   <GlyphWrapper>
     <div
@@ -73,6 +77,7 @@ const StarGlyph = (): React.ReactElement => (
   </GlyphWrapper>
 );
 
+/** CSS two-lobe heart shape — used for Rose Quartz ambient particles. */
 const HeartGlyph = (): React.ReactElement => (
   <GlyphWrapper>
     <div style={{ position: 'relative', width: '80%', height: '80%' }}>
@@ -106,6 +111,7 @@ const HeartGlyph = (): React.ReactElement => (
   </GlyphWrapper>
 );
 
+/** Blurred multi-radial ink blot — used for Marauder's Map ambient particles. */
 const InkBlotGlyph = (): React.ReactElement => (
   <GlyphWrapper>
     <div
@@ -120,6 +126,7 @@ const InkBlotGlyph = (): React.ReactElement => (
   </GlyphWrapper>
 );
 
+/** Translucent bubble circle — used for Deep Mariana ambient particles. */
 const BubbleGlyph = (): React.ReactElement => (
   <GlyphWrapper>
     <div
@@ -136,6 +143,7 @@ const BubbleGlyph = (): React.ReactElement => (
   </GlyphWrapper>
 );
 
+/** Warm elliptical ember glow — used for Industrial Furnace ambient particles. */
 const EmberGlyph = (): React.ReactElement => (
   <GlyphWrapper>
     <div
@@ -151,6 +159,7 @@ const EmberGlyph = (): React.ReactElement => (
   </GlyphWrapper>
 );
 
+/** Blurred radial wisp — used for Expecto Patronum ambient particles. */
 const WispGlyph = (): React.ReactElement => (
   <GlyphWrapper>
     <div
@@ -166,6 +175,7 @@ const WispGlyph = (): React.ReactElement => (
   </GlyphWrapper>
 );
 
+/** Solid circle fallback for unregistered effect IDs. */
 const FallbackGlyph = (): React.ReactElement => (
   <GlyphWrapper>
     <div
@@ -180,6 +190,7 @@ const FallbackGlyph = (): React.ReactElement => (
   </GlyphWrapper>
 );
 
+/** Maps effect IDs to their shape-primitive components. */
 const REGISTRY: Record<string, () => React.ReactElement> = {
   snowflakes: SnowflakeGlyph,
   leaves: LeafGlyph,

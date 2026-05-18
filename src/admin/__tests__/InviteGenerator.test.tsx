@@ -44,6 +44,7 @@ vi.mock('@/shared/storage/create-adapter', () => ({
   }),
 }));
 
+/** Tests for InviteGenerator role selector and viewer-of picker visibility. */
 describe('InviteGenerator — role selector', () => {
   it('shows role selector with User and Viewer options', () => {
     render(

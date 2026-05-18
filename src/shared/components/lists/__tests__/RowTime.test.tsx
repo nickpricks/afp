@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 
 import { RowTime } from '../RowTime';
 
+/** Tests for RowTime timestamp formatting and dash fallback. */
 describe('RowTime', () => {
   it('renders time portion of ISO timestamp in HH:mm format', () => {
     render(<RowTime timestamp="2026-04-29T14:23:00.000Z" />);

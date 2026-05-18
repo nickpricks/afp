@@ -9,7 +9,7 @@ import { ROUTES } from '@/constants/routes';
 import type { UserEntry } from '@/admin/hooks/useAllUsers';
 import type { ModuleConfig } from '@/shared/types';
 
-/** Module-specific color classes (A: color-coded module chips) */
+/** Tailwind color classes for module chip badges and toggle switches per module. */
 const MODULE_COLORS: Record<ModuleId, { chip: string; toggle: string }> = {
   [ModuleId.Body]: {
     chip: 'bg-indigo-500/10 text-indigo-600',

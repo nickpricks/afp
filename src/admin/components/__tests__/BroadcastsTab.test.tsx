@@ -28,6 +28,7 @@ vi.mock('@/shared/utils/date', () => ({
   todayStr: () => '2026-04-14',
 }));
 
+/** Tests for BroadcastsTab compose form, send guard, and user picker. */
 describe('BroadcastsTab', () => {
   it('renders compose form with all controls', () => {
     render(<BroadcastsTab />);

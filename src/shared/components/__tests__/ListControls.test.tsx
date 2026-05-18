@@ -16,6 +16,7 @@ const baseProps = {
   onPageChange: noop,
 };
 
+/** Tests for ListControls time-range pills, page size, and page navigation. */
 describe('ListControls', () => {
   it('renders all four time-range pills', () => {
     render(<ListControls {...baseProps} />);

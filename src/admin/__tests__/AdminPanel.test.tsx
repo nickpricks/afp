@@ -41,6 +41,7 @@ vi.mock('@/shared/storage/create-adapter', () => ({
   }),
 }));
 
+/** Integration tests for AdminPanel tab switching and deep-component behavior. */
 describe('AdminPanel', () => {
   it('shows Invites and Users tabs', () => {
     render(

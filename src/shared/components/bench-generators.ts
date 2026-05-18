@@ -27,8 +27,11 @@ import { todayStr } from '@/shared/utils/date';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
+/** Dev user ID used as the localStorage path root. */
 export const UID = 'dev-user';
+/** Base localStorage key prefix for all dev-mode data. */
 export const BASE = `afp:users/${UID}`;
+/** Max entries added per day when spreading bulk-generated data. */
 export const MAX_PER_DAY = 10;
 
 // ─── localStorage helpers (with error handling) ─────────────────────────────
@@ -390,7 +393,9 @@ export const benchGrowth = (date?: string): string => {
 
 // ─── Meals / Needs / Milestones generators ──────────────────────────────────
 
+/** Meal types cycled by the meal bench generator. */
 const MEAL_TYPES = [MealType.Breakfast, MealType.Lunch, MealType.Dinner, MealType.Snack];
+/** Portion sizes cycled by the meal bench generator. */
 const MEAL_PORTIONS = [
   MealPortion.None,
   MealPortion.Bite,
@@ -400,6 +405,7 @@ const MEAL_PORTIONS = [
   MealPortion.All,
   MealPortion.Extra,
 ];
+/** Sample meal descriptions for bench-generated entries. */
 const MEAL_DESCRIPTIONS = [
   'Oatmeal',
   'Banana mash',
@@ -430,6 +436,7 @@ export const benchMeal = (date?: string): string => {
   return id;
 };
 
+/** Need categories cycled by the need bench generator. */
 const NEED_CATEGORIES = [
   NeedCategory.Apparel,
   NeedCategory.Footwear,
@@ -438,7 +445,9 @@ const NEED_CATEGORIES = [
   NeedCategory.Books,
   NeedCategory.Other,
 ];
+/** Need statuses cycled by the need bench generator. */
 const NEED_STATUSES = [NeedStatus.Wishlist, NeedStatus.Inventory, NeedStatus.Outgrown];
+/** Sample need titles for bench-generated entries. */
 const NEED_TITLES = [
   'Onesie 6m',
   'Sippy cup',
@@ -470,6 +479,7 @@ export const benchNeed = (date?: string): string => {
   return id;
 };
 
+/** Milestone categories cycled by the milestone bench generator. */
 const MILESTONE_CATEGORIES = [
   MilestoneCategory.Motor,
   MilestoneCategory.Language,
@@ -478,6 +488,7 @@ const MILESTONE_CATEGORIES = [
   MilestoneCategory.Hobby,
   MilestoneCategory.Other,
 ];
+/** Sample milestone titles for bench-generated entries. */
 const MILESTONE_TITLES = [
   'First steps',
   'First word',

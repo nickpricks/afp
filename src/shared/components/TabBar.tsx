@@ -9,14 +9,17 @@ import { useModules } from '@/shared/hooks/useModules';
 /** Union of module IDs and the special admin tab */
 type TabId = ModuleId | 'admin';
 
+/** Tab config: icon component, display label, and route path. */
 type TabDefinition = { icon: typeof Activity; label: string; route: string };
 
+/** Per-module tab configurations for the bottom nav bar. */
 const MODULE_TABS: Record<ModuleId, TabDefinition> = {
   [ModuleId.Body]: { icon: Activity, label: 'Body', route: ROUTES.BODY },
   [ModuleId.Budget]: { icon: Receipt, label: 'Budget', route: ROUTES.BUDGET },
   [ModuleId.Baby]: { icon: Baby, label: 'Baby', route: ROUTES.BABY },
 };
 
+/** Admin tab shown only when the current user is TheAdminNick. */
 const ADMIN_TAB: TabDefinition = { icon: Activity, label: 'Admin', route: ROUTES.ADMIN };
 
 /** Bottom navigation bar with one tab per enabled module */

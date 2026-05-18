@@ -4,6 +4,7 @@ import { act, renderHook } from '@testing-library/react';
 import { useListControls } from '../useListControls';
 import { TimeRange } from '@/shared/types';
 
+/** Tests for useListControls page-reset and showAll behaviors. */
 describe('useListControls', () => {
   it('initializes with All range, pageSize 25, page 1, showAll false', () => {
     const { result } = renderHook(() => useListControls());

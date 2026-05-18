@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { runEliminationMigration } from '@/admin/runEliminationMigration';
 import { ok, err } from '@/shared/types';
 
+/** Tests for runEliminationMigration iteration, accumulation, and error handling. */
 describe('runEliminationMigration', () => {
   it('returns zero counts when there are no users', async () => {
     const summary = await runEliminationMigration({

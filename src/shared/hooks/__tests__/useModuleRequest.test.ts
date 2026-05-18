@@ -29,6 +29,7 @@ vi.mock('@/shared/utils/date', () => ({
   nowTime: () => '2026-04-14T10:00:00Z',
 }));
 
+/** Tests for useModuleRequest notification writes and guard conditions. */
 describe('useModuleRequest', () => {
   beforeEach(() => {
     vi.clearAllMocks();

@@ -37,13 +37,16 @@ import { ProfileMsg, ValidationMsg } from '@/constants/messages';
 import { createAdapter } from '@/shared/storage/create-adapter';
 import { DbSubcollection, DbDoc } from '@/constants/db';
 
+/** Flattened array of all theme definitions for iteration. */
 const THEME_LIST = Object.values(THEME_DEFINITIONS);
+/** Color mode options shown in the appearance section. */
 const COLOR_MODES: { value: ColorMode; label: string }[] = [
   { value: 'light', label: 'Light' },
   { value: 'dark', label: 'Dark' },
   { value: 'system', label: 'System' },
 ];
 
+/** Human-readable labels for each module ID shown in the Modules section. */
 const MODULE_LABELS: Record<ModuleId, string> = {
   [ModuleId.Body]: 'Body & Fitness',
   [ModuleId.Budget]: 'Budget',
@@ -129,6 +132,7 @@ export function ProfilePage() {
   const email = firebaseUser?.email ?? profile?.email ?? null;
   const photoURL = firebaseUser?.photoURL ?? null;
 
+  /** Applies a new theme and persists appearance to storage. */
   const handleThemeChange = useCallback(
     (themeId: ThemeId) => {
       applyTheme(themeId, colorMode);
@@ -142,6 +146,7 @@ export function ProfilePage() {
     [colorMode, intensity, size, uid, addToast, profile],
   );
 
+  /** Applies a new color mode and persists appearance to storage. */
   const handleColorModeChange = useCallback(
     (mode: ColorMode) => {
       setColorMode(mode);
@@ -156,6 +161,7 @@ export function ProfilePage() {
     [activeThemeId, intensity, size, uid, addToast, profile],
   );
 
+  /** Persists updated effect intensity — silent-fail to avoid slider-spam toasts. */
   const handleIntensityChange = useCallback(
     (newIntensity: number) => {
       setIntensity(newIntensity);
@@ -168,6 +174,7 @@ export function ProfilePage() {
     [activeThemeId, colorMode, size, uid, profile],
   );
 
+  /** Persists updated effect size — silent-fail to avoid picker-spam toasts. */
   const handleSizeChange = useCallback(
     (newSize: number) => {
       setSize(newSize);
@@ -180,6 +187,7 @@ export function ProfilePage() {
     [activeThemeId, colorMode, intensity, uid, profile],
   );
 
+  /** Validates, claims the new username, releases the old one, and persists to profile. */
   const handleUsernameSave = useCallback(async () => {
     if (savingRef.current) return;
     savingRef.current = true;
@@ -230,6 +238,7 @@ export function ProfilePage() {
     savingRef.current = false;
   }, [usernameInput, uid, profile, addToast]);
 
+  /** Releases the current username from the global registry and clears it from the profile. */
   const handleUsernameRelease = useCallback(async () => {
     if (!profile?.username || savingRef.current) return;
     savingRef.current = true;
@@ -247,6 +256,7 @@ export function ProfilePage() {
     savingRef.current = false;
   }, [profile, uid, addToast]);
 
+  /** Signs the user out of Firebase auth. */
   const handleSignOut = useCallback(async () => {
     try {
       await signOut(auth);

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { THEME_DEFINITIONS, ThemeId } from '@/themes/themes';
 import { GlyphPrimitive } from '@/shared/components/glyph-primitives';
 
+/** Props for AmbientEffects. */
 interface AmbientEffectsProps {
   themeId: ThemeId;
   intensity: number;

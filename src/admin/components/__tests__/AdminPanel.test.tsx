@@ -24,6 +24,7 @@ vi.mock('@/admin/components/BroadcastsTab', () => ({
   BroadcastsTab: () => <div data-testid="broadcasts-tab">Broadcasts</div>,
 }));
 
+/** Tests for AdminPanel tab switcher, badge, and child-tab rendering. */
 describe('AdminPanel', () => {
   it('renders three tab buttons', () => {
     render(<AdminPanel />);

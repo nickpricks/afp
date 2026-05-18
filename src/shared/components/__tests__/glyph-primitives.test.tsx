@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { GlyphPrimitive } from '../glyph-primitives';
 
+/** Tests for GlyphPrimitive shape registry and fallback behavior. */
 describe('<GlyphPrimitive>', () => {
   const knownEffects = [
     'snowflakes',

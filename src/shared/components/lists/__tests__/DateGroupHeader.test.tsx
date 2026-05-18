@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 
 import { DateGroupHeader } from '../DateGroupHeader';
 
+/** Tests for DateGroupHeader sticky date grouping behavior. */
 describe('DateGroupHeader', () => {
   it('renders "Today" prefix in accent for today', () => {
     render(<DateGroupHeader date="2026-04-29" today="2026-04-29" />);

@@ -48,6 +48,7 @@ vi.mock('@/shared/storage/create-adapter', () => ({
   }),
 }));
 
+/** Tests for InvitesTab invite list rendering and action buttons. */
 describe('InvitesTab', () => {
   it('shows invite name and status badges', () => {
     render(
@@ -91,6 +92,7 @@ describe('InvitesTab', () => {
   });
 });
 
+/** Tests for InvitesTab clipboard copy interaction. */
 describe('InvitesTab — copy link', () => {
   it('calls clipboard API when copy is clicked', async () => {
     Object.assign(navigator, {

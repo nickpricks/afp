@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { ThemeId, THEME_DEFINITIONS, themeClass, isValidThemeId, resolveThemeId } from '../themes';
 
+/** Tests for ThemeId enum completeness and definition alignment. */
 describe('ThemeId enum', () => {
   it('has exactly 10 themes', () => {
     expect(Object.keys(ThemeId)).toHaveLength(10);
@@ -14,6 +15,7 @@ describe('ThemeId enum', () => {
   });
 });
 
+/** Tests for THEME_DEFINITIONS structure, required fields, and effect configs. */
 describe('THEME_DEFINITIONS', () => {
   it('has exactly 10 entries', () => {
     expect(Object.keys(THEME_DEFINITIONS)).toHaveLength(10);
@@ -50,6 +52,7 @@ describe('THEME_DEFINITIONS', () => {
   });
 });
 
+/** Tests for themeClass CSS class derivation. */
 describe('themeClass', () => {
   it('derives CSS class from theme ID', () => {
     expect(themeClass(ThemeId.FamilyBlue)).toBe('theme-family-blue');
@@ -59,6 +62,7 @@ describe('themeClass', () => {
   });
 });
 
+/** Tests for isValidThemeId acceptance of current and rejection of dropped IDs. */
 describe('isValidThemeId', () => {
   it('accepts all 10 current theme IDs', () => {
     for (const id of Object.values(ThemeId)) {
@@ -77,6 +81,7 @@ describe('isValidThemeId', () => {
   });
 });
 
+/** Tests for resolveThemeId pass-through and migration map. */
 describe('resolveThemeId', () => {
   it('passes through valid IDs', () => {
     expect(resolveThemeId('family-blue')).toBe(ThemeId.FamilyBlue);
@@ -98,6 +103,7 @@ describe('resolveThemeId', () => {
   });
 });
 
+/** Tests for Phase 2i content invariants — redesigned glyphs have empty content, Patronus keeps emoji. */
 describe('Phase 2i content invariants', () => {
   const REDESIGNED_EFFECT_IDS = [
     'snowflakes',

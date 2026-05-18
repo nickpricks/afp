@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 import { AmbientEffects } from '../AmbientEffects';
 import { ThemeId } from '@/themes/themes';
 
+/** Tests for AmbientEffects rendering, reduced-motion, and intensity gating. */
 describe('<AmbientEffects>', () => {
   beforeEach(() => {
     vi.stubGlobal('matchMedia', (q: string) => ({
@@ -45,6 +46,7 @@ describe('<AmbientEffects>', () => {
   });
 });
 
+/** Tests that scale and opacity move together (depth-correlated). */
 describe('depth-correlated scaling', () => {
   beforeEach(() => {
     vi.stubGlobal('matchMedia', (q: string) => ({
@@ -80,6 +82,7 @@ describe('depth-correlated scaling', () => {
 });
 
 // Fix 2: viewport-aware size multiplier
+/** Tests for mobile (0.65x) vs desktop (1.0x) size multiplier. */
 describe('viewport-aware size multiplier', () => {
   it('applies 0.65x multiplier on mobile viewport (max-width: 640px)', () => {
     // Mock matchMedia: mobile viewport matches, reduced-motion does not
@@ -124,6 +127,7 @@ describe('viewport-aware size multiplier', () => {
 });
 
 // Fix 3: effectSize prop
+/** Tests that the effectSize prop scales particle sizes proportionally. */
 describe('effectSize prop', () => {
   beforeEach(() => {
     vi.stubGlobal('matchMedia', (q: string) => ({

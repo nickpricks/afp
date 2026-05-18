@@ -5,7 +5,9 @@ import { SceneAthlete } from '@/shared/components/loading/SceneAthlete';
 import { SceneReader } from '@/shared/components/loading/SceneReader';
 import { BRAND_TEXT } from '@/shared/components/loading/constants';
 
+/** Scene tab options for the animation viewer. */
 const TABS = ['All', 'Climber', 'Athlete', 'Reader'] as const;
+/** Union type of tab labels derived from TABS. */
 type Tab = (typeof TABS)[number];
 
 /** Dedicated page for previewing loading animations with scene and text controls */
