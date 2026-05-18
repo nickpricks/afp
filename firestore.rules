@@ -34,11 +34,26 @@ service cloud.firestore {
       return getProfile(userId).modules[moduleId] == true;
     }
 
+    // MUST MATCH src/modules/expenses/types.ts ExpenseMeta union.
+    // Nullable TS fields use `(field == null || field is <type>)` to honor `T | null`.
+    // Client validateMeta in src/modules/expenses/validation.ts mirrors these predicates.
     function validMeta(meta) {
       return meta == null
-        || (meta.type == 'fuel' && meta.liters is number && meta.liters > 0)
-        || (meta.type == 'travel' && meta.distance is number)
-        || (meta.type == 'maintenance' && meta.odometer is number && meta.odometer > 0);
+        || (meta.type == 'fuel'
+            && meta.liters is number && meta.liters > 0
+            && meta.pricePerLiter is number && meta.pricePerLiter > 0
+            && (meta.odometer == null || meta.odometer is number)
+            && (meta.tripOdo == null || meta.tripOdo is number)
+            && (meta.displayedMileage == null || meta.displayedMileage is number)
+            && meta.fullTank is bool)
+        || (meta.type == 'travel'
+            && meta.origin is string
+            && meta.destination is string
+            && (meta.distance == null || meta.distance is number))
+        || (meta.type == 'maintenance'
+            && meta.odometer is number && meta.odometer > 0
+            && (meta.nextService == null || meta.nextService is number)
+            && meta.serviceNotes is string);
     }
 
     // App config — create allowed once (fresh DB), updates only by admin
