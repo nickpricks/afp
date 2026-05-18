@@ -5,11 +5,12 @@ import { createAdapter } from '@/shared/storage/create-adapter';
 import { userPath, DbSubcollection } from '@/constants/db';
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { Notification } from '@/shared/types';
+import { SyncStatus } from '@/shared/types';
 import { todayStr } from '@/shared/utils/date';
 
 /** Reads the current user's notifications subcollection with real-time updates */
 export function useNotifications() {
-  const { firebaseUser } = useAuth();
+  const { firebaseUser, setSyncStatus } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [ready, setReady] = useState(false);
   const adapterRef = useRef<StorageAdapter | null>(null);
@@ -28,13 +29,14 @@ export function useNotifications() {
       },
       (error) => {
         console.error('[AFP] Notifications listener error:', error);
+        setSyncStatus(SyncStatus.Error);
       },
     );
     return () => {
       unsubscribe();
       adapterRef.current = null;
     };
-  }, [uid]);
+  }, [uid, setSyncStatus]);
 
   /** Active admin alerts: not dismissed, not expired */
   const activeAlerts = notifications.filter(

@@ -4,7 +4,7 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { useToast } from '@/shared/errors/useToast';
 import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
-import { isOk, ok, err, ToastType } from '@/shared/types';
+import { isOk, ok, err, SyncStatus, ToastType } from '@/shared/types';
 import type { Result } from '@/shared/types';
 import { userPath, DbSubcollection } from '@/constants/db';
 import { BabyMsg } from '@/constants/messages';
@@ -12,7 +12,7 @@ import type { Child } from '@/modules/baby/types';
 
 /** Manages the children collection for a user */
 export function useChildren(targetUid?: string) {
-  const { firebaseUser } = useAuth();
+  const { firebaseUser, setSyncStatus } = useAuth();
   const { addToast } = useToast();
   const [children, setChildren] = useState<Child[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +36,7 @@ export function useChildren(targetUid?: string) {
       (error) => {
         // TODO(sentry): pipe onError to centralized logError once Sentry lands.
         console.error('[AFP] Children listener error:', error);
+        setSyncStatus(SyncStatus.Error);
       },
     );
 
@@ -43,7 +44,7 @@ export function useChildren(targetUid?: string) {
       unsubscribe();
       adapterRef.current = null;
     };
-  }, [uid]);
+  }, [uid, setSyncStatus]);
 
   const addChild = useCallback(
     async (child: Omit<Child, 'id'>): Promise<Result<string>> => {

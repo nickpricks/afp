@@ -4,6 +4,8 @@ import { collectionGroup, onSnapshot as firestoreOnSnapshot, query } from 'fireb
 import { db, isFirebaseConfigured } from '@/shared/auth/firebase-config';
 import { DbSubcollection } from '@/constants/db';
 import type { UserProfile } from '@/shared/types';
+import { SyncStatus } from '@/shared/types';
+import { useAuth } from '@/shared/auth/useAuth';
 
 /** User profile entry with uid */
 export type UserEntry = UserProfile & { uid: string };
@@ -23,6 +25,7 @@ function extractUid(docPath: string): string {
 
 /** Lists all profiled users — admin only. Enabled by default but can be disabled to avoid unnecessary listeners. */
 export function useAllUsers(enabled = true) {
+  const { setSyncStatus } = useAuth();
   const [users, setUsers] = useState<UserEntry[]>([]);
   const [loading, setLoading] = useState(isFirebaseConfigured && enabled);
 
@@ -52,11 +55,12 @@ export function useAllUsers(enabled = true) {
       (error) => {
         console.error('[AFP] useAllUsers snapshot error:', error);
         setLoading(false);
+        setSyncStatus(SyncStatus.Error);
       },
     );
 
     return unsubscribe;
-  }, [enabled]);
+  }, [enabled, setSyncStatus]);
 
   return { users, loading };
 }

@@ -4,7 +4,7 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { useToast } from '@/shared/errors/useToast';
 import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
-import { isOk, ToastType } from '@/shared/types';
+import { isOk, SyncStatus, ToastType } from '@/shared/types';
 import { childPath } from '@/constants/db';
 import { CommonMsg } from '@/constants/messages';
 
@@ -15,7 +15,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
   label: string,
   targetUid?: string,
 ) {
-  const { firebaseUser } = useAuth();
+  const { firebaseUser, setSyncStatus } = useAuth();
   const { addToast } = useToast();
   const [items, setItems] = useState<T[]>([]);
   const [ready, setReady] = useState(false);
@@ -39,6 +39,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
       (error) => {
         // TODO(sentry): pipe onError to centralized logError once Sentry lands.
         console.error(`[AFP] Baby ${label} listener error:`, error);
+        setSyncStatus(SyncStatus.Error);
       },
     );
 
@@ -46,7 +47,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
       unsubscribe();
       adapterRef.current = null;
     };
-  }, [uid, childId, subcollection, label]);
+  }, [uid, childId, subcollection, label, setSyncStatus]);
 
   /** Saves a new entry with a generated UUID and shows a success/error toast */
   const log = useCallback(
