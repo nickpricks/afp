@@ -104,7 +104,7 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 
 - **Path alias**: `@/*` → `src/*` (NOT project root)
 - **Import order**: React → external libs → internal components → types/constants → utils (always last)
-- **JSDoc**: One-line `/** */` on every exported function — enables doc sweep hook
+- **JSDoc**: One-line `/** */` on every exported AND internal function/arrow/enum/type/interface/React component — nutcracker-tight style. Tests: docs on `describe` blocks + helpers, NOT individual `it()` bodies. Wave 3 sweep achieved 100% coverage across `src/`.
 - **IDs**: `crypto.randomUUID()`
 - **Dates**: `YYYY-MM-DD` strings, timestamps as ISO 8601
 - **Date helpers**: Import `todayStr()`, `nowTime()` from `@/shared/utils/date` — never define local copies in components
@@ -121,14 +121,20 @@ React 19 + Vite 8 + TypeScript (strict) + Tailwind CSS v4 + Firebase
 - **Tests**: vitest in `__tests__/` dirs. `src/test-setup.ts` loads jest-dom matchers. Test files excluded from tsconfig. E2E in `e2e/` (excluded from vitest).
 - **Refs for async callbacks**: When `useCallback` needs current state in an async flow, use a ref (`fooRef.current`) alongside `useState` — avoids stale closures
 - **Prettier**: Formatting owned by Prettier (`.prettierrc`). `bun run format` to format all, `bun run format:check` for CI. ESLint via `eslint-config-prettier` — no formatting rules in ESLint
+- **ExpenseMetaType enum convention**: Discriminated union discriminators like `Expense.meta` must have a corresponding string enum defined in the module's `types.ts` (e.g. `ExpenseMetaType`). Use `assertNever` from `@/shared/utils/types` as the `default` case in switches over the discriminator — compile-time exhaustiveness, runtime safety net.
+- **'T12:00:00' suffix for YYYY-MM-DD parsing**: Always parse `'YYYY-MM-DD'` date strings as `new Date(dateStr + 'T12:00:00')` to avoid UTC-vs-local-TZ off-by-one bugs. Use the `parseLocalDate` helper in `src/shared/utils/relative-date.ts` or mirror its idiom. The `formatDayDate` pattern uses the same approach.
+- **Hook return contract (Decision A1)**: Pure utilities return `Result<T>`. Data hooks (`useExpenses`, `useBabyCollection`) return `Promise<boolean>` — they own their toasts; the boolean gates state cleanup in the caller. This split is deliberate.
+- **VEHICLE_SUBCAT / TRAVEL_SUBCAT**: Subcategory routing keys for Auto-tab logic live as `as const` objects in `src/modules/expenses/categories.ts`. Never inline `'Fuel'` / `'Cab/Auto'` etc. as routing strings — import `VEHICLE_SUBCAT` or `TRAVEL_SUBCAT`.
 
 ## 20-Point Audit Violations (from `docs/revz/nick-review-20-points.md`)
 
 Found via grep sweeps — fix in next code hygiene pass:
 
-- **#4 (constants)**: ~~`PAGE_SIZE` hardcoded in 6 files~~ — FIXED, then retired (Phase 2h). Replaced by `useListControls` hook default. ~~`1000` for m↔km in 6 places~~ — FIXED (`CONFIG.METERS_PER_KM`). Watch for new magic numbers.
+- **#4 (constants)**: ~~`PAGE_SIZE` hardcoded in 6 files~~ — FIXED, then retired (Phase 2h). Replaced by `useListControls` hook default. ~~`1000` for m↔km in 6 places~~ — FIXED (`CONFIG.METERS_PER_KM`). ~~`CONFIG.LIST_PAGE_SIZE_OPTIONS` hardcoded array in `ListControls`~~ — FIXED (Phase 2k, `#41`). Watch for new magic numbers.
 - ~~**#6 (messages)**: ~15 raw toast strings in components instead of `constants/messages.ts` enums~~ — FIXED: All 18 raw strings moved to enums, `ToastType` enum added for type literals. Only exception: `useBabyCollection` dynamic templates (see Known Issues)
 - **#19 (utils)**: ~~Duplicated `formatDist()`/`formatDistance()`~~ — FIXED: shared `formatDistance()` in `utils/format.ts`. ~~8 inline `.sort()` comparators~~ — FIXED: `sortNewestFirst()` in `utils/sort.ts`
+- ~~**Meta-type literals** (`'fuel'|'travel'|'maintenance'` inline strings across ~25 sites)~~ — FIXED (Phase 2k): `ExpenseMetaType` enum + `assertNever` exhaustiveness applied at 4 discriminated-union sites. `VEHICLE_SUBCAT` + `TRAVEL_SUBCAT` typed constants replace subcat magic strings.
+- ~~**Non-exhaustive switches on `Expense.meta`**~~ — FIXED (Phase 2k): `assertNever` from `@/shared/utils/types` applied at all 4 meta switch sites.
 
 ## Known Issues (fix later)
 
@@ -143,7 +149,7 @@ Found via grep sweeps — fix in next code hygiene pass:
 - ~~**Negative/zero amounts accepted in inputs but won't save**~~ — DONE: All number inputs now have `min`/`step` attributes. Amounts: `min="0.01" step="0.01"`, floors: `min="0" step="1"`.
 - ~~**Payment method bubbles don't deselect on second click**~~ — DONE: Clicking active bubble now deselects (`PaymentMethod | null`). Toggle pattern applied to expense payment selector.
 - ~~**Income module throws app error**~~ — DONE: Fixed numeric enum `Object.values()` filter in AddIncome.tsx.
-- ~~**Baby tabs need edit and delete**~~ — PARTIAL: Delete buttons added to all 4 baby log components via `useBabyCollection.remove`. Edit (tap-to-populate-form) still TODO.
+- ~~**Baby tabs need edit and delete**~~ — PARTIAL: Delete buttons added to all 4 baby log components via `useBabyCollection.remove`. Edit (tap-to-populate-form) still TODO. `useBabyCollection.{log,update,remove}` now return `Promise<boolean>` so callers can gate state cleanup on success (Phase 2k, H8).
 - **Multi-baby not tested**: Only single child flow tested. Adding a second child, switching between children, and verifying data isolation across children needs manual/automated testing.
 - ~~**Profile page has no nav link**~~ — DONE: Header shows "D" button (dev) or avatar (prod) linking to /profile.
 - **Dev user mode possibilities**: Dev mode currently gives TheAdminNick role with all modules. Consider: (1) role switcher (test as User/Viewer), (2) module toggle (test with specific modules disabled), (3) simulate multiple users, (4) time travel (test with different "today" dates).
