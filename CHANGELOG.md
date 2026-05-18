@@ -4,6 +4,53 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.19] — 2026-05-18 (Phase 2k — Cleanup pass: flaw-in-the-plan)
+
+### Fixed
+
+- **(CRITICAL) AutoTab amount validation** now shows `BudgetMsg.AmountPositive` toast instead of the misleading `CategoryRequired` toast (#C1)
+- **(CRITICAL) ExpenseList em-dash** now renders the `—` character correctly (was rendering the HTML entity literal `—`) (#C2)
+- **(CRITICAL) `validateMeta` now rejects `NaN`/`Infinity`** — `Number('')` / `Number('abc')` no longer silently coerce to 0/NaN in fuel and maintenance inputs; `isValidNumber` guards every numeric field (#C3)
+- `relativeDateLabel` + `isoWeekNumber` no longer produce off-by-one results in timezones west of UTC — `YYYY-MM-DD` strings are now parsed as midday local time via `parseLocalDate` (#H7, #39)
+- `useBabyCollection.{log,update,remove}` now return `Promise<boolean>` so callers can gate state cleanup on success instead of running optimistic updates unconditionally (#H8)
+- `logToSiblings` now returns `{ ok, failed }` counts; a partial failure surfaces an error toast instead of a misleading success toast (#H9)
+- `useExpenses.{add,update,delete}Expense` now toast `BudgetMsg.AdapterNotReady` when the adapter is null — no more silent no-ops (#H10)
+- `ServiceDueBanner` no longer uses non-null assertions; single `useMemo` derivation replaces 4× array walks (#H11, #22, #24)
+- `dueMaintenance` now sorts candidate entries by odometer value, not date string — fixes catch-up-log correctness bug (#H12)
+- Fuel `autoDerive` stale-state bug resolved: `MetaSubForm` now dispatches to the new pure `deriveFuelTriple` util instead of reading closed-over state (#H13)
+- AutoTab now captures `paymentMethod` from the form; all entries no longer silently default to UPI (#H14)
+- `CHANGELOG.md` 0.2.18 entry corrected — fuel-math function signatures were wrong (#H15)
+- Removed dead `prevCategoryRef` / `prevSubCatRef` closures and misleading comment from `AddExpense` (#H16)
+- Inline helper text now appears below the amount field when the value is invalid in `AddExpense` (#19)
+- Keyboard activation (`role="button"`, `onKeyDown`) added to tap-to-edit rows across expenses, body, and baby modules (#33)
+- `filterByDateRange` now guards `getTime()` calls with `Number.isFinite` — malformed date strings log a warning instead of silently returning wrong results (#35)
+- `firestore.rules` now validates the `Expense.meta` shape server-side via a `validMeta()` helper function (#27)
+- WHAT-only inline comments cleaned up; `TODO(sentry):` markers added at all `onError` callback sites (#34, #44)
+
+### Changed
+
+- **Refactor**: Lifted `useExpenseForm` hook shared by `AddExpense` and `AutoTab` — eliminates form-state DRY violation (#14, #18, #21)
+- **Refactor**: `AutoTab.tsx` split (349→243 lines) into `AutoTabRow.tsx` and `expense-badges.ts` (#17)
+- **Refactor**: `ExpenseMetaType` string enum replaces inline `'fuel'|'travel'|'maintenance'` literals across ~25 sites (#H5)
+- **Refactor**: `VEHICLE_SUBCAT` and `TRAVEL_SUBCAT` typed `as const` objects replace subcat magic routing strings (#H6, #23)
+- **Refactor**: `assertNever` exhaustiveness helper from `@/shared/utils/types` applied as the `default` case at 4 discriminated-union switch sites (#H4)
+- **Refactor**: `useListControls` now scoped per-tab in `ExpenseListPage` — no cross-tab filter/pagination state leakage (#25)
+- **Refactor**: `useExpenses.deleteExpense` aligned to `Promise<boolean>` return matching `add`/`update` (#37)
+- **Refactor**: `CONFIG.LIST_PAGE_SIZE_OPTIONS` constant replaces hardcoded page-size array in `<ListControls>` (#41)
+- **Refactor**: `meta-utils` tests relocated to dedicated `__tests__/meta-utils.test.ts` (#38)
+- **Refactor**: Single validation pass in `useExpenses.updateExpense` — no double validation (#36)
+
+### Documentation
+
+- **JSDoc total coverage** — ~290 new docstrings; every exported AND internal function/arrow/enum/type/interface/React component across `src/` now carries a one-line JSDoc. Zero deletions. (Wave 3, 3 parallel subagent commits)
+- `baby/hooks/README.md` updated from 4 → 5 subcollections (#28)
+- `src/modules/expenses/` README family updated: new files (`expense-badges.ts`, `AutoTabRow.tsx`, `useExpenseForm.ts`), updated test inventory, corrected hook return-type convention
+- New conventions added to `CLAUDE.md`: `ExpenseMetaType` enum pattern, `assertNever` usage, `'T12:00:00'` YYYY-MM-DD parsing, hook return contract (Decision A1), `VEHICLE_SUBCAT`/`TRAVEL_SUBCAT` routing keys
+- Comment fixes: `AmbientEffects.tsx` jitter scope clarified; `r4` skip explained; `AddExpense.test.tsx` visible-categories comment de-magicified; `useExpenses` JSDoc mentions full CRUD (#29, #30, #42, #43)
+- New foundational utilities documented: `assertNever`, `deriveFuelTriple`, `parseLocalDate`, `useExpenseForm`, `AutoTabRow`, `expense-badges`
+
+---
+
 ## [0.2.18] — 2026-05-04 (Budget — Auto tab: fuel, travel, maintenance)
 
 ### Added
