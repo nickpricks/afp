@@ -3,6 +3,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AdminPanel } from '@/admin/components/AdminPanel';
 
+// Stable setSyncStatus reference so the listener useEffect doesn't refire each render.
+// (real useAuth returns the useState setter — also stable.)
+const mockSetSyncStatus = vi.fn();
 vi.mock('@/shared/auth/useAuth', () => ({
   useAuth: () => ({
     firebaseUser: { uid: 'admin-user' },
@@ -12,7 +15,7 @@ vi.mock('@/shared/auth/useAuth', () => ({
       modules: { body: true, budget: true, baby: true },
     },
     isTheAdminNick: true,
-    setSyncStatus: vi.fn(),
+    setSyncStatus: mockSetSyncStatus,
   }),
 }));
 
