@@ -13,6 +13,7 @@ import type { ExpenseCategory } from '@/shared/types';
 import { BudgetMsg } from '@/constants/messages';
 import { DbSubcollection, userPath } from '@/constants/db';
 
+/** Shape of the data passed to addExpense — mirrors Expense minus auto-generated fields */
 type ExpenseInput = {
   date: string;
   category: ExpenseCategory;

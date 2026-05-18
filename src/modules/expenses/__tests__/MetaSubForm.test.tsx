@@ -5,7 +5,9 @@ import { MetaSubForm } from '@/modules/expenses/components/MetaSubForm';
 import type { FuelMeta, TravelMeta, MaintenanceMeta } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
 
+/** Validates MetaSubForm fuel fields, checkbox, auto-derivation, and stale-state protection */
 describe('MetaSubForm — fuel variant', () => {
+  /** Renders the MetaSubForm fuel variant with optional meta overrides and spy callbacks */
   function renderFuel(initial: Partial<FuelMeta> = {}) {
     const onChangeMeta = vi.fn();
     const onChangeAmount = vi.fn();
@@ -100,6 +102,7 @@ describe('MetaSubForm — fuel variant', () => {
   });
 });
 
+/** Validates MetaSubForm travel fields render with pre-filled origin/destination */
 describe('MetaSubForm — travel variant', () => {
   it('renders origin and destination inputs', () => {
     const meta: TravelMeta = { type: ExpenseMetaType.Travel, origin: 'BLR', destination: 'MAA', distance: null };
@@ -109,6 +112,7 @@ describe('MetaSubForm — travel variant', () => {
   });
 });
 
+/** Validates MetaSubForm maintenance fields render odometer, next-service, and helper text */
 describe('MetaSubForm — maintenance variant', () => {
   it('renders odometer + next-service inputs and helper text', () => {
     const meta: MaintenanceMeta = {

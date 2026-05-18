@@ -7,10 +7,12 @@ import type { Expense } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ExpenseCategory, PaymentMethod } from '@/shared/types';
 
+/** Renders the given element inside a ToastProvider for AutoTab tests */
 function withToast(ui: React.ReactElement) {
   return render(<ToastProvider>{ui}</ToastProvider>);
 }
 
+/** Builds a minimal fuel Expense fixture for AutoTab tests */
 function fuelExpense(id: string, date: string, odometer = 12000): Expense {
   return {
     id,
@@ -36,6 +38,7 @@ function fuelExpense(id: string, date: string, odometer = 12000): Expense {
   };
 }
 
+/** Builds a minimal food Expense fixture to verify AutoTab filtering excludes non-vehicle/travel */
 function foodExpense(id: string, date: string): Expense {
   return {
     id,
@@ -52,6 +55,7 @@ function foodExpense(id: string, date: string): Expense {
   };
 }
 
+/** Validates AutoTab only renders Vehicle and Travel expenses in the list */
 describe('AutoTab — filtering', () => {
   it('shows only Vehicle and Travel expenses (filters out Food)', () => {
     const expenses = [fuelExpense('e1', '2026-05-01'), foodExpense('e2', '2026-05-02')];
@@ -80,6 +84,7 @@ describe('AutoTab — filtering', () => {
   });
 });
 
+/** Validates AutoTab quick-add buttons and their inline form visibility */
 describe('AutoTab — quick-add buttons', () => {
   it('renders the three quick-add buttons', () => {
     withToast(
@@ -137,6 +142,7 @@ describe('AutoTab — quick-add buttons', () => {
   });
 });
 
+/** Validates AutoTab tap-to-edit: row tap populates form and switches to Update mode */
 describe('AutoTab — tap-to-edit', () => {
   it('tapping a row populates the form and switches button to "Update"', () => {
     const expenses = [fuelExpense('e1', '2026-05-01')];
@@ -154,6 +160,7 @@ describe('AutoTab — tap-to-edit', () => {
   });
 });
 
+/** Validates AutoTab shows AmountPositive toast on submit with blank amount */
 describe('AutoTab — amount validation toast', () => {
   it('shows AmountPositive (not CategoryRequired) toast when amount is blank on submit', async () => {
     const addToastSpy = vi.fn();
@@ -183,6 +190,7 @@ describe('AutoTab — amount validation toast', () => {
   });
 });
 
+/** Validates AutoTab captures and submits the user-selected payment method */
 describe('AutoTab — paymentMethod capture', () => {
   it('Auto tab submits with the user-selected paymentMethod (not silently UPI)', async () => {
     const onAdd = vi.fn().mockResolvedValue(true);
@@ -242,6 +250,7 @@ describe('AutoTab — paymentMethod capture', () => {
   });
 });
 
+/** Validates AutoTab shows "incomplete" pill for expenses with no meta */
 describe('AutoTab — incomplete pill', () => {
   it('renders "incomplete" pill when meta is undefined', () => {
     const e: Expense = {
@@ -269,6 +278,7 @@ describe('AutoTab — incomplete pill', () => {
   });
 });
 
+/** Verifies AutoTab renders without throwing even with 500 expenses (no pagination overhead) */
 describe('AutoTab — pagination deviation sanity', () => {
   it('renders without throwing with 500 expenses (pagination-deviation sanity check)', () => {
     const expenses: Expense[] = Array.from({ length: 500 }, (_, i) => ({

@@ -40,6 +40,7 @@ export function MetaSubForm({
   }
 }
 
+/** Fuel-specific fields: liters, price/liter, full-tank toggle, optional vehicle ODO data */
 function FuelFields({
   meta,
   amount,
@@ -180,6 +181,7 @@ function FuelFields({
   );
 }
 
+/** Travel-specific fields: origin, destination, optional distance */
 function TravelFields({ meta, onChange }: { meta: TravelMeta; onChange: (m: TravelMeta) => void }) {
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-line bg-surface-card p-3">
@@ -224,6 +226,7 @@ function TravelFields({ meta, onChange }: { meta: TravelMeta; onChange: (m: Trav
   );
 }
 
+/** Maintenance-specific fields: current ODO, next-service ODO, service notes */
 function MaintenanceFields({
   meta,
   onChange,

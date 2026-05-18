@@ -5,6 +5,7 @@ import { JournalPicker } from '../components/JournalPicker';
 import { JournalGrain } from '../journal/constants';
 import { computeRange } from '../journal/range';
 
+/** Validates JournalPicker renders grain buttons, calls onChange on grain/step clicks */
 describe('JournalPicker', () => {
   it('renders all 3 grain buttons', () => {
     const range = computeRange(JournalGrain.Day, '2026-04-13');

@@ -57,6 +57,7 @@ export function AutoTab({
   );
   const sorted = sortNewestFirst(filtered, (e) => e.date);
 
+  /** Open a fresh quick-add form for the given meta kind */
   function startQuickAdd(kind: FormKind) {
     reset();
     setEditingId(null);
@@ -65,6 +66,7 @@ export function AutoTab({
     setMeta(defaultMeta(kind));
   }
 
+  /** Populate the inline form with an existing expense for editing */
   function startEdit(e: Expense) {
     if (!e.meta) return;
     setEditingId(e.id);
@@ -72,12 +74,14 @@ export function AutoTab({
     populate(e);
   }
 
+  /** Dismiss the inline form and clear all form state */
   function cancelForm() {
     setEditingId(null);
     setFormKind(null);
     reset();
   }
 
+  /** Validate and submit the inline form as add or update */
   async function handleSubmit(ev: React.FormEvent) {
     ev.preventDefault();
     if (!meta || !formKind) return;

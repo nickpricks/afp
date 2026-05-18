@@ -10,6 +10,7 @@ import type {
   DiaperEntry,
 } from '@/modules/baby/types';
 
+/** Validates FeedType numeric enum values and reverse mapping */
 describe('FeedType enum', () => {
   it('has all expected values', () => {
     expect(FeedType.Bottle).toBe(0);
@@ -25,6 +26,7 @@ describe('FeedType enum', () => {
   });
 });
 
+/** Validates SleepType numeric enum values */
 describe('SleepType enum', () => {
   it('has nap and night values', () => {
     expect(SleepType.Nap).toBe(0);
@@ -32,6 +34,7 @@ describe('SleepType enum', () => {
   });
 });
 
+/** Validates SleepQuality numeric enum values */
 describe('SleepQuality enum', () => {
   it('has good, fair, and poor values', () => {
     expect(SleepQuality.Good).toBe(0);
@@ -40,6 +43,7 @@ describe('SleepQuality enum', () => {
   });
 });
 
+/** Validates DiaperType numeric enum values */
 describe('DiaperType enum', () => {
   it('has wet, dirty, and mixed values', () => {
     expect(DiaperType.Wet).toBe(0);
@@ -48,6 +52,7 @@ describe('DiaperType enum', () => {
   });
 });
 
+/** Validates Child type structure and optional id field */
 describe('Child type shape', () => {
   it('satisfies the Child type with all fields', () => {
     const config: ChildConfig = {
@@ -80,6 +85,7 @@ describe('Child type shape', () => {
   });
 });
 
+/** Validates entry type shapes for FeedEntry, SleepEntry, GrowthEntry, and DiaperEntry */
 describe('Entry types use enums', () => {
   it('FeedEntry uses FeedType', () => {
     const entry: FeedEntry = {

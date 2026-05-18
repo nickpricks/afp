@@ -8,6 +8,7 @@ import {
 } from '@/modules/body/constants';
 import { ActivityType } from '@/shared/types';
 
+/** Validates BODY_DEFAULTS physical constants */
 describe('BODY_DEFAULTS', () => {
   it('has positive floor height', () => {
     expect(BODY_DEFAULTS.FLOOR_HEIGHT_M).toBeGreaterThan(0);
@@ -18,6 +19,7 @@ describe('BODY_DEFAULTS', () => {
   });
 });
 
+/** Validates SCORING_WEIGHTS relative ordering */
 describe('SCORING_WEIGHTS', () => {
   it('floor up scores more than floor down', () => {
     expect(SCORING_WEIGHTS.FLOOR_UP).toBeGreaterThan(SCORING_WEIGHTS.FLOOR_DOWN);
@@ -28,6 +30,7 @@ describe('SCORING_WEIGHTS', () => {
   });
 });
 
+/** Validates ACTIVITY_LABELS coverage for all ActivityType members */
 describe('ACTIVITY_LABELS', () => {
   it('has labels for all activity types', () => {
     expect(ACTIVITY_LABELS[ActivityType.Walk]).toBe('Walk');
@@ -37,6 +40,7 @@ describe('ACTIVITY_LABELS', () => {
   });
 });
 
+/** Validates FLOOR_HEIGHT_OPTIONS contains all supported heights */
 describe('FLOOR_HEIGHT_OPTIONS', () => {
   it('includes 2.5, 3.0, and 3.5', () => {
     expect(FLOOR_HEIGHT_OPTIONS).toContain(2.5);

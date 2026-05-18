@@ -11,6 +11,7 @@ import type { Expense, FuelMeta, MaintenanceMeta } from '@/modules/expenses/type
 import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ExpenseCategory, PaymentMethod } from '@/shared/types';
 
+/** Builds a minimal fuel Expense fixture with the given FuelMeta fields */
 function fuelExpense(
   id: string,
   date: string,
@@ -40,6 +41,7 @@ function fuelExpense(
   };
 }
 
+/** Builds a minimal maintenance Expense fixture with the given odometer and nextService */
 function maintenanceExpense(
   id: string,
   date: string,
@@ -62,6 +64,7 @@ function maintenanceExpense(
   };
 }
 
+/** Validates computeMileage returns tripOdo/liters only when fullTank+tripOdo are set */
 describe('computeMileage', () => {
   it('returns null when fullTank is false', () => {
     const meta: FuelMeta = {
@@ -116,6 +119,7 @@ describe('computeMileage', () => {
   });
 });
 
+/** Validates latestOdometer picks the highest reading across fuel+maintenance entries */
 describe('latestOdometer', () => {
   it('returns null for an empty list', () => {
     expect(latestOdometer([])).toBeNull();
@@ -164,6 +168,7 @@ describe('latestOdometer', () => {
   });
 });
 
+/** Validates dueMaintenance returns the most-recent maintenance entry with nextService set */
 describe('dueMaintenance', () => {
   it('returns null when no maintenance entry has nextService', () => {
     const m = maintenanceExpense('m1', '2026-04-01', 10000, null);
@@ -187,6 +192,7 @@ describe('dueMaintenance', () => {
   });
 });
 
+/** Validates dueMaintenance sorts by odometer value, not entry date */
 describe('dueMaintenance — sort by odometer not date', () => {
   it('returns the highest-odometer maintenance entry regardless of date order', () => {
     // newer date but lower odometer
@@ -199,6 +205,7 @@ describe('dueMaintenance — sort by odometer not date', () => {
   });
 });
 
+/** Validates isServiceDue returns true iff latestOdometer >= nextService */
 describe('isServiceDue', () => {
   it('returns false when there is no due maintenance', () => {
     expect(isServiceDue([])).toBe(false);
@@ -230,6 +237,7 @@ describe('isServiceDue', () => {
   });
 });
 
+/** Validates deriveFuelTriple two-of-three auto-fill math for liters/price/amount */
 describe('deriveFuelTriple', () => {
   it('liters+price+(no amount) → fills amount', () => {
     expect(deriveFuelTriple({ liters: 40, pricePerLiter: 100, amount: 0, lastEdited: 'liters' }))

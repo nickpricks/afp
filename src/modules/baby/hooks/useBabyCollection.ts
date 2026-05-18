@@ -47,6 +47,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
     };
   }, [uid, childId, subcollection, label]);
 
+  /** Saves a new entry with a generated UUID and shows a success/error toast */
   const log = useCallback(
     async (data: Omit<T, 'id'>): Promise<boolean> => {
       if (readOnly) return false;

@@ -6,6 +6,7 @@ import { useToast } from '@/shared/errors/useToast';
 import { ToastType } from '@/shared/types';
 import { BabyMsg } from '@/constants/messages';
 
+/** Props for SuggestionStrip inline child-detail banner */
 type Props = {
   suggestions: Suggestion[];
   onEnable: (childId: string, feature: Suggestion['feature']) => Promise<void>;
@@ -33,6 +34,7 @@ export function SuggestionStrip({ suggestions, onEnable }: Props): ReactElement 
       ? `Suggestion: ${verb} ${label} module`
       : `${suggestions.length} suggestions for this child`;
 
+  /** Applies the first suggestion action and shows a toast */
   const handleAct = async () => {
     await onEnable(first.childId, first.feature);
     addToast(
@@ -43,6 +45,7 @@ export function SuggestionStrip({ suggestions, onEnable }: Props): ReactElement 
     );
   };
 
+  /** Snoozes the first suggestion for 30 days and dismisses the strip */
   const handleSnooze = async () => {
     const result = await snooze(first.childId, first.feature);
     if (result.ok) {

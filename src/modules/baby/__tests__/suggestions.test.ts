@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { computeActiveSuggestions, SuggestionAction } from '@/modules/baby/suggestions';
 import type { Child } from '@/modules/baby/types';
 
+/** Builds a Child fixture aged monthsOld months with optional config/snooze overrides */
 function makeChild(
   monthsOld: number,
   configOverrides: Partial<Child['config']> = {},
@@ -31,6 +32,7 @@ function makeChild(
   };
 }
 
+/** Validates computeActiveSuggestions returns age-appropriate feature enable/disable suggestions */
 describe('computeActiveSuggestions', () => {
   it('returns no suggestions for newborn with default config', () => {
     expect(computeActiveSuggestions(makeChild(1))).toHaveLength(0);

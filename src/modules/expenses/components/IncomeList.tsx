@@ -38,6 +38,7 @@ export function IncomeList({
   const pagesCount = totalPages(filtered.length, ctrl.pageSize);
   const visible = ctrl.showAll ? filtered : paginate(filtered, ctrl.page, ctrl.pageSize);
 
+  /** Stage a delete with undo toast; fires actual delete after undo window expires */
   const handleDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);

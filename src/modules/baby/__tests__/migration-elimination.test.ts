@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { transformDiaperToElimination } from '../migration/elimination';
 import { DiaperType, EliminationMode, type DiaperEntry } from '../types';
 
+/** Validates transformDiaperToElimination maps legacy DiaperEntry to EliminationEntry with mode=Diaper */
 describe('transformDiaperToElimination', () => {
   it('converts a DiaperEntry to an EliminationEntry with mode=Diaper', () => {
     const diaper: DiaperEntry = {

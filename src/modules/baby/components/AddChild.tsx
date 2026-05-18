@@ -41,6 +41,7 @@ export function AddChild({ onAdded }: { onAdded?: (childId: string) => void }) {
     }
   }
 
+  /** Ordered list of config toggles shown in the add-child form */
   const configOptions: { key: keyof ChildConfig; label: string }[] = [
     { key: 'feeding', label: 'Feeding' },
     { key: 'sleep', label: 'Sleep' },

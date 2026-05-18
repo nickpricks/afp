@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { JournalGrain } from '../journal/constants';
 import { computeRange, formatRangeLabel } from '../journal/range';
 
+/** Validates computeRange produces correct start/end dates for Day, Week, and Month grains */
 describe('computeRange', () => {
   it('Day grain returns single-day range', () => {
     const r = computeRange(JournalGrain.Day, '2026-04-13');
@@ -45,6 +46,7 @@ describe('computeRange', () => {
   });
 });
 
+/** Validates formatRangeLabel produces human-readable date strings for each grain */
 describe('formatRangeLabel', () => {
   it('Day formats as "Mon D, YYYY"', () => {
     expect(

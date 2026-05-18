@@ -3,6 +3,7 @@ import { renderFuelBadge, renderTravelBadge, renderMaintenanceBadge, renderBadge
 import { ExpenseMetaType } from '../types';
 import type { FuelMeta, TravelMeta, MaintenanceMeta } from '../types';
 
+/** Validates renderFuelBadge output format and conditional field inclusion */
 describe('renderFuelBadge', () => {
   it('includes liters and price per liter when pricePerLiter > 0', () => {
     const meta: FuelMeta = {
@@ -62,6 +63,7 @@ describe('renderFuelBadge', () => {
   });
 });
 
+/** Validates renderTravelBadge route format and optional distance inclusion */
 describe('renderTravelBadge', () => {
   it('returns origin → destination route', () => {
     const meta: TravelMeta = {
@@ -97,6 +99,7 @@ describe('renderTravelBadge', () => {
   });
 });
 
+/** Validates renderMaintenanceBadge odometer and next-service formatting */
 describe('renderMaintenanceBadge', () => {
   it('includes odometer reading', () => {
     const meta: MaintenanceMeta = {
@@ -132,6 +135,7 @@ describe('renderMaintenanceBadge', () => {
   });
 });
 
+/** Verifies renderBadge dispatches to the correct renderer by meta.type */
 describe('renderBadge — dispatcher', () => {
   it('dispatches to fuel renderer', () => {
     const meta: FuelMeta = {

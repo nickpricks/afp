@@ -19,6 +19,7 @@ beforeEach(() => {
   mockSave.mockClear();
 });
 
+/** Validates logToSiblings returns accurate ok/failed counts across full, partial, and zero-sibling cases */
 describe('logToSiblings — partial failure', () => {
   it('returns { ok, failed } counts when all saves succeed', async () => {
     mockSave.mockResolvedValue(ok(undefined));

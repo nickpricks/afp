@@ -10,6 +10,7 @@ const mockUpdateElimination = vi.fn(async () => true);
 const mockRemoveElimination = vi.fn(async () => true);
 const mockAddToast = vi.fn();
 
+/** Diaper-mode EliminationEntry fixture for header and recent-entries tests */
 const sampleDiaperEntry: EliminationEntry = {
   id: 'e-1',
   date: '2026-04-12',
@@ -21,6 +22,7 @@ const sampleDiaperEntry: EliminationEntry = {
   notes: '',
 };
 
+/** Potty-mode EliminationEntry fixture for header and recent-entries tests */
 const samplePottyEntry: EliminationEntry = {
   id: 'e-2',
   date: '2026-04-13',
@@ -61,6 +63,7 @@ vi.mock('@/shared/errors/useToast', () => ({
   useToast: () => ({ addToast: mockAddToast }),
 }));
 
+/** Validates EliminationLog header adapts to diapers-only, potty-only, or both-enabled config */
 describe('EliminationLog — header behavior', () => {
   it('shows "Diaper Log" header when only diapers enabled', () => {
     render(<EliminationLog childId="c1" diapersEnabled={true} pottyEnabled={false} />);
@@ -84,6 +87,7 @@ describe('EliminationLog — header behavior', () => {
   });
 });
 
+/** Validates EliminationLog renders diaper quick-log buttons only in Diaper mode */
 describe('EliminationLog — mode-specific UI', () => {
   it('renders diaper quick-log buttons (Wet/Dirty) when in Diaper mode', () => {
     render(<EliminationLog childId="c1" diapersEnabled={true} pottyEnabled={false} />);
@@ -98,6 +102,7 @@ describe('EliminationLog — mode-specific UI', () => {
   });
 });
 
+/** Validates EliminationLog renders mixed diaper/potty entries with mode badges and delete buttons */
 describe('EliminationLog — recent entries', () => {
   it('renders both diaper and potty entries with mode-specific badges', () => {
     render(<EliminationLog childId="c1" diapersEnabled={true} pottyEnabled={true} />);

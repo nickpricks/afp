@@ -20,12 +20,14 @@ import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
 import { relativeDateLabel } from '@/shared/utils/relative-date';
 
+/** Props for MilestonesLog component */
 type Props = {
   childId?: string;
   siblingIds?: string[];
   uid?: string;
 };
 
+/** Local alias for a single milestone template entry */
 type TemplateShape = (typeof MILESTONE_TEMPLATES)[number];
 
 /** Milestone tracking — templates + form + grouped-by-category list with tap-to-edit */
@@ -69,6 +71,7 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
     setNotes(entry.notes);
   };
 
+  /** Clears the edit state and resets all form fields to defaults */
   const handleCancelEdit = () => {
     setEditEntry(null);
     setDate(todayStr());
@@ -79,6 +82,7 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
     setNotes('');
   };
 
+  /** Handles form submission — create or update milestone entry */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) {
@@ -128,6 +132,7 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
     setSaving(false);
   }
 
+  /** Stages a delete with undo toast; fires actual delete after undo window expires */
   const handleUndoDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);

@@ -29,6 +29,7 @@ export function useExpenseForm(props: UseExpenseFormProps = {}) {
   const [meta, setMeta] = useState<ExpenseMeta | undefined>(props.initialMeta);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(initPM);
 
+  /** Reset all form fields back to their initial values */
   const reset = useCallback(() => {
     setDate(initDate);
     setAmount('');
@@ -37,6 +38,7 @@ export function useExpenseForm(props: UseExpenseFormProps = {}) {
     setPaymentMethod(initPM);
   }, [initDate, initPM, props.initialMeta]);
 
+  /** Populate form fields from an existing expense for tap-to-edit */
   const populate = useCallback((e: Expense) => {
     setDate(e.date);
     setAmount(String(e.amount));

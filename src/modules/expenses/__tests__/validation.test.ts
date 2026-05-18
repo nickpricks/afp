@@ -10,6 +10,7 @@ import { ValidationMsg } from '@/constants/messages';
 const numericValues = <T extends Record<string, string | number>>(e: T): number[] =>
   Object.values(e).filter((v): v is number => typeof v === 'number');
 
+/** Validates validateExpense accepts valid inputs and rejects bad date/category/amount */
 describe('validateExpense', () => {
   it('accepts a valid expense with enum category', () => {
     const result = validateExpense({
@@ -78,6 +79,7 @@ describe('validateExpense', () => {
   });
 });
 
+/** Validates validateIncome accepts valid inputs and rejects bad date/source/amount */
 describe('validateIncome', () => {
   it('accepts a valid income entry', () => {
     const result = validateIncome({
@@ -134,6 +136,7 @@ describe('validateIncome', () => {
   });
 });
 
+/** Validates fuel meta validation rules: liters and pricePerLiter must be positive */
 describe('validateExpense — fuel meta', () => {
   const baseInput = {
     date: '2026-05-04',
@@ -185,6 +188,7 @@ describe('validateExpense — fuel meta', () => {
   });
 });
 
+/** Validates travel meta validation rules: origin and destination must be non-empty */
 describe('validateExpense — travel meta', () => {
   const baseInput = {
     date: '2026-05-04',
@@ -217,6 +221,7 @@ describe('validateExpense — travel meta', () => {
   });
 });
 
+/** Validates maintenance meta validation rules: odometer must be positive */
 describe('validateExpense — maintenance meta', () => {
   const baseInput = {
     date: '2026-05-04',
@@ -247,6 +252,7 @@ describe('validateExpense — maintenance meta', () => {
   });
 });
 
+/** Validates that NaN and Infinity numeric fields are rejected by validateMeta */
 describe('validateMeta — NaN/Infinity rejection', () => {
   const fuelBase = { date: '2026-05-04', category: ExpenseCategory.Vehicle, amount: 4000 };
   const maintBase = { date: '2026-05-04', category: ExpenseCategory.Vehicle, amount: 5000 };
@@ -291,6 +297,7 @@ describe('validateMeta — NaN/Infinity rejection', () => {
   });
 });
 
+/** Validates backward-compatibility: expenses without meta are accepted */
 describe('validateExpense — no meta', () => {
   it('accepts an expense with meta=undefined (existing behavior)', () => {
     expect(

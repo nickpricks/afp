@@ -25,6 +25,7 @@ function makeActivities(count: number): BodyActivity[] {
 
 const noop = vi.fn();
 
+/** Verifies ActivityLog respects useListControls pagination and show-all escape hatch */
 describe('ActivityLog — pagination via useListControls', () => {
   it('shows at most pageSize (25) activities by default', () => {
     render(<ActivityLog activities={makeActivities(35)} onEdit={noop} />);

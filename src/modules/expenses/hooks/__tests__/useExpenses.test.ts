@@ -28,6 +28,7 @@ beforeEach(() => {
   mockSetSyncStatus.mockClear();
 });
 
+/** Validates useExpenses callbacks toast AdapterNotReady when adapter is null (no uid) */
 describe('useExpenses adapter-null guards', () => {
   it('addExpense toasts AdapterNotReady when adapter is null', async () => {
     const { result } = renderHook(() => useExpenses());

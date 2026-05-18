@@ -3,6 +3,7 @@ import { renderBadge } from '@/modules/expenses/expense-badges';
 import { CATEGORIES, PAYMENT_METHOD_LABELS } from '@/modules/expenses/categories';
 import { CONFIG } from '@/constants/config';
 
+/** Props for AutoTabRow list item */
 interface AutoTabRowProps {
   expense: Expense;
   isActive: boolean;

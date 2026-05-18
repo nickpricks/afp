@@ -10,6 +10,7 @@ import {
 import { FeedType, SleepType, SleepQuality, DiaperType } from '@/modules/baby/types';
 import { isOk, isErr } from '@/shared/types';
 
+/** Validates validateFeedEntry accepts valid feeds and rejects invalid date or type */
 describe('validateFeedEntry', () => {
   it('accepts valid feed entry', () => {
     expect(isOk(validateFeedEntry({ date: '2026-04-04', type: FeedType.Bottle }))).toBe(true);
@@ -29,6 +30,7 @@ describe('validateFeedEntry', () => {
   });
 });
 
+/** Validates validateSleepEntry accepts valid entries including null quality */
 describe('validateSleepEntry', () => {
   it('accepts valid sleep entry', () => {
     expect(
@@ -49,6 +51,7 @@ describe('validateSleepEntry', () => {
   });
 });
 
+/** Validates validateGrowthEntry rejects zero/negative weight but accepts null */
 describe('validateGrowthEntry', () => {
   it('accepts valid growth entry', () => {
     expect(isOk(validateGrowthEntry({ date: '2026-04-04', weight: 5.5 }))).toBe(true);
@@ -67,6 +70,7 @@ describe('validateGrowthEntry', () => {
   });
 });
 
+/** Validates validateDiaperEntry accepts all DiaperType values with valid dates */
 describe('validateDiaperEntry', () => {
   it('accepts valid diaper entry', () => {
     expect(isOk(validateDiaperEntry({ date: '2026-04-04', type: DiaperType.Wet }))).toBe(true);
@@ -82,6 +86,7 @@ describe('validateDiaperEntry', () => {
   });
 });
 
+/** Validates validateChild rejects empty/whitespace names and invalid DOB formats */
 describe('validateChild', () => {
   it('accepts valid child input', () => {
     expect(isOk(validateChild({ name: 'Baby', dob: '2026-01-15' }))).toBe(true);

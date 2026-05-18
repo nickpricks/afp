@@ -7,6 +7,7 @@ import { ExpenseMetaType } from '@/modules/expenses/types';
 
 const noop = vi.fn().mockResolvedValue(true);
 
+/** Renders the given element inside a ToastProvider for tests that trigger toasts */
 const renderWithToast = (ui: React.ReactElement) => {
   return render(<ToastProvider>{ui}</ToastProvider>);
 };
@@ -31,6 +32,7 @@ function getMethodBubbles() {
   });
 }
 
+/** Validates AddExpense preset buttons fill and accumulate the amount input */
 describe('AddExpense — amount presets', () => {
   it('renders preset amount buttons', () => {
     renderWithToast(<AddExpense onSubmit={noop} />);
@@ -60,6 +62,7 @@ describe('AddExpense — amount presets', () => {
   });
 });
 
+/** Validates AddExpense amount input has correct min/step HTML attributes */
 describe('AddExpense — amount input constraints', () => {
   it('has min attribute preventing zero/negative values', () => {
     renderWithToast(<AddExpense onSubmit={noop} />);
@@ -74,6 +77,7 @@ describe('AddExpense — amount input constraints', () => {
   });
 });
 
+/** Validates payment method bubble toggle: second click deselects, null allowed on submit */
 describe('AddExpense — payment method bubbles', () => {
   it('deselects active payment method on second click', () => {
     renderWithToast(<AddExpense onSubmit={noop} />);
@@ -129,6 +133,7 @@ describe('AddExpense — payment method bubbles', () => {
   });
 });
 
+/** Validates MetaSubForm integration: revealed by Vehicle/Fuel selection, meta passed to onSubmit */
 describe('AddExpense — meta sub-form integration', () => {
   it('reveals the Fuel sub-form when Vehicle/Fuel is selected', () => {
     renderWithToast(<AddExpense onSubmit={noop} />);

@@ -6,6 +6,7 @@ import { computeAge } from '@/modules/baby/utils';
 import { ChildDetail } from '@/modules/baby/components/ChildDetail';
 import type { Child } from '@/modules/baby/types';
 
+/** Child fixture for ChildDetail rendering tests */
 const mockChild: Child = {
   id: 'child-1',
   name: 'Test Baby',
@@ -57,6 +58,7 @@ function renderChildDetail() {
   );
 }
 
+/** Validates ChildDetail renders name, age, and config-gated tabs */
 describe('ChildDetail', () => {
   it('renders child name and age', () => {
     renderChildDetail();

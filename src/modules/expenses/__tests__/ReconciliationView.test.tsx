@@ -23,6 +23,7 @@ function makeExpense(overrides: Partial<Expense> = {}): Expense {
   };
 }
 
+/** Validates ReconciliationView summary cards, outstanding calculation, and empty state */
 describe('ReconciliationView', () => {
   it('shows Charged, Settled, and Outstanding summary cards', () => {
     const expenses = [

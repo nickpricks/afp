@@ -24,6 +24,7 @@ vi.mock('../hooks/useJournalData', () => ({
   }),
 }));
 
+/** Child fixture for LifeJournalView render tests */
 const child: Child = {
   id: 'c1',
   name: 'Aanya',
@@ -42,6 +43,7 @@ const child: Child = {
   updatedAt: '',
 };
 
+/** Validates LifeJournalView renders journal summary stats, milestones, needs, and counting moments */
 describe('LifeJournalView', () => {
   it('renders header with child name and stage label', () => {
     render(<LifeJournalView child={child} />);

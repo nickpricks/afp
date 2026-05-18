@@ -11,12 +11,14 @@ vi.mock('@/shared/errors/useToast', () => ({
   useToast: () => ({ addToast: vi.fn() }),
 }));
 
+/** Enable-meals suggestion fixture for SuggestionBanner render tests */
 const suggestion1: Suggestion = {
   childId: 'c1',
   childName: 'Aanya',
   feature: 'meals',
   action: SuggestionAction.Enable,
 };
+/** Disable-feeds suggestion fixture for multi-suggestion count tests */
 const suggestion2: Suggestion = {
   childId: 'c2',
   childName: 'Vikas',
@@ -24,6 +26,7 @@ const suggestion2: Suggestion = {
   action: SuggestionAction.Disable,
 };
 
+/** Validates SuggestionBanner renders count, child names, and fires onAct on Enable click */
 describe('SuggestionBanner', () => {
   it('renders nothing when no suggestions', () => {
     const { container } = render(<SuggestionBanner suggestions={[]} onAct={vi.fn()} />);

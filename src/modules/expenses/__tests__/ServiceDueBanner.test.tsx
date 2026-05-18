@@ -6,6 +6,7 @@ import type { Expense } from '@/modules/expenses/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ExpenseCategory, PaymentMethod } from '@/shared/types';
 
+/** Builds a minimal maintenance Expense fixture for ServiceDueBanner tests */
 function maintenance(
   id: string,
   date: string,
@@ -28,6 +29,7 @@ function maintenance(
   };
 }
 
+/** Builds a minimal fuel Expense fixture for ServiceDueBanner tests */
 function fuel(id: string, date: string, odometer: number): Expense {
   return {
     id,
@@ -53,6 +55,7 @@ function fuel(id: string, date: string, odometer: number): Expense {
   };
 }
 
+/** Validates ServiceDueBanner visibility logic, odometer display, and dismiss action */
 describe('ServiceDueBanner', () => {
   it('returns null when expenses array is empty (defensive, no crash)', () => {
     const { container } = render(<ServiceDueBanner expenses={[]} />);

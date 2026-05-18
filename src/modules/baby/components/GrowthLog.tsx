@@ -52,6 +52,7 @@ export function GrowthLog({
     setNotes(entry.notes);
   };
 
+  /** Handles form submission — create or update growth measurement */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -88,6 +89,7 @@ export function GrowthLog({
     setSaving(false);
   }
 
+  /** Clears the edit state and resets all form fields to defaults */
   const handleCancelEdit = () => {
     setEditEntry(null);
     setDate(todayStr());
@@ -97,6 +99,7 @@ export function GrowthLog({
     setNotes('');
   };
 
+  /** Stages a delete with undo toast; fires actual delete after undo window expires */
   const handleUndoDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);

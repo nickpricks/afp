@@ -1,14 +1,17 @@
 import { JournalGrain } from './constants';
 import type { JournalRange } from './types';
 
+/** Zero-pads a number to two digits */
 function pad(n: number): string {
   return String(n).padStart(2, '0');
 }
 
+/** Converts a Date object to a YYYY-MM-DD string */
 function dateToStr(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+/** Parses a YYYY-MM-DD string to a local Date (avoids UTC midnight offset) */
 function strToDate(s: string): Date {
   const parts = s.split('-');
   const y = Number(parts[0]);
@@ -31,6 +34,7 @@ function endOfMonth(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth() + 1, 0);
 }
 
+/** Full month name lookup by 0-based index */
 const MONTHS = [
   'January',
   'February',
@@ -45,6 +49,7 @@ const MONTHS = [
   'November',
   'December',
 ];
+/** Abbreviated 3-letter month names derived from MONTHS */
 const SHORT_MONTHS = MONTHS.map((m) => m.slice(0, 3));
 
 /** Pure — human-readable label for a range */

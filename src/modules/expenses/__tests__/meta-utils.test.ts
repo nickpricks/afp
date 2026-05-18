@@ -4,6 +4,7 @@ import { metaKindFor, defaultMeta } from '@/modules/expenses/meta-utils';
 import { ExpenseCategory } from '@/shared/types';
 import { ExpenseMetaType } from '@/modules/expenses/types';
 
+/** Validates metaKindFor maps category+subCat pairs to the correct meta kind */
 describe('metaKindFor', () => {
   it('returns "fuel" for Vehicle/Fuel', () => {
     expect(metaKindFor(ExpenseCategory.Vehicle, 'Fuel')).toBe(ExpenseMetaType.Fuel);
@@ -26,6 +27,7 @@ describe('metaKindFor', () => {
   });
 });
 
+/** Validates defaultMeta returns correct zero-value meta objects for each kind */
 describe('defaultMeta', () => {
   it('returns FuelMeta with zeros and nulls', () => {
     const m = defaultMeta(ExpenseMetaType.Fuel);

@@ -24,6 +24,7 @@ import {
 
 // ─── Test fixtures ──────────────────────────────────────────────────────────
 
+/** Standard one-week range fixture for aggregate tests */
 const weekRange: JournalRange = {
   start: '2026-04-13',
   end: '2026-04-19',
@@ -31,6 +32,7 @@ const weekRange: JournalRange = {
   label: 'Apr 13–19, 2026',
 };
 
+/** Builds a minimal breast feed FeedEntry fixture */
 function feed(date: string, id = `f-${date}`): FeedEntry {
   return {
     id,
@@ -44,6 +46,7 @@ function feed(date: string, id = `f-${date}`): FeedEntry {
   };
 }
 
+/** Builds a minimal nap SleepEntry fixture with given start/end times */
 function sleep(date: string, start: string, end: string, id = `s-${date}`): SleepEntry {
   return {
     id,
@@ -58,6 +61,7 @@ function sleep(date: string, start: string, end: string, id = `s-${date}`): Slee
   };
 }
 
+/** Builds a minimal Diaper-mode EliminationEntry fixture */
 function diaper(date: string, id = `e-d-${date}`): EliminationEntry {
   return {
     id,
@@ -70,6 +74,7 @@ function diaper(date: string, id = `e-d-${date}`): EliminationEntry {
   };
 }
 
+/** Builds a minimal Potty-mode EliminationEntry fixture */
 function potty(date: string, id = `e-p-${date}`): EliminationEntry {
   return {
     id,
@@ -82,6 +87,7 @@ function potty(date: string, id = `e-p-${date}`): EliminationEntry {
   };
 }
 
+/** Builds a minimal Lunch MealEntry fixture */
 function meal(date: string, id = `m-${date}`): MealEntry {
   return {
     id,
@@ -96,6 +102,7 @@ function meal(date: string, id = `m-${date}`): MealEntry {
   };
 }
 
+/** Builds a minimal Milestone fixture with the given date and title */
 function milestone(
   date: string,
   title: string,
@@ -113,6 +120,7 @@ function milestone(
   };
 }
 
+/** Builds a minimal NeedEntry fixture with the given date and status */
 function need(date: string, status: NeedStatus, id = `n-${date}-${status}`): NeedEntry {
   return {
     id,
@@ -128,6 +136,7 @@ function need(date: string, status: NeedStatus, id = `n-${date}-${status}`): Nee
 
 // ─── computeCountingMoments ─────────────────────────────────────────────────
 
+/** Validates computeCountingMoments detects milestone thresholds crossed within a period */
 describe('computeCountingMoments', () => {
   it('returns no moments when no thresholds crossed', () => {
     expect(
@@ -171,6 +180,7 @@ describe('computeCountingMoments', () => {
 
 // ─── computeJournalSummary ──────────────────────────────────────────────────
 
+/** Validates computeJournalSummary aggregates all subcollection data into a JournalSummary */
 describe('computeJournalSummary', () => {
   it('returns zero counts for empty subcollections', () => {
     const s = computeJournalSummary({

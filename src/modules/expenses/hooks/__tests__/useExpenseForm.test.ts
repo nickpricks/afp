@@ -4,6 +4,7 @@ import { useExpenseForm } from '../useExpenseForm';
 import { ExpenseMetaType } from '../../types';
 import { PaymentMethod } from '@/shared/types';
 
+/** Validates useExpenseForm initialization, populate, and reset behaviors */
 describe('useExpenseForm', () => {
   it('initializes with default values when no props passed', () => {
     const { result } = renderHook(() => useExpenseForm());

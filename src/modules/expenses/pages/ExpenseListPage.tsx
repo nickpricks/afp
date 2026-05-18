@@ -11,6 +11,7 @@ import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
 import { useIncome } from '@/modules/expenses/hooks/useIncome';
 import { ROUTES } from '@/constants/routes';
 
+/** Union of budget tab identifiers for the ExpenseListPage tab switcher */
 type BudgetTab = 'expenses' | 'income' | 'auto' | 'reconcile';
 
 /** Page wrapper showing budget summary, expense/income/auto tabs, and list */
@@ -81,6 +82,7 @@ export function ExpenseListPage() {
   );
 }
 
+/** Single tab button pill for the budget tab strip */
 function TabButton({
   label,
   isActive,

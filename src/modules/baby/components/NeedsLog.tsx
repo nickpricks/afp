@@ -23,6 +23,7 @@ import { useListControls } from '@/shared/hooks/useListControls';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
 
+/** Props for NeedsLog component */
 type Props = {
   childId?: string;
   siblingIds?: string[];
@@ -66,6 +67,7 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setNotes('');
   };
 
+  /** Handles form submission — create or update need entry */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) {

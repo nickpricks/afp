@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { computeStage, monthsOldFromDob, STAGE_BOUNDARIES } from '@/modules/baby/stage';
 import { ChildStage } from '@/modules/baby/types';
 
+/** Validates monthsOldFromDob computes whole months elapsed since birth */
 describe('monthsOldFromDob', () => {
   it('returns 0 for today', () => {
     const today = new Date().toISOString().split('T')[0]!;
@@ -22,6 +23,7 @@ describe('monthsOldFromDob', () => {
   });
 });
 
+/** Validates computeStage returns the correct ChildStage at and around STAGE_BOUNDARIES */
 describe('computeStage', () => {
   function dobMonthsAgo(months: number): string {
     const d = new Date();

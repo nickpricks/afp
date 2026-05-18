@@ -24,6 +24,7 @@ import { useListControls } from '@/shared/hooks/useListControls';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
 
+/** Props for MealsLog component */
 type Props = {
   childId?: string;
   siblingIds?: string[];
@@ -73,6 +74,7 @@ export function MealsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setNotes(entry.notes);
   };
 
+  /** Clears the edit state and resets all form fields to defaults */
   const handleCancelEdit = () => {
     setEditEntry(null);
     setType(defaultMealType());
@@ -83,6 +85,7 @@ export function MealsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setNotes('');
   };
 
+  /** Handles form submission — create or update meal entry */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!description.trim()) {
@@ -132,6 +135,7 @@ export function MealsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setSaving(false);
   }
 
+  /** Stages a delete with undo toast; fires actual delete after undo window expires */
   const handleUndoDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);

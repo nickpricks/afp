@@ -37,6 +37,7 @@ beforeEach(() => {
   mockUnsubscribe.mockClear();
 });
 
+/** Validates useBabyCollection.log returns true on save success and false with error toast on failure */
 describe('useBabyCollection — log()', () => {
   it('returns true when adapter.save succeeds', async () => {
     mockSave.mockResolvedValue(ok(undefined));
@@ -69,6 +70,7 @@ describe('useBabyCollection — log()', () => {
   });
 });
 
+/** Validates useBabyCollection.update returns true on save success and false with error toast on failure */
 describe('useBabyCollection — update()', () => {
   it('returns true when adapter.save succeeds', async () => {
     mockSave.mockResolvedValue(ok(undefined));
@@ -101,6 +103,7 @@ describe('useBabyCollection — update()', () => {
   });
 });
 
+/** Validates useBabyCollection.remove returns true on success and false with error toast on failure */
 describe('useBabyCollection — remove()', () => {
   it('returns true when adapter.remove succeeds', async () => {
     mockRemove.mockResolvedValue(ok(undefined));
@@ -133,6 +136,7 @@ describe('useBabyCollection — remove()', () => {
   });
 });
 
+/** Validates useBabyCollection log/update/remove all return false when childId is null */
 describe('useBabyCollection — guard conditions', () => {
   it('log() returns false when childId is null', async () => {
     const { result } = renderHook(() =>

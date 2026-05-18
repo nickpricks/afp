@@ -4,6 +4,7 @@ import type { ExpenseCategory } from '@/shared/types';
 import { ExpenseCategory as Cat } from '@/shared/types';
 import { VEHICLE_SUBCAT, TRAVEL_SUBCAT } from '@/modules/expenses/categories';
 
+/** Nullable meta type discriminant — null means no meta applicable */
 type MetaKind = ExpenseMetaType | null;
 
 /** Returns the meta kind appropriate for a (category, subCat) pair, or null if none applies */

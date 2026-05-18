@@ -11,8 +11,10 @@ import { ChildStage, MilestoneCategory, type Child } from '../types';
 import { JournalCard } from './JournalCard';
 import { JournalPicker } from './JournalPicker';
 
+/** Props for LifeJournalView — requires full Child record for name and DOB */
 type Props = { child: Child };
 
+/** Human-readable label for each ChildStage */
 const STAGE_LABEL: Record<ChildStage, string> = {
   [ChildStage.Infant]: 'Infant',
   [ChildStage.Toddler]: 'Toddler',

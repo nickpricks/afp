@@ -7,6 +7,7 @@ function rec(up: number, down: number, walkMeters = 0, runMeters = 0) {
   return { up, down, walkMeters, runMeters };
 }
 
+/** Tests for computeBodyScore composite scoring */
 describe('computeBodyScore', () => {
   it('scores 10 up + 5 down as 12.5', () => {
     expect(computeBodyScore(rec(10, 5))).toBe(12.5);
@@ -40,6 +41,7 @@ describe('computeBodyScore', () => {
   });
 });
 
+/** Tests for computeSteps step approximation */
 describe('computeSteps', () => {
   it('approximates steps from distance and stride', () => {
     expect(computeSteps(750, 0.75)).toBe(1000);
