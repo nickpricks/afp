@@ -1605,7 +1605,79 @@ If any of #1–#4 fails, FIX before proceeding. The branch cannot ship with a re
 
 ## Execution Log
 
-(Filled in during Task 51.)
+### Wave 1 — CRITICAL + HIGH foundations + fixes (20 tasks, 20 commits)
+
+Branch created from `master @ f31c7a9`. Wave 1 landed 2026-05-15.
+
+| SHA | Subject |
+|-----|---------|
+| `f186e3f` | feat(shared): add assertNever exhaustiveness helper (Decision E1) |
+| `f9fc8f9` | feat(expenses): introduce ExpenseMetaType enum (foundation for H5) |
+| `966cf68` | feat(expenses): VEHICLE_SUBCAT typed constants (foundation for H6) |
+| `e2e944f` | feat(expenses): extract deriveFuelTriple pure util (foundation for H13) |
+| `27ec9ab` | fix(expenses): AutoTab amount validation shows AmountPositive toast (C1) |
+| `c7bf6cb` | fix(expenses): render em-dash literal correctly in ExpenseList note (C2) |
+| `f7be85b` | fix(expenses): reject NaN/Infinity in validateMeta + MetaSubForm coercion (C3) |
+| `2a4ab6b` | refactor(expenses): replace meta-type literals with ExpenseMetaType enum (H5) |
+| `797c8bb` | refactor(expenses): use VEHICLE_SUBCAT + TRAVEL_SUBCAT constants in routing logic (H6, #23) |
+| `7b1e6c4` | refactor(expenses): apply assertNever exhaustiveness at 4 meta sites (H4) |
+| `9bbdea1` | fix(shared): parse YYYY-MM-DD as local midday in relativeDateLabel + isoWeekNumber (H7, #39) |
+| `8766440` | fix(expenses): dueMaintenance sorts by odometer not date (H12) |
+| `40ffb62` | docs(changelog): correct fuel-math signatures for 0.2.18 (H15) |
+| `b9089c5` | chore(expenses): remove dead prevCategoryRef/prevSubCatRef + misleading comment (H16) |
+| `9923115` | fix(baby): useBabyCollection returns Promise<boolean>; gate state on success (H8) |
+| `a3b96f1` | fix(baby): surface partial failures in logToSiblings (H9) |
+| `e05c5fd` | fix(expenses): toast on adapter-null in add/update/delete (H10) |
+| `936cd67` | fix(expenses): ServiceDueBanner defensive guards + useMemo single-walk (H11, #22, #24) |
+| `ff1d4aa` | fix(expenses): MetaSubForm dispatches to deriveFuelTriple; no stale state (H13) |
+| `78fc28e` | fix(expenses): Auto tab captures paymentMethod (no silent UPI default) (H14) |
+
+### Wave 2 — Refactors + small fixes (13 commits)
+
+Landed 2026-05-15 to 2026-05-16.
+
+| SHA | Subject |
+|-----|---------|
+| `547efe5` | refactor(expenses): lift useExpenseForm hook shared by AddExpense + AutoTab (#14, #18, #21) |
+| `8bdfdb3` | refactor(expenses): split AutoTab into AutoTabRow + expense-badges (#17) |
+| `40a39b8` | chore: Wave 2 small fixes batch A — docs + comments + relocations |
+| `5194f32` | fix(expenses): inline helper text on invalid amount in AddExpense (#19) |
+| `555adb4` | a11y(expenses,body,baby): keyboard activation on tap-to-edit rows (#33) |
+| `bc9f6c1` | fix(shared): guard NaN getTime in filterByDateRange (#35) |
+| `2c012ce` | refactor(expenses): single validation pass in updateExpense (#36) — already correct, no change needed |
+| `e5594c8` | refactor(expenses): align AutoTab async prop signatures (#37) |
+| `9098ff2` | refactor(shared): CONFIG.LIST_PAGE_SIZE_OPTIONS extraction (#41) |
+| `6b4be61` | refactor(expenses): isolate useListControls per tab (#25) |
+| `638c0a9` | test(expenses): AutoTab pagination-deviation comment + 500-row sanity test (#26) |
+| `2964787` | fix(rules): validate Expense.meta shape server-side (#27) |
+
+### Wave 3 — JSDoc total coverage (~290 docstrings, 3 parallel subagent commits)
+
+| SHA | Subject |
+|-----|---------|
+| `050dbfb` | docs(shared): JSDoc total coverage on shared types/utils/constants/root (Wave 3) |
+| `bfd41e3` | docs(modules): JSDoc total coverage on baby/body/expenses (Wave 3 part 2) |
+| `43e8ce9` | docs(shared,admin,themes): JSDoc total coverage on UI + cross-cutting (Wave 3 part 3) |
+
+### Wave 4 — Docs sweep (5 commits)
+
+| SHA | Subject |
+|-----|---------|
+| `50c4b3e` | docs: per-dir README audit + targeted additions (Wave 4 / Task 47) |
+| `ff9f207` | docs(claude): known-issues purge + new conventions documented (Wave 4 / Task 48) |
+| `68c3f08` | docs(roadmap): bump 0.2.19 — flaw-in-the-plan cleanup pass (Wave 4 / Task 49) |
+| `f1d73e1` | docs(changelog): 0.2.19 entry — flaw-in-the-plan cleanup (Wave 4 / Task 50) |
+| *(this commit)* | docs(plans): mark flaw-in-the-plan execution log as shipped (Wave 4 / Task 51) |
+
+Total: 36 functional commits + 1 plan-doc commit = 41 commits ahead of master after Wave 4.
+
+---
+
+### Close-with-rationale (absorbed / scope clarifications)
+
+- **Task 23** (deriveFuelTriple guards in `validateMeta`) — absorbed into Task 4 (`deriveFuelTriple` extraction). The pure util already handles invalid inputs; `validateMeta` guards the entry point with `isValidNumber`.
+- **Task 38 CLAUDE.md hook codification** — folded into Task 48 (Known Issues purge). The new conventions (assertNever, ExpenseMetaType, T12:00:00 parsing, hook return contract, VEHICLE_SUBCAT) were written directly into CLAUDE.md Key Conventions rather than as a separate hook-codification pass.
+- **Task 36 "no change needed" note** — `updateExpense` was already doing a single validation pass on master. The commit confirms this but makes no functional change.
 
 ## Moved out of scope
 
