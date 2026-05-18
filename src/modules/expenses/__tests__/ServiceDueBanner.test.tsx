@@ -49,7 +49,6 @@ function fuel(id: string, date: string, odometer: number): Expense {
       pricePerLiter: 100,
       odometer,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     },
   };

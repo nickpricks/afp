@@ -151,7 +151,6 @@ describe('validateExpense — fuel meta', () => {
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: 500,
-      displayedMileage: 14.2,
       fullTank: true,
     };
     expect(isOk(validateExpense({ ...baseInput, meta }))).toBe(true);
@@ -164,7 +163,6 @@ describe('validateExpense — fuel meta', () => {
       pricePerLiter: 100,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     };
     const r = validateExpense({ ...baseInput, meta });
@@ -179,7 +177,6 @@ describe('validateExpense — fuel meta', () => {
       pricePerLiter: 0,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     };
     const r = validateExpense({ ...baseInput, meta });
@@ -274,7 +271,6 @@ describe('validateMeta — NaN/Infinity rejection', () => {
       pricePerLiter: 100,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     };
     const r = validateExpense({ ...fuelBase, meta });
@@ -288,7 +284,6 @@ describe('validateMeta — NaN/Infinity rejection', () => {
       pricePerLiter: Infinity,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     };
     const r = validateExpense({ ...fuelBase, meta });

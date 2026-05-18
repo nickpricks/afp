@@ -49,8 +49,6 @@ function validateMeta(meta: ExpenseMeta): Result<void> {
         return err(ValidationMsg.OdometerInvalid);
       if (meta.tripOdo != null && !isValidNumber(meta.tripOdo))
         return err(ValidationMsg.TripOdoInvalid);
-      if (meta.displayedMileage != null && !isValidNumber(meta.displayedMileage))
-        return err(ValidationMsg.DisplayedMileageInvalid);
       return ok(undefined);
     case ExpenseMetaType.Travel:
       if (!meta.origin.trim()) return err(ValidationMsg.TravelOriginRequired);

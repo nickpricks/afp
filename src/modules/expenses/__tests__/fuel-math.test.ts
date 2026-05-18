@@ -33,7 +33,6 @@ function fuelExpense(
       type: ExpenseMetaType.Fuel,
       odometer: meta.odometer ?? null,
       tripOdo: meta.tripOdo ?? null,
-      displayedMileage: meta.displayedMileage ?? null,
       fullTank: meta.fullTank ?? false,
       liters: meta.liters,
       pricePerLiter: meta.pricePerLiter,
@@ -73,7 +72,6 @@ describe('computeMileage', () => {
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: 500,
-      displayedMileage: null,
       fullTank: false,
     };
     expect(computeMileage(meta)).toBeNull();
@@ -86,7 +84,6 @@ describe('computeMileage', () => {
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: true,
     };
     expect(computeMileage(meta)).toBeNull();
@@ -99,7 +96,6 @@ describe('computeMileage', () => {
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: 500,
-      displayedMileage: null,
       fullTank: true,
     };
     expect(computeMileage(meta)).toBeNull();
@@ -112,7 +108,6 @@ describe('computeMileage', () => {
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: 600,
-      displayedMileage: null,
       fullTank: true,
     };
     expect(computeMileage(meta)).toBe(15);

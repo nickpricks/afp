@@ -17,7 +17,6 @@ describe('MetaSubForm — fuel variant', () => {
       pricePerLiter: 0,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
       ...initial,
     };
@@ -64,7 +63,6 @@ describe('MetaSubForm — fuel variant', () => {
       pricePerLiter: 100,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     };
     render(
@@ -91,7 +89,6 @@ describe('MetaSubForm — fuel variant', () => {
       pricePerLiter: 100,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     };
     // User has already manually typed amount=5000 (overrides implicit 40*100=4000)

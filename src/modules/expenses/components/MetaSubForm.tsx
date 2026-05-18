@@ -130,7 +130,7 @@ function FuelFields({
 
       <details className="text-xs">
         <summary className="cursor-pointer text-fg-muted">Vehicle data (optional)</summary>
-        <div className="mt-2 grid grid-cols-3 gap-2">
+        <div className="mt-2 grid grid-cols-2 gap-2">
           <label className="flex flex-col gap-1 text-[11px] text-fg-muted">
             Total ODO (km)
             <input
@@ -152,20 +152,6 @@ function FuelFields({
               step="1"
               value={meta.tripOdo ?? ''}
               onChange={(e) => onChange({ ...meta, tripOdo: toFiniteOrNull(e.target.value) })}
-              className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-[11px] text-fg-muted">
-            Dash km/L
-            <input
-              type="number"
-              inputMode="decimal"
-              min="0"
-              step="0.1"
-              value={meta.displayedMileage ?? ''}
-              onChange={(e) =>
-                onChange({ ...meta, displayedMileage: toFiniteOrNull(e.target.value) })
-              }
               className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
             />
           </label>

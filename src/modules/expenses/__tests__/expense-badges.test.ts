@@ -17,7 +17,6 @@ describe('renderFuelBadge', () => {
       pricePerLiter: 100,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     };
     const out = renderFuelBadge(meta);
@@ -32,7 +31,6 @@ describe('renderFuelBadge', () => {
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     };
     const out = renderFuelBadge(meta);
@@ -46,7 +44,6 @@ describe('renderFuelBadge', () => {
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: 600,
-      displayedMileage: null,
       fullTank: true,
     };
     const out = renderFuelBadge(meta);
@@ -60,7 +57,6 @@ describe('renderFuelBadge', () => {
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: 600,
-      displayedMileage: null,
       fullTank: false,
     };
     const out = renderFuelBadge(meta);
@@ -149,7 +145,6 @@ describe('renderBadge — dispatcher', () => {
       pricePerLiter: 0,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     };
     const out = renderBadge(meta);

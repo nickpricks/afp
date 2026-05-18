@@ -42,7 +42,6 @@ export function defaultMeta(kind: MetaKind): ExpenseMeta | undefined {
         pricePerLiter: 0,
         odometer: null,
         tripOdo: null,
-        displayedMileage: null,
         fullTank: false,
       };
     case ExpenseMetaType.Travel:

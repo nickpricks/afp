@@ -44,7 +44,6 @@ describe('useExpenseForm', () => {
           pricePerLiter: 25,
           odometer: null,
           tripOdo: null,
-          displayedMileage: null,
           fullTank: false,
         },
         paymentMethod: PaymentMethod.Cash,

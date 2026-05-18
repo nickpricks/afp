@@ -37,7 +37,6 @@ describe('defaultMeta', () => {
       pricePerLiter: 0,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     });
   });

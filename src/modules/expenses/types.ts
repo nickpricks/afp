@@ -16,7 +16,6 @@ export type FuelMeta = {
   pricePerLiter: number;
   odometer: number | null;
   tripOdo: number | null;
-  displayedMileage: number | null;
   fullTank: boolean;
 };
 

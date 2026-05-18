@@ -32,7 +32,6 @@ function fuelExpense(id: string, date: string, odometer = 12000): Expense {
       pricePerLiter: 100,
       odometer,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     },
   };
@@ -299,7 +298,6 @@ describe('AutoTab — pagination deviation sanity', () => {
         pricePerLiter: 100,
         odometer: null,
         tripOdo: null,
-        displayedMileage: null,
         fullTank: false,
       },
     }));
