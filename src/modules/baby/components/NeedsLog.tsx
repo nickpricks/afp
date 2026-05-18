@@ -96,7 +96,11 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
         createdAt: now,
         updatedAt: now,
       };
-      await log(entryData);
+      const saved = await log(entryData);
+      if (!saved) {
+        setSaving(false);
+        return;
+      }
       if (logToAll && hasSiblings && uid) {
         const { ok, failed } = await logToSiblings(
           uid,

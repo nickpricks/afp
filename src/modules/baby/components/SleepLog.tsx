@@ -96,7 +96,11 @@ export function SleepLog({
       });
       if (ok) setEditEntry(null);
     } else {
-      await logSleep(entryData);
+      const saved = await logSleep(entryData);
+      if (!saved) {
+        setSaving(false);
+        return;
+      }
       if (logToAll && hasSiblings && uid) {
         const { ok, failed } = await logToSiblings(
           uid,

@@ -70,7 +70,11 @@ export function GrowthLog({
       });
       if (ok) setEditEntry(null);
     } else {
-      await logGrowth(entryData);
+      const saved = await logGrowth(entryData);
+      if (!saved) {
+        setSaving(false);
+        return;
+      }
       if (logToAll && hasSiblings && uid) {
         const { ok, failed } = await logToSiblings(
           uid,

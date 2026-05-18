@@ -96,7 +96,11 @@ export function EliminationLog({
       const ok = await updateElimination({ ...editEntry, ...entryData });
       if (ok) setEditEntry(null);
     } else {
-      await logElimination(entryData);
+      const saved = await logElimination(entryData);
+      if (!saved) {
+        setSaving(false);
+        return;
+      }
       if (logToAll && hasSiblings && uid) {
         const { ok, failed } = await logToSiblings(
           uid,

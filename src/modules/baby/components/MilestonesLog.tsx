@@ -106,7 +106,11 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
       const ok = await update({ ...editEntry, ...entryData });
       if (ok) setEditEntry(null);
     } else {
-      await log(entryData);
+      const saved = await log(entryData);
+      if (!saved) {
+        setSaving(false);
+        return;
+      }
       if (logToAll && hasSiblings && uid) {
         const { ok, failed } = await logToSiblings(
           uid,
