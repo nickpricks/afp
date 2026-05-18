@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-05-04
+Last updated: 2026-05-18
 
 ---
 
@@ -194,6 +194,26 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 ---
 
 ## Done
+
+### 2026-05-18 — Session 21 (Phase 2k — Cleanup pass: flaw-in-the-plan, v0.2.19)
+
+- [x] **3 CRITICAL bug fixes** — AutoTab amount validation toast (#C1), em-dash literal rendering (#C2), `Number('')`/`Number('abc')` NaN/Infinity rejection in validateMeta (#C3)
+- [x] **13 HIGH bug fixes** — `relativeDateLabel`/`isoWeekNumber` off-by-one in timezones west of UTC (#H7), `useBabyCollection` returns `Promise<boolean>` (#H8), `logToSiblings` partial-failure surfacing (#H9), adapter-null toasts in `useExpenses` (#H10), `ServiceDueBanner` defensive guards + single-pass memo (#H11, #22, #24), `dueMaintenance` sorts by odometer not date (#H12), fuel stale-state via `deriveFuelTriple` (#H13), AutoTab captures paymentMethod (#H14), dead prevCategoryRef code removed (#H16), inline helper text on invalid amount (#19), keyboard activation on tap-to-edit rows (#33), `filterByDateRange` NaN guard (#35), assertNever exhaustiveness at 4 meta sites (#H4)
+- [x] **`useExpenseForm` hook** — Lifted shared form-state from `AddExpense` + `AutoTab`, eliminates form-state DRY violation (#14, #18, #21)
+- [x] **`AutoTab` split** — `AutoTab.tsx` (349→243 lines) split into `AutoTabRow.tsx` + `expense-badges.ts` (#17)
+- [x] **`ExpenseMetaType` enum** — Replaces inline `'fuel'|'travel'|'maintenance'` literals across ~25 sites (#H5)
+- [x] **`VEHICLE_SUBCAT` + `TRAVEL_SUBCAT` constants** — Typed `as const` objects replace subcat magic strings (#H6, #23)
+- [x] **`assertNever` exhaustiveness helper** — Applied at all 4 discriminated-union switch sites (Decision E1, #H4)
+- [x] **`deriveFuelTriple` pure util** — Extracted fuel triple derivation, fixes stale-state bug (#H13)
+- [x] **Firestore rules `validMeta()` defense-in-depth** — Server-side validation of `Expense.meta` shape (#27)
+- [x] **`useListControls` per-tab isolation in `ExpenseListPage`** — No cross-tab state leakage (#25)
+- [x] **`CONFIG.LIST_PAGE_SIZE_OPTIONS` constant** — Replaces hardcoded array in `ListControls` (#41)
+- [x] **JSDoc total coverage** — ~290 new docstrings across `src/`; 100% coverage on exported + internal symbols (Wave 3, 3 parallel subagent commits)
+- [x] **AutoTab 500-row sanity test** — Confirms no pagination chrome on Auto tab (#26)
+- [x] **Docs sweep** — Per-dir README audit (expenses module updated), CLAUDE.md new conventions, ROADMAP/CHANGELOG 0.2.19 entries (Wave 4)
+- [x] **Version**: 0.2.18 → 0.2.19
+
+---
 
 ### 2026-05-04 — Session 20 (Budget — Auto tab: fuel, travel, maintenance, v0.2.18)
 
