@@ -133,8 +133,8 @@ Found via grep sweeps — fix in next code hygiene pass:
 - **#4 (constants)**: ~~`PAGE_SIZE` hardcoded in 6 files~~ — FIXED, then retired (Phase 2h). Replaced by `useListControls` hook default. ~~`1000` for m↔km in 6 places~~ — FIXED (`CONFIG.METERS_PER_KM`). ~~`CONFIG.LIST_PAGE_SIZE_OPTIONS` hardcoded array in `ListControls`~~ — FIXED (Phase 2k, `#41`). Watch for new magic numbers.
 - ~~**#6 (messages)**: ~15 raw toast strings in components instead of `constants/messages.ts` enums~~ — FIXED: All 18 raw strings moved to enums, `ToastType` enum added for type literals. Only exception: `useBabyCollection` dynamic templates (see Known Issues)
 - **#19 (utils)**: ~~Duplicated `formatDist()`/`formatDistance()`~~ — FIXED: shared `formatDistance()` in `utils/format.ts`. ~~8 inline `.sort()` comparators~~ — FIXED: `sortNewestFirst()` in `utils/sort.ts`
-- ~~**Meta-type literals** (`'fuel'|'travel'|'maintenance'` inline strings across ~25 sites)~~ — FIXED (Phase 2k): `ExpenseMetaType` enum + `assertNever` exhaustiveness applied at 4 discriminated-union sites. `VEHICLE_SUBCAT` + `TRAVEL_SUBCAT` typed constants replace subcat magic strings.
-- ~~**Non-exhaustive switches on `Expense.meta`**~~ — FIXED (Phase 2k): `assertNever` from `@/shared/utils/types` applied at all 4 meta switch sites.
+- ~~**Meta-type literals** (`'fuel'|'travel'|'maintenance'` inline strings across ~25 sites)~~ — FIXED (Phase 2k): `ExpenseMetaType` enum + `assertNever` exhaustiveness applied. `VEHICLE_SUBCAT` + `TRAVEL_SUBCAT` typed constants replace subcat magic strings.
+- ~~**Non-exhaustive switches on `Expense.meta`**~~ — FIXED (Phase 2k + Wave 5b): `assertNever` from `@/shared/utils/types` applied at all 8 meta switch sites — 4 original (`renderBadge`, `readOdometer`, `toastForAdd`, `toastForUpdate`) + 4 added in Wave 5b (`MetaSubForm` JSX switch, `subCatFor`, `defaultMeta`, `validateMeta`).
 
 ## Known Issues (fix later)
 
@@ -164,6 +164,8 @@ Found via grep sweeps — fix in next code hygiene pass:
 - **Budget list has no summary header**: No daily/weekly total at top of expense list.
 - **Overall contrast low**: Family Blue theme (`#60a5fa` accent on white) feels washed out. Needs stronger card shadows or darker text contrast.
 - **Dynamic toast message templates**: `useBabyCollection` uses `` `${label} logged/deleted/updated` `` template literals. Consider replacing with a message template system (e.g. `toastMsg(label, action)` or parameterized enum pattern) so all user-facing strings live in `constants/messages.ts`. Static messages and toast types are already enum-based.
+- **Read-only delete UX is confusing for Viewers**: Tapping × on any list row (Body + Baby + Budget) shows the optimistic "X deleted (Undo)" toast for 10s, then the hook's readOnly guard fires `CommonMsg.ReadOnlyMode` and the row reappears. Two toasts, 10s apart, contradicting each other. Fix path: thread `readOnly` (from `useAuth().viewerOf`) into the list components and early-return with a single readOnly toast before the optimistic flow starts. Surfaced by Wave 5b's new readOnly toasts (the silent return was less visible before but equally wrong).
+- **AutoTab edit silently coerces null `paymentMethod` to UPI on submit**: If a Viewer/User taps a legacy expense whose stored `paymentMethod` is null/missing, the form populates with `null` (via `useExpenseForm.populate`'s `e.paymentMethod ?? initPM`). On submit, AutoTab's `paymentMethod ?? PaymentMethod.UpiBankAccount` fallback at the wrapper layer silently saves it as UPI. The wrapper-layer default is the agreed pattern (Wave 5b moved the silent default OUT of the hook), but a more rigorous fix would require an explicit PM pick on edit (red border + disabled save when `null`).
 
 ### Design Samples (SAM/design-samples/)
 - **theme-showcase-all.html** — approved 10-theme gallery with mini dashboard mockups (committed to git)

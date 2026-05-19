@@ -25,7 +25,10 @@ export function BudgetSummary({
   const totalIncome = computeTotalIncome(scopedIncome);
   const totalSpent = computeTotalSpent(scopedExpenses);
   const remaining = totalIncome - totalSpent;
-  const ccOutstanding = computeCCOutstanding(scopedExpenses);
+  // CC outstanding is a running balance ("what you currently owe"), not a period metric.
+  // Always computed against the full unfiltered expense set — scoping by timeRange would
+  // misrepresent it as "CC charges within this period".
+  const ccOutstanding = computeCCOutstanding(expenses);
 
   return (
     <div className="mx-4 mb-4 grid grid-cols-2 gap-2">
