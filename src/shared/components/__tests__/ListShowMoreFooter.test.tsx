@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 
 import { ListShowMoreFooter } from '../ListShowMoreFooter';
 
+/** Tests for ListShowMoreFooter visibility and label logic. */
 describe('ListShowMoreFooter', () => {
   it('renders nothing when total <= shown', () => {
     const { container } = render(

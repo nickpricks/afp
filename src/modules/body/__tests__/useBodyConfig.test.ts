@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { DEFAULT_BODY_CONFIG } from '@/modules/body/types';
 
+/** Verifies DEFAULT_BODY_CONFIG initial values used by useBodyConfig */
 describe('useBodyConfig defaults', () => {
   it('default config is not configured (empty configuredAt)', () => {
     expect(DEFAULT_BODY_CONFIG.configuredAt).toBe('');

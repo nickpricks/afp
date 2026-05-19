@@ -5,11 +5,12 @@ import { NeedsLog } from '@/modules/baby/components/NeedsLog';
 import { NeedCategory, NeedStatus } from '@/modules/baby/types';
 import type { NeedEntry } from '@/modules/baby/types';
 
-const mockLog = vi.fn(async () => undefined);
-const mockUpdate = vi.fn(async () => undefined);
-const mockRemove = vi.fn(async () => undefined);
+const mockLog = vi.fn(async () => true);
+const mockUpdate = vi.fn(async () => true);
+const mockRemove = vi.fn(async () => true);
 const mockAddToast = vi.fn();
 
+/** Wishlist NeedEntry fixture for filter and transition tests */
 const sampleWishlist: NeedEntry = {
   id: 'need-1',
   date: '2026-04-15',
@@ -21,6 +22,7 @@ const sampleWishlist: NeedEntry = {
   updatedAt: '2026-04-15T10:00:00Z',
 };
 
+/** Inventory NeedEntry fixture for filter and Outgrew transition tests */
 const sampleInventory: NeedEntry = {
   id: 'need-2',
   date: '2026-04-14',
@@ -32,6 +34,7 @@ const sampleInventory: NeedEntry = {
   updatedAt: '2026-04-14T09:00:00Z',
 };
 
+/** Outgrown NeedEntry fixture to verify no further transition buttons are shown */
 const sampleOutgrown: NeedEntry = {
   id: 'need-3',
   date: '2026-04-10',
@@ -64,6 +67,7 @@ beforeEach(() => {
   mockAddToast.mockClear();
 });
 
+/** Validates NeedsLog renders header, filter chips, all entries, and delete buttons */
 describe('NeedsLog — rendering', () => {
   it('renders Needs header', () => {
     render(<NeedsLog childId="c1" />);
@@ -93,6 +97,7 @@ describe('NeedsLog — rendering', () => {
   });
 });
 
+/** Validates NeedsLog filter chips show correct subset of entries per status */
 describe('NeedsLog — filter chips', () => {
   it('filters to Wishlist entries only', () => {
     render(<NeedsLog childId="c1" />);
@@ -122,6 +127,7 @@ describe('NeedsLog — filter chips', () => {
   });
 });
 
+/** Validates NeedsLog form validates title and submits correct Wishlist payload */
 describe('NeedsLog — form behavior', () => {
   it('blocks submit when title is empty and shows error toast', () => {
     render(<NeedsLog childId="c1" />);
@@ -147,6 +153,7 @@ describe('NeedsLog — form behavior', () => {
   });
 });
 
+/** Validates NeedsLog Bought/Outgrew buttons call update with correct status transitions */
 describe('NeedsLog — status transitions', () => {
   it('shows Bought button on Wishlist entries', () => {
     render(<NeedsLog childId="c1" />);
@@ -191,6 +198,7 @@ describe('NeedsLog — status transitions', () => {
   });
 });
 
+/** Validates NeedsLog tap-to-edit populates form and switches submit button text */
 describe('NeedsLog — tap-to-edit', () => {
   it('populates form when entry row is clicked', () => {
     render(<NeedsLog childId="c1" />);

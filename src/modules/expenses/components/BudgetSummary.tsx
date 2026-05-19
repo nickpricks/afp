@@ -5,12 +5,29 @@ import {
 } from '@/modules/expenses/budget-math';
 import type { Expense, Income } from '@/modules/expenses/types';
 import { CONFIG } from '@/constants/config';
+import { TimeRange } from '@/shared/types';
+import { filterByDateRange } from '@/shared/utils/filter';
+import { todayStr } from '@/shared/utils/date';
 
-/** Displays budget summary: total income, total spent, remaining balance */
-export function BudgetSummary({ expenses, income }: { expenses: Expense[]; income: Income[] }) {
-  const totalIncome = computeTotalIncome(income);
-  const totalSpent = computeTotalSpent(expenses);
+/** Displays budget summary: total income, total spent, remaining balance — honors the active time range */
+export function BudgetSummary({
+  expenses,
+  income,
+  timeRange = TimeRange.All,
+}: {
+  expenses: Expense[];
+  income: Income[];
+  timeRange?: TimeRange;
+}) {
+  const today = todayStr();
+  const scopedExpenses = filterByDateRange(expenses, timeRange, today, (e) => e.date);
+  const scopedIncome = filterByDateRange(income, timeRange, today, (i) => i.date);
+  const totalIncome = computeTotalIncome(scopedIncome);
+  const totalSpent = computeTotalSpent(scopedExpenses);
   const remaining = totalIncome - totalSpent;
+  // CC outstanding is a running balance ("what you currently owe"), not a period metric.
+  // Always computed against the full unfiltered expense set — scoping by timeRange would
+  // misrepresent it as "CC charges within this period".
   const ccOutstanding = computeCCOutstanding(expenses);
 
   return (

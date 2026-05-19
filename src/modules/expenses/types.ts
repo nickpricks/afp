@@ -2,20 +2,26 @@ import type { ExpenseCategory, IncomeSource, PaymentMethod, TimeRange } from '@/
 
 // NOTE: Directory remains `expenses/` for backwards compat. Module is "Budget" in the UI.
 
+/** Discriminator tag for Expense.meta variants. */
+export enum ExpenseMetaType {
+  Fuel = 'fuel',
+  Travel = 'travel',
+  Maintenance = 'maintenance',
+}
+
 /** Fuel-fill metadata captured for Vehicle/Fuel expenses */
 export type FuelMeta = {
-  type: 'fuel';
+  type: ExpenseMetaType.Fuel;
   liters: number;
   pricePerLiter: number;
   odometer: number | null;
   tripOdo: number | null;
-  displayedMileage: number | null;
   fullTank: boolean;
 };
 
 /** Trip metadata captured for Travel expenses */
 export type TravelMeta = {
-  type: 'travel';
+  type: ExpenseMetaType.Travel;
   origin: string;
   destination: string;
   distance: number | null;
@@ -23,7 +29,7 @@ export type TravelMeta = {
 
 /** Maintenance metadata captured for Vehicle/Maintenance expenses */
 export type MaintenanceMeta = {
-  type: 'maintenance';
+  type: ExpenseMetaType.Maintenance;
   odometer: number;
   nextService: number | null;
   serviceNotes: string;

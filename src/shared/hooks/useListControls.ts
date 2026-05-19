@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { TimeRange } from '@/shared/types';
 
+/** Snapshot of list control state — time-range, page, page size, show-all override. */
 export interface ListControlsState {
   timeRange: TimeRange;
   pageSize: number;
@@ -9,6 +10,7 @@ export interface ListControlsState {
   showAll: boolean;
 }
 
+/** Full list controls API: state + setters returned by useListControls. */
 export interface ListControlsHandle extends ListControlsState {
   setTimeRange: (range: TimeRange) => void;
   setPageSize: (size: number) => void;
@@ -16,7 +18,16 @@ export interface ListControlsHandle extends ListControlsState {
   setShowAll: (showAll: boolean) => void;
 }
 
-/** Bundled session state for list controls. Per-list, never persisted. */
+/**
+ * Bundled session state for list controls. Per-list, never persisted.
+ *
+ * Note on `timeRange`: most lists own this directly via the hook, but some pages
+ * (e.g. ExpenseListPage) hoist `timeRange` to share it across multiple lists
+ * + summary. Those lists accept `timeRange`/`onTimeRangeChange` as props and
+ * ignore the hook's own `timeRange`/`setTimeRange` (pagination + showAll still
+ * come from the hook). The dead members on the returned handle are intentional —
+ * keeping the API uniform avoids per-list hook variants.
+ */
 export function useListControls(defaults?: Partial<ListControlsState>): ListControlsHandle {
   const [timeRange, setTimeRangeState] = useState<TimeRange>(defaults?.timeRange ?? TimeRange.All);
   const [pageSize, setPageSizeState] = useState<number>(defaults?.pageSize ?? 25);

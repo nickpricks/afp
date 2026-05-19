@@ -4,6 +4,78 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.21] — 2026-05-19 (Phase 2k — Cleanup pass: flaw-in-the-plan)
+
+> 0.2.19 went to `feat/the-rehearsal`; 0.2.20 went to Kids Presents v2; flaw-in-the-plan slots in as 0.2.21.
+
+### Fixed
+
+- **(CRITICAL) AutoTab amount validation** now shows `BudgetMsg.AmountRequired` toast instead of the misleading `CategoryRequired` toast (#C1)
+- **(CRITICAL) ExpenseList em-dash** now renders the `—` character correctly (was rendering the HTML entity literal `—`) (#C2)
+- **(CRITICAL) `validateMeta` now rejects `NaN`/`Infinity`** — `Number('')` / `Number('abc')` no longer silently coerce to 0/NaN in fuel and maintenance inputs; `isValidNumber` guards every numeric field (#C3)
+- **(CRITICAL) `firestore.rules validMeta` aligned with TS nullable types** — Travel `distance` (and several Fuel/Maintenance fields) used `is number` predicates that rejected the legitimate `T | null` values produced by `defaultMeta`. Travel quick-adds would have hit permission-denied in prod (dev mode masked it). Rule now mirrors the TS shape field-for-field with `(field == null || field is <type>)` for nullables, and a `MUST MATCH` cross-ref comment binds the two files.
+- **(CRITICAL) Baby log create-path gates on `Promise<boolean>`** — the H8 migration was only wired on the edit branch; all 7 log components discarded the create-path boolean, so `logToSiblings` fired even when the primary save returned false and the form cleared optimistically. Now `setSaving(false); return;` on primary-save failure.
+- `relativeDateLabel` + `isoWeekNumber` no longer produce off-by-one results in timezones west of UTC — `YYYY-MM-DD` strings are now parsed as midday local time via `parseLocalDate` (#H7, #39)
+- `useBabyCollection.{log,update,remove}` now return `Promise<boolean>` so callers can gate state cleanup on success instead of running optimistic updates unconditionally (#H8)
+- `useBabyCollection.update` accepts an optional `{ silent: true }` to suppress its generic success toast (NeedsLog status-change calls this so the status-specific toast doesn't double-fire).
+- `logToSiblings` now returns `{ ok, failed }` counts; a partial failure surfaces an error toast instead of a misleading success toast (#H9)
+- `useExpenses.{add,update,delete}Expense` now toast `BudgetMsg.AdapterNotReady` when the adapter is null — no more silent no-ops (#H10)
+- `ServiceDueBanner` no longer uses non-null assertions; single `useMemo` derivation replaces 4× array walks (#H11, #22, #24)
+- `dueMaintenance` now sorts candidate entries by odometer value, not date string — fixes catch-up-log correctness bug (#H12)
+- Fuel `autoDerive` stale-state bug resolved: `MetaSubForm` now dispatches to the new pure `deriveFuelTriple` util instead of reading closed-over state (#H13)
+- AutoTab now captures `paymentMethod` from the form; all entries no longer silently default to UPI (#H14). Deselect goes to `null` (matching `AddExpense`); the hook validates and toasts `PaymentMethodRequired` when null reaches submit.
+- `BudgetSummary` accepts a `timeRange` prop and filters totals (excluding CC Outstanding which remains an unfiltered running balance). `ExpenseListPage` hoists shared `timeRange` to summary + both lists; pagination stays per-list.
+- `useExpenseForm.populate` honors caller's `initialPaymentMethod` choice instead of hardcoding UPI.
+- `subCatFor`, `defaultMeta`, and `validateMeta` now use `switch + assertNever` instead of `if/else` fall-through and `return err(UnknownMetaType)`. All meta-discriminating sites uniformly exhaustive. `ValidationMsg.UnknownMetaType` removed (unreachable).
+- `MetaSubForm` nullable numeric inputs use a new `toFiniteOrNull` helper instead of raw `Number(s)` — NaN no longer survives in state until blur/submit.
+- `filterByDateRange` uses `parseLocalDate` (now exported from `relative-date.ts`) — same UTC-vs-local fix as H7, just in a different file. Also NaN-guards the reference `today`; `relativeDateLabel` graceful-fallbacks malformed input.
+- Viewer (`readOnly`) writes now toast `CommonMsg.ReadOnlyMode` instead of silent `return false` (`useBabyCollection`, `useExpenses`).
+- Listener `onError` callbacks across `useBabyCollection`, `useChildren`, `useNotifications`, `useAllUsers` now set `SyncStatus.Error` — matches the existing pattern in `useExpenses` and `useBodyData`. Sync indicator now reflects baby/notifications/admin listener failures.
+- `auth-context` `getRedirectResult` now logs unhandled error codes (was: silently swallowed all but `auth/credential-already-in-use`).
+- Dev-mode profile init `adapter.save` now has a `.catch(console.warn)` instead of dangling promise.
+- `CHANGELOG.md` 0.2.18 entry corrected — fuel-math function signatures were wrong (#H15)
+- Removed dead `prevCategoryRef` / `prevSubCatRef` closures and misleading comment from `AddExpense` (#H16)
+- Inline helper text now appears below the amount field when the value is invalid in `AddExpense` (#19)
+- Keyboard activation (`role="button"`, `onKeyDown`) added to tap-to-edit rows across expenses, body, and baby modules (#33)
+- `firestore.rules` now validates the `Expense.meta` shape server-side via a `validMeta()` helper function (#27)
+- WHAT-only inline comments cleaned up; `TODO(sentry):` markers added at all `onError` callback sites (#34, #44)
+
+### Changed
+
+- **Refactor**: Lifted `useExpenseForm` hook shared by `AddExpense` and `AutoTab` — eliminates form-state DRY violation (#14, #18, #21)
+- **Refactor**: `AutoTab.tsx` split into `AutoTabRow.tsx` and `expense-badges.ts` (#17)
+- **Refactor**: `ExpenseMetaType` string enum replaces inline `'fuel'|'travel'|'maintenance'` literals across ~25 sites (#H5)
+- **Refactor**: `VEHICLE_SUBCAT` and `TRAVEL_SUBCAT` typed `as const` objects replace subcat magic routing strings (#H6, #23)
+- **Refactor**: `assertNever` exhaustiveness helper from `@/shared/utils/types` applied as the `default` case at meta-discriminating switch sites (#H4 + Wave 5b)
+- **Refactor**: `useListControls` now scoped per-tab in `ExpenseListPage`'s lists; `timeRange` hoisted to the page for cross-tab consistency (#25)
+- **Refactor**: `useExpenses.deleteExpense` aligned to `Promise<boolean>` return matching `add`/`update` (#37)
+- **Refactor**: `CONFIG.LIST_PAGE_SIZE_OPTIONS` constant replaces hardcoded page-size array in `<ListControls>` (#41)
+- **Refactor**: `meta-utils` tests relocated to dedicated `__tests__/meta-utils.test.ts` (#38)
+- **Refactor**: Single validation pass in `useExpenses.updateExpense` — no double validation (#36)
+- **Removed**: Dead `displayedMileage` field from `FuelMeta` (input-only, never displayed back) — removed from type, validation, defaults, MetaSubForm UI, firestore rule predicate, `ValidationMsg`, and 8 test fixtures.
+
+### Documentation
+
+- **JSDoc total coverage** — ~290 new docstrings; every exported AND internal function/arrow/enum/type/interface/React component across `src/` now carries a one-line JSDoc. Zero deletions. (Wave 3, 3 parallel subagent commits)
+- `baby/hooks/README.md` updated from 4 → 5 subcollections (#28)
+- `src/modules/expenses/` README family updated: new files (`expense-badges.ts`, `AutoTabRow.tsx`, `useExpenseForm.ts`), updated test inventory, corrected hook return-type convention
+- New conventions added to `CLAUDE.md`: `ExpenseMetaType` enum pattern, `assertNever` usage (with `as never` caveat), `'T12:00:00'` YYYY-MM-DD parsing, hook return contract (Decision A1), `VEHICLE_SUBCAT`/`TRAVEL_SUBCAT` routing keys
+- Known-Issues entries added for read-only delete UX confusion (Viewer toasts after 10s undo timer) and AutoTab edit-time PM coercion to UPI (pre-existing patterns, out of scope for this branch).
+
+### Tests + tooling
+
+- New test files: `logToSiblings.test.ts` (4 tests), `AutoTabRow.test.tsx` (7 tests).
+- `AdminPanel.test.tsx` mock for `setSyncStatus` hoisted to a stable `const` reference — prevented infinite re-render OOM that the new `setSyncStatus` deps in `useNotifications` triggered through `useAdminNotifications`.
+- Test fixtures use `VEHICLE_SUBCAT.Fuel`/`Maintenance` enums instead of raw strings.
+
+### Implementation notes
+
+- 58 commits ahead of master at merge time; full wave breakdown in `docs/plans/2026-05-15-flaw-in-the-plan-execution.md`.
+- Exit gate at branch-tip: 708/708 unit tests, 81/81 e2e, lint + format clean. Single-reviewer re-verify caught one CC-outstanding regression which was fixed in-branch.
+- Branch: `feat/the-flaw-in-the-plan`. Merged into master with conflict resolution against `the-rehearsal` (0.2.19) + Kids Presents v2 (0.2.20).
+
+---
+
 ## [0.2.20] — 2026-05-14 (Kids Presents v2 — gifts + finances per child + Budget aggregation)
 
 > Skipped 0.2.19 — that slot is claimed by `feat/the-rehearsal` (unmerged).
@@ -92,7 +164,7 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 ### Added
 - **Budget — Auto tab** (`feat/who-planned-it` series). New tab inside Budget module for Vehicle + Travel expenses with quick-add buttons (⛽ Add Fuel · 🚕 Add Trip · 🔧 Service), inline meta sub-form, and a derived service-due banner. Tap-to-populate edit pattern matching Body module. All toast strings live in `BudgetMsg` enum.
 - **Discriminated `meta` union on `Expense`** — New type system for optional metadata: `FuelMeta` (liters, pricePerLiter, odometer, tripOdo, displayedMileage, fullTank), `TravelMeta` (origin, destination, distance), `MaintenanceMeta` (odometer, nextService). Existing expenses without `meta` continue to work unchanged.
-- **`fuel-math.ts` module** — Pure computation helpers: `computeMileage(legStart, legEnd)`, `latestOdometer(expenses)`, `dueMaintenance(expenses, lastServiceOdo?)`, `isServiceDue(nextService)`. No storage coupling.
+- **`fuel-math.ts` module** — Pure computation helpers: `computeMileage(meta: FuelMeta)`, `latestOdometer(expenses: Expense[])`, `dueMaintenance(expenses: Expense[])`, `isServiceDue(expenses: Expense[]): boolean`. No storage coupling.
 - **`updateExpense` hook in `useExpenses`** — Complements existing `addExpense`/`deleteExpense`. Enables tap-to-populate edit on Auto tab (row → form pre-population → Update button).
 - **`meta-utils.ts` module** — `metaKindFor(meta)` discriminator, `defaultMeta(kind)` factory. Extracted to avoid react-refresh warnings when meta union types are used inline in component render.
 

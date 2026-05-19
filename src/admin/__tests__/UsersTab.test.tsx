@@ -57,6 +57,7 @@ vi.mock('@/admin/hooks/useAdminNotifications', () => ({
   }),
 }));
 
+/** Tests for UsersTab user list, role badges, module chips, and accordion. */
 describe('UsersTab', () => {
   it('lists all users with name and role', () => {
     render(

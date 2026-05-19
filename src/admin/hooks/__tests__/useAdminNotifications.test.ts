@@ -71,6 +71,7 @@ vi.mock('@/shared/utils/date', () => ({
   nowTime: () => '2026-04-14T10:00:00Z',
 }));
 
+/** Tests for useAdminNotifications module-request filtering, sendAlert, and approveModuleRequest. */
 describe('useAdminNotifications', () => {
   beforeEach(() => vi.clearAllMocks());
 

@@ -9,6 +9,7 @@ const mockRemoveFeed = vi.fn();
 const mockLogFeed = vi.fn();
 const mockAddToast = vi.fn();
 
+/** Sample feed entry fixture for delete-action tests */
 const sampleFeed: FeedEntry = {
   id: 'feed-1',
   date: '2026-04-07',
@@ -27,16 +28,16 @@ vi.mock('@/modules/baby/hooks/useBabyData', () => ({
     growth: [],
     diapers: [],
     logFeed: mockLogFeed,
-    updateFeed: vi.fn(),
+    updateFeed: vi.fn(async () => true),
     removeFeed: mockRemoveFeed,
     logSleep: vi.fn(),
-    updateSleep: vi.fn(),
+    updateSleep: vi.fn(async () => true),
     removeSleep: vi.fn(),
     logGrowth: vi.fn(),
-    updateGrowth: vi.fn(),
+    updateGrowth: vi.fn(async () => true),
     removeGrowth: vi.fn(),
     logDiaper: vi.fn(),
-    updateDiaper: vi.fn(),
+    updateDiaper: vi.fn(async () => true),
     removeDiaper: vi.fn(),
   }),
 }));
@@ -45,6 +46,7 @@ vi.mock('@/shared/errors/useToast', () => ({
   useToast: () => ({ addToast: mockAddToast }),
 }));
 
+/** Validates FeedLog delete button shows undo toast and optimistically hides the entry */
 describe('FeedLog — delete action', () => {
   it('shows a delete button on each recent entry', () => {
     render(<FeedLog childId="child-1" />);

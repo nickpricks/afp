@@ -36,4 +36,6 @@ export const CONFIG = {
     /** Post-redeem redirect delay so the user sees the success toast before navigation */
     INVITE_REDIRECT_MS: 2000 as number,
   },
+  /** Available page-size options for the universal list controls */
+  LIST_PAGE_SIZE_OPTIONS: [5, 10, 25, 50, 100, 500] as const,
 } as const;

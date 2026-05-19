@@ -75,7 +75,7 @@ export function FeedLog({
     };
 
     if (editEntry) {
-      await updateFeed({
+      const ok = await updateFeed({
         ...editEntry,
         date,
         time,
@@ -83,13 +83,25 @@ export function FeedLog({
         amount: isAmountType(type) ? amount : null,
         notes,
       });
-      setEditEntry(null);
+      if (ok) setEditEntry(null);
     } else {
-      await logFeed(entryData);
+      const saved = await logFeed(entryData);
+      if (!saved) {
+        setSaving(false);
+        return;
+      }
       if (logToAll && hasSiblings && uid) {
-        const count = await logToSiblings(uid, siblingIds, DbSubcollection.Feeds, entryData);
-        if (count > 0)
-          addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+        const { ok, failed } = await logToSiblings(
+          uid,
+          siblingIds,
+          DbSubcollection.Feeds,
+          entryData,
+        );
+        if (failed > 0) {
+          addToast(`${ok} of ${ok + failed} copied — ${failed} failed`, ToastType.Error);
+        } else if (ok > 0) {
+          addToast(`Copied to ${ok} sibling${ok > 1 ? 's' : ''}`, ToastType.Info);
+        }
       }
     }
 
@@ -277,7 +289,6 @@ function RecentFeeds({
 }) {
   if (entries.length === 0) return null;
 
-  // Group by date
   const groups: Record<string, FeedEntry[]> = {};
   entries.forEach((e) => {
     (groups[e.date] = groups[e.date] || []).push(e);

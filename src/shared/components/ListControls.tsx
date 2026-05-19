@@ -1,7 +1,9 @@
 import { ChangeEvent, FocusEvent, useState } from 'react';
 
 import { TimeRange } from '@/shared/types';
+import { CONFIG } from '@/constants/config';
 
+/** Available time-range filter options for list controls. */
 const TIME_RANGES: { id: TimeRange; label: string }[] = [
   { id: TimeRange.Today, label: 'Today' },
   { id: TimeRange.Week, label: 'Week' },
@@ -9,8 +11,7 @@ const TIME_RANGES: { id: TimeRange; label: string }[] = [
   { id: TimeRange.All, label: 'All' },
 ];
 
-const PAGE_SIZE_OPTIONS = [5, 10, 25, 50, 100, 500];
-
+/** Props for ListControls. */
 interface Props {
   timeRange: TimeRange;
   onTimeRangeChange: (range: TimeRange) => void;
@@ -72,7 +73,7 @@ export function ListControls(props: Props) {
               }
               className="rounded border border-line bg-surface-card px-1 py-0.5 text-fg"
             >
-              {PAGE_SIZE_OPTIONS.map((size) => (
+              {CONFIG.LIST_PAGE_SIZE_OPTIONS.map((size) => (
                 <option key={size} value={size}>
                   {size}
                 </option>

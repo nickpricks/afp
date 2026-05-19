@@ -24,6 +24,7 @@ import { useListControls } from '@/shared/hooks/useListControls';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
 
+/** Props for MealsLog component */
 type Props = {
   childId?: string;
   siblingIds?: string[];
@@ -73,6 +74,7 @@ export function MealsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setNotes(entry.notes);
   };
 
+  /** Clears the edit state and resets all form fields to defaults */
   const handleCancelEdit = () => {
     setEditEntry(null);
     setType(defaultMealType());
@@ -83,6 +85,7 @@ export function MealsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setNotes('');
   };
 
+  /** Handles form submission — create or update meal entry */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!description.trim()) {
@@ -103,14 +106,26 @@ export function MealsLog({ childId, siblingIds = [], uid = '' }: Props) {
     };
 
     if (editEntry) {
-      await update({ ...editEntry, ...entryData });
-      setEditEntry(null);
+      const ok = await update({ ...editEntry, ...entryData });
+      if (ok) setEditEntry(null);
     } else {
-      await log(entryData);
+      const saved = await log(entryData);
+      if (!saved) {
+        setSaving(false);
+        return;
+      }
       if (logToAll && hasSiblings && uid) {
-        const count = await logToSiblings(uid, siblingIds, DbSubcollection.Meals, entryData);
-        if (count > 0)
-          addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+        const { ok, failed } = await logToSiblings(
+          uid,
+          siblingIds,
+          DbSubcollection.Meals,
+          entryData,
+        );
+        if (failed > 0) {
+          addToast(`${ok} of ${ok + failed} copied — ${failed} failed`, ToastType.Error);
+        } else if (ok > 0) {
+          addToast(`Copied to ${ok} sibling${ok > 1 ? 's' : ''}`, ToastType.Info);
+        }
       }
     }
 
@@ -121,6 +136,7 @@ export function MealsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setSaving(false);
   }
 
+  /** Stages a delete with undo toast; fires actual delete after undo window expires */
   const handleUndoDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);

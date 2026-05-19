@@ -5,11 +5,12 @@ import { MealsLog } from '@/modules/baby/components/MealsLog';
 import { MealType, MealPortion } from '@/modules/baby/types';
 import type { MealEntry } from '@/modules/baby/types';
 
-const mockLog = vi.fn(async () => undefined);
-const mockUpdate = vi.fn(async () => undefined);
-const mockRemove = vi.fn(async () => undefined);
+const mockLog = vi.fn(async () => true);
+const mockUpdate = vi.fn(async () => true);
+const mockRemove = vi.fn(async () => true);
 const mockAddToast = vi.fn();
 
+/** Breakfast MealEntry fixture for rendering and form behavior tests */
 const sampleMeal: MealEntry = {
   id: 'meal-1',
   date: '2026-04-12',
@@ -43,6 +44,7 @@ beforeEach(() => {
   mockAddToast.mockClear();
 });
 
+/** Validates MealsLog renders header, existing entries, and delete buttons */
 describe('MealsLog — rendering', () => {
   it('renders Meals header', () => {
     render(<MealsLog childId="c1" />);
@@ -60,6 +62,7 @@ describe('MealsLog — rendering', () => {
   });
 });
 
+/** Validates MealsLog form validates description and submits correct payload */
 describe('MealsLog — form behavior', () => {
   it('blocks submit when description is empty and shows error toast', () => {
     render(<MealsLog childId="c1" />);
@@ -84,6 +87,7 @@ describe('MealsLog — form behavior', () => {
   });
 });
 
+/** Validates MealsLog renders all 4 meal type option buttons */
 describe('MealsLog — meal type defaults', () => {
   it('renders all 4 meal type options', () => {
     render(<MealsLog childId="c1" />);

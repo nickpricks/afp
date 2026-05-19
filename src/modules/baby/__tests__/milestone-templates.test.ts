@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { MILESTONE_TEMPLATES } from '@/modules/baby/milestone-templates';
 import { MilestoneCategory } from '@/modules/baby/types';
 
+/** Validates MILESTONE_TEMPLATES array has correct structure, unique titles, and valid enum categories */
 describe('MILESTONE_TEMPLATES', () => {
   it('contains at least 8 templates', () => {
     expect(MILESTONE_TEMPLATES.length).toBeGreaterThanOrEqual(8);

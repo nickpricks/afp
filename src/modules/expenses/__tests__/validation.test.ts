@@ -3,12 +3,14 @@ import { describe, it, expect } from 'vitest';
 import { validateExpense, validateIncome } from '@/modules/expenses/validation';
 import { isOk, isErr, ExpenseCategory, IncomeSource } from '@/shared/types';
 import type { FuelMeta, TravelMeta, MaintenanceMeta } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ValidationMsg } from '@/constants/messages';
 
 /** Extracts only numeric values from a numeric TypeScript enum */
 const numericValues = <T extends Record<string, string | number>>(e: T): number[] =>
   Object.values(e).filter((v): v is number => typeof v === 'number');
 
+/** Validates validateExpense accepts valid inputs and rejects bad date/category/amount */
 describe('validateExpense', () => {
   it('accepts a valid expense with enum category', () => {
     const result = validateExpense({
@@ -77,6 +79,7 @@ describe('validateExpense', () => {
   });
 });
 
+/** Validates validateIncome accepts valid inputs and rejects bad date/source/amount */
 describe('validateIncome', () => {
   it('accepts a valid income entry', () => {
     const result = validateIncome({
@@ -143,6 +146,7 @@ describe('validateIncome', () => {
   });
 });
 
+/** Validates fuel meta validation rules: liters and pricePerLiter must be positive */
 describe('validateExpense — fuel meta', () => {
   const baseInput = {
     date: '2026-05-04',
@@ -152,12 +156,11 @@ describe('validateExpense — fuel meta', () => {
 
   it('accepts a valid fuel meta', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: 500,
-      displayedMileage: 14.2,
       fullTank: true,
     };
     expect(isOk(validateExpense({ ...baseInput, meta }))).toBe(true);
@@ -165,35 +168,34 @@ describe('validateExpense — fuel meta', () => {
 
   it('rejects fuel meta with zero liters', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 0,
       pricePerLiter: 100,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
-    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.FuelLitersPositive);
+    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.FuelLitersInvalid);
   });
 
   it('rejects fuel meta with zero pricePerLiter', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 0,
       odometer: null,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: false,
     };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
-    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.FuelPricePerLiterPositive);
+    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.FuelPriceInvalid);
   });
 });
 
+/** Validates travel meta validation rules: origin and destination must be non-empty */
 describe('validateExpense — travel meta', () => {
   const baseInput = {
     date: '2026-05-04',
@@ -203,7 +205,7 @@ describe('validateExpense — travel meta', () => {
 
   it('accepts a valid travel meta', () => {
     const meta: TravelMeta = {
-      type: 'travel',
+      type: ExpenseMetaType.Travel,
       origin: 'BLR',
       destination: 'MAA',
       distance: 8,
@@ -212,20 +214,31 @@ describe('validateExpense — travel meta', () => {
   });
 
   it('rejects travel meta with empty origin', () => {
-    const meta: TravelMeta = { type: 'travel', origin: '', destination: 'MAA', distance: null };
+    const meta: TravelMeta = {
+      type: ExpenseMetaType.Travel,
+      origin: '',
+      destination: 'MAA',
+      distance: null,
+    };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
     if (!isOk(r)) expect(r.error).toBe(ValidationMsg.TravelOriginRequired);
   });
 
   it('rejects travel meta with empty destination', () => {
-    const meta: TravelMeta = { type: 'travel', origin: 'BLR', destination: '', distance: null };
+    const meta: TravelMeta = {
+      type: ExpenseMetaType.Travel,
+      origin: 'BLR',
+      destination: '',
+      distance: null,
+    };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
     if (!isOk(r)) expect(r.error).toBe(ValidationMsg.TravelDestinationRequired);
   });
 });
 
+/** Validates maintenance meta validation rules: odometer must be positive */
 describe('validateExpense — maintenance meta', () => {
   const baseInput = {
     date: '2026-05-04',
@@ -235,7 +248,7 @@ describe('validateExpense — maintenance meta', () => {
 
   it('accepts a valid maintenance meta', () => {
     const meta: MaintenanceMeta = {
-      type: 'maintenance',
+      type: ExpenseMetaType.Maintenance,
       odometer: 12500,
       nextService: 22500,
       serviceNotes: 'Engine oil + filter',
@@ -245,17 +258,61 @@ describe('validateExpense — maintenance meta', () => {
 
   it('rejects maintenance meta with zero odometer', () => {
     const meta: MaintenanceMeta = {
-      type: 'maintenance',
+      type: ExpenseMetaType.Maintenance,
       odometer: 0,
       nextService: null,
       serviceNotes: '',
     };
     const r = validateExpense({ ...baseInput, meta });
     expect(isOk(r)).toBe(false);
-    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.MaintenanceOdometerPositive);
+    if (!isOk(r)) expect(r.error).toBe(ValidationMsg.OdometerInvalid);
   });
 });
 
+/** Validates that NaN and Infinity numeric fields are rejected by validateMeta */
+describe('validateMeta — NaN/Infinity rejection', () => {
+  const fuelBase = { date: '2026-05-04', category: ExpenseCategory.Vehicle, amount: 4000 };
+  const maintBase = { date: '2026-05-04', category: ExpenseCategory.Vehicle, amount: 5000 };
+
+  it('rejects NaN liters on fuel meta', () => {
+    const meta: FuelMeta = {
+      type: ExpenseMetaType.Fuel,
+      liters: NaN,
+      pricePerLiter: 100,
+      odometer: null,
+      tripOdo: null,
+      fullTank: false,
+    };
+    const r = validateExpense({ ...fuelBase, meta });
+    expect(isOk(r)).toBe(false);
+  });
+
+  it('rejects Infinity pricePerLiter on fuel meta', () => {
+    const meta: FuelMeta = {
+      type: ExpenseMetaType.Fuel,
+      liters: 40,
+      pricePerLiter: Infinity,
+      odometer: null,
+      tripOdo: null,
+      fullTank: false,
+    };
+    const r = validateExpense({ ...fuelBase, meta });
+    expect(isOk(r)).toBe(false);
+  });
+
+  it('rejects NaN odometer on maintenance meta', () => {
+    const meta: MaintenanceMeta = {
+      type: ExpenseMetaType.Maintenance,
+      odometer: NaN,
+      nextService: 50000,
+      serviceNotes: '',
+    };
+    const r = validateExpense({ ...maintBase, meta });
+    expect(isOk(r)).toBe(false);
+  });
+});
+
+/** Validates backward-compatibility: expenses without meta are accepted */
 describe('validateExpense — no meta', () => {
   it('accepts an expense with meta=undefined (existing behavior)', () => {
     expect(

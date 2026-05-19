@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SizeTierPicker } from '../SizeTierPicker';
 
+/** Tests for SizeTierPicker tier buttons, active state, and onChange. */
 describe('<SizeTierPicker>', () => {
   it('renders 3 buttons with tier labels', () => {
     render(<SizeTierPicker value={100} onChange={() => {}} />);

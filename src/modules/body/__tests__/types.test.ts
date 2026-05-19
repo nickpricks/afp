@@ -4,6 +4,7 @@ import { ActivityType } from '@/shared/types';
 import type { BodyConfig, BodyRecord, BodyActivity } from '@/modules/body/types';
 import { DEFAULT_BODY_CONFIG } from '@/modules/body/types';
 
+/** Verifies ActivityType enum string values match storage expectations */
 describe('ActivityType (shared)', () => {
   it('has walk, run, cycle, yoga values', () => {
     expect(ActivityType.Walk).toBe('walk');
@@ -13,6 +14,7 @@ describe('ActivityType (shared)', () => {
   });
 });
 
+/** Validates BodyConfig type defaults and shape */
 describe('BodyConfig', () => {
   it('DEFAULT_BODY_CONFIG has expected defaults', () => {
     expect(DEFAULT_BODY_CONFIG.floors).toBe(true);
@@ -38,6 +40,7 @@ describe('BodyConfig', () => {
   });
 });
 
+/** Validates BodyRecord type fields and storage conventions */
 describe('BodyRecord', () => {
   it('has flattened floors (up/down at top level)', () => {
     const record: BodyRecord = {
@@ -68,6 +71,7 @@ describe('BodyRecord', () => {
   });
 });
 
+/** Validates BodyActivity type with nullable fields */
 describe('BodyActivity', () => {
   it('supports nullable distance and duration', () => {
     const activity: BodyActivity = {

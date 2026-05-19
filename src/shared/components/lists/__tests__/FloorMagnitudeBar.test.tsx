@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 
 import { FloorMagnitudeBar } from '../FloorMagnitudeBar';
 
+/** Tests for FloorMagnitudeBar proportional segment rendering. */
 describe('FloorMagnitudeBar', () => {
   it('renders an up segment proportional to up count', () => {
     const { container } = render(<FloorMagnitudeBar up={12} down={3} goal={20} />);

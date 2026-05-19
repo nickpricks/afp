@@ -12,6 +12,7 @@ vi.mock('@/shared/errors/useToast', () => ({
 const mockOnLog = vi.fn();
 const mockOnSave = vi.fn();
 
+/** Cycling activity fixture for list-filtering tests */
 const cycleActivity: BodyActivity = {
   id: 'a1',
   date: '2026-04-07',
@@ -22,6 +23,7 @@ const cycleActivity: BodyActivity = {
   updatedAt: '2026-04-07T10:00:00Z',
 };
 
+/** Walk activity fixture to verify CyclingTab filters out non-cycle activities */
 const walkActivity: BodyActivity = {
   id: 'a2',
   date: '2026-04-07',
@@ -32,6 +34,7 @@ const walkActivity: BodyActivity = {
   updatedAt: '2026-04-07T10:00:00Z',
 };
 
+/** Validates CyclingTab renders correctly and filters to cycle-only activities */
 describe('CyclingTab', () => {
   it('renders the add activity form with Cycle as default type', () => {
     render(<CyclingTab activities={[]} onLog={mockOnLog} onSave={mockOnSave} />);

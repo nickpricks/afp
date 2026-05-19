@@ -81,7 +81,6 @@ export function ActivityLog({
       />
       <ul className="flex flex-col bg-surface">
         {(() => {
-          // Group visible by date for sticky day headers
           const groups: Record<string, BodyActivity[]> = {};
           visible.forEach((a) => {
             (groups[a.date] = groups[a.date] || []).push(a);

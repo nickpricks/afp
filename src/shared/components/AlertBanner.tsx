@@ -15,6 +15,7 @@ const SEVERITY_ICON: Record<Severity, string> = {
   [Severity.Critical]: '\uD83D\uDEA8',
 };
 
+/** Props for AlertBanner. */
 interface AlertBannerProps {
   alerts: Notification[];
   onDismiss: (id: string) => void;

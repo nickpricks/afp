@@ -11,6 +11,7 @@ vi.mock('firebase/firestore', () => ({
   query: vi.fn(),
 }));
 
+/** Smoke tests for useAllUsers hook export (Firebase not configured in test env). */
 describe('useAllUsers', () => {
   it('exports a function', async () => {
     const { useAllUsers } = await import('@/admin/hooks/useAllUsers');

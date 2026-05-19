@@ -3,9 +3,11 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 
 import { AddExpense } from '@/modules/expenses/components/AddExpense';
 import { ToastProvider } from '@/shared/errors/toast-context';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 
 const noop = vi.fn().mockResolvedValue(true);
 
+/** Renders the given element inside a ToastProvider for tests that trigger toasts */
 const renderWithToast = (ui: React.ReactElement) => {
   return render(<ToastProvider>{ui}</ToastProvider>);
 };
@@ -30,6 +32,7 @@ function getMethodBubbles() {
   });
 }
 
+/** Validates AddExpense preset buttons fill and accumulate the amount input */
 describe('AddExpense — amount presets', () => {
   it('renders preset amount buttons', () => {
     renderWithToast(<AddExpense onSubmit={noop} />);
@@ -59,6 +62,7 @@ describe('AddExpense — amount presets', () => {
   });
 });
 
+/** Validates AddExpense amount input has correct min/step HTML attributes */
 describe('AddExpense — amount input constraints', () => {
   it('has min attribute preventing zero/negative values', () => {
     renderWithToast(<AddExpense onSubmit={noop} />);
@@ -73,6 +77,7 @@ describe('AddExpense — amount input constraints', () => {
   });
 });
 
+/** Validates payment method bubble toggle: second click deselects, null allowed on submit */
 describe('AddExpense — payment method bubbles', () => {
   it('deselects active payment method on second click', () => {
     renderWithToast(<AddExpense onSubmit={noop} />);
@@ -128,11 +133,12 @@ describe('AddExpense — payment method bubbles', () => {
   });
 });
 
+/** Validates MetaSubForm integration: revealed by Vehicle/Fuel selection, meta passed to onSubmit */
 describe('AddExpense — meta sub-form integration', () => {
   it('reveals the Fuel sub-form when Vehicle/Fuel is selected', () => {
     renderWithToast(<AddExpense onSubmit={noop} />);
 
-    // Vehicle is within the first 7 visible categories — no "View All" needed
+    // If Vehicle is hidden behind View All (BUDGET_VISIBLE_CATEGORIES tuning), reveal it first
     const viewAll = screen.queryByRole('button', { name: /View All/ });
     if (viewAll) fireEvent.click(viewAll);
 
@@ -168,7 +174,7 @@ describe('AddExpense — meta sub-form integration', () => {
     expect(onSubmit).toHaveBeenCalled();
     const call = onSubmit.mock.calls[0]![0];
     expect(call.meta).toBeDefined();
-    expect(call.meta?.type).toBe('fuel');
+    expect(call.meta?.type).toBe(ExpenseMetaType.Fuel);
     expect(call.meta?.liters).toBe(40);
     expect(call.meta?.pricePerLiter).toBe(100);
   });

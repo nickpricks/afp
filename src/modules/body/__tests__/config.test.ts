@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest';
 import type { BodyConfig } from '@/modules/body/types';
 import { DEFAULT_BODY_CONFIG } from '@/modules/body/types';
 
+/** Validates that BodyConfig fields satisfy module requirements */
 describe('BodyConfig validation', () => {
   it('at least one activity must be enabled for valid config', () => {
     const allOff: BodyConfig = {
@@ -48,6 +49,7 @@ describe('BodyConfig validation', () => {
   });
 });
 
+/** Verifies BodyPage config-gate behavior (show form vs tabs) */
 describe('Config gate logic', () => {
   it('should show config form when not configured', () => {
     const isConfigured = false;
@@ -62,6 +64,7 @@ describe('Config gate logic', () => {
 
   it('builds correct tabs based on config', () => {
     type TabDef = { id: string; label: string };
+    /** Local replica of BodyPage's buildTabs for unit testing */
     function buildTabs(config: { floors: boolean; walking: boolean; running: boolean }): TabDef[] {
       const tabs: TabDef[] = [{ id: 'stats', label: 'Stats' }];
       if (config.floors) tabs.push({ id: 'floors', label: 'Floors' });

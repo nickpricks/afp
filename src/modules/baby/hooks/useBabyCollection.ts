@@ -4,8 +4,9 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { useToast } from '@/shared/errors/useToast';
 import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
-import { isOk, ToastType } from '@/shared/types';
+import { isOk, SyncStatus, ToastType } from '@/shared/types';
 import { childPath } from '@/constants/db';
+import { CommonMsg } from '@/constants/messages';
 
 /** Generic hook for a baby subcollection nested under a child — handles listener, state, and save */
 export function useBabyCollection<T extends Record<string, unknown> & { id: string }>(
@@ -14,7 +15,7 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
   label: string,
   targetUid?: string,
 ) {
-  const { firebaseUser } = useAuth();
+  const { firebaseUser, setSyncStatus } = useAuth();
   const { addToast } = useToast();
   const [items, setItems] = useState<T[]>([]);
   const [ready, setReady] = useState(false);
@@ -36,7 +37,9 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
         setReady(true);
       },
       (error) => {
+        // TODO(sentry): pipe onError to centralized logError once Sentry lands.
         console.error(`[AFP] Baby ${label} listener error:`, error);
+        setSyncStatus(SyncStatus.Error);
       },
     );
 
@@ -44,19 +47,25 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
       unsubscribe();
       adapterRef.current = null;
     };
-  }, [uid, childId, subcollection, label]);
+  }, [uid, childId, subcollection, label, setSyncStatus]);
 
+  /** Saves a new entry with a generated UUID and shows a success/error toast */
   const log = useCallback(
-    async (data: Omit<T, 'id'>) => {
-      if (readOnly) return;
+    async (data: Omit<T, 'id'>): Promise<boolean> => {
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       const adapter = adapterRef.current;
-      if (!adapter) return;
+      if (!adapter) return false;
       const entry = { ...data, id: crypto.randomUUID() } as T;
       const result = await adapter.save(subcollection, entry);
       if (isOk(result)) {
         addToast(`${label} logged`, ToastType.Success);
+        return true;
       } else {
         addToast(result.error, ToastType.Error);
+        return false;
       }
     },
     [addToast, subcollection, label, readOnly],
@@ -64,31 +73,41 @@ export function useBabyCollection<T extends Record<string, unknown> & { id: stri
 
   /** Removes an entry by ID */
   const remove = useCallback(
-    async (id: string) => {
-      if (readOnly) return;
+    async (id: string): Promise<boolean> => {
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       const adapter = adapterRef.current;
-      if (!adapter) return;
+      if (!adapter) return false;
       const result = await adapter.remove(subcollection, id);
       if (isOk(result)) {
         addToast(`${label} deleted`, ToastType.Success);
+        return true;
       } else {
         addToast(result.error, ToastType.Error);
+        return false;
       }
     },
     [addToast, subcollection, label, readOnly],
   );
 
-  /** Updates an existing entry by ID */
+  /** Updates an existing entry by ID. Pass { silent: true } to suppress the generic success toast (caller toasts a more specific message). */
   const update = useCallback(
-    async (data: T) => {
-      if (readOnly) return;
+    async (data: T, opts?: { silent?: boolean }): Promise<boolean> => {
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       const adapter = adapterRef.current;
-      if (!adapter) return;
+      if (!adapter) return false;
       const result = await adapter.save(subcollection, data);
       if (isOk(result)) {
-        addToast(`${label} updated`, ToastType.Success);
+        if (!opts?.silent) addToast(`${label} updated`, ToastType.Success);
+        return true;
       } else {
         addToast(result.error, ToastType.Error);
+        return false;
       }
     },
     [addToast, subcollection, label, readOnly],

@@ -11,6 +11,7 @@ vi.mock('@/shared/errors/useToast', () => ({
   useToast: () => ({ addToast: vi.fn() }),
 }));
 
+/** Enable-meals suggestion fixture for SuggestionStrip interaction tests */
 const suggestion: Suggestion = {
   childId: 'c1',
   childName: 'Aanya',
@@ -18,6 +19,7 @@ const suggestion: Suggestion = {
   action: SuggestionAction.Enable,
 };
 
+/** Validates SuggestionStrip renders summary line, expands on click, and calls onEnable */
 describe('SuggestionStrip', () => {
   it('renders nothing when no suggestions', () => {
     const { container } = render(<SuggestionStrip suggestions={[]} onEnable={vi.fn()} />);

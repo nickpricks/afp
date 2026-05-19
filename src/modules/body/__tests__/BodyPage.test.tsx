@@ -4,6 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BodyPage } from '@/modules/body/components/BodyPage';
 import type { BodyConfig } from '@/modules/body/types';
 
+/** Stub BodyConfig with floors+walking enabled for reconfigure tests */
 const mockConfig: BodyConfig = {
   floors: true,
   walking: true,
@@ -25,6 +26,7 @@ vi.mock('@/modules/body/hooks/useBodyConfig', () => ({
   }),
 }));
 
+/** Stub today record for body data hook mock */
 const mockTodayRecord = {
   dateStr: '2026-04-07',
   up: 0,
@@ -51,6 +53,7 @@ vi.mock('@/shared/errors/useToast', () => ({
   useToast: () => ({ addToast: vi.fn() }),
 }));
 
+/** Validates BodyPage gear-button opens pre-filled config form */
 describe('BodyPage — reconfigure', () => {
   it('shows a settings/gear button when configured', () => {
     render(<BodyPage />);

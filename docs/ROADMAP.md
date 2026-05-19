@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-05-14
+Last updated: 2026-05-19
 
 ---
 
@@ -196,6 +196,28 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 
 ## Done
 
+### 2026-05-19 — Session 23 (Phase 2k — Cleanup pass: flaw-in-the-plan, v0.2.21)
+
+- [x] **5 CRITICAL bug fixes** — AutoTab amount validation toast (#C1), em-dash literal rendering (#C2), `Number('')`/`Number('abc')` NaN/Infinity rejection in validateMeta (#C3), `firestore.rules validMeta` aligned with TS nullable types (Wave 5b), baby log create-path gates `Promise<boolean>` (Wave 5b)
+- [x] **13+ HIGH bug fixes** — `relativeDateLabel`/`isoWeekNumber` off-by-one in TZ west of UTC (#H7), `useBabyCollection` returns `Promise<boolean>` (#H8), `logToSiblings` partial-failure surfacing (#H9), adapter-null toasts in `useExpenses` (#H10), `ServiceDueBanner` defensive guards + single-pass memo (#H11, #22, #24), `dueMaintenance` sorts by odometer (#H12), fuel stale-state via `deriveFuelTriple` (#H13), AutoTab captures paymentMethod (#H14), dead prevCategoryRef code removed (#H16), inline helper text on invalid amount (#19), keyboard activation on tap-to-edit rows (#33), `filterByDateRange` NaN guard (#35), assertNever exhaustiveness at 8 meta sites (#H4 + Wave 5b)
+- [x] **Wave 5b regressions fixed in-branch** — AutoTab PM deselect → null; `BudgetSummary` honors `timeRange` (CC outstanding kept unfiltered); `useExpenseForm.populate` honors initPM; `subCatFor`/`defaultMeta`/`validateMeta` switch + assertNever; `MetaSubForm` nullable inputs use `toFiniteOrNull` (NaN rejected at keystroke); `filterByDateRange` + `relativeDateLabel` TZ-safe + NaN-guarded; dead `displayedMileage` field removed
+- [x] **Pre-existing silent-failure issues addressed** — Viewer `readOnly` toast (`CommonMsg.ReadOnlyMode`); listener `onError` SyncStatus consistency across baby/notifications/admin; `getRedirectResult` broader error logging; dev-mode profile init non-dangling promise; NeedsLog double-toast via `update({silent:true})` opt-in
+- [x] **`useExpenseForm` hook** — Lifted shared form-state from `AddExpense` + `AutoTab`, eliminates DRY violation (#14, #18, #21)
+- [x] **`AutoTab` split** — `AutoTab.tsx` split into `AutoTabRow.tsx` + `expense-badges.ts` (#17)
+- [x] **`ExpenseMetaType` enum** — Replaces inline `'fuel'|'travel'|'maintenance'` literals across ~25 sites (#H5)
+- [x] **`VEHICLE_SUBCAT` + `TRAVEL_SUBCAT` constants** — Typed `as const` objects replace subcat magic strings (#H6, #23)
+- [x] **`deriveFuelTriple` pure util** — Extracted fuel triple derivation, fixes stale-state bug (#H13)
+- [x] **Firestore rules `validMeta()` defense-in-depth** — Server-side `Expense.meta` shape validation (#27) — Wave 5b aligned with TS nullable types
+- [x] **`useListControls` per-tab + `timeRange` page-shared in `ExpenseListPage`** — Summary card matches list filter (#25 + Wave 5b BudgetSummary fix)
+- [x] **`CONFIG.LIST_PAGE_SIZE_OPTIONS` constant** — Replaces hardcoded array in `ListControls` (#41)
+- [x] **JSDoc total coverage** — ~290 new docstrings across `src/`; 100% coverage (Wave 3, 3 parallel subagent commits)
+- [x] **New test files** — `logToSiblings.test.ts` (4), `AutoTabRow.test.tsx` (7); AdminPanel mock setSyncStatus stabilized
+- [x] **AutoTab 500-row sanity test** — Confirms no pagination chrome on Auto tab (#26)
+- [x] **Docs sweep** — Per-dir README audit, CLAUDE.md new conventions (`ExpenseMetaType`/`assertNever`/`parseLocalDate`/`VEHICLE_SUBCAT` + `Promise<boolean>` hook contract), Known-Issues entries for read-only delete + AutoTab edit-PM coercion, ROADMAP/CHANGELOG entries
+- [x] **Version**: 0.2.20 → 0.2.21 (collision: 0.2.19 went to the-rehearsal, 0.2.20 to Kids Presents v2)
+
+---
+
 ### 2026-05-14 — Kids Presents v2 (finishing pass, unreleased)
 
 - [x] **Kids Presents v2 feature** — Per-child gift + finance tracking via two new subcollections (`gifts`, `finances`). New `🎁` tab in `ChildDetail` for per-child view.
@@ -223,6 +245,9 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 - [x] **Doc sweep — 11 files** — root `README.md`, `CLAUDE.md`, `docs/firebase-data-structure.md`, 8 per-directory READMEs updated to current Phase 2i terminology. Removed obsolete "per-effect glyphs are emoji today" note (false since v0.2.17). Fixed `effectCount` → `effectIntensity` + `effectSize` typed as number across data-structure docs. `bucketX + X_TIERS` idiom documented.
 - [x] **Tests**: 637 → 648 unit (+11), 81 → 82 E2E (+1)
 - [x] **Version**: 0.2.18 → 0.2.19
+
+---
+
 
 ### 2026-05-04 — Session 20 (Budget — Auto tab: fuel, travel, maintenance, v0.2.18)
 

@@ -67,11 +67,12 @@ vi.mock('@/constants/config', () => ({
 
 import { ProfilePage } from '@/shared/components/ProfilePage';
 
-/** Wraps a component in MemoryRouter for tests */
+/** Wraps a component in MemoryRouter for routing-aware tests. */
 function renderWithRouter(ui: React.ReactElement) {
   return render(<MemoryRouter>{ui}</MemoryRouter>);
 }
 
+/** Tests for the ProfilePage module request/approve UI. */
 describe('ProfilePage module request UI', () => {
   it('shows "Request" button for disabled unrequested modules', () => {
     renderWithRouter(<ProfilePage />);

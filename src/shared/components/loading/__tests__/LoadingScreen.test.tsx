@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react';
 import { useMinDelay } from '@/shared/hooks/useMinDelay';
 
+/** Tests for useMinDelay timer behavior and cleanup. */
 describe('useMinDelay', () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -38,6 +39,7 @@ import { SceneAthlete } from '../SceneAthlete';
 import { SceneReader } from '../SceneReader';
 import { LoadingScreen } from '../LoadingScreen';
 
+/** Tests for SceneClimber staircase SVG rendering. */
 describe('SceneClimber', () => {
   it('renders an SVG with the staircase', () => {
     const { container } = render(<SceneClimber />);
@@ -48,6 +50,7 @@ describe('SceneClimber', () => {
   });
 });
 
+/** Tests for SceneAthlete boxer figure SVG rendering. */
 describe('SceneAthlete', () => {
   it('renders an SVG with the athlete figure', () => {
     const { container } = render(<SceneAthlete />);
@@ -57,6 +60,7 @@ describe('SceneAthlete', () => {
   });
 });
 
+/** Tests for SceneReader spectacles-and-papers SVG rendering. */
 describe('SceneReader', () => {
   it('renders an SVG with spectacles and papers', () => {
     const { container } = render(<SceneReader />);
@@ -67,6 +71,7 @@ describe('SceneReader', () => {
   });
 });
 
+/** Tests for LoadingScreen random-scene selection and brand text. */
 describe('LoadingScreen', () => {
   it('renders one of the three scenes', () => {
     const { container } = render(<LoadingScreen />);
@@ -87,6 +92,7 @@ describe('LoadingScreen', () => {
 
 import { AnimationViewer } from '../../AnimationViewer';
 
+/** Tests for AnimationViewer scene-toggle and text-checkbox controls. */
 describe('AnimationViewer', () => {
   it('renders all three scenes when All is selected', () => {
     const { container } = render(<AnimationViewer />);

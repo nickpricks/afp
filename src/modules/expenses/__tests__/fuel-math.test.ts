@@ -5,10 +5,14 @@ import {
   latestOdometer,
   dueMaintenance,
   isServiceDue,
+  deriveFuelTriple,
 } from '@/modules/expenses/fuel-math';
 import type { Expense, FuelMeta, MaintenanceMeta } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
 import { ExpenseCategory, PaymentMethod } from '@/shared/types';
+import { VEHICLE_SUBCAT } from '@/modules/expenses/categories';
 
+/** Builds a minimal fuel Expense fixture with the given FuelMeta fields */
 function fuelExpense(
   id: string,
   date: string,
@@ -18,7 +22,7 @@ function fuelExpense(
     id,
     date,
     category: ExpenseCategory.Vehicle,
-    subCat: 'Fuel',
+    subCat: VEHICLE_SUBCAT.Fuel,
     amount: meta.liters * meta.pricePerLiter,
     paymentMethod: PaymentMethod.UpiBankAccount,
     isSettlement: false,
@@ -27,10 +31,9 @@ function fuelExpense(
     createdAt: `${date}T10:00:00Z`,
     updatedAt: `${date}T10:00:00Z`,
     meta: {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       odometer: meta.odometer ?? null,
       tripOdo: meta.tripOdo ?? null,
-      displayedMileage: meta.displayedMileage ?? null,
       fullTank: meta.fullTank ?? false,
       liters: meta.liters,
       pricePerLiter: meta.pricePerLiter,
@@ -38,6 +41,7 @@ function fuelExpense(
   };
 }
 
+/** Builds a minimal maintenance Expense fixture with the given odometer and nextService */
 function maintenanceExpense(
   id: string,
   date: string,
@@ -48,7 +52,7 @@ function maintenanceExpense(
     id,
     date,
     category: ExpenseCategory.Vehicle,
-    subCat: 'Maintenance',
+    subCat: VEHICLE_SUBCAT.Maintenance,
     amount: 5000,
     paymentMethod: PaymentMethod.UpiBankAccount,
     isSettlement: false,
@@ -56,19 +60,19 @@ function maintenanceExpense(
     isDeleted: false,
     createdAt: `${date}T10:00:00Z`,
     updatedAt: `${date}T10:00:00Z`,
-    meta: { type: 'maintenance', odometer, nextService, serviceNotes: '' },
+    meta: { type: ExpenseMetaType.Maintenance, odometer, nextService, serviceNotes: '' },
   };
 }
 
+/** Validates computeMileage returns tripOdo/liters only when fullTank+tripOdo are set */
 describe('computeMileage', () => {
   it('returns null when fullTank is false', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: 500,
-      displayedMileage: null,
       fullTank: false,
     };
     expect(computeMileage(meta)).toBeNull();
@@ -76,12 +80,11 @@ describe('computeMileage', () => {
 
   it('returns null when tripOdo is missing', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: null,
-      displayedMileage: null,
       fullTank: true,
     };
     expect(computeMileage(meta)).toBeNull();
@@ -89,12 +92,11 @@ describe('computeMileage', () => {
 
   it('returns null when liters is zero', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 0,
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: 500,
-      displayedMileage: null,
       fullTank: true,
     };
     expect(computeMileage(meta)).toBeNull();
@@ -102,18 +104,18 @@ describe('computeMileage', () => {
 
   it('returns tripOdo / liters when fullTank and both present', () => {
     const meta: FuelMeta = {
-      type: 'fuel',
+      type: ExpenseMetaType.Fuel,
       liters: 40,
       pricePerLiter: 100,
       odometer: 12000,
       tripOdo: 600,
-      displayedMileage: null,
       fullTank: true,
     };
     expect(computeMileage(meta)).toBe(15);
   });
 });
 
+/** Validates latestOdometer picks the highest reading across fuel+maintenance entries */
 describe('latestOdometer', () => {
   it('returns null for an empty list', () => {
     expect(latestOdometer([])).toBeNull();
@@ -162,6 +164,7 @@ describe('latestOdometer', () => {
   });
 });
 
+/** Validates dueMaintenance returns the most-recent maintenance entry with nextService set */
 describe('dueMaintenance', () => {
   it('returns null when no maintenance entry has nextService', () => {
     const m = maintenanceExpense('m1', '2026-04-01', 10000, null);
@@ -185,6 +188,20 @@ describe('dueMaintenance', () => {
   });
 });
 
+/** Validates dueMaintenance sorts by odometer value, not entry date */
+describe('dueMaintenance — sort by odometer not date', () => {
+  it('returns the highest-odometer maintenance entry regardless of date order', () => {
+    // newer date but lower odometer
+    const lowOdoNewDate = maintenanceExpense('a', '2026-04-01', 30000, 40000);
+    // older date but higher odometer (catch-up log)
+    const highOdoOldDate = maintenanceExpense('b', '2026-03-01', 45000, 55000);
+    const result = dueMaintenance([lowOdoNewDate, highOdoOldDate]);
+    expect(result?.odometer).toBe(45000);
+    expect(result?.nextService).toBe(55000);
+  });
+});
+
+/** Validates isServiceDue returns true iff latestOdometer >= nextService */
 describe('isServiceDue', () => {
   it('returns false when there is no due maintenance', () => {
     expect(isServiceDue([])).toBe(false);
@@ -213,5 +230,42 @@ describe('isServiceDue', () => {
   it('returns false when no fuel/maintenance entry has odometer', () => {
     const m = maintenanceExpense('m1', '2026-01-01', 5000, 15000);
     expect(isServiceDue([m])).toBe(false);
+  });
+});
+
+/** Validates deriveFuelTriple two-of-three auto-fill math for liters/price/amount */
+describe('deriveFuelTriple', () => {
+  it('liters+price+(no amount) → fills amount', () => {
+    expect(
+      deriveFuelTriple({ liters: 40, pricePerLiter: 100, amount: 0, lastEdited: 'liters' }),
+    ).toEqual({ liters: 40, pricePerLiter: 100, amount: 4000 });
+  });
+  it('liters+amount+(no price) → fills price', () => {
+    expect(
+      deriveFuelTriple({ liters: 40, pricePerLiter: 0, amount: 4000, lastEdited: 'liters' }),
+    ).toEqual({ liters: 40, pricePerLiter: 100, amount: 4000 });
+  });
+  it('price+amount+(no liters) → fills liters', () => {
+    expect(
+      deriveFuelTriple({ liters: 0, pricePerLiter: 100, amount: 4000, lastEdited: 'price' }),
+    ).toEqual({ liters: 40, pricePerLiter: 100, amount: 4000 });
+  });
+  it('does not clobber user-typed amount when lastEdited === amount', () => {
+    expect(
+      deriveFuelTriple({ liters: 40, pricePerLiter: 100, amount: 5000, lastEdited: 'amount' }),
+    ).toEqual({ liters: 40, pricePerLiter: 100, amount: 5000 });
+  });
+  it('skips derivation when any operand is 0 / NaN', () => {
+    expect(
+      deriveFuelTriple({ liters: 0, pricePerLiter: 0, amount: 0, lastEdited: 'liters' }),
+    ).toEqual({ liters: 0, pricePerLiter: 0, amount: 0 });
+    expect(
+      deriveFuelTriple({ liters: NaN, pricePerLiter: 100, amount: 0, lastEdited: 'liters' }),
+    ).toEqual({ liters: NaN, pricePerLiter: 100, amount: 0 });
+  });
+  it('rejects non-finite derived results (amount/0 = Infinity)', () => {
+    expect(
+      deriveFuelTriple({ liters: 0, pricePerLiter: 0, amount: 4000, lastEdited: 'amount' }),
+    ).toEqual({ liters: 0, pricePerLiter: 0, amount: 4000 });
   });
 });

@@ -20,6 +20,7 @@ const stubMatchMedia = (mode: StubMode = 'desktop'): void => {
   }));
 };
 
+/** Tests for AmbientEffects rendering, reduced-motion, and intensity gating. */
 describe('<AmbientEffects>', () => {
   beforeEach(() => stubMatchMedia());
 
@@ -50,6 +51,7 @@ describe('<AmbientEffects>', () => {
   });
 });
 
+/** Tests that scale and opacity move together (depth-correlated). */
 describe('depth-correlated scaling', () => {
   beforeEach(() => stubMatchMedia());
 
@@ -78,6 +80,7 @@ describe('depth-correlated scaling', () => {
 });
 
 // Fix 2: viewport-aware size multiplier
+/** Tests for mobile (0.65x) vs desktop (1.0x) size multiplier. */
 describe('viewport-aware size multiplier', () => {
   it('applies 0.65x multiplier on mobile viewport (max-width: 640px)', () => {
     stubMatchMedia('mobile');
@@ -111,6 +114,7 @@ describe('viewport-aware size multiplier', () => {
 });
 
 // Fix 3: effectSize prop
+/** Tests that the effectSize prop scales particle sizes proportionally. */
 describe('effectSize prop', () => {
   beforeEach(() => stubMatchMedia());
 

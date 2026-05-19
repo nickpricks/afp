@@ -1,3 +1,4 @@
+/** Props for RowTime. */
 interface Props {
   timestamp: string | undefined;
 }

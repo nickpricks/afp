@@ -8,9 +8,10 @@ import type { Expense, ExpenseMeta } from '@/modules/expenses/types';
 import { validateExpense } from '@/modules/expenses/validation';
 import { SyncStatus, isOk, ToastType, PaymentMethod } from '@/shared/types';
 import type { ExpenseCategory } from '@/shared/types';
-import { BudgetMsg } from '@/constants/messages';
+import { BudgetMsg, CommonMsg } from '@/constants/messages';
 import { DbSubcollection, userPath } from '@/constants/db';
 
+/** Shape of the data passed to addExpense — mirrors Expense minus auto-generated fields */
 type ExpenseInput = {
   date: string;
   category: ExpenseCategory;
@@ -25,7 +26,8 @@ type ExpenseInput = {
 };
 
 /** Add/update toast lookup keyed on the meta discriminator. Adding a new meta variant means
- * adding one row here — no parallel switch updates. The `default` shape covers the no-meta case. */
+ * adding one row here — TS errors at the Record literal if the union expands. The `default`
+ * row covers the no-meta case (plain expenses). */
 const META_TOAST: Record<ExpenseMeta['type'] | 'default', { add: BudgetMsg; update: BudgetMsg }> = {
   fuel: { add: BudgetMsg.FuelLogged, update: BudgetMsg.FuelUpdated },
   travel: { add: BudgetMsg.TripLogged, update: BudgetMsg.TripUpdated },
@@ -33,10 +35,11 @@ const META_TOAST: Record<ExpenseMeta['type'] | 'default', { add: BudgetMsg; upda
   default: { add: BudgetMsg.ExpenseAdded, update: BudgetMsg.ExpenseUpdated },
 };
 
+/** Returns the appropriate toast for a given meta variant + action */
 const metaToast = (meta: ExpenseMeta | undefined, action: 'add' | 'update'): BudgetMsg =>
   META_TOAST[meta?.type ?? 'default'][action];
 
-/** Provides expense CRUD operations with real-time sync and soft-delete */
+/** Provides expense CRUD (add/update/soft-delete) with real-time sync. */
 export function useExpenses(targetUid?: string) {
   const { firebaseUser, setSyncStatus } = useAuth();
   const { addToast } = useToast();
@@ -61,6 +64,7 @@ export function useExpenses(targetUid?: string) {
         syncFn(SyncStatus.Synced);
       },
       (error) => {
+        // TODO(sentry): pipe onError to centralized logError once Sentry lands.
         console.error('[AFP] Expenses listener error:', error);
         syncFn(SyncStatus.Error);
       },
@@ -75,7 +79,10 @@ export function useExpenses(targetUid?: string) {
   /** Validates and persists a new expense, showing a toast on success or failure */
   const addExpense = useCallback(
     async (input: ExpenseInput) => {
-      if (readOnly) return false;
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       if (input.paymentMethod === null) {
         addToast(BudgetMsg.PaymentMethodRequired, ToastType.Error);
         return false;
@@ -87,7 +94,10 @@ export function useExpenses(targetUid?: string) {
       }
 
       const adapter = adapterRef.current;
-      if (!adapter) return false;
+      if (!adapter) {
+        addToast(BudgetMsg.AdapterNotReady, ToastType.Error);
+        return false;
+      }
 
       const now = new Date().toISOString();
       const expense: Expense = {
@@ -120,7 +130,10 @@ export function useExpenses(targetUid?: string) {
   /** Validates and persists an updated expense (full replace by id) */
   const updateExpense = useCallback(
     async (expense: Expense) => {
-      if (readOnly) return false;
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       const validation = validateExpense(expense);
       if (!isOk(validation)) {
         addToast(validation.error, ToastType.Error);
@@ -128,7 +141,10 @@ export function useExpenses(targetUid?: string) {
       }
 
       const adapter = adapterRef.current;
-      if (!adapter) return false;
+      if (!adapter) {
+        addToast(BudgetMsg.AdapterNotReady, ToastType.Error);
+        return false;
+      }
 
       const updated: Expense = { ...expense, updatedAt: new Date().toISOString() };
       const result = await adapter.save(DbSubcollection.Expenses, { ...updated });
@@ -145,10 +161,16 @@ export function useExpenses(targetUid?: string) {
 
   /** Soft-deletes an expense by marking it as deleted */
   const deleteExpense = useCallback(
-    async (id: string) => {
-      if (readOnly) return;
+    async (id: string): Promise<boolean> => {
+      if (readOnly) {
+        addToast(CommonMsg.ReadOnlyMode, ToastType.Info);
+        return false;
+      }
       const adapter = adapterRef.current;
-      if (!adapter) return;
+      if (!adapter) {
+        addToast(BudgetMsg.AdapterNotReady, ToastType.Error);
+        return false;
+      }
 
       const result = await adapter.save(DbSubcollection.Expenses, {
         id,
@@ -158,10 +180,11 @@ export function useExpenses(targetUid?: string) {
 
       if (!isOk(result)) {
         addToast(result.error, ToastType.Error);
-        return;
+        return false;
       }
 
       addToast(BudgetMsg.ExpenseDeleted, ToastType.Success);
+      return true;
     },
     [addToast, readOnly],
   );

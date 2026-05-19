@@ -68,6 +68,7 @@ export function SleepLog({
     setNotes(entry.notes);
   };
 
+  /** Handles form submission — create or update sleep entry */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -84,14 +85,34 @@ export function SleepLog({
     };
 
     if (editEntry) {
-      await updateSleep({ ...editEntry, date, startTime, endTime, type, quality, notes });
-      setEditEntry(null);
+      const ok = await updateSleep({
+        ...editEntry,
+        date,
+        startTime,
+        endTime,
+        type,
+        quality,
+        notes,
+      });
+      if (ok) setEditEntry(null);
     } else {
-      await logSleep(entryData);
+      const saved = await logSleep(entryData);
+      if (!saved) {
+        setSaving(false);
+        return;
+      }
       if (logToAll && hasSiblings && uid) {
-        const count = await logToSiblings(uid, siblingIds, DbSubcollection.Sleep, entryData);
-        if (count > 0)
-          addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+        const { ok, failed } = await logToSiblings(
+          uid,
+          siblingIds,
+          DbSubcollection.Sleep,
+          entryData,
+        );
+        if (failed > 0) {
+          addToast(`${ok} of ${ok + failed} copied — ${failed} failed`, ToastType.Error);
+        } else if (ok > 0) {
+          addToast(`Copied to ${ok} sibling${ok > 1 ? 's' : ''}`, ToastType.Info);
+        }
       }
     }
 
@@ -101,6 +122,7 @@ export function SleepLog({
     setSaving(false);
   }
 
+  /** Clears the edit state and resets all form fields to defaults */
   const handleCancelEdit = () => {
     setEditEntry(null);
     setType(SleepType.Nap);
@@ -111,6 +133,7 @@ export function SleepLog({
     setNotes('');
   };
 
+  /** Stages a delete with undo toast; fires actual delete after undo window expires */
   const handleUndoDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);

@@ -1,5 +1,6 @@
 import { relativeDateLabel } from '@/shared/utils/relative-date';
 
+/** Props for DateGroupHeader. */
 interface Props {
   date: string;
   today: string;

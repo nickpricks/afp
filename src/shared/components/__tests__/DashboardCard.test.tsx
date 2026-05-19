@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 import { DashboardCard } from '@/shared/components/DashboardCard';
 
+/** Renders a DashboardCard with default props merged with any overrides. */
 function renderCard(props = {}) {
   const defaults = {
     title: 'Body',
@@ -19,6 +20,7 @@ function renderCard(props = {}) {
   );
 }
 
+/** Tests for DashboardCard content, icon, link, and styling. */
 describe('DashboardCard', () => {
   it('renders title, metric, and subtitle', () => {
     renderCard();

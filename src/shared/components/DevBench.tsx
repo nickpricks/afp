@@ -140,6 +140,7 @@ function DevBenchInner() {
   const tourTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const originalThemeRef = useRef<ThemeId | null>(null);
 
+  /** Cancels the theme tour and restores the original theme. */
   const stopTour = useCallback(() => {
     if (tourTimeoutRef.current) clearTimeout(tourTimeoutRef.current);
     tourTimeoutRef.current = null;
@@ -150,6 +151,7 @@ function DevBenchInner() {
     setTourRunning(false);
   }, []);
 
+  /** Cycles through all themes at 3s intervals, preserving the original on stop. */
   const startTour = useCallback(() => {
     originalThemeRef.current = activeThemeId;
     const themeIds = Object.values(THEME_DEFINITIONS).map((t) => t.id);
@@ -167,6 +169,7 @@ function DevBenchInner() {
     tick();
   }, [activeThemeId, stopTour]);
 
+  /** Clears all afp: localStorage keys and reloads the page. */
   const handleClear = () => {
     const keys = Object.keys(localStorage).filter((k) => k.startsWith('afp:'));
     keys.forEach((k) => localStorage.removeItem(k));

@@ -11,56 +11,27 @@ import { AutoTab } from '@/modules/expenses/components/AutoTab';
 import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
 import { useIncome } from '@/modules/expenses/hooks/useIncome';
 import { ROUTES } from '@/constants/routes';
-import { ListControls } from '@/shared/components/ListControls';
-import { ListShowMoreFooter } from '@/shared/components/ListShowMoreFooter';
-import { useListControls } from '@/shared/hooks/useListControls';
 import { useAuth } from '@/shared/auth/useAuth';
-import { ModuleId } from '@/shared/types';
-import { todayStr } from '@/shared/utils/date';
-import { filterByDateRange } from '@/shared/utils/filter';
-import { paginate, totalPages } from '@/shared/utils/paginate';
+import { ModuleId, TimeRange } from '@/shared/types';
 import { PaymentMethod } from '@/shared/types';
 
+/** Union of budget tab identifiers for the ExpenseListPage tab switcher */
 type BudgetTab = 'expenses' | 'income' | 'kids' | 'auto' | 'reconcile';
 
-/** Page wrapper showing budget summary, expense/income/auto tabs, and list */
+/** Page wrapper showing budget summary, expense/income/kids/auto/CC tabs, and list */
 export function ExpenseListPage() {
   const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses();
   const { income, deleteIncome } = useIncome();
   const { profile } = useAuth();
   const babyEnabled = profile?.modules?.[ModuleId.Baby] === true;
   const [activeTab, setActiveTab] = useState<BudgetTab>('expenses');
-  const ctrl = useListControls();
-
-  const today = todayStr();
-  const filteredExpenses = filterByDateRange(expenses, ctrl.timeRange, today, (e) => e.date);
-  const filteredIncome = filterByDateRange(income, ctrl.timeRange, today, (i) => i.date);
-
-  const activeFiltered = activeTab === 'income' ? filteredIncome : filteredExpenses;
-  const pagesCount = totalPages(activeFiltered.length, ctrl.pageSize);
-  const visibleExpenses = ctrl.showAll
-    ? filteredExpenses
-    : paginate(filteredExpenses, ctrl.page, ctrl.pageSize);
-  const visibleIncome = ctrl.showAll
-    ? filteredIncome
-    : paginate(filteredIncome, ctrl.page, ctrl.pageSize);
-  const visibleCount = activeTab === 'income' ? visibleIncome.length : visibleExpenses.length;
+  // Shared across BudgetSummary + ExpenseList + IncomeList so summary card matches list contents.
+  // Pagination stays per-list; only the date filter is hoisted.
+  const [timeRange, setTimeRange] = useState<TimeRange>(TimeRange.All);
 
   return (
     <div className="relative">
-      <BudgetSummary expenses={filteredExpenses} income={filteredIncome} />
-
-      {activeTab !== 'auto' && activeTab !== 'kids' && (
-        <ListControls
-          timeRange={ctrl.timeRange}
-          onTimeRangeChange={ctrl.setTimeRange}
-          pageSize={ctrl.pageSize}
-          onPageSizeChange={ctrl.setPageSize}
-          page={ctrl.page}
-          totalPages={ctrl.showAll ? 1 : pagesCount}
-          onPageChange={ctrl.setPage}
-        />
-      )}
+      <BudgetSummary expenses={expenses} income={income} timeRange={timeRange} />
 
       <div className="mx-4 mb-3 flex rounded-lg border border-line bg-surface-card p-1">
         <TabButton
@@ -93,9 +64,21 @@ export function ExpenseListPage() {
       </div>
 
       {activeTab === 'expenses' && (
-        <ExpenseList expenses={visibleExpenses} onDelete={deleteExpense} />
+        <ExpenseList
+          expenses={expenses}
+          onDelete={deleteExpense}
+          timeRange={timeRange}
+          onTimeRangeChange={setTimeRange}
+        />
       )}
-      {activeTab === 'income' && <IncomeList income={visibleIncome} onDelete={deleteIncome} />}
+      {activeTab === 'income' && (
+        <IncomeList
+          income={income}
+          onDelete={deleteIncome}
+          timeRange={timeRange}
+          onTimeRangeChange={setTimeRange}
+        />
+      )}
       {activeTab === 'kids' && <KidsFinanceTab />}
       {activeTab === 'auto' && (
         <AutoTab
@@ -106,28 +89,19 @@ export function ExpenseListPage() {
               category: input.category,
               subCat: input.subCat,
               amount: input.amount,
+              // Auto tab's payment-method picker can yield null — the hook validates and toasts
+              // PaymentMethodRequired. Default to UPI here only when input is explicitly null
+              // AND we want the legacy fallback (currently we let the hook flag it).
+              paymentMethod: input.paymentMethod ?? PaymentMethod.UpiBankAccount,
               note: input.note,
               meta: input.meta,
-              // Auto tab is a quick-add for vehicle expenses with no payment-method picker.
-              // The default is set explicitly here (not silently in the hook) so the choice
-              // is visible at the call site; a future picker would replace this default.
-              paymentMethod: PaymentMethod.UpiBankAccount,
             })
           }
           onUpdate={updateExpense}
           onDelete={deleteExpense}
         />
       )}
-      {activeTab === 'reconcile' && <ReconciliationView expenses={filteredExpenses} />}
-
-      {(activeTab === 'expenses' || activeTab === 'income') && !ctrl.showAll && (
-        <ListShowMoreFooter
-          totalCount={activeFiltered.length}
-          shownCount={visibleCount}
-          pageSize={ctrl.pageSize}
-          onShowAll={() => ctrl.setShowAll(true)}
-        />
-      )}
+      {activeTab === 'reconcile' && <ReconciliationView expenses={expenses} />}
 
       <Link
         to={ROUTES.BUDGET_ADD}
@@ -140,6 +114,7 @@ export function ExpenseListPage() {
   );
 }
 
+/** Single tab button pill for the budget tab strip */
 function TabButton({
   label,
   isActive,

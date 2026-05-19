@@ -1,4 +1,20 @@
 import type { ExpenseMeta, FuelMeta, TravelMeta, MaintenanceMeta } from '@/modules/expenses/types';
+import { ExpenseMetaType } from '@/modules/expenses/types';
+import { assertNever } from '@/shared/utils/types';
+import { deriveFuelTriple } from '@/modules/expenses/fuel-math';
+
+/** Coerce a string input to a finite number; non-numeric or empty becomes 0. */
+const toFiniteNumber = (s: string): number => {
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+};
+
+/** Coerce a string input to a finite number or null; empty/non-finite both become null. */
+const toFiniteOrNull = (s: string): number | null => {
+  if (s === '') return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+};
 
 /** Conditional meta sub-form — renders Fuel / Travel / Maintenance fields based on meta.type */
 export function MetaSubForm({
@@ -12,22 +28,26 @@ export function MetaSubForm({
   onChangeMeta: (m: ExpenseMeta) => void;
   onChangeAmount: (a: string) => void;
 }) {
-  if (meta.type === 'fuel') {
-    return (
-      <FuelFields
-        meta={meta}
-        amount={amount}
-        onChange={onChangeMeta}
-        onChangeAmount={onChangeAmount}
-      />
-    );
+  switch (meta.type) {
+    case ExpenseMetaType.Fuel:
+      return (
+        <FuelFields
+          meta={meta}
+          amount={amount}
+          onChange={onChangeMeta}
+          onChangeAmount={onChangeAmount}
+        />
+      );
+    case ExpenseMetaType.Travel:
+      return <TravelFields meta={meta} onChange={onChangeMeta} />;
+    case ExpenseMetaType.Maintenance:
+      return <MaintenanceFields meta={meta} onChange={onChangeMeta} />;
+    default:
+      return assertNever(meta);
   }
-  if (meta.type === 'travel') {
-    return <TravelFields meta={meta} onChange={onChangeMeta} />;
-  }
-  return <MaintenanceFields meta={meta} onChange={onChangeMeta} />;
 }
 
+/** Fuel-specific fields: liters, price/liter, full-tank toggle, optional vehicle ODO data */
 function FuelFields({
   meta,
   amount,
@@ -39,24 +59,6 @@ function FuelFields({
   onChange: (m: FuelMeta) => void;
   onChangeAmount: (a: string) => void;
 }) {
-  /** Fills in the third value when two of {liters, pricePerLiter, amount} are present */
-  function autoDerive(
-    next: FuelMeta,
-    lastEdited: 'liters' | 'price' | 'amount',
-    amountStr: string,
-  ) {
-    const liters = next.liters;
-    const price = next.pricePerLiter;
-    const amt = Number(amountStr);
-    if (lastEdited !== 'amount' && liters > 0 && price > 0) {
-      onChangeAmount(String(Number((liters * price).toFixed(2))));
-    } else if (lastEdited !== 'liters' && price > 0 && amt > 0) {
-      onChange({ ...next, liters: Number((amt / price).toFixed(2)) });
-    } else if (lastEdited !== 'price' && liters > 0 && amt > 0) {
-      onChange({ ...next, pricePerLiter: Number((amt / liters).toFixed(2)) });
-    }
-  }
-
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-line bg-surface-card p-3">
       <span className="text-xs font-medium text-fg-muted">⛽ Fuel details</span>
@@ -69,8 +71,22 @@ function FuelFields({
             min="0"
             step="0.01"
             value={meta.liters || ''}
-            onChange={(e) => onChange({ ...meta, liters: Number(e.target.value) })}
-            onBlur={() => autoDerive(meta, 'liters', amount)}
+            onChange={(e) => onChange({ ...meta, liters: toFiniteNumber(e.target.value) })}
+            onBlur={(e) => {
+              const litersNext = toFiniteNumber(e.target.value);
+              const amtIn = toFiniteNumber(amount);
+              const derived = deriveFuelTriple({
+                liters: litersNext,
+                pricePerLiter: meta.pricePerLiter,
+                amount: amtIn,
+                lastEdited: 'liters',
+              });
+              onChange({ ...meta, liters: derived.liters, pricePerLiter: derived.pricePerLiter });
+              // Only update amount when deriveFuelTriple actually filled it in
+              if (derived.amount !== amtIn && derived.amount !== 0) {
+                onChangeAmount(String(derived.amount));
+              }
+            }}
             className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
           />
         </label>
@@ -82,8 +98,22 @@ function FuelFields({
             min="0"
             step="0.01"
             value={meta.pricePerLiter || ''}
-            onChange={(e) => onChange({ ...meta, pricePerLiter: Number(e.target.value) })}
-            onBlur={() => autoDerive(meta, 'price', amount)}
+            onChange={(e) => onChange({ ...meta, pricePerLiter: toFiniteNumber(e.target.value) })}
+            onBlur={(e) => {
+              const priceNext = toFiniteNumber(e.target.value);
+              const amtIn = toFiniteNumber(amount);
+              const derived = deriveFuelTriple({
+                liters: meta.liters,
+                pricePerLiter: priceNext,
+                amount: amtIn,
+                lastEdited: 'price',
+              });
+              onChange({ ...meta, liters: derived.liters, pricePerLiter: derived.pricePerLiter });
+              // Only update amount when deriveFuelTriple actually filled it in
+              if (derived.amount !== amtIn && derived.amount !== 0) {
+                onChangeAmount(String(derived.amount));
+              }
+            }}
             className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
           />
         </label>
@@ -100,7 +130,7 @@ function FuelFields({
 
       <details className="text-xs">
         <summary className="cursor-pointer text-fg-muted">Vehicle data (optional)</summary>
-        <div className="mt-2 grid grid-cols-3 gap-2">
+        <div className="mt-2 grid grid-cols-2 gap-2">
           <label className="flex flex-col gap-1 text-[11px] text-fg-muted">
             Total ODO (km)
             <input
@@ -109,12 +139,7 @@ function FuelFields({
               min="0"
               step="1"
               value={meta.odometer ?? ''}
-              onChange={(e) =>
-                onChange({
-                  ...meta,
-                  odometer: e.target.value === '' ? null : Number(e.target.value),
-                })
-              }
+              onChange={(e) => onChange({ ...meta, odometer: toFiniteOrNull(e.target.value) })}
               className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
             />
           </label>
@@ -126,29 +151,7 @@ function FuelFields({
               min="0"
               step="1"
               value={meta.tripOdo ?? ''}
-              onChange={(e) =>
-                onChange({
-                  ...meta,
-                  tripOdo: e.target.value === '' ? null : Number(e.target.value),
-                })
-              }
-              className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-[11px] text-fg-muted">
-            Dash km/L
-            <input
-              type="number"
-              inputMode="decimal"
-              min="0"
-              step="0.1"
-              value={meta.displayedMileage ?? ''}
-              onChange={(e) =>
-                onChange({
-                  ...meta,
-                  displayedMileage: e.target.value === '' ? null : Number(e.target.value),
-                })
-              }
+              onChange={(e) => onChange({ ...meta, tripOdo: toFiniteOrNull(e.target.value) })}
               className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
             />
           </label>
@@ -158,6 +161,7 @@ function FuelFields({
   );
 }
 
+/** Travel-specific fields: origin, destination, optional distance */
 function TravelFields({ meta, onChange }: { meta: TravelMeta; onChange: (m: TravelMeta) => void }) {
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-line bg-surface-card p-3">
@@ -192,9 +196,7 @@ function TravelFields({ meta, onChange }: { meta: TravelMeta; onChange: (m: Trav
           min="0"
           step="1"
           value={meta.distance ?? ''}
-          onChange={(e) =>
-            onChange({ ...meta, distance: e.target.value === '' ? null : Number(e.target.value) })
-          }
+          onChange={(e) => onChange({ ...meta, distance: toFiniteOrNull(e.target.value) })}
           className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
         />
       </label>
@@ -202,6 +204,7 @@ function TravelFields({ meta, onChange }: { meta: TravelMeta; onChange: (m: Trav
   );
 }
 
+/** Maintenance-specific fields: current ODO, next-service ODO, service notes */
 function MaintenanceFields({
   meta,
   onChange,
@@ -221,7 +224,7 @@ function MaintenanceFields({
             min="0"
             step="1"
             value={meta.odometer || ''}
-            onChange={(e) => onChange({ ...meta, odometer: Number(e.target.value) })}
+            onChange={(e) => onChange({ ...meta, odometer: toFiniteNumber(e.target.value) })}
             className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
           />
         </label>
@@ -234,12 +237,7 @@ function MaintenanceFields({
             step="1"
             placeholder="32500"
             value={meta.nextService ?? ''}
-            onChange={(e) =>
-              onChange({
-                ...meta,
-                nextService: e.target.value === '' ? null : Number(e.target.value),
-              })
-            }
+            onChange={(e) => onChange({ ...meta, nextService: toFiniteOrNull(e.target.value) })}
             className="rounded-md border border-line bg-surface px-2 py-1 text-fg"
           />
         </label>

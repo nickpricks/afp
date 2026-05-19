@@ -37,11 +37,13 @@ export function computeActiveSuggestions(child: Child): Suggestion[] {
   const today = todayYmd();
   const result: Suggestion[] = [];
 
+  /** Returns true if the given feature suggestion is currently snoozed */
   function isSnoozed(feature: SuggestionFeature): boolean {
     const snooze = snoozeState[feature];
     return snooze !== undefined && snooze.snoozedUntil > today;
   }
 
+  /** Pushes a suggestion if the feature state doesn't match the recommendation and isn't snoozed */
   function maybeAdd(feature: SuggestionFeature, action: SuggestionAction, currentlyOn: boolean) {
     const recommendOn = action === SuggestionAction.Enable;
     if (currentlyOn === recommendOn) return;

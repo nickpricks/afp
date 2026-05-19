@@ -47,13 +47,16 @@ type AppearanceSettings = Pick<
   'theme' | 'colorMode' | 'effectIntensity' | 'effectSize'
 >;
 
+/** Flattened array of all theme definitions for iteration. */
 const THEME_LIST = Object.values(THEME_DEFINITIONS);
+/** Color mode options shown in the appearance section. */
 const COLOR_MODES: { value: ColorMode; label: string }[] = [
   { value: 'light', label: 'Light' },
   { value: 'dark', label: 'Dark' },
   { value: 'system', label: 'System' },
 ];
 
+/** Human-readable labels for each module ID shown in the Modules section. */
 const MODULE_LABELS: Record<ModuleId, string> = {
   [ModuleId.Body]: 'Body & Fitness',
   [ModuleId.Budget]: 'Budget',
@@ -138,8 +141,9 @@ export function ProfilePage() {
   const email = firebaseUser?.email ?? profile?.email ?? null;
   const photoURL = firebaseUser?.photoURL ?? null;
 
+  /** Applies a new theme and persists appearance — toast reflects save outcome, not optimistic. */
   const handleThemeChange = useCallback(
-    (themeId: ThemeId) => {
+    async (themeId: ThemeId) => {
       applyTheme(themeId, colorMode);
       if (uid) {
         saveAppearance(
@@ -158,13 +162,13 @@ export function ProfilePage() {
             addToast(ProfileMsg.ThemeSaveFailed, ToastType.Error);
           });
       }
-      addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
     [colorMode, intensity, size, uid, addToast, profile],
   );
 
+  /** Applies a new color mode and persists appearance — toast reflects save outcome, not optimistic. */
   const handleColorModeChange = useCallback(
-    (mode: ColorMode) => {
+    async (mode: ColorMode) => {
       setColorMode(mode);
       applyTheme(activeThemeId, mode);
       if (uid) {
@@ -184,11 +188,11 @@ export function ProfilePage() {
             addToast(ProfileMsg.ColorModeSaveFailed, ToastType.Error);
           });
       }
-      addToast(ProfileMsg.ThemeSaved, ToastType.Success);
     },
     [activeThemeId, intensity, size, uid, addToast, profile],
   );
 
+  /** Persists updated effect intensity. No UI toast (slider spam), but logged for debugging. */
   const handleIntensityChange = useCallback(
     (newIntensity: number) => {
       setIntensity(newIntensity);
@@ -210,6 +214,7 @@ export function ProfilePage() {
     [activeThemeId, colorMode, size, uid, profile],
   );
 
+  /** Persists updated effect size. No UI toast (picker spam), but logged for debugging. */
   const handleSizeChange = useCallback(
     (newSize: number) => {
       setSize(newSize);
@@ -229,6 +234,7 @@ export function ProfilePage() {
     [activeThemeId, colorMode, intensity, uid, profile],
   );
 
+  /** Validates, claims the new username, releases the old one, and persists to profile. */
   const handleUsernameSave = useCallback(async () => {
     if (savingRef.current) return;
     savingRef.current = true;
@@ -290,6 +296,7 @@ export function ProfilePage() {
     savingRef.current = false;
   }, [usernameInput, uid, profile, addToast]);
 
+  /** Releases the current username from the global registry and clears it from the profile. */
   const handleUsernameRelease = useCallback(async () => {
     if (!profile?.username || savingRef.current) return;
     savingRef.current = true;
@@ -314,6 +321,7 @@ export function ProfilePage() {
     savingRef.current = false;
   }, [profile, uid, addToast]);
 
+  /** Signs the user out of Firebase auth. */
   const handleSignOut = useCallback(async () => {
     try {
       await signOut(auth);

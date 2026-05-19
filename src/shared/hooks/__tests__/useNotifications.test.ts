@@ -27,6 +27,7 @@ vi.mock('@/shared/utils/date', () => ({
   todayStr: () => '2026-04-14',
 }));
 
+/** Builds a Notification fixture for useNotifications tests. */
 const makeAlert = (overrides: Partial<Notification> = {}): Notification => ({
   id: 'alert-1',
   type: NotificationType.AdminAlert,
@@ -40,6 +41,7 @@ const makeAlert = (overrides: Partial<Notification> = {}): Notification => ({
   ...overrides,
 });
 
+/** Tests for useNotifications snapshot population, filtering, and dismiss/markRead. */
 describe('useNotifications', () => {
   beforeEach(() => {
     vi.clearAllMocks();

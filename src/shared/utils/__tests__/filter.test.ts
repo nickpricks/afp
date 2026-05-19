@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
 
 import { filterByDateRange } from '../filter';
 import { TimeRange } from '@/shared/types';
@@ -42,5 +42,21 @@ describe('filterByDateRange', () => {
       i.createdAt.slice(0, 10),
     );
     expect(result.map((i) => i.id)).toEqual(['x']);
+  });
+});
+
+describe('filterByDateRange — bad date input', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('drops items with invalid date strings and warns', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const items = [
+      { id: 'a', date: '2026-04-15' },
+      { id: 'b', date: 'not-a-date' },
+    ];
+    const result = filterByDateRange(items, TimeRange.Week, '2026-04-15', (i) => i.date);
+    expect(result.length).toBe(1);
+    expect(result[0]!.id).toBe('a');
+    expect(warn).toHaveBeenCalled();
   });
 });

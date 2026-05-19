@@ -42,6 +42,7 @@ function makeIncome(overrides: Partial<Income> = {}): Income {
   };
 }
 
+/** Validates computeTotalIncome sums all income entries */
 describe('computeTotalIncome', () => {
   it('sums all income entries', () => {
     const income = [makeIncome({ amount: 5000 }), makeIncome({ amount: 3000 })];
@@ -53,6 +54,7 @@ describe('computeTotalIncome', () => {
   });
 });
 
+/** Validates computeTotalSpent excludes settlement entries from the total */
 describe('computeTotalSpent', () => {
   it('sums all non-settlement expenses', () => {
     const expenses = [makeExpense({ amount: 200 }), makeExpense({ amount: 300 })];
@@ -78,6 +80,7 @@ describe('computeTotalSpent', () => {
   });
 });
 
+/** Validates computeCCOutstanding = CC spend - settlements, floor 0 */
 describe('computeCCOutstanding', () => {
   it('computes CC spend minus settlements', () => {
     const expenses = [
@@ -109,6 +112,7 @@ describe('computeCCOutstanding', () => {
   });
 });
 
+/** Validates filterByDateRange with Today/Week/Month/All time ranges */
 describe('filterByDateRange', () => {
   const expenses = [
     makeExpense({ date: '2026-04-07' }),

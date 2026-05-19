@@ -1,3 +1,4 @@
+/** Props for FloorMagnitudeBar. */
 interface Props {
   up: number;
   down: number;

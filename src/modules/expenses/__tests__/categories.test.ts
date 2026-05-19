@@ -6,6 +6,8 @@ import {
   getSubCategories,
   PAYMENT_METHOD_LABELS,
   INCOME_SOURCE_LABELS,
+  VEHICLE_SUBCAT,
+  TRAVEL_SUBCAT,
 } from '@/modules/expenses/categories';
 import { ExpenseCategory, IncomeSource, PaymentMethod } from '@/shared/types';
 
@@ -13,6 +15,7 @@ import { ExpenseCategory, IncomeSource, PaymentMethod } from '@/shared/types';
 const numericValues = <T extends Record<string, string | number>>(e: T): number[] =>
   Object.values(e).filter((v): v is number => typeof v === 'number');
 
+/** Verifies CATEGORIES map has full coverage for every ExpenseCategory enum value */
 describe('CATEGORIES', () => {
   it('has an entry for every ExpenseCategory enum value', () => {
     for (const cat of numericValues(ExpenseCategory)) {
@@ -34,6 +37,7 @@ describe('CATEGORIES', () => {
   });
 });
 
+/** Verifies getAllCategoryIds returns every ExpenseCategory member */
 describe('getAllCategoryIds', () => {
   it('returns all ExpenseCategory values', () => {
     const ids = getAllCategoryIds();
@@ -45,6 +49,7 @@ describe('getAllCategoryIds', () => {
   });
 });
 
+/** Verifies getSubCategories returns correct lists for known and unknown categories */
 describe('getSubCategories', () => {
   it('returns subcategories for a known category', () => {
     const subs = getSubCategories(ExpenseCategory.Food);
@@ -58,6 +63,7 @@ describe('getSubCategories', () => {
   });
 });
 
+/** Verifies PAYMENT_METHOD_LABELS has emoji, label, and shortLabel for every PaymentMethod */
 describe('PAYMENT_METHOD_LABELS', () => {
   it('has an entry for every PaymentMethod enum value', () => {
     for (const pm of numericValues(PaymentMethod)) {
@@ -69,6 +75,7 @@ describe('PAYMENT_METHOD_LABELS', () => {
   });
 });
 
+/** Verifies INCOME_SOURCE_LABELS has emoji, label, and shortLabel for every IncomeSource */
 describe('INCOME_SOURCE_LABELS', () => {
   it('has an entry for every IncomeSource enum value', () => {
     for (const src of numericValues(IncomeSource)) {
@@ -77,5 +84,27 @@ describe('INCOME_SOURCE_LABELS', () => {
       expect(INCOME_SOURCE_LABELS[src as IncomeSource].label.length).toBeGreaterThan(0);
       expect(INCOME_SOURCE_LABELS[src as IncomeSource].shortLabel.length).toBeGreaterThan(0);
     }
+  });
+});
+
+/** Verifies VEHICLE_SUBCAT string constants match storage-expected values */
+describe('VEHICLE_SUBCAT', () => {
+  it('exposes Fuel, Maintenance, Washing, Parking, Insurance keys with the storage strings the UI uses', () => {
+    expect(VEHICLE_SUBCAT.Fuel).toBe('Fuel');
+    expect(VEHICLE_SUBCAT.Maintenance).toBe('Maintenance');
+    expect(VEHICLE_SUBCAT.Washing).toBe('Washing');
+    expect(VEHICLE_SUBCAT.Parking).toBe('Parking');
+    expect(VEHICLE_SUBCAT.Insurance).toBe('Insurance');
+  });
+});
+
+/** Verifies TRAVEL_SUBCAT string constants match storage-expected values */
+describe('TRAVEL_SUBCAT', () => {
+  it('exposes Air, Train, Bus, CabAuto, RoadToll keys with the storage strings the UI uses', () => {
+    expect(TRAVEL_SUBCAT.Air).toBe('Air');
+    expect(TRAVEL_SUBCAT.Train).toBe('Train');
+    expect(TRAVEL_SUBCAT.Bus).toBe('Bus');
+    expect(TRAVEL_SUBCAT.CabAuto).toBe('Cab/Auto');
+    expect(TRAVEL_SUBCAT.RoadToll).toBe('Road Toll');
   });
 });

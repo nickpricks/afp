@@ -2,6 +2,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 
 import { computeAge } from '@/modules/baby/utils';
 
+/** Validates computeAge returns correct human-readable age strings from DOB */
 describe('computeAge', () => {
   afterEach(() => {
     vi.useRealTimers();

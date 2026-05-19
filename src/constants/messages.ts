@@ -1,3 +1,8 @@
+/** Cross-cutting messages shared across modules */
+export enum CommonMsg {
+  ReadOnlyMode = 'Read-only mode — sign in as this user to edit',
+}
+
 /** Validation error messages */
 export enum ValidationMsg {
   DateRequired = 'Date is required',
@@ -11,11 +16,16 @@ export enum ValidationMsg {
   UsernameTooLong = 'Username must be at most 20 characters',
   UsernameInvalid = 'Username can only contain letters, numbers, and underscores',
   FuelLitersPositive = 'Liters must be greater than zero',
+  FuelLitersInvalid = 'Liters must be a positive number',
   FuelPricePerLiterPositive = 'Price per liter must be greater than zero',
+  FuelPriceInvalid = 'Price per liter must be a positive number',
   TravelOriginRequired = 'Origin is required',
   TravelDestinationRequired = 'Destination is required',
+  TravelDistanceInvalid = 'Travel distance must be a positive number',
   MaintenanceOdometerPositive = 'Odometer must be greater than zero',
-  UnknownMetaType = 'Unknown expense meta type',
+  OdometerInvalid = 'Odometer must be a positive number',
+  NextServiceInvalid = 'Next-service odometer must be a positive number',
+  TripOdoInvalid = 'Trip odometer must be a positive number',
 }
 
 /** Invite-related messages */
@@ -48,6 +58,7 @@ export enum BudgetMsg {
   KidsExpenseLogFailed = 'Failed to log expense',
   PaymentMethodRequired = 'Please select a payment method',
   AmountRequired = 'Please enter a valid amount',
+  AdapterNotReady = 'Storage not ready — try again in a moment',
 }
 
 /** Body module messages */

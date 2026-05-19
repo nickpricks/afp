@@ -88,7 +88,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (credential) {
           await signInWithCredential(auth, credential);
         }
+        return;
       }
+      // Any other redirect error (network-request-failed, popup-closed, etc.) —
+      // log so it shows up in dev tools instead of vanishing.
+      console.error('[AFP] getRedirectResult error:', error);
     });
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -156,7 +160,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } else {
             // Initialize local profile if missing — match DEV_PROFILE so all modules are enabled
             setProfile(DEV_PROFILE);
-            adapter.save(DbSubcollection.Profile, { ...DEV_PROFILE, id: DbDoc.Main });
+            adapter
+              .save(DbSubcollection.Profile, { ...DEV_PROFILE, id: DbDoc.Main })
+              .catch((err) => {
+                console.warn('[AFP] Dev profile init save failed:', err);
+              });
           }
           setSyncStatus(SyncStatus.Synced);
         },

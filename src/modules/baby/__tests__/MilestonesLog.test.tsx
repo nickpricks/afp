@@ -5,11 +5,12 @@ import { MilestonesLog } from '@/modules/baby/components/MilestonesLog';
 import { MilestoneCategory } from '@/modules/baby/types';
 import type { Milestone } from '@/modules/baby/types';
 
-const mockLog = vi.fn(async () => undefined);
-const mockUpdate = vi.fn(async () => undefined);
-const mockRemove = vi.fn(async () => undefined);
+const mockLog = vi.fn(async () => true);
+const mockUpdate = vi.fn(async () => true);
+const mockRemove = vi.fn(async () => true);
 const mockAddToast = vi.fn();
 
+/** Motor milestone fixture for grouping and media-link tests */
 const sampleMotor: Milestone = {
   id: 'm-1',
   date: '2026-04-01',
@@ -22,6 +23,7 @@ const sampleMotor: Milestone = {
   notes: '',
 };
 
+/** Language milestone fixture for grouping-by-category tests */
 const sampleLanguage: Milestone = {
   id: 'm-2',
   date: '2026-04-05',
@@ -53,6 +55,7 @@ beforeEach(() => {
   mockAddToast.mockClear();
 });
 
+/** Validates MilestonesLog renders header, template chips, category groups, media links, and delete buttons */
 describe('MilestonesLog — rendering', () => {
   it('renders Milestones header', () => {
     render(<MilestonesLog childId="c1" />);
@@ -86,6 +89,7 @@ describe('MilestonesLog — rendering', () => {
   });
 });
 
+/** Validates MilestonesLog form validates title, prefills from template chip, and submits correct payload */
 describe('MilestonesLog — form behavior', () => {
   it('blocks submit when title is empty and shows error toast', () => {
     render(<MilestonesLog childId="c1" />);

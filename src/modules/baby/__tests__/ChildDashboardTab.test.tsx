@@ -22,6 +22,7 @@ vi.mock('../hooks/useJournalData', () => ({
   }),
 }));
 
+/** Child fixture for DashboardTab journal strip tests */
 const child: Child = {
   id: 'c1',
   name: 'Aanya',
@@ -40,6 +41,7 @@ const child: Child = {
   updatedAt: '',
 };
 
+/** Validates DashboardTab today-stat strip renders feed/sleep/diaper counts */
 describe('DashboardTab journal strip', () => {
   it('renders today feed / sleep / diaper counts when present', () => {
     render(<DashboardTab child={child} onNavigate={vi.fn()} />);

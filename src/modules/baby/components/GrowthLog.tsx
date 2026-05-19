@@ -52,6 +52,7 @@ export function GrowthLog({
     setNotes(entry.notes);
   };
 
+  /** Handles form submission — create or update growth measurement */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -59,14 +60,33 @@ export function GrowthLog({
     const entryData = { date, weight, height, headCircumference, createdAt: now, notes };
 
     if (editEntry) {
-      await updateGrowth({ ...editEntry, date, weight, height, headCircumference, notes });
-      setEditEntry(null);
+      const ok = await updateGrowth({
+        ...editEntry,
+        date,
+        weight,
+        height,
+        headCircumference,
+        notes,
+      });
+      if (ok) setEditEntry(null);
     } else {
-      await logGrowth(entryData);
+      const saved = await logGrowth(entryData);
+      if (!saved) {
+        setSaving(false);
+        return;
+      }
       if (logToAll && hasSiblings && uid) {
-        const count = await logToSiblings(uid, siblingIds, DbSubcollection.Growth, entryData);
-        if (count > 0)
-          addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+        const { ok, failed } = await logToSiblings(
+          uid,
+          siblingIds,
+          DbSubcollection.Growth,
+          entryData,
+        );
+        if (failed > 0) {
+          addToast(`${ok} of ${ok + failed} copied — ${failed} failed`, ToastType.Error);
+        } else if (ok > 0) {
+          addToast(`Copied to ${ok} sibling${ok > 1 ? 's' : ''}`, ToastType.Info);
+        }
       }
     }
 
@@ -77,6 +97,7 @@ export function GrowthLog({
     setSaving(false);
   }
 
+  /** Clears the edit state and resets all form fields to defaults */
   const handleCancelEdit = () => {
     setEditEntry(null);
     setDate(todayStr());
@@ -86,6 +107,7 @@ export function GrowthLog({
     setNotes('');
   };
 
+  /** Stages a delete with undo toast; fires actual delete after undo window expires */
   const handleUndoDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);

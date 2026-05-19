@@ -6,6 +6,7 @@ import { useToast } from '@/shared/errors/useToast';
 import { ToastType } from '@/shared/types';
 import { BabyMsg } from '@/constants/messages';
 
+/** Props for SuggestionBanner dashboard display */
 type Props = {
   suggestions: Suggestion[];
   onAct: (
@@ -29,6 +30,7 @@ export function SuggestionBanner({ suggestions, onAct }: Props): ReactElement | 
   const visible = suggestions.filter((s) => !dismissedIds.has(`${s.childId}:${s.feature}`));
   if (visible.length === 0) return null;
 
+  /** Snoozes a suggestion for 30 days and dismisses it from the visible list */
   const handleSnooze = async (s: Suggestion) => {
     const result = await snooze(s.childId, s.feature);
     if (result.ok) {

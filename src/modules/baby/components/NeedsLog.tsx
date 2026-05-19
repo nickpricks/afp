@@ -23,6 +23,7 @@ import { useListControls } from '@/shared/hooks/useListControls';
 import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
 
+/** Props for NeedsLog component */
 type Props = {
   childId?: string;
   siblingIds?: string[];
@@ -66,6 +67,7 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setNotes('');
   };
 
+  /** Handles form submission — create or update need entry */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) {
@@ -76,14 +78,14 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
     const now = new Date().toISOString();
 
     if (editEntry) {
-      await update({
+      const ok = await update({
         ...editEntry,
         title: title.trim(),
         category,
         notes,
         updatedAt: now,
       });
-      setEditEntry(null);
+      if (ok) setEditEntry(null);
     } else {
       const entryData = {
         date: todayStr(),
@@ -94,11 +96,23 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
         createdAt: now,
         updatedAt: now,
       };
-      await log(entryData);
+      const saved = await log(entryData);
+      if (!saved) {
+        setSaving(false);
+        return;
+      }
       if (logToAll && hasSiblings && uid) {
-        const count = await logToSiblings(uid, siblingIds, DbSubcollection.Needs, entryData);
-        if (count > 0)
-          addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+        const { ok, failed } = await logToSiblings(
+          uid,
+          siblingIds,
+          DbSubcollection.Needs,
+          entryData,
+        );
+        if (failed > 0) {
+          addToast(`${ok} of ${ok + failed} copied — ${failed} failed`, ToastType.Error);
+        } else if (ok > 0) {
+          addToast(`Copied to ${ok} sibling${ok > 1 ? 's' : ''}`, ToastType.Info);
+        }
       }
     }
 
@@ -108,14 +122,16 @@ export function NeedsLog({ childId, siblingIds = [], uid = '' }: Props) {
     setSaving(false);
   }
 
-  /** Moves an entry to a new status */
+  /** Moves an entry to a new status — suppresses the hook's generic toast to show a status-specific one */
   async function changeStatus(need: NeedEntry, newStatus: NeedStatus) {
     const now = new Date().toISOString();
-    await update({ ...need, status: newStatus, updatedAt: now });
-    if (newStatus === NeedStatus.Inventory) {
-      addToast(BabyMsg.NeedMovedToInventory, ToastType.Success);
-    } else if (newStatus === NeedStatus.Outgrown) {
-      addToast(BabyMsg.NeedMovedToOutgrown, ToastType.Success);
+    const ok = await update({ ...need, status: newStatus, updatedAt: now }, { silent: true });
+    if (ok) {
+      if (newStatus === NeedStatus.Inventory) {
+        addToast(BabyMsg.NeedMovedToInventory, ToastType.Success);
+      } else if (newStatus === NeedStatus.Outgrown) {
+        addToast(BabyMsg.NeedMovedToOutgrown, ToastType.Success);
+      }
     }
   }
 

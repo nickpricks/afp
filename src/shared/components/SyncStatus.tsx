@@ -1,6 +1,7 @@
 import { SyncStatus } from '@/shared/types';
 import { useSyncStatus } from '@/shared/hooks/useSyncStatus';
 
+/** Tailwind color class and label per sync status value. */
 const STATUS_CONFIG: Record<SyncStatus, { color: string; label: string }> = {
   [SyncStatus.Synced]: { color: 'bg-success', label: 'Synced' },
   [SyncStatus.Syncing]: { color: 'bg-warning animate-pulse', label: 'Syncing...' },

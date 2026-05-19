@@ -20,12 +20,14 @@ import { filterByDateRange } from '@/shared/utils/filter';
 import { paginate, totalPages } from '@/shared/utils/paginate';
 import { relativeDateLabel } from '@/shared/utils/relative-date';
 
+/** Props for MilestonesLog component */
 type Props = {
   childId?: string;
   siblingIds?: string[];
   uid?: string;
 };
 
+/** Local alias for a single milestone template entry */
 type TemplateShape = (typeof MILESTONE_TEMPLATES)[number];
 
 /** Milestone tracking — templates + form + grouped-by-category list with tap-to-edit */
@@ -69,6 +71,7 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
     setNotes(entry.notes);
   };
 
+  /** Clears the edit state and resets all form fields to defaults */
   const handleCancelEdit = () => {
     setEditEntry(null);
     setDate(todayStr());
@@ -79,6 +82,7 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
     setNotes('');
   };
 
+  /** Handles form submission — create or update milestone entry */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) {
@@ -99,14 +103,26 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
     };
 
     if (editEntry) {
-      await update({ ...editEntry, ...entryData });
-      setEditEntry(null);
+      const ok = await update({ ...editEntry, ...entryData });
+      if (ok) setEditEntry(null);
     } else {
-      await log(entryData);
+      const saved = await log(entryData);
+      if (!saved) {
+        setSaving(false);
+        return;
+      }
       if (logToAll && hasSiblings && uid) {
-        const count = await logToSiblings(uid, siblingIds, DbSubcollection.Milestones, entryData);
-        if (count > 0)
-          addToast(`Copied to ${count} sibling${count > 1 ? 's' : ''}`, ToastType.Info);
+        const { ok, failed } = await logToSiblings(
+          uid,
+          siblingIds,
+          DbSubcollection.Milestones,
+          entryData,
+        );
+        if (failed > 0) {
+          addToast(`${ok} of ${ok + failed} copied — ${failed} failed`, ToastType.Error);
+        } else if (ok > 0) {
+          addToast(`Copied to ${ok} sibling${ok > 1 ? 's' : ''}`, ToastType.Info);
+        }
       }
     }
 
@@ -117,6 +133,7 @@ export function MilestonesLog({ childId, siblingIds = [], uid = '' }: Props) {
     setSaving(false);
   }
 
+  /** Stages a delete with undo toast; fires actual delete after undo window expires */
   const handleUndoDelete = (id: string) => {
     undoRef.current = false;
     setPendingDeleteId(id);

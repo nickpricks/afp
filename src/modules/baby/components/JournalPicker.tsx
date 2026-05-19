@@ -2,27 +2,32 @@ import { JournalGrain } from '../journal/constants';
 import { computeRange } from '../journal/range';
 import type { JournalRange } from '../journal/types';
 
+/** Props for JournalPicker grain/period selector */
 type Props = {
   range: JournalRange;
   onChange: (next: JournalRange) => void;
 };
 
+/** Available grain options for the journal time period picker */
 const GRAIN_OPTIONS: { label: string; value: JournalGrain }[] = [
   { label: 'Day', value: JournalGrain.Day },
   { label: 'Week', value: JournalGrain.Week },
   { label: 'Month', value: JournalGrain.Month },
 ];
 
+/** Zero-pads a number to two digits for date string construction */
 function pad(n: number): string {
   return String(n).padStart(2, '0');
 }
 
 /** Grain selector (Day/Week/Month) + previous/next period stepper */
 export function JournalPicker({ range, onChange }: Props) {
+  /** Switches to a new grain anchored on the current range start */
   function setGrain(grain: JournalGrain) {
     onChange(computeRange(grain, range.start));
   }
 
+  /** Steps backward (-1) or forward (+1) by one grain period */
   function step(direction: -1 | 1) {
     const [y, m, d] = range.start.split('-').map(Number);
     const anchor = new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1);

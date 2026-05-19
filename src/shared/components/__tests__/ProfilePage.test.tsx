@@ -82,11 +82,12 @@ vi.mock('@/shared/errors/useToast', () => ({
   }),
 }));
 
-/** Wraps a component in MemoryRouter for tests */
+/** Wraps a component in MemoryRouter for routing-aware tests. */
 function renderWithRouter(ui: React.ReactElement) {
   return render(<MemoryRouter>{ui}</MemoryRouter>);
 }
 
+/** Tests for ProfilePage rendering, theme picker, and dev-mode behavior. */
 describe('ProfilePage', () => {
   it('renders the user display name', () => {
     renderWithRouter(<ProfilePage />);

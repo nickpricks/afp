@@ -5,6 +5,7 @@ import { EFFECT_SIZE_DEFAULT } from '@/shared/utils/effectSize';
 import { useMatchMedia } from '@/shared/hooks/useMatchMedia';
 import { useViewportSizeMultiplier } from '@/shared/hooks/useViewportSizeMultiplier';
 
+/** Props for AmbientEffects. */
 interface AmbientEffectsProps {
   themeId: ThemeId;
   intensity: number;
@@ -94,21 +95,21 @@ export const AmbientEffects: React.FC<AmbientEffectsProps> = ({
       const contentOptions = effect.content.split(',');
 
       for (let i = 0; i < count; i++) {
-        // Use a stable seed based on theme, effect, and index
         const baseSeed = i + effectSeed + themeSeed;
         const r1 = seededRandom(baseSeed + 1);
         const r2 = seededRandom(baseSeed + 2);
         const r3 = seededRandom(baseSeed + 3);
+        // r4 reserved (renumber if reclaimed)
         const r5 = seededRandom(baseSeed + 5);
         const r6 = seededRandom(baseSeed + 6);
         const r7 = seededRandom(baseSeed + 7);
 
-        // Pick content from options
         const contentIndex = Math.floor(r1 * contentOptions.length);
         const content = contentOptions[contentIndex] || '';
 
         // Depth drives scale + opacity + size + duration together — see PARTICLE_DEPTH at module top.
         const depth = r5;
+        // Jitter applies to duration; r7 is also reused for drift-y below.
         const jitter = (r7 - 0.5) * PARTICLE_DEPTH.DURATION_JITTER;
         const sizeMultiplier = (effectSize / 100) * viewportMultiplier;
 

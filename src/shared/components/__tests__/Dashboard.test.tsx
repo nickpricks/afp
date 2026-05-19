@@ -112,6 +112,7 @@ vi.mock('@/admin/hooks/useAllUsers', () => ({
 import { Dashboard } from '@/shared/components/Dashboard';
 import { LiveActivityProvider } from '@/modules/body/context/LiveActivityContext';
 
+/** Tests for Dashboard greeting, module card rendering, and data pass-through. */
 describe('Dashboard', () => {
   it('shows greeting with user name', () => {
     render(
