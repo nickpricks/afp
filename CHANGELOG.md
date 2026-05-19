@@ -49,6 +49,47 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 - Comment fixes: `AmbientEffects.tsx` jitter scope clarified; `r4` skip explained; `AddExpense.test.tsx` visible-categories comment de-magicified; `useExpenses` JSDoc mentions full CRUD (#29, #30, #42, #43)
 - New foundational utilities documented: `assertNever`, `deriveFuelTriple`, `parseLocalDate`, `useExpenseForm`, `AutoTabRow`, `expense-badges`
 
+### Wave 5b — re-review follow-ups (2026-05-19)
+
+Single-pass re-review by 6 parallel agents flagged 14 regressions introduced by the cleanup itself + 11 pre-existing silent-failure issues that the deeper sweep surfaced. Per the agreed scope, all 25 were addressed in-branch.
+
+**Regressions fixed:**
+
+- **(CRITICAL) `firestore.rules validMeta` aligned with TS nullable types** — Travel `distance` (and several Fuel/Maintenance fields) used `is number` predicates that rejected the legitimate `T | null` values produced by `defaultMeta`. Travel quick-adds would have hit permission-denied in prod (dev mode masked it). Rule now mirrors the TS shape field-for-field with `(field == null || field is <type>)` for nullables, and a `MUST MATCH` cross-ref comment binds the two files.
+- **(CRITICAL) Baby log create-path gates on `Promise<boolean>`** — the H8 migration was only wired on the edit branch; all 7 log components discarded the create-path boolean, so `logToSiblings` fired even when the primary save returned false and the form cleared optimistically. Now `setSaving(false); return;` on primary-save failure.
+- AutoTab payment-method deselect now returns `null` (matching `AddExpense.tsx:253` and CLAUDE.md Known-Issues), not `UpiBankAccount`.
+- `useExpenses.addExpense` requires explicit `paymentMethod: PaymentMethod` — no more silent UPI fallback at the hook layer. Wrappers (`AddExpensePage`, `AutoTab`) default explicitly.
+- `useExpenseForm.populate` honors caller's `initialPaymentMethod` choice instead of hardcoding UPI.
+- `BudgetSummary` now accepts a `timeRange` prop and filters totals — `ExpenseListPage` hoists `timeRange` state shared between summary + both lists. PR #25's per-tab `useListControls` isolation had decoupled the summary from the filter.
+- `subCatFor`, `defaultMeta`, and `validateMeta` now use `switch + assertNever` instead of `if/else` fall-through and `return err(UnknownMetaType)`. All five meta-discriminating sites are now uniformly exhaustive. `ValidationMsg.UnknownMetaType` removed (unreachable).
+- `MetaSubForm` nullable numeric inputs use a new `toFiniteOrNull` helper instead of raw `Number(s)` — NaN no longer survives in state until blur/submit.
+- `filterByDateRange` uses `parseLocalDate` (now exported from `relative-date.ts`) — same UTC-vs-local fix as H7, just in a different file. Also NaN-guards the reference `today` and `relativeDateLabel` graceful-fallbacks malformed input.
+- Dead `displayedMileage` field removed from `FuelMeta` (input-only, never displayed back). Removed from type, validation, defaults, MetaSubForm UI (grid 3-col → 2-col), firestore rule predicate, `ValidationMsg`, and 8 test fixtures.
+
+**Pre-existing issues fixed (out of scope for original cleanup, addressed by user request):**
+
+- Viewer (`readOnly`) writes now toast `CommonMsg.ReadOnlyMode` instead of silent `return false` (`useBabyCollection`, `useExpenses`).
+- `ProfilePage.handleThemeChange` / `handleColorModeChange` now `await` the save and branch toast on actual outcome — no more "lying success" toast pair on failure.
+- `ProfilePage` intensity/size slider handlers now `console.warn` on save failure instead of empty catch.
+- Listener `onError` callbacks across `useBabyCollection`, `useChildren`, `useNotifications`, `useAllUsers` now set `SyncStatus.Error` — matches the existing pattern in `useExpenses` and `useBodyData`. Sync indicator now reflects baby/notifications/admin listener failures.
+- `auth-context` `getRedirectResult` now logs unhandled error codes (was: silently swallowed all but `auth/credential-already-in-use`).
+- Dev-mode profile init `adapter.save` now has a `.catch(console.warn)` instead of dangling promise.
+- `NeedsLog.changeStatus` no longer double-toasts — `useBabyCollection.update` accepts `{ silent: true }` to suppress its generic toast in favor of the caller's status-specific one.
+
+**Tests + tooling:**
+
+- New test files: `logToSiblings.test.ts` (4 tests — all-ok, partial-failure, empty, unique-id), `AutoTabRow.test.tsx` (7 tests — rendering, incomplete-pill, active-row, onTap/onDelete isolation).
+- `AdminPanel.test.tsx` mock for `setSyncStatus` hoisted to a stable `const` reference — prevented infinite re-render OOM that the new `setSyncStatus` deps in `useNotifications` triggered through `useAdminNotifications`.
+- Test fixtures use `VEHICLE_SUBCAT.Fuel`/`Maintenance` enums instead of raw strings.
+
+**Documentation:**
+
+- `CLAUDE.md`: stale gotcha block, listener-count, log-count, and `DiaperLog`/`EliminationLog` references all updated; new `useBabyCollection.update` silent-flag mention.
+- `hooks/README.md`: `useExpenseForm` API matches actual implementation (`reset`/`populate`, not `resetForm`/`formToExpense`).
+- `SiblingLogResult` JSDoc added; `assertNever` JSDoc warns against `as never` silencing.
+
+Exit gate: 708/708 unit tests, 81/81 e2e, lint + format clean, single-reviewer re-verify pending.
+
 ---
 
 ## [0.2.18] — 2026-05-04 (Budget — Auto tab: fuel, travel, maintenance)

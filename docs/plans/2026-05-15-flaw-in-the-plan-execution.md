@@ -1671,6 +1671,31 @@ Landed 2026-05-15 to 2026-05-16.
 
 Total: 36 functional commits + 1 plan-doc commit = 41 commits ahead of master after Wave 4.
 
+### Wave 5b — Re-review follow-ups (2026-05-19, 14 commits)
+
+After Wave 5 re-review surfaced new findings, Nick chose "fix everything in-branch" + single-reviewer re-verify.
+
+| SHA | Subject |
+|-----|---------|
+| `72878fe` | fix(rules): align validMeta with TS nullable types (CRITICAL — Travel/Fuel/Maintenance shape coverage) |
+| `19a3af4` | fix(baby): gate create-path on Promise<boolean> across 7 log components (CRITICAL — H8 migration completion) |
+| `4b14435` | fix(expenses): no silent UPI fallback; deselect goes to null (3 sites: AutoTab + useExpenses + useExpenseForm) |
+| `937465f` | fix(expenses): BudgetSummary honors active time range (PR #25 regression) |
+| `6f40fd0` | fix(expenses): assertNever exhaustiveness on subCatFor, defaultMeta, validateMeta |
+| `e96f0e6` | fix(expenses): MetaSubForm nullable inputs reject NaN at keystroke (new toFiniteOrNull helper) |
+| `0ad0e37` | fix(shared): TZ-safe date parsing + NaN guards in filter + label (export parseLocalDate) |
+| `b6b949a` | fix(shared): read-only Viewer toast + truthful Profile save toasts |
+| `d9954d8` | fix(auth+listeners): consistent SyncStatus.Error on listener failure (baby/notifications/admin) |
+| `26be7d7` | chore(expenses): remove dead displayedMileage field from FuelMeta |
+| `a4607db` | test(admin): stabilize setSyncStatus mock to prevent infinite re-render OOM |
+| `c034779` | chore: NeedsLog double-toast fix + missing test coverage + docs accuracy |
+| `42f8da6` | test(expenses): use VEHICLE_SUBCAT enum in fixtures instead of raw strings |
+| `d6a4805` | style: Prettier pass over Wave 5b new files |
+
+Total: 50 functional commits + 1 plan-doc commit = 55 commits ahead of master after Wave 5b.
+
+Exit gate verification: format ✅ · lint ✅ · 708/708 unit tests ✅ · 81/81 e2e ✅. Single-reviewer re-verify pending.
+
 ---
 
 ### Close-with-rationale (absorbed / scope clarifications)
@@ -1681,7 +1706,7 @@ Total: 36 functional commits + 1 plan-doc commit = 41 commits ahead of master af
 
 ## Moved out of scope
 
-(Filled in during Task 54 if any deferrals happen.)
+After Nick's decision to fix everything in-branch (Wave 5b), no items were deferred to specs. Pre-existing silent-failure issues surfaced by the deeper Wave 5 re-review (readOnly toasts, ProfilePage save timing, ProfilePage slider silent errors, dev-mode dangling promise, getRedirectResult single-error catch, listener SyncStatus consistency, NeedsLog double-toast, missing test coverage on logToSiblings/AutoTabRow) were all addressed in Wave 5b commits.
 
 ## Self-review notes
 
