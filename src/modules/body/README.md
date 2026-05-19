@@ -1,6 +1,6 @@
 # body/
 
-Body/fitness tracking module. Floors (daily aggregate) + walk/run/cycle activities (individual entries with distance). SVG score ring with daily goal and weekly bar chart.
+Body/fitness tracking module. Floors (daily aggregate) + walk/run/cycle activities (individual entries with distance). SVG score ring with daily goal and weekly bar chart. Live-activity tracking POC (Active Session) lives alongside the manual-log surface.
 
 ## Files
 
@@ -10,16 +10,10 @@ Body/fitness tracking module. Floors (daily aggregate) + walk/run/cycle activiti
 
 ## Directories
 
-- `components/` — 10 UI components (BodyTracker, BodyPage, BodyStats, BodyConfigForm, FloorsTab, WalkingTab, RunningTab, CyclingTab, ActivityLog, AddActivity)
-- `hooks/` — Data hooks (useBodyConfig, useBodyData: logActivity with optional date, deleteActivity, deleteRecord, stale-closure fix via recordsRef)
+- `components/` — Body UI: `BodyTracker`, `BodyPage`, `BodyStats`, `BodyConfigForm`, four tab components (FloorsTab / WalkingTab / RunningTab / CyclingTab), `ActivityLog`, `AddActivity`, `BodySummaryCard` (dashboard surface), `ActiveSessionOverlay` (live tracking overlay)
+- `context/` — `LiveActivityContext` provider that owns live-session state (`prepare`, `start`, `pause`, `stop`, `sessionState`). Read via `useLiveActivityContext`
+- `hooks/` — `useBodyConfig`, `useBodyData` (logActivity with optional date, deleteActivity, deleteRecord — stale-closure fix via `recordsRef`), `useLiveActivity` (low-level live-session hook that the context wraps)
 
 ## Tests
 
-- `__tests__/scoring.test.ts` — `computeBodyScore` and `computeSteps`
-- `__tests__/types.test.ts` — `ActivityType` enum and `ALL_ACTIVITY_TYPES`
-- `__tests__/constants.test.ts` — Body defaults and scoring weights
-- `__tests__/config.test.ts` — Body config validation
-- `__tests__/BodyPage.test.tsx` — Tab rendering and navigation
-- `__tests__/CyclingTab.test.tsx` — Cycling tab component
-- `__tests__/ActivityLog.test.tsx` — Activity list rendering
-- `__tests__/useBodyConfig.test.ts` — Config hook state management
+`__tests__/` contains tests for scoring, types/enums, config validation, defaults, BodyPage tab navigation, CyclingTab, ActivityLog rendering, and `useBodyConfig` state management. Active-session + live tracking covered by integration tests in the parent test dir.

@@ -13,6 +13,7 @@ App shell components for layout, navigation, route guards, dashboard, profile, d
 - **AdminClaim.tsx** — First-run screen letting the first authenticated user claim admin role (Google sign-in + claim flow)
 - **Dashboard.tsx** — Role-aware home page at `/` with per-module summary cards (Body, Budget, Baby)
 - **DashboardCard.tsx** — Reusable card component linking to a module page with icon, metric, and subtitle
+- **ActivityTrackerCard.tsx** — Dashboard CTA to start a live activity session (Walk or Run). Reads `useLiveActivityContext` and hides when a session is already running. Renders only when Body module is enabled
 - **ProfilePage.tsx** — User profile page with username, theme picker (expandable inline 2-col grid), color mode, two tier pickers (5-tier intensity for particle count, 3-tier size for scale), sign out, and changelog viewer. Real-time slider/picker saves silent-fail toward the user but log via `verr('[AFP:profile:save]', …)` so a Firestore permission regression isn't invisible
 - **GoogleSignInButton.tsx** — Google sign-in button handling account linking and error display
 - **AnimationViewer.tsx** — Dedicated page for previewing loading animations with pill tab switcher and text toggle
