@@ -146,9 +146,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } else {
             // Initialize local profile if missing — match DEV_PROFILE so all modules are enabled
             setProfile(DEV_PROFILE);
-            adapter.save(DbSubcollection.Profile, { ...DEV_PROFILE, id: DbDoc.Main }).catch((err) => {
-              console.warn('[AFP] Dev profile init save failed:', err);
-            });
+            adapter
+              .save(DbSubcollection.Profile, { ...DEV_PROFILE, id: DbDoc.Main })
+              .catch((err) => {
+                console.warn('[AFP] Dev profile init save failed:', err);
+              });
           }
           setSyncStatus(SyncStatus.Synced);
         },

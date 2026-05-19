@@ -36,7 +36,9 @@ function fuelExpense(): Expense {
 /** Renders fuel/travel/maintenance + the incomplete pill case, plus the active-row + delete affordances */
 describe('AutoTabRow', () => {
   it('renders amount, payment-method short label, and category label', () => {
-    render(<AutoTabRow expense={fuelExpense()} isActive={false} onTap={vi.fn()} onDelete={vi.fn()} />);
+    render(
+      <AutoTabRow expense={fuelExpense()} isActive={false} onTap={vi.fn()} onDelete={vi.fn()} />,
+    );
     expect(screen.getByText('4000', { exact: false })).toBeInTheDocument();
     expect(screen.getByText(/Vehicle/i)).toBeInTheDocument();
     expect(screen.getByText(VEHICLE_SUBCAT.Fuel, { exact: false })).toBeInTheDocument();
@@ -49,7 +51,9 @@ describe('AutoTabRow', () => {
   });
 
   it('hides the incomplete pill when meta is present', () => {
-    render(<AutoTabRow expense={fuelExpense()} isActive={false} onTap={vi.fn()} onDelete={vi.fn()} />);
+    render(
+      <AutoTabRow expense={fuelExpense()} isActive={false} onTap={vi.fn()} onDelete={vi.fn()} />,
+    );
     expect(screen.queryByText(/incomplete/i)).not.toBeInTheDocument();
   });
 
@@ -64,14 +68,18 @@ describe('AutoTabRow', () => {
 
   it('fires onTap when the row is clicked', () => {
     const onTap = vi.fn();
-    render(<AutoTabRow expense={fuelExpense()} isActive={false} onTap={onTap} onDelete={vi.fn()} />);
+    render(
+      <AutoTabRow expense={fuelExpense()} isActive={false} onTap={onTap} onDelete={vi.fn()} />,
+    );
     fireEvent.click(screen.getByRole('button', { name: /4000/ }));
     expect(onTap).toHaveBeenCalledOnce();
   });
 
   it('fires onTap when Enter is pressed on the row', () => {
     const onTap = vi.fn();
-    render(<AutoTabRow expense={fuelExpense()} isActive={false} onTap={onTap} onDelete={vi.fn()} />);
+    render(
+      <AutoTabRow expense={fuelExpense()} isActive={false} onTap={onTap} onDelete={vi.fn()} />,
+    );
     fireEvent.keyDown(screen.getByRole('button', { name: /4000/ }), { key: 'Enter' });
     expect(onTap).toHaveBeenCalledOnce();
   });
@@ -79,7 +87,9 @@ describe('AutoTabRow', () => {
   it('fires onDelete (not onTap) when the × button is clicked', () => {
     const onTap = vi.fn();
     const onDelete = vi.fn();
-    render(<AutoTabRow expense={fuelExpense()} isActive={false} onTap={onTap} onDelete={onDelete} />);
+    render(
+      <AutoTabRow expense={fuelExpense()} isActive={false} onTap={onTap} onDelete={onDelete} />,
+    );
     fireEvent.click(screen.getByRole('button', { name: '×' }));
     expect(onDelete).toHaveBeenCalledOnce();
     expect(onTap).not.toHaveBeenCalled();

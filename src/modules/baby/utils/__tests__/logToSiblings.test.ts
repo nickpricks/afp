@@ -5,7 +5,13 @@ import { ok, err } from '@/shared/types';
 
 const saveMock = vi.fn();
 vi.mock('@/shared/storage/create-adapter', () => ({
-  createAdapter: () => ({ save: saveMock, getAll: vi.fn(), getById: vi.fn(), remove: vi.fn(), onSnapshot: vi.fn() }),
+  createAdapter: () => ({
+    save: saveMock,
+    getAll: vi.fn(),
+    getById: vi.fn(),
+    remove: vi.fn(),
+    onSnapshot: vi.fn(),
+  }),
 }));
 
 /** Verifies fan-out write results — all-ok and partial-failure paths */
@@ -16,7 +22,9 @@ describe('logToSiblings', () => {
 
   it('returns ok=N failed=0 when every sibling save succeeds', async () => {
     saveMock.mockResolvedValue(ok(undefined));
-    const result = await logToSiblings('uid-1', ['sib-a', 'sib-b', 'sib-c'], 'feeds', { date: '2026-05-18' });
+    const result = await logToSiblings('uid-1', ['sib-a', 'sib-b', 'sib-c'], 'feeds', {
+      date: '2026-05-18',
+    });
     expect(result).toEqual({ ok: 3, failed: 0 });
     expect(saveMock).toHaveBeenCalledTimes(3);
   });
@@ -28,7 +36,9 @@ describe('logToSiblings', () => {
       .mockResolvedValueOnce(ok(undefined));
     // Silence the expected console.error from the failure branch
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const result = await logToSiblings('uid-1', ['sib-a', 'sib-b', 'sib-c'], 'feeds', { date: '2026-05-18' });
+    const result = await logToSiblings('uid-1', ['sib-a', 'sib-b', 'sib-c'], 'feeds', {
+      date: '2026-05-18',
+    });
     expect(result).toEqual({ ok: 2, failed: 1 });
     expect(consoleError).toHaveBeenCalled();
     consoleError.mockRestore();
