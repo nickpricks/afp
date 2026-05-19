@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { AuthProvider } from '@/shared/auth/auth-context';
 import { ToastProvider } from '@/shared/errors/toast-context';
+import { LiveActivityProvider } from '@/modules/body/context/LiveActivityContext';
+import { ActiveSessionOverlay } from '@/modules/body/components/ActiveSessionOverlay';
 import { ErrorBoundary } from '@/shared/errors/ErrorBoundary';
 import { Layout } from '@/shared/components/Layout';
 import { ModuleGate } from '@/shared/components/ModuleGate';
@@ -71,75 +73,78 @@ export function App() {
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <AuthProvider>
           <ToastProvider>
-            <ThemeInitializer />
-            <Suspense fallback={<LoadingScreen />}>
-              <Routes>
-                <Route path={ROUTES.INVITE} element={<InviteRedeem />} />
-                <Route element={<Layout />}>
-                  <Route path={ROUTES.HOME} element={<Dashboard />} />
-                  <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
-                  <Route
-                    path={ROUTES.BODY}
-                    element={
-                      <ModuleGate moduleId={ModuleId.Body}>
-                        <BodyPage />
-                      </ModuleGate>
-                    }
-                  />
-                  <Route
-                    path={ROUTES.BUDGET}
-                    element={
-                      <ModuleGate moduleId={ModuleId.Budget}>
-                        <ExpenseListPage />
-                      </ModuleGate>
-                    }
-                  />
-                  <Route
-                    path={ROUTES.BUDGET_ADD}
-                    element={
-                      <ModuleGate moduleId={ModuleId.Budget}>
-                        <AddExpensePage />
-                      </ModuleGate>
-                    }
-                  />
-                  <Route
-                    path={ROUTES.BABY}
-                    element={
-                      <ModuleGate moduleId={ModuleId.Baby}>
-                        <BabyLanding />
-                      </ModuleGate>
-                    }
-                  />
-                  <Route
-                    path={ROUTES.BABY_CHILD}
-                    element={
-                      <ModuleGate moduleId={ModuleId.Baby}>
-                        <ChildDetail />
-                      </ModuleGate>
-                    }
-                  />
-                  <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
-                  <Route
-                    path={ROUTES.ADMIN}
-                    element={
-                      <AdminGate>
-                        <AdminPanel />
-                      </AdminGate>
-                    }
-                  />
-                  <Route
-                    path={ROUTES.ADMIN_INVITES}
-                    element={
-                      <AdminGate>
-                        <InviteGenerator />
-                      </AdminGate>
-                    }
-                  />
-                  <Route path={ROUTES.DEBUG} element={<DebugPage />} />
-                  <Route path={ROUTES.ANIMATIONS} element={<AnimationViewer />} />
-                </Route>
-              </Routes>
-            </Suspense>
+            <LiveActivityProvider>
+              <ActiveSessionOverlay />
+              <ThemeInitializer />
+              <Suspense fallback={<LoadingScreen />}>
+                <Routes>
+                  <Route path={ROUTES.INVITE} element={<InviteRedeem />} />
+                  <Route element={<Layout />}>
+                    <Route path={ROUTES.HOME} element={<Dashboard />} />
+                    <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+                    <Route
+                      path={ROUTES.BODY}
+                      element={
+                        <ModuleGate moduleId={ModuleId.Body}>
+                          <BodyPage />
+                        </ModuleGate>
+                      }
+                    />
+                    <Route
+                      path={ROUTES.BUDGET}
+                      element={
+                        <ModuleGate moduleId={ModuleId.Budget}>
+                          <ExpenseListPage />
+                        </ModuleGate>
+                      }
+                    />
+                    <Route
+                      path={ROUTES.BUDGET_ADD}
+                      element={
+                        <ModuleGate moduleId={ModuleId.Budget}>
+                          <AddExpensePage />
+                        </ModuleGate>
+                      }
+                    />
+                    <Route
+                      path={ROUTES.BABY}
+                      element={
+                        <ModuleGate moduleId={ModuleId.Baby}>
+                          <BabyLanding />
+                        </ModuleGate>
+                      }
+                    />
+                    <Route
+                      path={ROUTES.BABY_CHILD}
+                      element={
+                        <ModuleGate moduleId={ModuleId.Baby}>
+                          <ChildDetail />
+                        </ModuleGate>
+                      }
+                    />
+                    <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+                    <Route
+                      path={ROUTES.ADMIN}
+                      element={
+                        <AdminGate>
+                          <AdminPanel />
+                        </AdminGate>
+                      }
+                    />
+                    <Route
+                      path={ROUTES.ADMIN_INVITES}
+                      element={
+                        <AdminGate>
+                          <InviteGenerator />
+                        </AdminGate>
+                      }
+                    />
+                    <Route path={ROUTES.DEBUG} element={<DebugPage />} />
+                    <Route path={ROUTES.ANIMATIONS} element={<AnimationViewer />} />
+                  </Route>
+                </Routes>
+              </Suspense>
+            </LiveActivityProvider>
           </ToastProvider>
         </AuthProvider>
       </BrowserRouter>

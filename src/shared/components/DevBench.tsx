@@ -26,6 +26,7 @@ import {
 } from '@/shared/components/bench-generators';
 import { applyTheme, THEME_DEFINITIONS, useActiveThemeId } from '@/themes/themes';
 import type { ThemeId } from '@/themes/themes';
+import { CONFIG } from '@/constants/config';
 
 // ─── BenchButton ────────────────────────────────────────────────────────────
 
@@ -37,7 +38,7 @@ function BenchButton({ label, onClick }: { label: string; onClick: (date?: strin
     (count: number) => {
       const msg = count === 1 ? onClick() : bulkRun(onClick, count, label);
       setFlash(msg);
-      setTimeout(() => setFlash(null), 2000);
+      setTimeout(() => setFlash(null), CONFIG.TIMINGS.FLASH_DURATION_MS);
     },
     [onClick, label],
   );
@@ -89,7 +90,7 @@ function UserProfilePanel() {
       .writeText(json)
       .then(() => {
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setTimeout(() => setCopied(false), CONFIG.TIMINGS.COPY_FEEDBACK_MS);
       })
       .catch((e) => console.error('[AFP] Clipboard copy failed:', e));
   }, [json]);
@@ -161,7 +162,7 @@ function DevBenchInner() {
       }
       applyTheme(themeIds[i]!, 'system');
       i++;
-      tourTimeoutRef.current = setTimeout(tick, 3000);
+      tourTimeoutRef.current = setTimeout(tick, CONFIG.TIMINGS.THEME_TOUR_INTERVAL_MS);
     };
     tick();
   }, [activeThemeId, stopTour]);

@@ -19,4 +19,21 @@ export const CONFIG = {
   DAILY_SCORE_GOAL: 50 as number,
   /** Number of categories visible in the budget form when collapsed */
   BUDGET_VISIBLE_CATEGORIES: 7 as number,
+  /** Mobile breakpoint in px. Matches Tailwind's `sm:` breakpoint. Used by viewport-aware
+   * hooks (`useViewportSizeMultiplier`) and any future feature that conditions on small screens. */
+  MOBILE_BREAKPOINT_PX: 640 as number,
+  /** Timing constants for transient UI feedback. Hoisted from inline `setTimeout` literals so
+   * a duration tweak is one-line; named so a reviewer can tell at a glance which surface owns it. */
+  TIMINGS: {
+    /** Minimum hold time on the loading screen so the splash isn't a flash on fast networks */
+    MIN_LOADING_DELAY_MS: 1000 as number,
+    /** "Copied!" feedback duration for clipboard buttons (DevBench, ConsoleViewer) */
+    COPY_FEEDBACK_MS: 2000 as number,
+    /** DevBench bulk-action flash duration (the green "Generated!" pill) */
+    FLASH_DURATION_MS: 2000 as number,
+    /** DevBench theme tour interval — auto-advances through themes for visual review */
+    THEME_TOUR_INTERVAL_MS: 3000 as number,
+    /** Post-redeem redirect delay so the user sees the success toast before navigation */
+    INVITE_REDIRECT_MS: 2000 as number,
+  },
 } as const;

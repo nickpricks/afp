@@ -8,6 +8,8 @@ import {
   MealPortion,
   NeedCategory,
   NeedStatus,
+  GiftStatus,
+  FinanceStatus,
   MilestoneCategory,
 } from '@/modules/baby/types';
 
@@ -154,6 +156,36 @@ export const ALL_NEED_STATUSES: readonly NeedStatus[] = [
   NeedStatus.Wishlist,
   NeedStatus.Inventory,
   NeedStatus.Outgrown,
+];
+
+/** Display labels for gift lifecycle status, keyed by enum value */
+export const GIFT_STATUS_LABELS: Record<GiftStatus, string> = {
+  [GiftStatus.Wishlist]: 'Wishlist',
+  [GiftStatus.Received]: 'Received',
+  [GiftStatus.Used]: 'Used',
+  [GiftStatus.Outgrown]: 'Outgrown',
+};
+
+/** All gift status enum values in display order */
+export const ALL_GIFT_STATUSES: readonly GiftStatus[] = [
+  GiftStatus.Wishlist,
+  GiftStatus.Received,
+  GiftStatus.Used,
+  GiftStatus.Outgrown,
+];
+
+/** Display labels for finance entry status, keyed by enum value */
+export const FINANCE_STATUS_LABELS: Record<FinanceStatus, string> = {
+  [FinanceStatus.Received]: 'Received',
+  [FinanceStatus.Saved]: 'Saved',
+  [FinanceStatus.Spent]: 'Spent',
+};
+
+/** All finance status enum values in display order */
+export const ALL_FINANCE_STATUSES: readonly FinanceStatus[] = [
+  FinanceStatus.Received,
+  FinanceStatus.Saved,
+  FinanceStatus.Spent,
 ];
 
 /** Display labels for milestone categories, keyed by enum value */

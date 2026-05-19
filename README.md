@@ -25,8 +25,8 @@ Dev mode works without Firebase — all modules enabled, TheAdminNick role, loca
 | `bun run lint` | Type check + ESLint |
 | `bun run typecheck` | tsc --noEmit only |
 | `bun run lint:eslint` | ESLint only |
-| `bun run test` | Vitest unit tests (637) |
-| `bun run test:e2e` | Playwright E2E tests (81) |
+| `bun run test` | Vitest unit tests (648) |
+| `bun run test:e2e` | Playwright E2E tests (82) |
 | `bun run format` | Prettier format all source files |
 | `bun run format:check` | Prettier check (CI-friendly, no writes) |
 | `bun run test:coverage` | Unit tests with v8 coverage |
@@ -57,19 +57,19 @@ Hooks accept optional `targetUid` for data scoping. Write callbacks are no-ops i
 ```
 src/
   admin/          — Admin panel (tabbed Invites + Users + Broadcasts), invite generator, notifications
-  constants/      — config (UNDO_DURATION_MS, METERS_PER_KM), routes, db paths, messages
+  constants/      — config (UNDO_DURATION_MS, METERS_PER_KM, MOBILE_BREAKPOINT_PX, BUDGET_VISIBLE_CATEGORIES), routes, db paths, messages
   modules/
     body/         — BodyPage (tabbed), FloorsTab, Walking/Running/CyclingTab, BodyStats, scoring
     expenses/     — Budget landing, AddExpense/AddIncome, ExpenseList, IncomeList, ReconciliationView
     baby/         — BabyLanding, ChildDetail (tabbed), FeedLog, SleepLog, GrowthLog, DiaperLog
   shared/
     auth/         — Firebase auth, invite system, TheAdminNick model
-    components/   — Dashboard, DashboardCard, Layout, TabBar, ModuleGate, AdminGate, AlertBanner, DatePickerModal, SwipeToDelete, DevBench, PaymentMethodBubble, ListControls, ListShowMoreFooter, lists/, loading/
+    components/   — Dashboard, DashboardCard, Layout, TabBar, ModuleGate, AdminGate, AlertBanner, DatePickerModal, SwipeToDelete, DevBench, PaymentMethodBubble, ListControls, ListShowMoreFooter, AmbientEffects, IntensityTierPicker, SizeTierPicker, GlyphPrimitive, lists/, loading/
     errors/       — ErrorBoundary, toast notifications (with undo action support)
-    hooks/        — useModules, useNotifications, useModuleRequest, useSyncStatus, useMinDelay, useListControls
+    hooks/        — useModules, useNotifications, useModuleRequest, useSyncStatus, useMinDelay, useListControls, useMatchMedia, useViewportSizeMultiplier
     storage/      — StorageAdapter interface + Firebase/localStorage impls
     types.ts      — Result<T>, ModuleId, SyncStatus, UserRole, ToastType, NotificationType, Severity, all enums
-    utils/        — date, error, profile, validation, regex, format, sort helpers
+    utils/        — date, error, profile, validation, regex, format, sort, filter, paginate, relative-date, intensity, effectSize, verbose helpers
   themes/         — 10 CSS themes, ambient effects, theme definitions + migration
 ```
 

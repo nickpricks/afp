@@ -14,6 +14,7 @@ import { auth, db, isFirebaseConfigured } from '@/shared/auth/firebase-config';
 import { DbCollection, DbSubcollection, DbDoc, DbField } from '@/constants/db';
 import { createDefaultProfile } from '@/shared/utils/profile';
 import { createLocalStorageAdapter } from '@/shared/storage/localStorage-adapter';
+import { vwarn } from '@/shared/utils/verbose';
 
 export interface AuthContextValue {
   firebaseUser: User | null;
@@ -33,6 +34,19 @@ const DEV_PROFILE: UserProfile = createDefaultProfile('Dev User', UserRole.TheAd
   [ModuleId.Budget]: true,
   [ModuleId.Baby]: true,
 });
+
+/** Resolves missing/null `profile.modules` to {@link DEFAULT_MODULES} with a verbose warning so a
+ * permission regression or schema-drift incident is visible in the console. Uses `??` instead of
+ * `||` so a deliberately-empty modules map (admin clear) is honored rather than silently
+ * substituted. */
+const resolveModules = (
+  modules: UserProfile['modules'] | undefined,
+  source: string,
+): UserProfile['modules'] => {
+  if (modules !== undefined && modules !== null) return modules;
+  vwarn('[AFP:auth]', `profile.modules missing in ${source} — using DEFAULT_MODULES`);
+  return DEFAULT_MODULES;
+};
 
 /** Provides Firebase auth state and user profile — bypasses auth in dev when Firebase isn't configured */
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -113,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const data = snapshot.data() as UserProfile;
             setProfile({
               ...data,
-              modules: data.modules || DEFAULT_MODULES,
+              modules: resolveModules(data.modules, 'firestore-snapshot'),
             });
             setSyncStatus(SyncStatus.Synced);
           } else {
@@ -137,7 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Ensure modules exist even in older local data
             setProfile({
               ...mainDoc,
-              modules: mainDoc.modules || DEFAULT_MODULES,
+              modules: resolveModules(mainDoc.modules, 'localStorage-snapshot'),
             });
           } else {
             // Initialize local profile if missing — match DEV_PROFILE so all modules are enabled

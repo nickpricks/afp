@@ -17,14 +17,18 @@ import { ConsoleOverlay } from '@/shared/components/ConsoleViewer';
 import { useConsoleCapture } from '@/shared/hooks/useConsoleCapture';
 import { useVerbose } from '@/shared/hooks/useVerbose';
 import { AmbientEffects } from '@/shared/components/AmbientEffects';
+import { bucketEffectSize } from '@/shared/utils/effectSize';
 import { ThemeId } from '@/themes/themes';
+import { CONFIG } from '@/constants/config';
 
 /** Root app shell with header, routed content area, tab bar, and PWA update prompt */
 export function Layout() {
   const navigate = useNavigate();
   const { isLoading, profile, firebaseUser, isTheAdminNick } = useAuth();
   const isAnonymous = firebaseUser?.isAnonymous ?? true;
-  const minDelayActive = useMinDelay(isFirebaseConfigured ? 1000 : 0);
+  const minDelayActive = useMinDelay(
+    isFirebaseConfigured ? CONFIG.TIMINGS.MIN_LOADING_DELAY_MS : 0,
+  );
   const { entries, clear } = useConsoleCapture();
   const { verbose } = useVerbose();
   const { activeAlerts, unreadCount, dismiss } = useNotifications();
@@ -56,7 +60,7 @@ export function Layout() {
         key={profile.theme}
         themeId={profile.theme as ThemeId}
         intensity={profile.effectIntensity}
-        effectSize={profile.effectSize ?? 100}
+        effectSize={bucketEffectSize(profile.effectSize)}
       />
       <AlertBanner alerts={activeAlerts} onDismiss={dismiss} />
       {profile.modules?.[ModuleId.Baby] && <BabySuggestionsToast />}

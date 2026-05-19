@@ -43,6 +43,11 @@ export enum BudgetMsg {
   IncomeAdded = 'Income added',
   IncomeDeleted = 'Income deleted',
   CategoryRequired = 'Please select a category',
+  KidsTabEmpty = 'No kid finances yet',
+  KidsExpenseLogged = 'Logged as expense',
+  KidsExpenseLogFailed = 'Failed to log expense',
+  PaymentMethodRequired = 'Please select a payment method',
+  AmountRequired = 'Please enter a valid amount',
 }
 
 /** Body module messages */
@@ -93,6 +98,13 @@ export enum BabyMsg {
   SuggestionSnoozed = 'Suggestion snoozed for 30 days',
   SuggestionEnabled = 'Module enabled',
   SuggestionDisabled = 'Module disabled',
+  PresentFinanceSaved = 'Finance entry saved',
+  PresentFinanceUpdated = 'Finance entry updated',
+  PresentFinanceDeleted = 'Finance entry deleted',
+  PresentGiftSaved = 'Gift saved',
+  PresentGiftUpdated = 'Gift updated',
+  PresentGiftDeleted = 'Gift deleted',
+  PresentTitleRequired = 'Description/Title is required',
 }
 
 /** Profile-related messages */
@@ -102,6 +114,7 @@ export enum ProfileMsg {
   UsernameTaken = 'Username is already taken',
   UsernameClaimFailed = 'Failed to claim username',
   UsernameReleaseFailed = 'Failed to release username',
+  UsernameSaveFailed = 'Failed to save username — please retry',
   ThemeSaved = 'Theme updated',
   ThemeSaveFailed = 'Failed to save theme',
   ColorModeSaveFailed = 'Failed to save color mode',
@@ -149,4 +162,5 @@ export enum NotificationMsg {
 export enum ProviderMsg {
   AuthRequired = 'useAuth must be used within an AuthProvider',
   ToastRequired = 'useToast must be used within a ToastProvider',
+  LiveActivityRequired = 'useLiveActivityContext must be used within a LiveActivityProvider',
 }

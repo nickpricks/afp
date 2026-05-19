@@ -5,6 +5,7 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { isValidInviteCode, redeemInvite } from '@/shared/auth/invite';
 import { isOk } from '@/shared/types';
 import { GoogleSignInButton } from '@/shared/components/GoogleSignInButton';
+import { CONFIG } from '@/constants/config';
 
 type RedeemResult =
   | { status: 'pending' }
@@ -45,7 +46,7 @@ export function InviteRedeem() {
           if (!cancelled) {
             navigate('/', { replace: true });
           }
-        }, 2000);
+        }, CONFIG.TIMINGS.INVITE_REDIRECT_MS);
       } else {
         setResult({ status: 'error', message: res.error });
       }

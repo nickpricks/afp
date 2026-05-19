@@ -3,15 +3,25 @@ import { render } from '@testing-library/react';
 import { AmbientEffects } from '../AmbientEffects';
 import { ThemeId } from '@/themes/themes';
 
+/** Mode for {@link stubMatchMedia}. `desktop` matches nothing; `mobile` matches max-width queries;
+ * `reduce-motion` matches prefers-reduced-motion queries. */
+type StubMode = 'desktop' | 'mobile' | 'reduce-motion';
+
+/** Hoisted matchMedia stub helper — replaces the same 5-line stub previously duplicated
+ * across 5 describe blocks. Keeps each test focused on its assertion, not its setup. */
+const stubMatchMedia = (mode: StubMode = 'desktop'): void => {
+  vi.stubGlobal('matchMedia', (q: string) => ({
+    matches:
+      (mode === 'mobile' && q.includes('max-width')) ||
+      (mode === 'reduce-motion' && q.includes('reduce')),
+    media: q,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  }));
+};
+
 describe('<AmbientEffects>', () => {
-  beforeEach(() => {
-    vi.stubGlobal('matchMedia', (q: string) => ({
-      matches: false,
-      media: q,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    }));
-  });
+  beforeEach(() => stubMatchMedia());
 
   it('returns null when intensity is 0', () => {
     const { container } = render(<AmbientEffects themeId={ThemeId.FamilyBlue} intensity={0} />);
@@ -19,12 +29,7 @@ describe('<AmbientEffects>', () => {
   });
 
   it('returns null when prefers-reduced-motion matches', () => {
-    vi.stubGlobal('matchMedia', (q: string) => ({
-      matches: q.includes('reduce'),
-      media: q,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    }));
+    stubMatchMedia('reduce-motion');
     const { container } = render(<AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} />);
     expect(container.firstChild).toBeNull();
   });
@@ -46,14 +51,7 @@ describe('<AmbientEffects>', () => {
 });
 
 describe('depth-correlated scaling', () => {
-  beforeEach(() => {
-    vi.stubGlobal('matchMedia', (q: string) => ({
-      matches: false,
-      media: q,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    }));
-  });
+  beforeEach(() => stubMatchMedia());
 
   it('scale and opacity correlate (close particles are bigger AND brighter)', () => {
     const { container } = render(<AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} />);
@@ -82,13 +80,7 @@ describe('depth-correlated scaling', () => {
 // Fix 2: viewport-aware size multiplier
 describe('viewport-aware size multiplier', () => {
   it('applies 0.65x multiplier on mobile viewport (max-width: 640px)', () => {
-    // Mock matchMedia: mobile viewport matches, reduced-motion does not
-    vi.stubGlobal('matchMedia', (q: string) => ({
-      matches: q.includes('max-width: 640px'),
-      media: q,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    }));
+    stubMatchMedia('mobile');
 
     const { container } = render(<AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} />);
     const particles = container.querySelectorAll('.fx-particle');
@@ -104,12 +96,7 @@ describe('viewport-aware size multiplier', () => {
   });
 
   it('applies 1.0x multiplier on desktop viewport', () => {
-    vi.stubGlobal('matchMedia', (q: string) => ({
-      matches: false,
-      media: q,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    }));
+    stubMatchMedia();
 
     const { container } = render(<AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} />);
     const particles = container.querySelectorAll('.fx-particle');
@@ -125,14 +112,7 @@ describe('viewport-aware size multiplier', () => {
 
 // Fix 3: effectSize prop
 describe('effectSize prop', () => {
-  beforeEach(() => {
-    vi.stubGlobal('matchMedia', (q: string) => ({
-      matches: false,
-      media: q,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    }));
-  });
+  beforeEach(() => stubMatchMedia());
 
   it('effectSize=70 produces smaller --fx-size than effectSize=100', () => {
     const { container: c100 } = render(
@@ -194,5 +174,29 @@ describe('effectSize prop', () => {
         .reduce((a, b) => a + b, 0) / c140.querySelectorAll('.fx-particle').length;
 
     expect(avg140).toBeGreaterThan(avg100);
+  });
+});
+
+// Reduced-motion is the safety override: regardless of effectSize tier (Small/Medium/Large)
+// or viewport, OS-level reduce-motion preference must short-circuit to zero particles.
+// Guards against future regressions where size logic runs before the reduced-motion check.
+describe('reduced-motion × effectSize interaction', () => {
+  it.each([70, 100, 140])(
+    'reduced-motion suppresses all particles regardless of effectSize=%i',
+    (size) => {
+      stubMatchMedia('reduce-motion');
+      const { container } = render(
+        <AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} effectSize={size} />,
+      );
+      expect(container.firstChild).toBeNull();
+    },
+  );
+
+  it('reduced-motion + max intensity + Large tier still produces zero particles', () => {
+    stubMatchMedia('reduce-motion');
+    const { container } = render(
+      <AmbientEffects themeId={ThemeId.FamilyBlue} intensity={100} effectSize={140} />,
+    );
+    expect(container.querySelectorAll('.fx-particle').length).toBe(0);
   });
 });

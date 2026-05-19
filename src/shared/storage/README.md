@@ -11,4 +11,6 @@ Backend-agnostic storage layer using the adapter pattern.
 
 ## Tests
 
-Tests in `__tests__/`: `adapter.test.ts`.
+Tests in `__tests__/`:
+- **`adapter.test.ts`** — Storage adapter contract
+- **`effectSize-roundtrip.test.ts`** — Locks `UserProfile.effectSize` persistence: save → reload returns the same value; legacy profiles without the field read as `undefined` and resolve to `EFFECT_SIZE_DEFAULT` via the `bucketEffectSize(undefined)` consumer fallback in `Layout.tsx`

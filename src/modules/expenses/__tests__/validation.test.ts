@@ -120,6 +120,16 @@ describe('validateIncome', () => {
     if (isErr(result)) expect(result.error).toBe('Unknown income source');
   });
 
+  it('rejects a reverse-mapped enum key as a string (numeric-enum trap)', () => {
+    const result = validateIncome({
+      date: '2026-04-02',
+      source: 'Salary' as unknown as IncomeSource,
+      amount: 100,
+    });
+    expect(isErr(result)).toBe(true);
+    if (isErr(result)) expect(result.error).toBe('Unknown income source');
+  });
+
   it('rejects zero amount', () => {
     const result = validateIncome({ date: '2026-04-02', source: IncomeSource.Salary, amount: 0 });
     expect(isErr(result)).toBe(true);

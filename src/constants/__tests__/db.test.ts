@@ -35,8 +35,13 @@ describe('DbSubcollection', () => {
     expect(DbSubcollection.Milestones).toBe('milestones');
   });
 
-  it('has exactly 17 subcollections', () => {
-    expect(Object.keys(DbSubcollection)).toHaveLength(17);
+  it('has exactly 19 subcollections', () => {
+    expect(Object.keys(DbSubcollection)).toHaveLength(19);
+  });
+
+  it('has Phase 3 Gifts + Finances subcollections', () => {
+    expect(DbSubcollection.Gifts).toBe('gifts');
+    expect(DbSubcollection.Finances).toBe('finances');
   });
 
   it('no longer has old BabyFeeds/BabySleep/BabyGrowth/BabyDiapers', () => {
