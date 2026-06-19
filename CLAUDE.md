@@ -9,15 +9,17 @@ Design spec: `docs/specs/2026-04-01-aprilfoolsjoke-design.md`
 Implementation plan: `docs/plans/2026-04-01-aprilfoolsjoke-phase1.md`
 Firebase setup: `docs/firebase-setup.md`
 
+**Docs filename convention:** Both `docs/plans/` and `docs/specs/` use `YYYY-MM-DD-<topic>.md` on AFP — diverges from the global CLAUDE.md (which date-prefixes plans only, topic-names specs). Chronological grouping pairs cleanly with how phases ship and keeps spec↔plan crosswalk grep-friendly.
+
 ## Branch Naming
 
 Branches follow a comedic narrative arc around the April Fools origin story — each name is a chapter beat. Pick from the available queue; **don't burn reserved names on routine work** (they announce the saga's ending).
 
 **Used so far** (chronological):
-`the-prank` → `no-joke` → `joke-landed` → `last-laugh` → `the-plan-thickens` → `the-foolproof-alibi` → `exhibit-a` → `alibi-has-holes` (fix) → `exhibit-b` → `the-atmosphere-thickens` → `dialing-it-in` → `the-fine-print` → `who-planned-it` → `the-rehearsal` → `what-was-the-joke` → `the-flaw-in-the-plan`
+`the-prank` → `no-joke` → `joke-landed` → `last-laugh` → `the-plan-thickens` → `the-foolproof-alibi` → `exhibit-a` → `alibi-has-holes` (fix) → `exhibit-b` → `the-atmosphere-thickens` → `dialing-it-in` → `the-fine-print` → `who-planned-it` → `the-rehearsal` → `what-was-the-joke` → `the-flaw-in-the-plan` → `the-original-script` 🚧 (in flight — Family Umbrella overhaul: family-scoped data model, expense shared ledger, baby IA redesign + submodule remove, body auto-tracking)
 
 **Available next** (comedy-flashback queue, pick from these for upcoming branches):
-`the-original-script`, `where-it-all-began`
+`where-it-all-began`
 
 **Reserved — DO NOT USE on routine PRs** (trial-ending beats, save for the actual saga wrap):
 `cross-examination`, `closing-arguments`, `the-jury-deliberates`, `the-verdict`, `the-sentence`, `sealing-the-record`, `case-closed`
