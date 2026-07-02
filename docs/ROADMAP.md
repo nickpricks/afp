@@ -22,7 +22,7 @@ Last updated: 2026-07-02
 | Phase 2i (Themes 2.0 — Atmosphere & Glyphs) | ✅ Done | 20/20 | Atmosphere ×9 themes (Charcoal silent), 8 shape-primitive glyphs, depth-correlated scaling, intensity tier picker (5) + size tier picker (3), viewport-aware multiplier, DevBench catch-up + Theme Tour. Phase 2j (Iconography) split as separate future spec. |
 | Phase 3 (Baby → Kid) | 🚧 In progress | 7/10 | Brainstorm A (Baby→Kid) done: Plans 1-7 shipped (Foundation, Suggestions, Elimination, Meals, Needs, Milestones, Life Journal). Plans 8-9 deferred. Plan 10 = Yoga = Brainstorm C — see **Pending Brainstorms** block below |
 | Phase 3 (Baby → Kids Presents v2) | ✅ Done | —/— | Kids Presents feature shipped 2026-05-14: per-child gift/finance tracking, Kids tab in Budget, Spent→Expense bridge, viewer mode. See spec + implementation plan. |
-| Family Umbrella (`feat/the-original-script`) | 🚧 Design done | 0/4 plans | Brainstorm G done 2026-07-02: spec + 4 pillar plans (family data model, expense shared ledger view, baby IA drawer + submodule retirement, body sensor auto-tracking). See `docs/specs/2026-07-02-family-umbrella-design.md` + **Pending Brainstorms** block below |
+| Family Umbrella (`feat/the-original-script`) | ✅ Implemented | 4/4 plans | Brainstorm G + all 4 pillar plans executed 2026-07-02 (v0.2.22–0.2.25): families/{familyId} data model + admin Families tab, read-only Family ledger tab, ChildNav drawer + per-child archive + Needs→Presents merge, sensor-tracking hardening (step-math + TrackingSource + strideCm + DevBench probe). Remaining: Firestore rules deploy verification, real-device sensor probe pass |
 | **Total** | **~99%** | **209/226** | |
 
 ---
