@@ -17,6 +17,7 @@ App shell components for layout, navigation, route guards, dashboard, profile, d
 - **ProfilePage.tsx** — User profile page with username, theme picker (expandable inline 2-col grid), color mode, two tier pickers (5-tier intensity for particle count, 3-tier size for scale), sign out, and changelog viewer. Real-time slider/picker saves silent-fail toward the user but log via `verr('[AFP:profile:save]', …)` so a Firestore permission regression isn't invisible
 - **GoogleSignInButton.tsx** — Google sign-in button handling account linking and error display
 - **AnimationViewer.tsx** — Dedicated page for previewing loading animations with pill tab switcher and text toggle
+- **SensorProbe.tsx** — DevBench panel (Family Umbrella Pillar 4 decision gate): availability pills for Geolocation / DeviceMotion / iOS permission API / PressureSensor / WakeLock + on-demand live accel magnitude stream (explicit tap; nothing persisted)
 - **DevBench.tsx** — Dev-only tool for generating test data across all modules with bulk modes
 - **bench-generators.ts** — Pure generator functions for DevBench (11 generators with x1/x100/x1k bulk + day-spread)
 - **DebugPage.tsx** — Debug info page showing auth state, config, and DevBench

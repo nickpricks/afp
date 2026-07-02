@@ -37,11 +37,13 @@ Dev mode works without Firebase — all modules enabled, TheAdminNick role, loca
 
 | Module | What |
 |---|---|
-| Body | Floors (up/down taps), walking, running, cycling — daily scoring, tabbed UI, config gate |
-| Budget | 15 expense categories, income tracking, payment methods, CC reconciliation, time-range filter (Today/Week/Month/All) |
-| Baby | Multi-child support. Feed, sleep, growth, diaper logs — nested subcollections per child |
+| Body | Floors (up/down taps), walking, running, cycling — daily scoring, tabbed UI, config gate. Live sensor sessions (GPS distance + motion steps + barometer/GPS floors) with pure `step-math` detection |
+| Budget | 15 expense categories, income tracking, payment methods, CC reconciliation, Auto (fuel/travel/service) + Kids + read-only Family ledger tabs, time-range filter (Today/Week/Month/All) |
+| Baby | Multi-child support. Grouped drawer/sidebar nav (Overview / Logs / Archived). Feed, sleep, growth, elimination, meals, milestones, presents (incl. Needs segment) — nested subcollections per child; per-child archive renders retired logs read-only |
 
 All modules disabled by default. TheAdminNick enables per user via invites.
+
+**Family Umbrella** — optional `families/{familyId}` link (admin-managed). Family members get cross-member reads (profile, body, expenses, income) and shared read/write on `children/**`; the Budget module surfaces a read-only Family ledger aggregating every member's expenses.
 
 ## Dashboard
 
@@ -56,18 +58,18 @@ Hooks accept optional `targetUid` for data scoping. Write callbacks are no-ops i
 
 ```
 src/
-  admin/          — Admin panel (tabbed Invites + Users + Broadcasts), invite generator, notifications
+  admin/          — Admin panel (tabbed Invites + Users + Broadcasts + Migrations + Families), invite generator, notifications
   constants/      — config (UNDO_DURATION_MS, METERS_PER_KM, MOBILE_BREAKPOINT_PX, BUDGET_VISIBLE_CATEGORIES), routes, db paths, messages
   modules/
     body/         — BodyPage (tabbed), FloorsTab, Walking/Running/CyclingTab, BodyStats, scoring
-    expenses/     — Budget landing, AddExpense/AddIncome, ExpenseList, IncomeList, ReconciliationView
-    baby/         — BabyLanding, ChildDetail (tabbed), FeedLog, SleepLog, GrowthLog, DiaperLog
+    expenses/     — Budget landing, AddExpense/AddIncome, ExpenseList, IncomeList, ReconciliationView, AutoTab, KidsFinanceTab, FamilyLedgerTab
+    baby/         — BabyLanding, ChildDetail (grouped ChildNav drawer/sidebar), 8 log components, LifeJournalView, sections helper
   shared/
     auth/         — Firebase auth, invite system, TheAdminNick model
     components/   — Dashboard, DashboardCard, Layout, TabBar, ModuleGate, AdminGate, AlertBanner, DatePickerModal, SwipeToDelete, DevBench, PaymentMethodBubble, ListControls, ListShowMoreFooter, AmbientEffects, IntensityTierPicker, SizeTierPicker, GlyphPrimitive, lists/, loading/
     errors/       — ErrorBoundary, toast notifications (with undo action support)
-    hooks/        — useModules, useNotifications, useModuleRequest, useSyncStatus, useMinDelay, useListControls, useMatchMedia, useViewportSizeMultiplier
-    storage/      — StorageAdapter interface + Firebase/localStorage impls
+    hooks/        — useModules, useNotifications, useModuleRequest, useSyncStatus, useMinDelay, useListControls, useMatchMedia, useViewportSizeMultiplier, useFamily
+    storage/      — StorageAdapter interface + Firebase/localStorage impls (per-user base paths + ROOT_PATH top-level collections)
     types.ts      — Result<T>, ModuleId, SyncStatus, UserRole, ToastType, NotificationType, Severity, all enums
     utils/        — date, error, profile, validation, regex, format, sort, filter, paginate, relative-date, intensity, effectSize, verbose helpers
   themes/         — 10 CSS themes, ambient effects, theme definitions + migration
@@ -84,7 +86,7 @@ src/
 - **Undo delete** — 10s toast with "Undo" action on all deletable lists
 - **Additive presets** — [10] [20] [50] [100] [200] buttons in Budget increment the total amount
 - **Interactive bubbles** — emoji-grid category selection with expandable "View All" logic
-- **Daily Ledger lists** — universal list controls via `useListControls()` + `<ListControls>` (time-range pills, page-size dropdown, page jumper) + `<ListShowMoreFooter>` (load remaining / show all). Sticky day-of-week date headers, hairline rows, tabular-nums time prefix, magnitude bar on Floors. 25-default page size, configurable per list.
+- **Daily Ledger lists** — universal list controls via `useListControls()` + `<ListControls>` (time-range pills, page-size dropdown, page jumper) + `<ListShowMoreFooter>` (load remaining / show all). Sticky day-of-week date headers, hairline rows, tabular-nums time prefix, magnitude bar on Floors. Default page size `CONFIG.LIST_DEFAULT_PAGE_SIZE` (5), configurable per list.
 - **Delete UX** — inline `x` on all lists (hover → red, grows), swipe-to-delete on mobile via `SwipeToDelete` wrapper, 10s undo toast
 - **Notifications** — per-user `notifications` subcollection. Module request flow (user → admin), admin alerts/broadcasts with severity banners
 - **Score ring** — SVG progress ring with daily goal, zone labels (Easy Start → Beast Mode)

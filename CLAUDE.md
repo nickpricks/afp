@@ -230,6 +230,7 @@ Found via grep sweeps — fix in next code hygiene pass:
 - Invites: TheAdminNick has full write. Any authenticated user can redeem an unclaimed invite (update `linkedUid` + `usedAt` only, all other fields immutable)
 - Profiles: TheAdminNick has full write. Owner can create (non-admin role only) and update (only `theme`, `colorMode`, `name` — `role` and `modules` locked server-side)
 - Module data: Owner + module enabled, or TheAdminNick. Enforced per-collection in rules
+- Families: `families/{familyId}` — member read (uid in members map), TheAdminNick-only write. `isFamilyMember(ownerUid)` helper (two `get()`s) grants family-member READ on profile/body/body_activities/expenses/income and READ+WRITE on `children/**`. Profile `familyId` locked server-side on owner updates (like `role`/`modules`)
 - Invite redemption uses `runTransaction` for atomicity (prevents double-redemption)
 
 ## Remaining Backlog

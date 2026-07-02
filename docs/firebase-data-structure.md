@@ -1,6 +1,6 @@
 # Firebase Data Structure
 
-Last updated: 2026-04-15
+Last updated: 2026-07-02 (Family Umbrella — families collection, familyId link, Phase 3 baby subcollections, sensor-source field)
 
 This document maps every Firestore collection, subcollection, and document in the AFP database. No PII — all examples use placeholder values.
 
@@ -19,6 +19,9 @@ firestore/
 |
 |-- usernames/
 |   |-- {username}                      # Global username uniqueness
+|
+|-- families/
+|   |-- {familyId}                      # Family Umbrella — members map (uid -> role)
 |
 |-- users/
     |-- {uid}/
@@ -47,7 +50,7 @@ firestore/
         |   |-- {incomeId}              # Individual income records
         |
         |-- children/
-            |-- {childId}               # Child profile doc
+            |-- {childId}               # Child profile doc (config incl. optional archived map)
             |   |-- feeds/
             |   |   |-- {feedId}        # Feed entries (bottle, breast, solid)
             |   |-- sleep/
@@ -55,7 +58,19 @@ firestore/
             |   |-- growth/
             |   |   |-- {growthId}      # Growth measurements
             |   |-- diapers/
-                    |-- {diaperId}      # Diaper change entries
+            |   |   |-- {diaperId}      # LEGACY — migrated to elimination/* (old docs preserved)
+            |   |-- elimination/
+            |   |   |-- {entryId}       # Combined diaper/potty entries (mode-discriminated)
+            |   |-- meals/
+            |   |   |-- {mealId}        # Meal entries (toddler+)
+            |   |-- needs/
+            |   |   |-- {needId}        # Wishlist/inventory (UI lives inside Presents)
+            |   |-- milestones/
+            |   |   |-- {milestoneId}   # Developmental firsts
+            |   |-- gifts/
+            |   |   |-- {giftId}        # Physical presents
+            |   |-- finances/
+                    |-- {financeId}     # Present money entries
 ```
 
 ---
@@ -106,6 +121,24 @@ Global uniqueness registry for usernames.
 
 ---
 
+### `families/{familyId}`
+
+Family Umbrella (v0.2.22). One document per family — data stays per-user; this doc only records membership. Admin-managed.
+
+| Field | Type | Example | Description |
+|-------|------|---------|-------------|
+| `id` | string | `"uuid-fam1"` | Family ID (matches doc ID) |
+| `name` | string | `"The Nicks"` | Display name |
+| `createdBy` | string | `"adminUid"` | Creator UID |
+| `createdAt` | string | `"2026-07-02T10:00:00Z"` | ISO 8601 |
+| `members` | map | `{ "uidA": "owner", "uidB": "adult", "uidC": null }` | uid → `FamilyRole` (`"owner"`/`"adult"`); `null` = unlink tombstone (the StorageAdapter merge-saves, so map keys can't be deleted — clients filter via `familyMemberUids()`) |
+
+**Rules:** Members (non-null in `members`) can read their own family doc. TheAdminNick-only create/update/delete.
+
+**Cross-member access:** the `isFamilyMember(ownerUid)` rules helper (caller and target share a non-null `profile.familyId` — two `get()` calls) grants family members READ on each other's profile, body, body_activities, expenses, and income, plus READ **and WRITE** on `children/**` (both parents log on either owner's children). Client reads fan out as one per-member adapter from the members map — no collectionGroup.
+
+---
+
 ## User Subcollections (`users/{uid}/...`)
 
 Everything below lives under a user's UID. The `{uid}` is the Firebase Auth UID.
@@ -121,6 +154,7 @@ One document per user. Created on invite redemption or admin claim.
 | `email` | string \| null | `null` | Google email (if linked) |
 | `username` | string \| null | `null` | Chosen username |
 | `viewerOf` | string \| null | `null` | Target UID (viewer role only) |
+| `familyId` | string \| null | `null` | Family Umbrella link to `families/{familyId}` (admin-stamped; locked server-side like `role`) |
 | `theme` | string | `"family-blue"` | Active theme ID |
 | `colorMode` | string | `"system"` | `"light"`, `"dark"`, or `"system"` |
 | `effectIntensity` | number | `50` | Ambient particle quantity (0–100, bucketed via `bucketIntensity()` to Off/Subtle/Standard/Lively/Maximum tiers on display) |
@@ -130,7 +164,7 @@ One document per user. Created on invite redemption or admin claim.
 | `createdAt` | string | `"2026-04-10T12:00:00Z"` | ISO 8601 |
 | `updatedAt` | string | `"2026-04-15T09:00:00Z"` | ISO 8601 |
 
-**Rules:** Owner + viewer + admin can read. Owner can update `theme`, `colorMode`, `name`, `requestedModules`. Admin can update anything (including `role`, `modules`).
+**Rules:** Owner + viewer + family members + admin can read. Owner can update `theme`, `colorMode`, `name`, `requestedModules` — `role`, `modules`, `viewerOf`, and `familyId` are locked server-side. Admin can update anything.
 
 **collectionGroup:** `useAllUsers()` queries all `profile` docs via `collectionGroup('profile')` — requires a Firestore collectionGroup index.
 
@@ -191,6 +225,8 @@ Daily aggregate document. Key is `YYYY-MM-DD`.
 **Scoring:** `floors_up x 1 + floors_down x 0.5 + walk_km x 10 + run_km x 20 + cycle_km x 15`
 
 ### `body_activities/{activityId}`
+
+> v0.2.25 adds optional `source` (`"manual"` / `"sensor"` — `TrackingSource` string enum). Absent = manual (backwards-compatible). Sensor sessions also honor optional `body_config/main.strideCm` (steps→distance fallback).
 
 Individual activity entries (walk, run, cycle, yoga).
 
@@ -319,7 +355,9 @@ Child profile document. Nested subcollections hang off each child.
 | `createdAt` | string | `"2026-04-15T07:00:00Z"` | ISO 8601 |
 | `notes` | string | `""` | User notes |
 
-**Rules (children + all subcollections):** Owner with `modules.baby == true` + admin + viewer can read. Owner with module + admin can write.
+**Rules (children + all subcollections):** Owner with `modules.baby == true` + admin + viewer + family members can read. Owner with module + admin + **family members** can write (Family Umbrella — shared child logging).
+
+> Phase 3 added `elimination/*` (replaces `diapers/*` via a non-destructive admin migration), `meals/*`, `needs/*`, `milestones/*`, `gifts/*`, `finances/*` — same rules block (`children/{childId}/{sub}/{docId}`). Per-child retirement (`config.archived`) is UI-only: archived subcollections keep their data and stay readable.
 
 ---
 
@@ -330,6 +368,7 @@ Child profile document. Nested subcollections hang off each child.
 | **Admin (theAdminNick)** | Full read/write on everything | All collections |
 | **User** | Read/write own data within enabled modules | Own subcollections only |
 | **Viewer** | Read-only on `viewerOf` user's data | Target user's subcollections only |
+| **Family member** | Read on member profile/body/body_activities/expenses/income; read+write on `children/**`; read own `families/{familyId}` doc | Members listed in the family doc (`isFamilyMember` helper) |
 | **Any authenticated** | Read `app/config`, invites, usernames. Redeem unclaimed invite. Create `module_request` notification to admin | Limited root collections |
 | **Unauthenticated** | Nothing | Blocked |
 
@@ -357,6 +396,7 @@ String enums (`ActivityType`, `ModuleId`, `UserRole`, `NotificationType`, etc.) 
 /app/config                                          # Singleton
 /invites/{code}                                      # Root collection
 /usernames/{username}                                # Root collection
+/families/{familyId}                                 # Root collection (Family Umbrella)
 /users/{uid}/profile/main                            # One per user
 /users/{uid}/notifications/{notifId}                 # Per-user inbox
 /users/{uid}/body_config/main                        # Body settings
@@ -369,7 +409,13 @@ String enums (`ActivityType`, `ModuleId`, `UserRole`, `NotificationType`, etc.) 
 /users/{uid}/children/{childId}/feeds/{uuid}         # Feed entries
 /users/{uid}/children/{childId}/sleep/{uuid}         # Sleep entries
 /users/{uid}/children/{childId}/growth/{uuid}        # Growth entries
-/users/{uid}/children/{childId}/diapers/{uuid}       # Diaper entries
+/users/{uid}/children/{childId}/diapers/{uuid}       # Diaper entries (legacy)
+/users/{uid}/children/{childId}/elimination/{uuid}   # Diaper/potty entries
+/users/{uid}/children/{childId}/meals/{uuid}         # Meal entries
+/users/{uid}/children/{childId}/needs/{uuid}         # Needs entries
+/users/{uid}/children/{childId}/milestones/{uuid}    # Milestone entries
+/users/{uid}/children/{childId}/gifts/{uuid}         # Gift entries
+/users/{uid}/children/{childId}/finances/{uuid}      # Finance entries
 ```
 
 **Segment count rule:** Firestore `collection()` requires odd segment counts (1, 3, 5...). All paths follow this — subcollections are flat under users, and baby subcollections nest under children.

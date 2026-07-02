@@ -7,15 +7,15 @@ Budget module (directory is `expenses/`, ModuleId is `Budget`). Expense + income
 - **types.ts** — `Expense`, `Income`, `BudgetConfig`, `CategoryDefinition`, `LabelDefinition`, `ExpenseMeta` discriminated union, and `ExpenseMetaType` enum definitions
 - **categories.ts** — 15 category definitions with emoji labels and subcategories. `PAYMENT_METHOD_LABELS`, `INCOME_SOURCE_LABELS`, `getAllCategoryIds`, `getSubCategories`, `VEHICLE_SUBCAT`, `TRAVEL_SUBCAT` helpers
 - **validation.ts** — `validateExpense` returns `Result<void>` using `ValidationMsg` enum for error messages. Also validates optional `meta` union via internal `validateMeta` helper.
-- **budget-math.ts** — Pure computation functions: `computeTotalIncome`, `computeTotalSpent`, `computeCCOutstanding`, `filterByDateRange`
+- **budget-math.ts** — Pure computation functions: `computeTotalIncome`, `computeTotalSpent`, `computeCCOutstanding`, `computeFamilyTotals` (per-member + family totals, timeRange-aware)
 - **fuel-math.ts** — Pure functions for fuel mileage and service-due derivations: `computeMileage`, `latestOdometer`, `dueMaintenance`, `isServiceDue`
 - **meta-utils.ts** — Helpers for the meta sub-form: `metaKindFor()`, `subCatFor()`, and `defaultMeta()` — all use `switch + assertNever` for exhaustiveness on `ExpenseMetaType`
 - **expense-badges.ts** — Pure badge-text helpers for Auto tab rows: `fuelBadge()`, `travelBadge()`, `maintenanceBadge()`, `renderBadge()`. Extracted from `AutoTab.tsx` to comply with `react-refresh/only-export-components`
 
 ## Directories
 
-- `components/` — UI: AddExpense, AddIncome, BudgetSummary (timeRange-aware), ExpenseList, IncomeList, AutoTab, AutoTabRow, MetaSubForm, ServiceDueBanner, ReconciliationView, KidsFinanceTab (read-only kids aggregate), ConfirmExpenseModal (Spent→Expense bridge)
-- `hooks/` — Data hooks: `useExpenses` (CRUD with `Promise<boolean>` returns), `useIncome`, `useExpenseForm` (shared form state), `useAllKidsFinances` (aggregate of all children's finances)
+- `components/` — UI: AddExpense, AddIncome, BudgetSummary (timeRange-aware), ExpenseList, IncomeList, AutoTab, AutoTabRow, MetaSubForm, ServiceDueBanner, ReconciliationView, KidsFinanceTab (read-only kids aggregate), FamilyLedgerTab (read-only family ledger — Family Umbrella), ConfirmExpenseModal (Spent→Expense bridge)
+- `hooks/` — Data hooks: `useExpenses` (CRUD with `Promise<boolean>` returns), `useIncome`, `useExpenseForm` (shared form state), `useAllKidsFinances` (aggregate of all children's finances), `useFamilyExpenses` (read-only per-member fan-out for the Family tab)
 - `pages/` — Route-level pages (ExpenseListPage, AddExpensePage)
 
 ## Tests
@@ -37,6 +37,9 @@ Budget module (directory is `expenses/`, ModuleId is `Budget`). Expense + income
 - `__tests__/AutoTabRow.test.tsx` — AutoTab row rendering, incomplete pill, tap/delete affordances
 - `__tests__/KidsFinanceTab.test.tsx` — Kids aggregate view and Spent→Expense bridge interactions
 - `__tests__/useAllKidsFinances.test.tsx` — Aggregator readiness gating across multiple children
+- `__tests__/family-math.test.ts` — `computeFamilyTotals` aggregation, range filtering, settlement exclusion
+- `__tests__/FamilyLedgerTab.test.tsx` — Read-only family ledger rendering (chips, totals, no mutator UI)
+- `hooks/__tests__/useFamilyExpenses.test.ts` — Per-member fan-out, soft-delete filter, readiness, no-mutator contract
 
 ## Expense meta (Phase 2j+2k)
 
