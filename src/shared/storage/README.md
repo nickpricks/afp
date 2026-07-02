@@ -7,7 +7,7 @@ Backend-agnostic storage layer using the adapter pattern.
 - **adapter.ts** — `StorageAdapter` interface (`getAll`, `getById`, `save`, `remove`, `onSnapshot`). `onSnapshot` accepts an optional `onError` callback for surfacing listener failures
 - **firebase-adapter.ts** — Firestore-backed `StorageAdapter` implementation; verbose logging gated behind `isVerbose()` from `utils/verbose`
 - **localStorage-adapter.ts** — localStorage-backed `StorageAdapter` for dev/offline mode; verbose logging gated behind `isVerbose()`
-- **create-adapter.ts** — Factory (`createAdapter(basePath)`) that returns Firebase or localStorage adapter based on `isFirebaseConfigured`
+- **create-adapter.ts** — Factory (`createAdapter(basePath)`) that returns Firebase or localStorage adapter based on `isFirebaseConfigured`. An empty base path (`ROOT_PATH` from `constants/db`) targets top-level collections (e.g. `families`) — the Firebase import boundary stays intact for root-collection access
 
 ## Tests
 

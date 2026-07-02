@@ -1,8 +1,10 @@
 import { useLiveActivityContext } from '@/modules/body/context/LiveActivityContext';
 import { useBodyData } from '@/modules/body/hooks/useBodyData';
+import { useBodyConfig } from '@/modules/body/hooks/useBodyConfig';
+import { computeStrideDistance } from '@/modules/body/step-math';
 import { useToast } from '@/shared/errors/useToast';
 import { BodyMsg } from '@/constants/messages';
-import { ToastType } from '@/shared/types';
+import { ToastType, TrackingSource, isOk } from '@/shared/types';
 import { formatDistance } from '@/shared/utils/format';
 import { todayStr } from '@/shared/utils/date';
 
@@ -21,6 +23,7 @@ function formatDuration(seconds: number): string {
 export function ActiveSessionOverlay() {
   const { sessionState, metrics, start, stop, cancel, refreshSensors } = useLiveActivityContext();
   const { logActivity, saveRecord, todayRecord } = useBodyData();
+  const { config } = useBodyConfig();
   const { addToast } = useToast();
 
   if (sessionState === 'idle') return null;
@@ -28,9 +31,14 @@ export function ActiveSessionOverlay() {
   const handleEnd = async () => {
     const final = stop();
 
-    // 1. Log the distance activity
-    if (final.distanceMeters > 0) {
-      await logActivity(final.type, final.distanceMeters);
+    // 1. Log the distance activity — GPS distance when usable, else steps × stride fallback
+    let distanceMeters = final.distanceMeters;
+    if (distanceMeters <= 0 && final.steps > 0 && config?.strideCm) {
+      const derived = computeStrideDistance(final.steps, config.strideCm);
+      if (isOk(derived)) distanceMeters = derived.data;
+    }
+    if (distanceMeters > 0) {
+      await logActivity(final.type, distanceMeters, undefined, TrackingSource.Sensor);
     }
 
     // 2. Log floors if any detected

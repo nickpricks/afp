@@ -291,6 +291,31 @@ export function BodyConfigForm({
         </div>
       </div>
 
+      {/* Stride length — steps→distance fallback for sensor sessions without usable GPS */}
+      <div className="flex flex-col gap-2">
+        <h3 className="text-xs font-medium text-fg-muted uppercase tracking-wide">
+          Stride Length (cm)
+        </h3>
+        <input
+          type="number"
+          min="20"
+          max="200"
+          step="1"
+          value={config.strideCm ?? ''}
+          placeholder="e.g. 75"
+          onChange={(e) =>
+            setConfig((prev) => ({
+              ...prev,
+              strideCm: e.target.value ? Number(e.target.value) : undefined,
+            }))
+          }
+          className="w-full rounded-lg border border-line bg-surface-card px-3 py-2 text-sm text-fg"
+        />
+        <p className="text-[10px] text-fg-muted">
+          Used to estimate distance from steps when GPS is unavailable during tracking sessions
+        </p>
+      </div>
+
       {/* Daily Goal Builder */}
       <div className="flex flex-col gap-3">
         <h3 className="text-xs font-medium text-fg-muted uppercase tracking-wide">

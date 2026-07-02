@@ -30,6 +30,16 @@ service cloud.firestore {
       return isViewer() && getProfile(request.auth.uid).viewerOf == userId;
     }
 
+    // Family Umbrella: caller and target share a non-null profile.familyId.
+    // Costs two get() calls per evaluation — acceptable at family scale (2-4 members).
+    function isFamilyMember(userId) {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/users/$(userId)/profile/main)
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid)/profile/main)
+        && getProfile(userId).get('familyId', null) != null
+        && getProfile(userId).get('familyId', null) == getProfile(request.auth.uid).get('familyId', null);
+    }
+
     function hasModule(userId, moduleId) {
       return getProfile(userId).modules[moduleId] == true;
     }
@@ -53,6 +63,13 @@ service cloud.firestore {
             && meta.odometer is number && meta.odometer > 0
             && (meta.nextService == null || meta.nextService is number)
             && meta.serviceNotes is string);
+    }
+
+    // Families (Family Umbrella) — members map: uid -> role ('owner'|'adult'|null tombstone)
+    match /families/{familyId} {
+      allow read: if isHeadminick()
+        || (isAuthenticated() && resource.data.members[request.auth.uid] != null);
+      allow create, update, delete: if isHeadminick();
     }
 
     // App config — create allowed once (fresh DB), updates only by admin
@@ -83,7 +100,7 @@ service cloud.firestore {
 
     // User profiles
     match /users/{userId}/profile/{document=**} {
-      allow read: if isOwner(userId) || isViewerOf(userId) || isHeadminick();
+      allow read: if isOwner(userId) || isViewerOf(userId) || isFamilyMember(userId) || isHeadminick();
       allow create: if isHeadminick()
         || (isOwner(userId) && request.resource.data.role != 'theAdminNick')
         || (isOwner(userId) && !exists(/databases/$(database)/documents/app/config));
@@ -91,7 +108,8 @@ service cloud.firestore {
         || (isOwner(userId)
             && request.resource.data.role == resource.data.role
             && request.resource.data.modules == resource.data.modules
-            && request.resource.data.viewerOf == resource.data.viewerOf)
+            && request.resource.data.viewerOf == resource.data.viewerOf
+            && request.resource.data.get('familyId', null) == resource.data.get('familyId', null))
         || (isOwner(userId)
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['requestedModules', 'theme', 'colorMode', 'updatedAt']));
       allow delete: if isHeadminick();
@@ -112,7 +130,7 @@ service cloud.firestore {
     // Body data
     match /users/{userId}/body/{docId} {
       allow read: if (isOwner(userId) && hasModule(userId, 'body'))
-        || isViewerOf(userId) || isHeadminick();
+        || isViewerOf(userId) || isFamilyMember(userId) || isHeadminick();
       allow write: if (isOwner(userId) && hasModule(userId, 'body'))
         || isHeadminick();
     }
@@ -120,7 +138,7 @@ service cloud.firestore {
     // Body activities
     match /users/{userId}/body_activities/{docId} {
       allow read: if (isOwner(userId) && hasModule(userId, 'body'))
-        || isViewerOf(userId) || isHeadminick();
+        || isViewerOf(userId) || isFamilyMember(userId) || isHeadminick();
       allow write: if (isOwner(userId) && hasModule(userId, 'body'))
         || isHeadminick();
     }
@@ -134,7 +152,7 @@ service cloud.firestore {
     // Expenses
     match /users/{userId}/expenses/{docId} {
       allow read: if (isOwner(userId) && hasModule(userId, 'budget'))
-        || isViewerOf(userId) || isHeadminick();
+        || isViewerOf(userId) || isFamilyMember(userId) || isHeadminick();
       allow write: if ((isOwner(userId) && hasModule(userId, 'budget'))
           && validMeta(request.resource.data.get('meta', null)))
         || isHeadminick();
@@ -143,7 +161,7 @@ service cloud.firestore {
     // Income
     match /users/{userId}/income/{docId} {
       allow read: if (isOwner(userId) && hasModule(userId, 'budget'))
-        || isViewerOf(userId) || isHeadminick();
+        || isViewerOf(userId) || isFamilyMember(userId) || isHeadminick();
       allow write: if (isOwner(userId) && hasModule(userId, 'budget'))
         || isHeadminick();
     }
@@ -151,16 +169,16 @@ service cloud.firestore {
     // Children (baby module parent docs)
     match /users/{userId}/children/{childId} {
       allow read: if (isOwner(userId) && hasModule(userId, 'baby'))
-        || isViewerOf(userId) || isHeadminick();
+        || isViewerOf(userId) || isFamilyMember(userId) || isHeadminick();
       allow write: if (isOwner(userId) && hasModule(userId, 'baby'))
-        || isHeadminick();
+        || isFamilyMember(userId) || isHeadminick();
 
       // Child subcollections (feeds, sleep, growth, diapers)
       match /{sub}/{docId} {
         allow read: if (isOwner(userId) && hasModule(userId, 'baby'))
-          || isViewerOf(userId) || isHeadminick();
+          || isViewerOf(userId) || isFamilyMember(userId) || isHeadminick();
         allow write: if (isOwner(userId) && hasModule(userId, 'baby'))
-          || isHeadminick();
+          || isFamilyMember(userId) || isHeadminick();
       }
     }
 

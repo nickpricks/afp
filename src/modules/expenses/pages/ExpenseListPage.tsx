@@ -8,6 +8,7 @@ import { IncomeList } from '@/modules/expenses/components/IncomeList';
 import { KidsFinanceTab } from '@/modules/expenses/components/KidsFinanceTab';
 import { ReconciliationView } from '@/modules/expenses/components/ReconciliationView';
 import { AutoTab } from '@/modules/expenses/components/AutoTab';
+import { FamilyLedgerTab } from '@/modules/expenses/components/FamilyLedgerTab';
 import { useExpenses } from '@/modules/expenses/hooks/useExpenses';
 import { useIncome } from '@/modules/expenses/hooks/useIncome';
 import { ROUTES } from '@/constants/routes';
@@ -16,7 +17,7 @@ import { ModuleId, TimeRange } from '@/shared/types';
 import { PaymentMethod } from '@/shared/types';
 
 /** Union of budget tab identifiers for the ExpenseListPage tab switcher */
-type BudgetTab = 'expenses' | 'income' | 'kids' | 'auto' | 'reconcile';
+type BudgetTab = 'expenses' | 'income' | 'kids' | 'auto' | 'reconcile' | 'family';
 
 /** Page wrapper showing budget summary, expense/income/kids/auto/CC tabs, and list */
 export function ExpenseListPage() {
@@ -24,6 +25,7 @@ export function ExpenseListPage() {
   const { income, deleteIncome } = useIncome();
   const { profile } = useAuth();
   const babyEnabled = profile?.modules?.[ModuleId.Baby] === true;
+  const familyId = profile?.familyId ?? null;
   const [activeTab, setActiveTab] = useState<BudgetTab>('expenses');
   // Shared across BudgetSummary + ExpenseList + IncomeList so summary card matches list contents.
   // Pagination stays per-list; only the date filter is hoisted.
@@ -61,6 +63,13 @@ export function ExpenseListPage() {
           isActive={activeTab === 'auto'}
           onClick={() => setActiveTab('auto')}
         />
+        {familyId && (
+          <TabButton
+            label="Family"
+            isActive={activeTab === 'family'}
+            onClick={() => setActiveTab('family')}
+          />
+        )}
       </div>
 
       {activeTab === 'expenses' && (
@@ -102,6 +111,13 @@ export function ExpenseListPage() {
         />
       )}
       {activeTab === 'reconcile' && <ReconciliationView expenses={expenses} />}
+      {activeTab === 'family' && familyId && (
+        <FamilyLedgerTab
+          familyId={familyId}
+          timeRange={timeRange}
+          onTimeRangeChange={setTimeRange}
+        />
+      )}
 
       <Link
         to={ROUTES.BUDGET_ADD}

@@ -125,6 +125,13 @@ export type ChildConfig = {
   milestones?: boolean; // NEW — Milestones module (Plan 6)
   needs?: boolean; // NEW — Needs module
   presents?: boolean; // NEW — Presents module (Finances + Gifts)
+  /** Family Umbrella Pillar 3 — per-child retirement flags. Archived sections render
+   * read-only in the Archived nav group; data stays in place (no migration). Absent = nothing archived. */
+  archived?: {
+    feeds?: boolean;
+    sleep?: boolean;
+    elimination?: boolean;
+  };
 };
 
 /** A child profile in the children collection */

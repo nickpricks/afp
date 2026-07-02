@@ -30,6 +30,8 @@ type Props = {
   uid?: string;
   diapersEnabled: boolean;
   pottyEnabled: boolean;
+  /** Archived list-only view — no mode toggle, no quick-log, no form, no edit/delete */
+  readOnly?: boolean;
 };
 
 /** Combined Diaper / Potty tracking — mode determined by per-child config flags */
@@ -39,6 +41,7 @@ export function EliminationLog({
   uid = '',
   diapersEnabled,
   pottyEnabled,
+  readOnly = false,
 }: Props) {
   const { elimination, logElimination, updateElimination, removeElimination } = useBabyData(
     childId ?? null,
@@ -181,6 +184,9 @@ export function EliminationLog({
   return (
     <div className="flex flex-col gap-6 px-4 py-6">
       <h2 className="text-lg font-semibold text-fg">{headerLabel}</h2>
+      {readOnly && <p className="text-xs text-fg-muted italic">Archived — read only</p>}
+      {!readOnly && (
+      <>
 
       {diapersEnabled && pottyEnabled && (
         <div className="flex gap-2">
@@ -312,6 +318,8 @@ export function EliminationLog({
           )}
         </div>
       </form>
+      </>
+      )}
 
       {sortedEntries.length > 0 && (
         <ListControls
@@ -330,6 +338,7 @@ export function EliminationLog({
         onEdit={startEdit}
         editingId={editEntry?.id ?? null}
         onRemove={handleUndoDelete}
+        readOnly={readOnly}
       />
       {!ctrl.showAll && (
         <ListShowMoreFooter
@@ -350,12 +359,14 @@ function RecentElimination({
   onEdit,
   editingId,
   onRemove,
+  readOnly = false,
 }: {
   entries: EliminationEntry[];
   today: string;
   onEdit: (e: EliminationEntry) => void;
   editingId: string | null;
   onRemove: (id: string) => void;
+  readOnly?: boolean;
 }) {
   if (entries.length === 0) return null;
 
@@ -382,7 +393,9 @@ function RecentElimination({
               <button
                 key={entry.id}
                 type="button"
-                onClick={() => onEdit(entry)}
+                onClick={() => {
+                  if (!readOnly) onEdit(entry);
+                }}
                 className={`block w-full border-t border-line p-3 text-left transition-colors hover:bg-accent-muted ${isActive ? 'bg-accent-muted border-l-2 border-l-accent' : ''}`}
               >
                 <div className="flex justify-between text-sm">
@@ -393,6 +406,7 @@ function RecentElimination({
                     <span className="font-mono text-xs tabular-nums text-fg-muted">
                       {entry.time}
                     </span>
+                    {!readOnly && (
                     <span
                       role="button"
                       tabIndex={0}
@@ -411,6 +425,7 @@ function RecentElimination({
                     >
                       ×
                     </span>
+                    )}
                   </div>
                 </div>
                 {entry.notes && <p className="text-xs text-fg-muted mt-1">{entry.notes}</p>}

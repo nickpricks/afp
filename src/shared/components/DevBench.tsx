@@ -24,6 +24,7 @@ import {
   benchNeed,
   benchMilestone,
 } from '@/shared/components/bench-generators';
+import { SensorProbe } from '@/shared/components/SensorProbe';
 import { applyTheme, THEME_DEFINITIONS, useActiveThemeId } from '@/themes/themes';
 import type { ThemeId } from '@/themes/themes';
 import { CONFIG } from '@/constants/config';
@@ -264,6 +265,11 @@ function DevBenchInner() {
             Stop Tour
           </button>
         )}
+      </section>
+
+      {/* Sensor Probe section — Family Umbrella Pillar 4 decision gate */}
+      <section className="border-t border-line pt-4 mt-4">
+        <SensorProbe />
       </section>
     </div>
   );

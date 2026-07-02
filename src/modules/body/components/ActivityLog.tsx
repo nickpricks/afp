@@ -5,7 +5,7 @@ import { CONFIG } from '@/constants/config';
 import { BodyMsg } from '@/constants/messages';
 import { formatDistanceOrDash } from '@/shared/utils/format';
 import { sortNewestFirst } from '@/shared/utils/sort';
-import { ToastType } from '@/shared/types';
+import { ToastType, TrackingSource } from '@/shared/types';
 import { useToast } from '@/shared/errors/useToast';
 import { SwipeToDelete } from '@/shared/components/SwipeToDelete';
 import { ListControls } from '@/shared/components/ListControls';
@@ -106,7 +106,17 @@ export function ActivityLog({
                     }}
                   >
                     <RowTime timestamp={a.timestamp} />
-                    <span className="text-sm text-fg">{a.type}</span>
+                    <span className="text-sm text-fg">
+                      {a.type}
+                      {a.source === TrackingSource.Sensor && (
+                        <span
+                          title="Sensor-tracked session"
+                          className="ml-1.5 rounded bg-accent-muted px-1 py-0.5 text-[9px] font-medium uppercase tracking-wide text-accent"
+                        >
+                          auto
+                        </span>
+                      )}
+                    </span>
                     <span className="whitespace-nowrap text-right font-mono text-sm tabular-nums text-fg-muted">
                       {formatDistanceOrDash(a.distance)}
                     </span>

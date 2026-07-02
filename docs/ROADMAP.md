@@ -1,6 +1,6 @@
 # AFP Roadmap
 
-Last updated: 2026-05-19
+Last updated: 2026-07-02
 
 ---
 
@@ -22,6 +22,7 @@ Last updated: 2026-05-19
 | Phase 2i (Themes 2.0 — Atmosphere & Glyphs) | ✅ Done | 20/20 | Atmosphere ×9 themes (Charcoal silent), 8 shape-primitive glyphs, depth-correlated scaling, intensity tier picker (5) + size tier picker (3), viewport-aware multiplier, DevBench catch-up + Theme Tour. Phase 2j (Iconography) split as separate future spec. |
 | Phase 3 (Baby → Kid) | 🚧 In progress | 7/10 | Brainstorm A (Baby→Kid) done: Plans 1-7 shipped (Foundation, Suggestions, Elimination, Meals, Needs, Milestones, Life Journal). Plans 8-9 deferred. Plan 10 = Yoga = Brainstorm C — see **Pending Brainstorms** block below |
 | Phase 3 (Baby → Kids Presents v2) | ✅ Done | —/— | Kids Presents feature shipped 2026-05-14: per-child gift/finance tracking, Kids tab in Budget, Spent→Expense bridge, viewer mode. See spec + implementation plan. |
+| Family Umbrella (`feat/the-original-script`) | ✅ Implemented | 4/4 plans | Brainstorm G + all 4 pillar plans executed 2026-07-02 (v0.2.22–0.2.25): families/{familyId} data model + admin Families tab, read-only Family ledger tab, ChildNav drawer + per-child archive + Needs→Presents merge, sensor-tracking hardening (step-math + TrackingSource + strideCm + DevBench probe). Remaining: Firestore rules deploy verification, real-device sensor probe pass |
 | **Total** | **~99%** | **209/226** | |
 
 ---
@@ -147,6 +148,7 @@ Per `docs/specs/2026-04-13-phase3-vision-design.md` § 7, each brainstorm produc
 | D | Body → Gamification | AFP | 🔨 Pending | Medium (Floor-Tracker: 30-challenge catalog, badges, usernames, streaks) | Lightest — mostly cherry-picking features over existing scoring data |
 | E | ft web layer | `ft/` repo | 🔮 Optional | — | Markdown-blogger frontend. Triggered by `ft/`'s roadmap, not AFP's |
 | F | passforge web vault | `passforge/` repo | 🔮 Optional | — | Web UI + browser extension. Triggered by `passforge/`'s roadmap |
+| G | Family Umbrella | AFP | ✅ Design done | Low (original brainstorm discussion was never committed — re-run from the four pillar names, 2026-07-02) | familyId link + `families/{familyId}`, family expense view (no split/settle), baby drawer IA + Feeding/Sleep/Elimination archive + Needs→Presents merge, session-based sensor tracking. Spec + 4 plans on `feat/the-original-script` — implementation pending |
 
 ### Module Evolution
 

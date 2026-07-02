@@ -7,7 +7,7 @@ import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { BodyActivity, BodyRecord } from '@/modules/body/types';
 import { computeBodyScore } from '@/modules/body/scoring';
 import { todayStr } from '@/shared/utils/date';
-import { ActivityType, SyncStatus, ToastType, isOk } from '@/shared/types';
+import { ActivityType, SyncStatus, ToastType, TrackingSource, isOk } from '@/shared/types';
 import { DbSubcollection, userPath } from '@/constants/db';
 import { BodyMsg } from '@/constants/messages';
 import { sortNewestFirst } from '@/shared/utils/sort';
@@ -136,9 +136,9 @@ export function useBodyData(targetUid?: string) {
     [addToast, readOnly],
   );
 
-  /** Logs a new activity (walk, run, etc.) — defaults to today, pass date for backfill */
+  /** Logs a new activity (walk, run, etc.) — defaults to today, pass date for backfill; source defaults to Manual */
   const logActivity = useCallback(
-    async (type: ActivityType, distanceMeters: number, date?: string) => {
+    async (type: ActivityType, distanceMeters: number, date?: string, source?: TrackingSource) => {
       if (readOnly) return;
       const adapter = adapterRef.current;
       if (!adapter || distanceMeters <= 0) return;
@@ -151,6 +151,7 @@ export function useBodyData(targetUid?: string) {
         date: date ?? todayStr(),
         timestamp: new Date().toISOString(),
         createdAt: new Date().toISOString(),
+        source: source ?? TrackingSource.Manual,
       };
 
       // Save activity — snapshot listener will update state

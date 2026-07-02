@@ -14,5 +14,5 @@ Self-contained feature modules. Each module owns its types, hooks, components, a
 - Each module follows the same structure: `types.ts`, `hooks/`, `components/`, `__tests__/`
 - All hooks use `createAdapter` factory for storage, `DbSubcollection` enum for collection names, and `SyncStatus` enum for sync state
 - Hooks accept optional `targetUid` for role-aware data scoping (viewer reads viewerOf user, admin selects from all users)
-- All list views use tap-to-edit pattern and the shared `<ListControls>` strip (time-range pills + per-list session-state pagination via `useListControls`, default page size 25)
+- All list views use tap-to-edit pattern and the shared `<ListControls>` strip (time-range pills + per-list session-state pagination via `useListControls`, default page size `CONFIG.LIST_DEFAULT_PAGE_SIZE` = 5)
 - Delete actions use 10s undo toast (`CONFIG.UNDO_DURATION_MS`)

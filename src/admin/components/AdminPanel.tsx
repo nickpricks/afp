@@ -4,9 +4,10 @@ import { InvitesTab } from '@/admin/components/InvitesTab';
 import { UsersTab } from '@/admin/components/UsersTab';
 import { BroadcastsTab } from '@/admin/components/BroadcastsTab';
 import { MigrationsTab } from '@/admin/components/MigrationsTab';
+import { FamiliesTab } from '@/admin/components/FamiliesTab';
 import { useAdminNotifications } from '@/admin/hooks/useAdminNotifications';
 
-type AdminTab = 'invites' | 'users' | 'broadcasts' | 'migrations';
+type AdminTab = 'invites' | 'users' | 'broadcasts' | 'migrations' | 'families';
 
 /** Admin dashboard with Invites, Users, and Broadcasts tabs */
 export function AdminPanel() {
@@ -63,12 +64,24 @@ export function AdminPanel() {
         >
           Migrations
         </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('families')}
+          className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            activeTab === 'families'
+              ? 'bg-accent text-fg-on-accent'
+              : 'text-fg-muted hover:text-fg'
+          }`}
+        >
+          Families
+        </button>
       </div>
 
       {activeTab === 'invites' && <InvitesTab />}
       {activeTab === 'users' && <UsersTab />}
       {activeTab === 'broadcasts' && <BroadcastsTab />}
       {activeTab === 'migrations' && <MigrationsTab />}
+      {activeTab === 'families' && <FamiliesTab />}
     </div>
   );
 }

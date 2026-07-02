@@ -26,8 +26,19 @@ Implementation plans for AFP. One file per phase or feature.
 - `2026-04-13-phase3-baby-suggestions-plan.md` -- Phase 3 Baby suggestions engine plan
 - `2026-04-13-phase3-baby-elimination-plan.md` -- Phase 3 Baby elimination/removal plan for infant-only features
 - `2026-04-14-notifications-module-requests-plan.md` -- Notifications and module requests implementation plan
+- `2026-04-15-phase2g-e2e-bench.md` -- Phase 2g E2E coverage + DevBench split plan (generators in `bench-generators.ts`, ×1/×100/×1k bulk modes, day-spread)
 - `2026-04-15-phase3-body-yoga-plan.md` -- Phase 3 Body module Yoga tab (Plan 10) — duration-based activity with asana selector
+- `2026-04-25-enhanced-themes-plan.md` -- Enhanced themes plan (effect intensity + size tier pickers, mobile viewport multiplier, font system polish)
+- `2026-04-29-phase2h-list-controls.md` -- Phase 2h universal list infrastructure plan (`useListControls` hook, `ListControls` strip, `ListShowMoreFooter`, sticky `DateGroupHeader`, `RowTime`, `FloorMagnitudeBar` — applied across all 11 list surfaces)
+- `2026-04-30-phase2i-themes-2.0-plan.md` -- Phase 2i themes 2.0 plan (theme picker UX, expandable customize panel, intensity + size tier pickers)
 - `2026-05-04-fuel-travel-maintenance.md` -- Phase 2j: Auto tab implementation plan (10 TDD tasks — types, validation, hook, fuel-math, MetaSubForm, ServiceDueBanner, AutoTab, AddExpense wiring, ExpenseListPage, CHANGELOG)
+- `2026-05-13-kids-presents-plan.md` -- Kids Presents v1 plan (superseded by v2; kept for design-history)
+- `2026-05-14-kids-presents.md` -- Kids Presents v2 plan (gifts + finances subcollections per child, Spent→Expense bridge, Kids tab on Budget module)
+- `2026-05-15-flaw-in-the-plan-execution.md` -- Phase 2k cleanup execution plan (`ExpenseMetaType` enum, `assertNever` exhaustiveness at 8 meta switch sites, `VEHICLE_SUBCAT`/`TRAVEL_SUBCAT` typed constants, readOnly toasts in expense hooks)
+- `2026-07-02-family-umbrella-family-data-model-plan.md` -- Family Umbrella Pillar 1 (`families/{familyId}` + `FamilyRole`, `useFamily` hook, admin FamiliesTab, Firestore rules `isFamilyMember` + children write grant)
+- `2026-07-02-family-umbrella-shared-ledger-plan.md` -- Family Umbrella Pillar 2 (read-only Family tab on Budget, `useFamilyExpenses` per-member fan-out, `computeFamilyTotals`, member attribution chips)
+- `2026-07-02-family-umbrella-baby-ia-plan.md` -- Family Umbrella Pillar 3 (`ChildNav` drawer/sidebar with Overview/Logs/Archived groups, per-child archive of Feeding/Sleep/Elimination, Needs→Presents merge — all UI-only, no migrations)
+- `2026-07-02-family-umbrella-body-auto-tracking-plan.md` -- Family Umbrella Pillar 4 (DevBench sensor probe gate, `step-math.ts` pure detection, `useSensorSession`, TrackTab, `TrackingSource` enum — sensor data in-memory only)
 
 ## Conventions
 

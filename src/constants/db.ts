@@ -4,7 +4,11 @@ export enum DbCollection {
   Invites = 'invites',
   App = 'app',
   Usernames = 'usernames',
+  Families = 'families',
 }
+
+/** Root base path for adapters over top-level collections (e.g. `families`) */
+export const ROOT_PATH = '';
 
 /** Firestore subcollection names within a user document */
 export enum DbSubcollection {

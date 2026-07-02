@@ -15,18 +15,19 @@ Plus child profiles at `children/{childId}` and journal/aggregate data computed 
 
 ## Files
 
-- **types.ts** — Entry types (`FeedEntry`, `SleepEntry`, `GrowthEntry`, `EliminationEntry`, `MealEntry`, `NeedEntry`, `MilestoneEntry`, `GiftEntry`, `FinanceEntry`), `Child`, `ChildConfig` (9 module toggles), enums (feed/sleep/diaper/portion/status/category types), `LifeStage`
+- **types.ts** — Entry types (`FeedEntry`, `SleepEntry`, `GrowthEntry`, `EliminationEntry`, `MealEntry`, `NeedEntry`, `MilestoneEntry`, `GiftEntry`, `FinanceEntry`), `Child`, `ChildConfig` (9 module toggles + optional `archived` map for per-child retirement), enums (feed/sleep/diaper/portion/status/category types), `LifeStage`
 - **constants.ts** — Typed `as const` arrays for feed/sleep/quality/diaper/potty/portion/status/category options
 - **validation.ts** — `validate*Entry` per subcollection — input validation following expense module pattern
 - **milestone-templates.ts** — 10 quick-add milestone templates with category preset
 - **presents-math.ts** — Pure derivations for present finance aggregation (per-child totals, Total Kid Wealth)
+- **sections.ts** — `computeChildSections(config, presence)` + `isArchivedSection` — pure grouped-nav model (Overview / Logs / Archived; Needs merged into Presents)
 - **utils.ts** — `computeAge` + `lifeStageFor` helpers
 - **journal/** — D/W/M aggregation primitives (constants, types, range, aggregate)
 - **utils/logToSiblings.ts** — Fan-out write helper returning `{ ok, failed }` counts
 
 ## Directories
 
-- `components/` — UI components: `BabyLanding`, `ChildDetail`, `AddChild`, 8 log components (Feed/Sleep/Growth/Elimination/Meals/Needs/Milestones/Presents), `LifeJournalView` + journal helpers, suggestion banners
+- `components/` — UI components: `BabyLanding`, `ChildDetail` (grouped `ChildNav` drawer/sidebar), `AddChild`, 8 log components (Feed/Sleep/Growth/Elimination/Meals/Needs/Milestones/Presents — Needs renders as a Presents segment; Feed/Sleep/Elimination support read-only archived mode), `LifeJournalView` + journal helpers, suggestion banners
 - `hooks/` — Data hooks: `useChildren`, `useBabyData` (legacy 5-listener composer), `useBabyCollection<T>` (generic per-subcollection), `useJournalData`, `useSnooze`, `useSuggestions`
 - `journal/` — Pure journal aggregation primitives
 - `utils/` — Cross-subcollection helpers

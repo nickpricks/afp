@@ -4,6 +4,59 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.25] — 2026-07-02 (Family Umbrella — Pillar 4: body auto-tracking hardening)
+
+> Live sensor sessions already existed (`useLiveActivity` + `BodyTracker`/`ActiveSessionOverlay` — GPS distance, DeviceMotion steps, PressureSensor/GPS-altitude floors). Pillar 4 executes as a hardening pass on that infra rather than a rebuild.
+
+### Added
+
+- **`step-math.ts`** — pure, fixture-tested step detection: `processMotionSample` (rising-edge + 300ms refractory window), `computeSteps` batch counter, `computeStrideDistance(steps, strideCm)` (`Result<T>`-validated), `metersToKm` via `CONFIG.METERS_PER_KM`.
+- **`TrackingSource` string enum** + `BodyActivity.source?` (absent = manual, no migration). Sensor-session saves are tagged `Sensor`; `ActivityLog` shows a small `auto` badge. `logActivity` gains an optional trailing `source` param (appended — backwards-compatible).
+- **`BodyConfig.strideCm?`** + config-form input (`min`/`max`/`step` attrs) — steps→distance fallback when a session ends with no usable GPS distance.
+- **DevBench Sensor Probe** (decision gate): availability pills (Geolocation / DeviceMotion / iOS permission API / PressureSensor / WakeLock) + on-demand live accel magnitude stream. Raw samples never persisted — privacy path is sensor → in-memory math → own Firestore aggregates only.
+
+### Fixed
+
+- **Step overcounting** — the live session counted one step per >12 m/s² sample (~60Hz), so a single impact counted dozens of times. `useLiveActivity` now feeds samples through the rising-edge + refractory detector.
+
+---
+
+## [0.2.24] — 2026-07-02 (Family Umbrella — Pillar 3: baby IA redesign + submodule retirement)
+
+### Changed
+
+- **Child nav: top tabs → grouped drawer/sidebar** (spec § 5). New `ChildNav` — slide-in drawer behind a hamburger on mobile (CSS transform, no gesture lib), persistent left sidebar ≥ `md`. Groups: Overview (Dashboard, Journal) / Logs (config-gated) / Archived (collapsed by default). State-based switching preserved — no new routes.
+- **Per-child submodule retirement**: new optional `ChildConfig.archived` map (`feeds`/`sleep`/`elimination`). Retired sections move to the Archived group and render **read-only** (no form, no edit/delete/swipe) via a new `readOnly` prop on `FeedLog`/`SleepLog`/`EliminationLog`. Retirement wins over the config flag; absent map = today's behavior. **Archive-in-place — zero data moves, Journal aggregation untouched** (D6).
+- **Needs merged into Presents** (UI-only): `PresentsLog` gains a Needs segment (Finances | Gifts | Needs) rendering the full `NeedsLog`; subcollection stays `needs/*`. Needs leaves the nav; Presents shows when `config.presents || config.needs`. Dashboard Needs card now routes to Presents.
+- `computeChildSections(config, presence)` pure helper (+ `isArchivedSection`) in `sections.ts` derives the grouped nav model. Archive toggles live in `AddChild` (per-child config at creation time).
+
+---
+
+## [0.2.23] — 2026-07-02 (Family Umbrella — Pillar 2: expense shared ledger view)
+
+### Added
+
+- **Family tab on Budget** (spec § 4) — sixth state-based tab (Expenses | Income | CC | Kids | Auto | **Family**), visible only when `profile.familyId != null`. No new route.
+- `useFamilyExpenses(familyId)` — read-only fan-out: one per-member adapter from the family members map (no `collectionGroup`), per-member `ready` tracking (aggregate `ready` only when family doc + all member listeners report), soft-deleted expenses filtered. **No mutators by construction.**
+- `computeFamilyTotals(members, timeRange, today)` in `budget-math.ts` — per-member + family-wide spend totals honoring the active time range; settlements excluded (reuses `computeTotalSpent` + `filterByDateRange`).
+- `FamilyLedgerTab` — Daily Ledger pattern (`ListControls`, sticky `DateGroupHeader`s, `sortNewestFirst`, `ListShowMoreFooter`) with per-member attribution chips (stable palette) and a contribution summary strip. Owner = payer; no `paidBy` field added to `Expense`, no split/settle (D2). Shares the page-hoisted `timeRange`.
+
+---
+
+## [0.2.22] — 2026-07-02 (Family Umbrella — Pillar 1: family data model)
+
+### Added
+
+- **Family data model** (spec `2026-07-02-family-umbrella-design.md` § 3): new root `families/{familyId}` collection (members map uid → `FamilyRole`), `UserProfile.familyId?: string | null` link (default null — users without a family see zero behavior change).
+- `FamilyRole` string enum (`Owner`/`Adult`), `Family` interface, `familyMemberUids()` tombstone-filtering helper in `shared/types.ts`.
+- `useFamily(familyId)` (shared hook — one-time family-doc fetch, `{ family, memberUids, ready }`) and `useFamilies()` (admin realtime list).
+- `useAdminActions.createFamily(name, memberUids)` + `unlinkFamilyMember(family, uid)` — `Promise<boolean>`, own toasts (`FamilyMsg` enum). Unlink writes a `null` member tombstone (the adapter merge-saves, so map keys can't be deleted).
+- **Families tab** in the admin panel: create-family form (name + unlinked-user pills), family list with member chips + unlink `×`.
+- StorageAdapter root-collection support: empty base path (`ROOT_PATH`) now resolves top-level collections in the Firebase adapter — the Firebase import boundary stays intact (no raw Firestore at call sites).
+- **Firestore rules**: `families/{familyId}` block (member read, admin write), `isFamilyMember()` helper (two `get()`s — family-scale cost), family-member **read** grants on profile/body/body_activities/expenses/income, family-member **read + write** on `children/**` (both parents log on either owner's children), and `familyId` locked server-side on owner profile updates (like `role`/`modules`). Rules deploy verification pending, as elsewhere.
+
+---
+
 ## [0.2.21] — 2026-05-19 (Phase 2k — Cleanup pass: flaw-in-the-plan)
 
 > 0.2.19 went to `feat/the-rehearsal`; 0.2.20 went to Kids Presents v2; flaw-in-the-plan slots in as 0.2.21.

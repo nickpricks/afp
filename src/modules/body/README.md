@@ -4,15 +4,16 @@ Body/fitness tracking module. Floors (daily aggregate) + walk/run/cycle activiti
 
 ## Files
 
-- **types.ts** — `BodyRecord` (daily summary: floors, distances, total), `BodyConfig`, `DEFAULT_BODY_CONFIG`
+- **types.ts** — `BodyRecord` (daily summary: floors, distances, total), `BodyConfig` (incl. optional `strideCm` steps→distance fallback), `BodyActivity` (optional `source: TrackingSource` — absent = manual), `DEFAULT_BODY_CONFIG`
 - **constants.ts** — `BODY_DEFAULTS` (floor height, stride lengths), `SCORING_WEIGHTS` (floors_up x1, floors_down x0.5, walk_km x10, run_km x20, cycle_km x15), `ACTIVITY_LABELS`
 - **scoring.ts** — `computeBodyScore(record)` composite scoring, `computeSteps(distance, stride)` approximation
+- **step-math.ts** — Pure sensor-session math: `processMotionSample` (rising-edge + 300ms refractory step detection), `computeSteps` batch counter, `computeStrideDistance(steps, strideCm)` (`Result<T>`), `metersToKm`
 
 ## Directories
 
 - `components/` — Body UI: `BodyTracker`, `BodyPage`, `BodyStats`, `BodyConfigForm`, four tab components (FloorsTab / WalkingTab / RunningTab / CyclingTab), `ActivityLog`, `AddActivity`, `BodySummaryCard` (dashboard surface), `ActiveSessionOverlay` (live tracking overlay)
 - `context/` — `LiveActivityContext` provider that owns live-session state (`prepare`, `start`, `pause`, `stop`, `sessionState`). Read via `useLiveActivityContext`
-- `hooks/` — `useBodyConfig`, `useBodyData` (logActivity with optional date, deleteActivity, deleteRecord — stale-closure fix via `recordsRef`), `useLiveActivity` (low-level live-session hook that the context wraps)
+- `hooks/` — `useBodyConfig`, `useBodyData` (logActivity with optional date + `TrackingSource`, deleteActivity, deleteRecord — stale-closure fix via `recordsRef`), `useLiveActivity` (low-level live-session hook that the context wraps; steps counted via `step-math` rising-edge detector, never per-sample)
 
 ## Tests
 

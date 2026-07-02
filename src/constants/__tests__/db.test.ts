@@ -3,15 +3,16 @@ import { describe, expect, it } from 'vitest';
 import { DbCollection, DbSubcollection, DbDoc, DbField, userPath } from '@/constants/db';
 
 describe('DbCollection', () => {
-  it('has Users, Invites, App, Usernames', () => {
+  it('has Users, Invites, App, Usernames, Families', () => {
     expect(DbCollection.Users).toBe('users');
     expect(DbCollection.Invites).toBe('invites');
     expect(DbCollection.App).toBe('app');
     expect(DbCollection.Usernames).toBe('usernames');
+    expect(DbCollection.Families).toBe('families');
   });
 
-  it('has exactly 4 collections', () => {
-    expect(Object.keys(DbCollection)).toHaveLength(4);
+  it('has exactly 5 collections', () => {
+    expect(Object.keys(DbCollection)).toHaveLength(5);
   });
 });
 

@@ -4,10 +4,10 @@ App-wide configuration, route definitions, Firestore paths, and user-facing mess
 
 ## Files
 
-- **config.ts** — `CONFIG` object with APP_NAME, VERSION, DEFAULT_THEME, CURRENCY_SYMBOL, invite-code settings, METERS_PER_FLOOR, METERS_PER_KM, UNDO_DURATION_MS, DAILY_SCORE_GOAL, BUDGET_VISIBLE_CATEGORIES, and MOBILE_BREAKPOINT_PX (640, matches Tailwind's `sm:` breakpoint — used by viewport-aware hooks)
+- **config.ts** — `CONFIG` object with APP_NAME, VERSION, DEFAULT_THEME, CURRENCY_SYMBOL, invite-code settings, METERS_PER_FLOOR, METERS_PER_KM, UNDO_DURATION_MS, DAILY_SCORE_GOAL, BUDGET_VISIBLE_CATEGORIES, LIST_PAGE_SIZE_OPTIONS + LIST_DEFAULT_PAGE_SIZE (5), and MOBILE_BREAKPOINT_PX (640, matches Tailwind's `sm:` breakpoint — used by viewport-aware hooks)
 - **routes.ts** — `AppPath` enum (14 paths including `/animations`) and `ROUTES` lookup object for all application route paths
-- **db.ts** — `DbCollection`, `DbSubcollection`, `DbDoc`, `DbField` enums and path helpers (`userPath`, `childPath`)
-- **messages.ts** — `ValidationMsg`, `InviteMsg`, `BudgetMsg`, `BodyMsg`, `BabyMsg`, `ProfileMsg`, `AdminMsg`, `ProviderMsg` enums for toast and error messages
+- **db.ts** — `DbCollection` (incl. `Families`), `DbSubcollection`, `DbDoc`, `DbField` enums, `ROOT_PATH` (empty base path for top-level collections), and path helpers (`userPath`, `childPath`)
+- **messages.ts** — `ValidationMsg`, `InviteMsg`, `BudgetMsg`, `BodyMsg`, `BabyMsg`, `ProfileMsg`, `AdminMsg`, `FamilyMsg`, `NotificationMsg`, `ProviderMsg` enums for toast and error messages
 
 ## Tests
 

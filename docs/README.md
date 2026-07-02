@@ -6,6 +6,7 @@ Project documentation root for AFP.
 
 - `ROADMAP.md` -- Full prioritized backlog (P0-P3) for remaining work
 - `firebase-setup.md` -- Firebase project configuration and setup instructions
+- `firebase-data-structure.md` -- Full Firestore data map (collections, fields, rules summary, path patterns)
 - `getting-started.md` -- Developer onboarding guide
 
 ## Subdirectories
