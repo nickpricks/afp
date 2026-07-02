@@ -4,6 +4,17 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.23] — 2026-07-02 (Family Umbrella — Pillar 2: expense shared ledger view)
+
+### Added
+
+- **Family tab on Budget** (spec § 4) — sixth state-based tab (Expenses | Income | CC | Kids | Auto | **Family**), visible only when `profile.familyId != null`. No new route.
+- `useFamilyExpenses(familyId)` — read-only fan-out: one per-member adapter from the family members map (no `collectionGroup`), per-member `ready` tracking (aggregate `ready` only when family doc + all member listeners report), soft-deleted expenses filtered. **No mutators by construction.**
+- `computeFamilyTotals(members, timeRange, today)` in `budget-math.ts` — per-member + family-wide spend totals honoring the active time range; settlements excluded (reuses `computeTotalSpent` + `filterByDateRange`).
+- `FamilyLedgerTab` — Daily Ledger pattern (`ListControls`, sticky `DateGroupHeader`s, `sortNewestFirst`, `ListShowMoreFooter`) with per-member attribution chips (stable palette) and a contribution summary strip. Owner = payer; no `paidBy` field added to `Expense`, no split/settle (D2). Shares the page-hoisted `timeRange`.
+
+---
+
 ## [0.2.22] — 2026-07-02 (Family Umbrella — Pillar 1: family data model)
 
 ### Added
