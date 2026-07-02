@@ -4,6 +4,23 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.25] — 2026-07-02 (Family Umbrella — Pillar 4: body auto-tracking hardening)
+
+> Live sensor sessions already existed (`useLiveActivity` + `BodyTracker`/`ActiveSessionOverlay` — GPS distance, DeviceMotion steps, PressureSensor/GPS-altitude floors). Pillar 4 executes as a hardening pass on that infra rather than a rebuild.
+
+### Added
+
+- **`step-math.ts`** — pure, fixture-tested step detection: `processMotionSample` (rising-edge + 300ms refractory window), `computeSteps` batch counter, `computeStrideDistance(steps, strideCm)` (`Result<T>`-validated), `metersToKm` via `CONFIG.METERS_PER_KM`.
+- **`TrackingSource` string enum** + `BodyActivity.source?` (absent = manual, no migration). Sensor-session saves are tagged `Sensor`; `ActivityLog` shows a small `auto` badge. `logActivity` gains an optional trailing `source` param (appended — backwards-compatible).
+- **`BodyConfig.strideCm?`** + config-form input (`min`/`max`/`step` attrs) — steps→distance fallback when a session ends with no usable GPS distance.
+- **DevBench Sensor Probe** (decision gate): availability pills (Geolocation / DeviceMotion / iOS permission API / PressureSensor / WakeLock) + on-demand live accel magnitude stream. Raw samples never persisted — privacy path is sensor → in-memory math → own Firestore aggregates only.
+
+### Fixed
+
+- **Step overcounting** — the live session counted one step per >12 m/s² sample (~60Hz), so a single impact counted dozens of times. `useLiveActivity` now feeds samples through the rising-edge + refractory detector.
+
+---
+
 ## [0.2.24] — 2026-07-02 (Family Umbrella — Pillar 3: baby IA redesign + submodule retirement)
 
 ### Changed

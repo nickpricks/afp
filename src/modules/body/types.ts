@@ -1,4 +1,4 @@
-import type { ActivityType } from '@/shared/types';
+import type { ActivityType, TrackingSource } from '@/shared/types';
 
 /** Per-activity toggle configuration for the body module */
 export type BodyConfig = {
@@ -9,6 +9,8 @@ export type BodyConfig = {
   yoga: boolean;
   floorHeight: number;
   dailyGoal: number;
+  /** Stride length in cm — steps→distance fallback for sensor sessions without usable GPS (optional, no migration) */
+  strideCm?: number;
   configuredAt: string;
 };
 
@@ -44,4 +46,6 @@ export type BodyActivity = {
   date: string;
   timestamp: string;
   createdAt: string;
+  /** Recording source — absent = manual (backwards-compatible) */
+  source?: TrackingSource;
 };

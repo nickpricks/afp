@@ -162,6 +162,12 @@ export enum ActivityType {
   Yoga = 'yoga',
 }
 
+/** How a body activity was recorded — absent on old records means Manual (backwards-compatible) */
+export enum TrackingSource {
+  Manual = 'manual',
+  Sensor = 'sensor',
+}
+
 /** List view timeframe — applies to any list with a date field */
 export enum TimeRange {
   Today = 'today',

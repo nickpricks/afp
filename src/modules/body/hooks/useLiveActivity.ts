@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback } from 'react';
 import { vlog, vwarn, verr } from '@/shared/utils/verbose';
 import { ActivityType } from '@/shared/types';
+import { initialStepState, processMotionSample } from '@/modules/body/step-math';
+import type { StepDetectorState } from '@/modules/body/step-math';
 
 /** Configuration constants for live activity tracking sensors */
 const LIVE_ACTIVITY_CONFIG = {
@@ -10,7 +12,6 @@ const LIVE_ACTIVITY_CONFIG = {
   MAX_ALTITUDE_ACCURACY_M: 20,
   MIN_ALTITUDE_DIFF_M: 0.5,
   METERS_PER_FLOOR: 3,
-  STEP_ACCEL_THRESHOLD: 12,
   PRESSURE_DIFF_HPA_PER_FLOOR: 0.36,
   PRESSURE_SENSOR_FREQ_HZ: 1,
   TIMER_INTERVAL_MS: 1000,
@@ -57,6 +58,7 @@ export function useLiveActivity() {
   const pressureSensorRef = useRef<{ stop: () => void } | null>(null);
   const lastPressureRef = useRef<number | null>(null);
   const motionHandlerRef = useRef<((e: DeviceMotionEvent) => void) | null>(null);
+  const stepStateRef = useRef<StepDetectorState>(initialStepState());
 
   // Track cumulative elevation changes from GPS
   const elevationGainRef = useRef<number>(0);
@@ -181,13 +183,19 @@ export function useLiveActivity() {
       }
     }
 
-    // 3. Simple step detection logic
+    // 3. Step detection — rising-edge + refractory window via pure step-math
+    // (raw per-sample threshold counting overcounted badly at ~60Hz sampling)
+    stepStateRef.current = initialStepState();
     const handleMotion = (event: DeviceMotionEvent) => {
       const acc = event.accelerationIncludingGravity;
       if (!acc) return;
       const total = Math.sqrt((acc.x ?? 0) ** 2 + (acc.y ?? 0) ** 2 + (acc.z ?? 0) ** 2);
-      // Simple threshold for a "step" impact
-      if (total > LIVE_ACTIVITY_CONFIG.STEP_ACCEL_THRESHOLD) {
+      const result = processMotionSample(stepStateRef.current, {
+        t: Date.now(),
+        magnitude: total,
+      });
+      stepStateRef.current = result.state;
+      if (result.stepped) {
         setMetrics((prev) => ({ ...prev, steps: prev.steps + 1 }));
       }
     };
