@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { BodyActivity } from '@/modules/body/types';
 import { AddActivity } from '@/modules/body/components/AddActivity';
 import { ActivityLog } from '@/modules/body/components/ActivityLog';
+import { AddMissingDayButton } from '@/modules/body/components/AddMissingDayButton';
 import { DatePickerModal } from '@/shared/components/DatePickerModal';
 import { ActivityType } from '@/shared/types';
 
@@ -34,6 +35,7 @@ export function CyclingTab({
         backfillDate={backfillDate}
         onClearBackfill={() => setBackfillDate(null)}
       />
+      <AddMissingDayButton onClick={() => setShowDatePicker(true)} />
       {cycleActivities.length > 0 && (
         <ActivityLog
           activities={cycleActivities}
@@ -42,15 +44,7 @@ export function CyclingTab({
           editingId={editEntry?.id}
         />
       )}
-      <div className="flex justify-center">
-        <button
-          type="button"
-          onClick={() => setShowDatePicker(true)}
-          className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-fg-muted transition-colors hover:border-accent hover:text-accent"
-        >
-          + Add missing day
-        </button>
-      </div>
+      <AddMissingDayButton onClick={() => setShowDatePicker(true)} />
       {showDatePicker && (
         <DatePickerModal
           title="Add cycle for a past day"

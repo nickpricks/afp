@@ -3,6 +3,7 @@ import { ArrowUp, ArrowDown, RotateCcw } from 'lucide-react';
 
 import type { BodyRecord } from '@/modules/body/types';
 import { BODY_DEFAULTS } from '@/modules/body/constants';
+import { AddMissingDayButton } from '@/modules/body/components/AddMissingDayButton';
 import { CONFIG } from '@/constants/config';
 import { BodyMsg } from '@/constants/messages';
 import { todayStr } from '@/shared/utils/date';
@@ -186,6 +187,9 @@ export function FloorsTab({
         </div>
       )}
 
+      {/* Add missing day button — above the list */}
+      <AddMissingDayButton onClick={() => setShowDatePicker(true)} />
+
       {/* Recent days */}
       {sortedDays.length > 0 && (
         <div className="flex flex-col gap-2">
@@ -269,16 +273,8 @@ export function FloorsTab({
           )}
         </div>
       )}
-      {/* Add missing day button */}
-      <div className="flex justify-center">
-        <button
-          type="button"
-          onClick={() => setShowDatePicker(true)}
-          className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-fg-muted transition-colors hover:border-accent hover:text-accent"
-        >
-          + Add missing day
-        </button>
-      </div>
+      {/* Add missing day button — below the list */}
+      <AddMissingDayButton onClick={() => setShowDatePicker(true)} />
 
       {/* Date picker modal */}
       {showDatePicker && (
