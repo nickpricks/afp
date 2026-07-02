@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import { ActivityLog } from '@/modules/body/components/ActivityLog';
+import { CONFIG } from '@/constants/config';
 import { ActivityType } from '@/shared/types';
 import type { BodyActivity } from '@/modules/body/types';
 
@@ -27,9 +28,9 @@ const noop = vi.fn();
 
 /** Verifies ActivityLog respects useListControls pagination and show-all escape hatch */
 describe('ActivityLog — pagination via useListControls', () => {
-  it('shows at most pageSize (25) activities by default', () => {
+  it('shows at most the default page size of activities by default', () => {
     render(<ActivityLog activities={makeActivities(35)} onEdit={noop} />);
-    expect(screen.getAllByTestId('activity-row').length).toBe(25);
+    expect(screen.getAllByTestId('activity-row').length).toBe(CONFIG.LIST_DEFAULT_PAGE_SIZE);
   });
 
   it('renders ListControls time-range pills when paginated', () => {

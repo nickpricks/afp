@@ -2,14 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 
 import { useListControls } from '../useListControls';
+import { CONFIG } from '@/constants/config';
 import { TimeRange } from '@/shared/types';
 
 /** Tests for useListControls page-reset and showAll behaviors. */
 describe('useListControls', () => {
-  it('initializes with All range, pageSize 25, page 1, showAll false', () => {
+  it('initializes with All range, default page size, page 1, showAll false', () => {
     const { result } = renderHook(() => useListControls());
     expect(result.current.timeRange).toBe(TimeRange.All);
-    expect(result.current.pageSize).toBe(25);
+    expect(result.current.pageSize).toBe(CONFIG.LIST_DEFAULT_PAGE_SIZE);
     expect(result.current.page).toBe(1);
     expect(result.current.showAll).toBe(false);
   });

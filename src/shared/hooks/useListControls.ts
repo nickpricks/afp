@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { CONFIG } from '@/constants/config';
 import { TimeRange } from '@/shared/types';
 
 /** Snapshot of list control state — time-range, page, page size, show-all override. */
@@ -30,7 +31,9 @@ export interface ListControlsHandle extends ListControlsState {
  */
 export function useListControls(defaults?: Partial<ListControlsState>): ListControlsHandle {
   const [timeRange, setTimeRangeState] = useState<TimeRange>(defaults?.timeRange ?? TimeRange.All);
-  const [pageSize, setPageSizeState] = useState<number>(defaults?.pageSize ?? 25);
+  const [pageSize, setPageSizeState] = useState<number>(
+    defaults?.pageSize ?? CONFIG.LIST_DEFAULT_PAGE_SIZE,
+  );
   const [page, setPage] = useState<number>(defaults?.page ?? 1);
   const [showAll, setShowAll] = useState<boolean>(defaults?.showAll ?? false);
 

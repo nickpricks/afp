@@ -38,4 +38,6 @@ export const CONFIG = {
   },
   /** Available page-size options for the universal list controls */
   LIST_PAGE_SIZE_OPTIONS: [5, 10, 25, 50, 100, 500] as const,
+  /** Default page size for all lists (useListControls) — must be one of LIST_PAGE_SIZE_OPTIONS */
+  LIST_DEFAULT_PAGE_SIZE: 5 as number,
 } as const;
