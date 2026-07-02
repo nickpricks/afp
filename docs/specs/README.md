@@ -20,6 +20,7 @@ Design specifications and analysis documents for AFP.
 - `2026-05-13-kids-presents-design.md` -- Kids Presents v1 design (superseded by v2; kept for design-history)
 - `2026-05-14-kids-presents-design-v2.md` -- Kids Presents v2 design (gifts + finances subcollections, Spent→Expense bridge, `KidsFinanceTab` read-only aggregate)
 - `2026-05-15-flaw-in-the-plan-cleanup-design.md` -- Phase 2k cleanup design (`ExpenseMetaType` + `assertNever` exhaustiveness, `VEHICLE_SUBCAT`/`TRAVEL_SUBCAT`, readOnly toast paths)
+- `2026-07-02-family-umbrella-design.md` -- Family Umbrella design spec (Brainstorm G — `families/{familyId}` + `familyId` link, family expense view, baby drawer IA + submodule archive + Needs→Presents merge, session-based sensor auto-tracking)
 
 ## Conventions
 
