@@ -13,11 +13,13 @@ import { SleepLog } from '@/modules/baby/components/SleepLog';
 import { GrowthLog } from '@/modules/baby/components/GrowthLog';
 import { EliminationLog } from '@/modules/baby/components/EliminationLog';
 import { MealsLog } from '@/modules/baby/components/MealsLog';
-import { NeedsLog } from '@/modules/baby/components/NeedsLog';
 import { MilestonesLog } from '@/modules/baby/components/MilestonesLog';
 import { PresentsLog } from '@/modules/baby/components/PresentsLog';
 import { LifeJournalView } from '@/modules/baby/components/LifeJournalView';
+import { ChildNav } from '@/modules/baby/components/ChildNav';
 import { SuggestionStrip } from '@/modules/baby/components/SuggestionStrip';
+import { computeChildSections, isArchivedSection } from '@/modules/baby/sections';
+import type { SectionId } from '@/modules/baby/sections';
 import { useChildren } from '@/modules/baby/hooks/useChildren';
 import { useSuggestions } from '@/modules/baby/hooks/useSuggestions';
 import { configFieldFor, SuggestionAction } from '@/modules/baby/suggestions';
@@ -28,21 +30,8 @@ import type { Child } from '@/modules/baby/types';
 import { computeAge } from '@/modules/baby/utils';
 import { ROUTES } from '@/constants/routes';
 
-/** Tab identifiers for the child detail view */
-type TabId =
-  | 'dashboard'
-  | 'journal'
-  | 'feeding'
-  | 'sleep'
-  | 'growth'
-  | 'diapers'
-  | 'meals'
-  | 'needs'
-  | 'milestones'
-  | 'presents';
-
-/** Tab definition with id, label, and visibility flag */
-type TabDef = { id: TabId; label: string; visible: boolean };
+/** Tab identifiers for the child detail view — the grouped-nav SectionId union (needs merged into presents) */
+type TabId = SectionId;
 
 /** Per-child detail view with tabbed interface — reads childId from URL params */
 export function ChildDetail() {
@@ -101,22 +90,15 @@ function ChildDetailInner({
   const suggestions = useSuggestions(child);
   const diapersOn = child.config.diapers;
   const pottyOn = child.config.potty ?? false;
-  const eliminationLabel = diapersOn && pottyOn ? 'Elimination' : pottyOn ? 'Potty' : 'Diapers';
-  const tabs: TabDef[] = [
-    { id: 'dashboard', label: 'Dashboard', visible: true },
-    { id: 'journal', label: 'Journal', visible: true },
-    { id: 'feeding', label: 'Feeding', visible: child.config.feeding },
-    { id: 'sleep', label: 'Sleep', visible: child.config.sleep },
-    { id: 'growth', label: 'Growth', visible: child.config.growth },
-    { id: 'diapers', label: eliminationLabel, visible: diapersOn || pottyOn },
-    { id: 'meals', label: 'Meals', visible: child.config.meals ?? false },
-    { id: 'needs', label: 'Needs', visible: child.config.needs ?? false },
-    { id: 'milestones', label: 'Milestones', visible: child.config.milestones ?? false },
-    { id: 'presents', label: '🎁', visible: child.config.presents ?? false },
-  ];
-
-  const visibleTabs = tabs.filter((t) => t.visible);
+  // Presence checks deferred (v1): archiving is an explicit per-child choice, so the
+  // empty-subcollection case is rare — avoid 3 extra listeners just for nav visibility.
+  const sections = computeChildSections(child.config, {
+    feeds: true,
+    sleep: true,
+    elimination: true,
+  });
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
+  const activeArchived = isArchivedSection(sections, activeTab);
 
   const childId = child.id ?? '';
   const siblingIds = siblings.map((s) => s.id).filter(Boolean) as string[];
@@ -168,47 +150,58 @@ function ChildDetailInner({
       {/* Age-based suggestion strip */}
       <SuggestionStrip suggestions={suggestions} onEnable={applySuggestion} />
 
-      {/* Tabs */}
-      <div className="flex gap-1 overflow-x-auto border-b border-line">
-        {visibleTabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-3 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-              activeTab === tab.id
-                ? 'border-accent text-accent'
-                : 'border-transparent text-fg-muted hover:text-fg'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {/* Grouped nav (drawer on mobile, sidebar ≥ md) + section content */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-start">
+        <ChildNav sections={sections} activeId={activeTab} onSelect={setActiveTab} />
 
-      {/* Tab Content */}
-      {activeTab === 'dashboard' && <DashboardTab child={child} onNavigate={setActiveTab} />}
-      {activeTab === 'journal' && <LifeJournalView child={child} />}
-      {activeTab === 'feeding' && <FeedLog childId={childId} siblingIds={siblingIds} uid={uid} />}
-      {activeTab === 'sleep' && <SleepLog childId={childId} siblingIds={siblingIds} uid={uid} />}
-      {activeTab === 'growth' && <GrowthLog childId={childId} siblingIds={siblingIds} uid={uid} />}
-      {activeTab === 'diapers' && (
-        <EliminationLog
-          childId={childId}
-          siblingIds={siblingIds}
-          uid={uid}
-          diapersEnabled={diapersOn}
-          pottyEnabled={pottyOn}
-        />
-      )}
-      {activeTab === 'meals' && <MealsLog childId={childId} siblingIds={siblingIds} uid={uid} />}
-      {activeTab === 'needs' && <NeedsLog childId={childId} siblingIds={siblingIds} uid={uid} />}
-      {activeTab === 'milestones' && (
-        <MilestonesLog childId={childId} siblingIds={siblingIds} uid={uid} />
-      )}
-      {activeTab === 'presents' && (
-        <PresentsLog childId={childId} siblingIds={siblingIds} uid={uid} />
-      )}
+        <div className="min-w-0 flex-1">
+          {activeTab === 'dashboard' && <DashboardTab child={child} onNavigate={setActiveTab} />}
+          {activeTab === 'journal' && <LifeJournalView child={child} />}
+          {activeTab === 'feeding' && (
+            <FeedLog
+              childId={childId}
+              siblingIds={siblingIds}
+              uid={uid}
+              readOnly={activeArchived}
+            />
+          )}
+          {activeTab === 'sleep' && (
+            <SleepLog
+              childId={childId}
+              siblingIds={siblingIds}
+              uid={uid}
+              readOnly={activeArchived}
+            />
+          )}
+          {activeTab === 'growth' && (
+            <GrowthLog childId={childId} siblingIds={siblingIds} uid={uid} />
+          )}
+          {activeTab === 'diapers' && (
+            <EliminationLog
+              childId={childId}
+              siblingIds={siblingIds}
+              uid={uid}
+              diapersEnabled={diapersOn}
+              pottyEnabled={pottyOn}
+              readOnly={activeArchived}
+            />
+          )}
+          {activeTab === 'meals' && (
+            <MealsLog childId={childId} siblingIds={siblingIds} uid={uid} />
+          )}
+          {activeTab === 'milestones' && (
+            <MilestonesLog childId={childId} siblingIds={siblingIds} uid={uid} />
+          )}
+          {activeTab === 'presents' && (
+            <PresentsLog
+              childId={childId}
+              siblingIds={siblingIds}
+              uid={uid}
+              showNeeds={child.config.needs ?? false}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -311,7 +304,7 @@ export function DashboardTab({
             label="Needs"
             icon="🛍"
             description="Wishlist + inventory"
-            onClick={() => onNavigate('needs')}
+            onClick={() => onNavigate('presents')}
           />
         )}
         {child.config.milestones && (

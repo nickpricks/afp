@@ -5,6 +5,19 @@ import { DEFAULT_CHILD_CONFIG } from '@/modules/baby/constants';
 import type { ChildConfig } from '@/modules/baby/types';
 import { todayStr } from '@/shared/utils/date';
 
+/** Boolean module toggles (excludes the archived map, which has its own fieldset) */
+type ToggleKey = Exclude<keyof ChildConfig, 'archived'>;
+
+/** Keys of the per-child archive map */
+type ArchiveKey = keyof NonNullable<ChildConfig['archived']>;
+
+/** Archive toggles shown in the add-child form (retired = read-only Archived nav group) */
+const ARCHIVE_OPTIONS: { key: ArchiveKey; label: string }[] = [
+  { key: 'feeds', label: 'Feeding' },
+  { key: 'sleep', label: 'Sleep' },
+  { key: 'elimination', label: 'Diapers / Potty' },
+];
+
 /** Form for adding a new child with name, DOB, and tracking module toggles */
 export function AddChild({ onAdded }: { onAdded?: (childId: string) => void }) {
   const { addChild } = useChildren();
@@ -14,8 +27,16 @@ export function AddChild({ onAdded }: { onAdded?: (childId: string) => void }) {
   const [saving, setSaving] = useState(false);
 
   /** Toggles a config flag on/off */
-  function toggleConfig(key: keyof ChildConfig) {
+  function toggleConfig(key: ToggleKey) {
     setConfig((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  /** Toggles a per-child archive flag (retired sections render read-only — Family Umbrella Pillar 3) */
+  function toggleArchived(key: ArchiveKey) {
+    setConfig((prev) => ({
+      ...prev,
+      archived: { ...prev.archived, [key]: !(prev.archived?.[key] ?? false) },
+    }));
   }
 
   /** Handles form submission */
@@ -42,7 +63,7 @@ export function AddChild({ onAdded }: { onAdded?: (childId: string) => void }) {
   }
 
   /** Ordered list of config toggles shown in the add-child form */
-  const configOptions: { key: keyof ChildConfig; label: string }[] = [
+  const configOptions: { key: ToggleKey; label: string }[] = [
     { key: 'feeding', label: 'Feeding' },
     { key: 'sleep', label: 'Sleep' },
     { key: 'growth', label: 'Growth' },
@@ -90,6 +111,21 @@ export function AddChild({ onAdded }: { onAdded?: (childId: string) => void }) {
                 type="checkbox"
                 checked={config[opt.key] ?? false}
                 onChange={() => toggleConfig(opt.key)}
+                className="rounded border-line"
+              />
+              {opt.label}
+            </label>
+          ))}
+        </fieldset>
+
+        <fieldset className="flex flex-col gap-2">
+          <legend className="text-sm text-fg-muted mb-1">Archived (read-only history)</legend>
+          {ARCHIVE_OPTIONS.map((opt) => (
+            <label key={opt.key} className="flex items-center gap-2 text-sm text-fg">
+              <input
+                type="checkbox"
+                checked={config.archived?.[opt.key] ?? false}
+                onChange={() => toggleArchived(opt.key)}
                 className="rounded border-line"
               />
               {opt.label}

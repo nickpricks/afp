@@ -31,15 +31,17 @@ function timeOffset(minutes: number): string {
   return d.toTimeString().slice(0, 5);
 }
 
-/** Sleep tracking form with type/quality selection and recent entries list */
+/** Sleep tracking form with type/quality selection and recent entries list. `readOnly` renders the archived list-only view (no form, no edit/delete). */
 export function SleepLog({
   childId,
   siblingIds = [],
   uid = '',
+  readOnly = false,
 }: {
   childId?: string;
   siblingIds?: string[];
   uid?: string;
+  readOnly?: boolean;
 }) {
   const { sleeps, logSleep, updateSleep, removeSleep } = useBabyData(childId ?? null);
   const { addToast } = useToast();
@@ -166,6 +168,8 @@ export function SleepLog({
 
   return (
     <div className="flex flex-col gap-6 px-4 py-6">
+      {readOnly && <p className="text-xs text-fg-muted italic">Archived — read only</p>}
+      {!readOnly && (
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {editEntry && (
           <div className="flex items-center gap-2">
@@ -265,6 +269,7 @@ export function SleepLog({
           )}
         </div>
       </form>
+      )}
 
       {sortedSleeps.length > 0 && (
         <ListControls
@@ -283,6 +288,7 @@ export function SleepLog({
         onEdit={startEdit}
         editingId={editEntry?.id ?? null}
         onRemove={handleUndoDelete}
+        readOnly={readOnly}
       />
       {!ctrl.showAll && (
         <ListShowMoreFooter
@@ -303,12 +309,14 @@ function RecentSleeps({
   onEdit,
   editingId,
   onRemove,
+  readOnly = false,
 }: {
   entries: SleepEntry[];
   today: string;
   onEdit: (e: SleepEntry) => void;
   editingId: string | null;
   onRemove: (id: string) => void;
+  readOnly?: boolean;
 }) {
   if (entries.length === 0) return null;
 
@@ -330,7 +338,9 @@ function RecentSleeps({
               <button
                 key={entry.id}
                 type="button"
-                onClick={() => onEdit(entry)}
+                onClick={() => {
+                  if (!readOnly) onEdit(entry);
+                }}
                 className={`block w-full border-t border-line p-3 text-left transition-colors hover:bg-accent-muted ${isActive ? 'bg-accent-muted border-l-2 border-l-accent' : ''}`}
               >
                 <div className="flex justify-between text-sm">
@@ -339,6 +349,7 @@ function RecentSleeps({
                     <span className="font-mono text-xs tabular-nums text-fg-muted">
                       {entry.startTime}
                     </span>
+                    {!readOnly && (
                     <span
                       role="button"
                       tabIndex={0}
@@ -357,6 +368,7 @@ function RecentSleeps({
                     >
                       \u00D7
                     </span>
+                    )}
                   </div>
                 </div>
                 <p className="text-xs text-fg-muted mt-1">

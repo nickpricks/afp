@@ -4,6 +4,17 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.24] — 2026-07-02 (Family Umbrella — Pillar 3: baby IA redesign + submodule retirement)
+
+### Changed
+
+- **Child nav: top tabs → grouped drawer/sidebar** (spec § 5). New `ChildNav` — slide-in drawer behind a hamburger on mobile (CSS transform, no gesture lib), persistent left sidebar ≥ `md`. Groups: Overview (Dashboard, Journal) / Logs (config-gated) / Archived (collapsed by default). State-based switching preserved — no new routes.
+- **Per-child submodule retirement**: new optional `ChildConfig.archived` map (`feeds`/`sleep`/`elimination`). Retired sections move to the Archived group and render **read-only** (no form, no edit/delete/swipe) via a new `readOnly` prop on `FeedLog`/`SleepLog`/`EliminationLog`. Retirement wins over the config flag; absent map = today's behavior. **Archive-in-place — zero data moves, Journal aggregation untouched** (D6).
+- **Needs merged into Presents** (UI-only): `PresentsLog` gains a Needs segment (Finances | Gifts | Needs) rendering the full `NeedsLog`; subcollection stays `needs/*`. Needs leaves the nav; Presents shows when `config.presents || config.needs`. Dashboard Needs card now routes to Presents.
+- `computeChildSections(config, presence)` pure helper (+ `isArchivedSection`) in `sections.ts` derives the grouped nav model. Archive toggles live in `AddChild` (per-child config at creation time).
+
+---
+
 ## [0.2.23] — 2026-07-02 (Family Umbrella — Pillar 2: expense shared ledger view)
 
 ### Added

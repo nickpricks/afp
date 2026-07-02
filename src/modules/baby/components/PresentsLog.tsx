@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { NeedsLog } from '@/modules/baby/components/NeedsLog';
+
 import { ConfirmExpenseModal } from '@/modules/baby/components/ConfirmExpenseModal';
 import { useBabyCollection } from '@/modules/baby/hooks/useBabyCollection';
 import type { GiftEntry, FinanceEntry } from '@/modules/baby/types';
@@ -30,12 +32,14 @@ type Props = {
   childId?: string;
   siblingIds?: string[];
   uid?: string;
+  /** Renders the merged Needs segment (Family Umbrella Pillar 3 — Needs lives inside Presents) */
+  showNeeds?: boolean;
 };
 
-type PresentType = 'finances' | 'gifts';
+type PresentType = 'finances' | 'gifts' | 'needs';
 
 /** Presents tracking (Gifts + Finances) — sub-tabs, status lifecycle, tap-to-edit, swipe/undo-delete */
-export function PresentsLog({ childId, uid }: Props) {
+export function PresentsLog({ childId, siblingIds = [], uid, showNeeds = false }: Props) {
   const [activeSubTab, setActiveSubTab] = useState<PresentType>('finances');
   const { addToast } = useToast();
 
@@ -258,9 +262,28 @@ export function PresentsLog({ childId, uid }: Props) {
           >
             Gifts
           </button>
+          {showNeeds && (
+            <button
+              type="button"
+              onClick={() => {
+                setActiveSubTab('needs');
+                resetForm();
+              }}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${activeSubTab === 'needs' ? 'bg-accent text-fg-on-accent' : 'text-fg-muted hover:text-fg'}`}
+            >
+              Needs
+            </button>
+          )}
         </div>
       </div>
 
+      {/* Merged Needs segment — the full NeedsLog (subcollection stays needs/*, UI-only merge) */}
+      {activeSubTab === 'needs' && (
+        <NeedsLog childId={childId} siblingIds={siblingIds} uid={uid} />
+      )}
+
+      {activeSubTab !== 'needs' && (
+      <>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {(editFinance || editGift) && (
           <div className="flex items-center gap-2">
@@ -383,6 +406,9 @@ export function PresentsLog({ childId, uid }: Props) {
           pageSize={ctrl.pageSize}
           onShowAll={() => ctrl.setShowAll(true)}
         />
+      )}
+
+      </>
       )}
 
       {pendingSpent && (

@@ -24,15 +24,17 @@ function isAmountType(type: FeedType): boolean {
   return type === FeedType.Bottle || type === FeedType.SolidFood;
 }
 
-/** Feed tracking form with type selection and recent entries list */
+/** Feed tracking form with type selection and recent entries list. `readOnly` renders the archived list-only view (no form, no edit/delete). */
 export function FeedLog({
   childId,
   siblingIds = [],
   uid = '',
+  readOnly = false,
 }: {
   childId?: string;
   siblingIds?: string[];
   uid?: string;
+  readOnly?: boolean;
 }) {
   const { feeds, logFeed, updateFeed, removeFeed } = useBabyData(childId ?? null);
   const { addToast } = useToast();
@@ -152,6 +154,10 @@ export function FeedLog({
 
   return (
     <div className="flex flex-col gap-6 px-4 py-6">
+      {readOnly && (
+        <p className="text-xs text-fg-muted italic">Archived — read only</p>
+      )}
+      {!readOnly && (
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {editEntry && (
           <div className="flex items-center gap-2">
@@ -242,6 +248,7 @@ export function FeedLog({
           )}
         </div>
       </form>
+      )}
 
       {sortedFeeds.length > 0 && (
         <ListControls
@@ -260,6 +267,7 @@ export function FeedLog({
         onEdit={startEdit}
         editingId={editEntry?.id ?? null}
         onRemove={handleUndoDelete}
+        readOnly={readOnly}
       />
       {!ctrl.showAll && (
         <ListShowMoreFooter
@@ -273,19 +281,21 @@ export function FeedLog({
   );
 }
 
-/** Renders a sorted list of recent feed entries grouped by date with edit/delete actions */
+/** Renders a sorted list of recent feed entries grouped by date with edit/delete actions (suppressed when readOnly) */
 function RecentFeeds({
   entries,
   today,
   onEdit,
   editingId,
   onRemove,
+  readOnly = false,
 }: {
   entries: FeedEntry[];
   today: string;
   onEdit: (e: FeedEntry) => void;
   editingId: string | null;
   onRemove: (id: string) => void;
+  readOnly?: boolean;
 }) {
   if (entries.length === 0) return null;
 
@@ -307,7 +317,9 @@ function RecentFeeds({
               <button
                 key={entry.id}
                 type="button"
-                onClick={() => onEdit(entry)}
+                onClick={() => {
+                  if (!readOnly) onEdit(entry);
+                }}
                 className={`block w-full border-t border-line p-3 text-left transition-colors hover:bg-accent-muted ${
                   isActive ? 'bg-accent-muted border-l-2 border-l-accent' : ''
                 }`}
@@ -318,6 +330,7 @@ function RecentFeeds({
                     <span className="font-mono text-xs tabular-nums text-fg-muted">
                       {entry.time}
                     </span>
+                    {!readOnly && (
                     <span
                       role="button"
                       tabIndex={0}
@@ -336,6 +349,7 @@ function RecentFeeds({
                     >
                       ×
                     </span>
+                    )}
                   </div>
                 </div>
                 {entry.amount !== null && entry.amount > 0 && (
