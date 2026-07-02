@@ -4,6 +4,20 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.22] — 2026-07-02 (Family Umbrella — Pillar 1: family data model)
+
+### Added
+
+- **Family data model** (spec `2026-07-02-family-umbrella-design.md` § 3): new root `families/{familyId}` collection (members map uid → `FamilyRole`), `UserProfile.familyId?: string | null` link (default null — users without a family see zero behavior change).
+- `FamilyRole` string enum (`Owner`/`Adult`), `Family` interface, `familyMemberUids()` tombstone-filtering helper in `shared/types.ts`.
+- `useFamily(familyId)` (shared hook — one-time family-doc fetch, `{ family, memberUids, ready }`) and `useFamilies()` (admin realtime list).
+- `useAdminActions.createFamily(name, memberUids)` + `unlinkFamilyMember(family, uid)` — `Promise<boolean>`, own toasts (`FamilyMsg` enum). Unlink writes a `null` member tombstone (the adapter merge-saves, so map keys can't be deleted).
+- **Families tab** in the admin panel: create-family form (name + unlinked-user pills), family list with member chips + unlink `×`.
+- StorageAdapter root-collection support: empty base path (`ROOT_PATH`) now resolves top-level collections in the Firebase adapter — the Firebase import boundary stays intact (no raw Firestore at call sites).
+- **Firestore rules**: `families/{familyId}` block (member read, admin write), `isFamilyMember()` helper (two `get()`s — family-scale cost), family-member **read** grants on profile/body/body_activities/expenses/income, family-member **read + write** on `children/**` (both parents log on either owner's children), and `familyId` locked server-side on owner profile updates (like `role`/`modules`). Rules deploy verification pending, as elsewhere.
+
+---
+
 ## [0.2.21] — 2026-05-19 (Phase 2k — Cleanup pass: flaw-in-the-plan)
 
 > 0.2.19 went to `feat/the-rehearsal`; 0.2.20 went to Kids Presents v2; flaw-in-the-plan slots in as 0.2.21.

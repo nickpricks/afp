@@ -56,6 +56,8 @@ export interface UserProfile {
   email: string | null;
   username: string | null;
   viewerOf: string | null;
+  /** Family link — id of the `families/{familyId}` doc this user belongs to; null/absent = no family */
+  familyId?: string | null;
   theme: string;
   colorMode: 'light' | 'dark' | 'system';
   effectIntensity: number;
@@ -65,6 +67,34 @@ export interface UserProfile {
   updatedAt: string;
   requestedModules?: string[];
 }
+
+// ─── Family Types ────────────────────────────────────────────────────────────
+
+/** Member role within a family — Owner created it, Adults are linked members */
+export enum FamilyRole {
+  Owner = 'owner',
+  Adult = 'adult',
+}
+
+/**
+ * Root family document at `families/{familyId}`. `members` maps uid → role;
+ * a `null` role is an unlink tombstone (the StorageAdapter always merge-saves,
+ * so map keys cannot be deleted — filter nulls via {@link familyMemberUids}).
+ */
+export interface Family {
+  id: string;
+  name: string;
+  createdBy: string;
+  createdAt: string;
+  members: Record<string, FamilyRole | null>;
+}
+
+/** Extracts active member uids from a family, skipping unlink tombstones */
+export const familyMemberUids = (family: Family): string[] => {
+  return Object.entries(family.members)
+    .filter(([, role]) => role != null)
+    .map(([uid]) => uid);
+};
 
 // ─── Toast Types ────────────────────────────────────────────────────────────
 

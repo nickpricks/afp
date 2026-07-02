@@ -154,6 +154,16 @@ export enum AdminMsg {
   RoleUpdateFailed = 'Failed to update role',
 }
 
+/** Family management messages (admin panel Families tab) */
+export enum FamilyMsg {
+  Created = 'Family created',
+  CreateFailed = 'Failed to create family',
+  NameRequired = 'Family name is required',
+  MembersRequired = 'Pick at least one member',
+  MemberUnlinked = 'Member unlinked from family',
+  UnlinkFailed = 'Failed to unlink member',
+}
+
 /** Notification and module request messages */
 export enum NotificationMsg {
   ModuleRequested = 'Module requested',

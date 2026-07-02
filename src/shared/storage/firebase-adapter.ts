@@ -17,14 +17,19 @@ import { vlog, verr } from '@/shared/utils/verbose';
 
 /** Creates a Firestore-backed StorageAdapter scoped to the given base path */
 export function createFirebaseAdapter(basePath: string): StorageAdapter {
+  /** Resolves a collection path relative to the base path (empty base = top-level collection) */
+  function collectionPath(name: string): string {
+    return basePath ? `${basePath}/${name}` : name;
+  }
+
   /** Resolves a collection reference relative to the base path */
   function resolveCollection(name: string) {
-    return collection(db, `${basePath}/${name}`);
+    return collection(db, collectionPath(name));
   }
 
   /** Resolves a document reference within a collection */
   function resolveDoc(name: string, id: string) {
-    return doc(db, `${basePath}/${name}`, id);
+    return doc(db, collectionPath(name), id);
   }
 
   return {
