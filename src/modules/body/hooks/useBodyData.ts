@@ -6,6 +6,7 @@ import { createAdapter } from '@/shared/storage/create-adapter';
 import type { StorageAdapter } from '@/shared/storage/adapter';
 import type { BodyActivity, BodyRecord } from '@/modules/body/types';
 import { computeBodyScore } from '@/modules/body/scoring';
+import { roundMeters } from '@/modules/body/step-math';
 import { todayStr } from '@/shared/utils/date';
 import { ActivityType, SyncStatus, ToastType, TrackingSource, isOk } from '@/shared/types';
 import { DbSubcollection, userPath } from '@/constants/db';
@@ -29,7 +30,8 @@ function recomputeSummary(record: BodyRecord, activities: BodyActivity[]): BodyR
       runMeters += a.distance ?? 0;
     }
   }
-  const updated = { ...record, walkMeters, runMeters };
+  // Two-decimal invariant — float noise never lands in the daily summary
+  const updated = { ...record, walkMeters: roundMeters(walkMeters), runMeters: roundMeters(runMeters) };
   updated.total = computeBodyScore(updated);
   return updated;
 }
@@ -146,7 +148,8 @@ export function useBodyData(targetUid?: string) {
       const entry: BodyActivity = {
         id: crypto.randomUUID(),
         type,
-        distance: distanceMeters,
+        // Two-decimal invariant on every save path (manual entries are already clean; sensor floats aren't)
+        distance: roundMeters(distanceMeters),
         duration: null,
         date: date ?? todayStr(),
         timestamp: new Date().toISOString(),

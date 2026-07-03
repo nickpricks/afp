@@ -21,7 +21,17 @@ function formatDuration(seconds: number): string {
  * Shows live metrics and provides a stop button that persists data.
  */
 export function ActiveSessionOverlay() {
-  const { sessionState, metrics, start, stop, cancel, refreshSensors } = useLiveActivityContext();
+  const {
+    sessionState,
+    metrics,
+    stairsMode,
+    start,
+    stop,
+    cancel,
+    refreshSensors,
+    addManualFloor,
+    setStairsMode,
+  } = useLiveActivityContext();
   const { logActivity, saveRecord, todayRecord } = useBodyData();
   const { config } = useBodyConfig();
   const { addToast } = useToast();
@@ -118,13 +128,46 @@ export function ActiveSessionOverlay() {
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-xs font-bold text-fg-muted uppercase">Floors Up</span>
-          <span className="text-3xl font-bold text-fg text-emerald-500">{metrics.floorsUp}</span>
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-3xl font-bold text-fg text-emerald-500">{metrics.floorsUp}</span>
+            <button
+              type="button"
+              onClick={() => addManualFloor('up')}
+              aria-label="Add floor up"
+              className="h-9 w-9 rounded-full border border-line bg-surface-card text-base font-bold text-emerald-500 active:scale-95 transition-transform"
+            >
+              +
+            </button>
+          </div>
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-xs font-bold text-fg-muted uppercase">Floors Down</span>
-          <span className="text-3xl font-bold text-fg text-amber-500">{metrics.floorsDown}</span>
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-3xl font-bold text-fg text-amber-500">{metrics.floorsDown}</span>
+            <button
+              type="button"
+              onClick={() => addManualFloor('down')}
+              aria-label="Add floor down"
+              className="h-9 w-9 rounded-full border border-line bg-surface-card text-base font-bold text-amber-500 active:scale-95 transition-transform"
+            >
+              +
+            </button>
+          </div>
         </div>
       </div>
+      {/* Stairs mode — steps→floors heuristic for devices without barometer/usable GPS altitude */}
+      <button
+        type="button"
+        onClick={() => setStairsMode(!stairsMode)}
+        aria-pressed={stairsMode}
+        className={`mb-4 px-4 py-2 rounded-full border text-xs font-semibold active:scale-95 transition-all ${
+          stairsMode
+            ? 'border-accent bg-accent/10 text-accent'
+            : 'border-line bg-surface-card text-fg-muted hover:text-fg'
+        }`}
+      >
+        🪜 Stairs mode {stairsMode ? 'ON — steps count as floors up' : 'off'}
+      </button>
       <div className="grid grid-cols-2 gap-4 w-full max-w-sm mb-4 p-3 rounded-xl bg-surface-card border border-line text-left">
         <div className="flex flex-col">
           <span className="text-[10px] font-bold text-fg-muted uppercase tracking-wider">Lat</span>

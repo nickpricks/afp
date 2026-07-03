@@ -15,7 +15,7 @@ UI components for the Body module (floors, walking, running, cycling tracking).
 - `ActivityLog.tsx` -- Shared activity list used by Walking/Running/Cycling tabs. Inline delete (x button), undo toast, SwipeToDelete wrapper. Phase 2h refactor: entries grouped by date with `<DateGroupHeader>`, each row prefixed by `<RowTime>` (HH:mm) and laid out on a `[56px_1fr_auto_auto]` grid for `[time, label, value, ×]`. Pagination via `useListControls`. Sensor-tracked rows (`source === TrackingSource.Sensor`) show a small `auto` badge
 - `AddActivity.tsx` -- Shared form for adding walk/run/cycle activities; supports optional backfill date param
 - `AddMissingDayButton.tsx` -- Centered "+ Add missing day" pill, rendered above AND below the list in all four tabs
-- `ActiveSessionOverlay.tsx` -- Full-screen live-session overlay. On stop: saves distance (GPS, or steps × `strideCm` fallback) as a walk activity tagged `TrackingSource.Sensor`, and floors into the daily aggregate
+- `ActiveSessionOverlay.tsx` -- Full-screen live-session overlay. During tracking: manual +↑/+↓ floor tap buttons and a 🪜 stairs-mode toggle (steps→floors for barometer-less devices). On stop: saves distance (GPS, or steps × `strideCm` fallback — always two decimals) as a walk activity tagged `TrackingSource.Sensor`, and floors into the daily aggregate
 
 ## Conventions
 

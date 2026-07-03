@@ -1,7 +1,13 @@
 import { useState, useRef, useCallback } from 'react';
 import { vlog, vwarn, verr } from '@/shared/utils/verbose';
 import { ActivityType } from '@/shared/types';
-import { initialStepState, processMotionSample } from '@/modules/body/step-math';
+import {
+  computeStepFloors,
+  FLOOR_ESTIMATION,
+  initialStepState,
+  processMotionSample,
+  roundMeters,
+} from '@/modules/body/step-math';
 import type { StepDetectorState } from '@/modules/body/step-math';
 
 /** Configuration constants for live activity tracking sensors */
@@ -59,6 +65,11 @@ export function useLiveActivity() {
   const lastPressureRef = useRef<number | null>(null);
   const motionHandlerRef = useRef<((e: DeviceMotionEvent) => void) | null>(null);
   const stepStateRef = useRef<StepDetectorState>(initialStepState());
+  // Stairs mode — steps-per-floor floor estimation for barometer-less devices
+  const [stairsMode, setStairsModeState] = useState(false);
+  const stairsModeRef = useRef(false);
+  const stairStepsRef = useRef(0);
+  const stepFloorsCountedRef = useRef(0);
 
   // Track cumulative elevation changes from GPS
   const elevationGainRef = useRef<number>(0);
@@ -127,7 +138,11 @@ export function useLiveActivity() {
               pos.coords.accuracy < LIVE_ACTIVITY_CONFIG.MIN_GPS_ACCURACY_M &&
               dist > LIVE_ACTIVITY_CONFIG.MIN_DISTANCE_M
             ) {
-              setMetrics((prev) => ({ ...prev, distanceMeters: prev.distanceMeters + dist }));
+              // Rounded on every accumulation — the live value never drifts into float noise
+              setMetrics((prev) => ({
+                ...prev,
+                distanceMeters: roundMeters(prev.distanceMeters + dist),
+              }));
             }
 
             // Elevation tracking (Fallback if no PressureSensor)
@@ -196,7 +211,24 @@ export function useLiveActivity() {
       });
       stepStateRef.current = result.state;
       if (result.stepped) {
-        setMetrics((prev) => ({ ...prev, steps: prev.steps + 1 }));
+        // Stairs mode: steps also accumulate toward floors-up (steps-per-floor
+        // heuristic) — the fallback signal when no barometer/usable GPS altitude.
+        // Direction is up-only by design; corrections come from manual ↓/↑ taps.
+        let floorDelta = 0;
+        if (stairsModeRef.current) {
+          stairStepsRef.current += 1;
+          const totalFloors = computeStepFloors(
+            stairStepsRef.current,
+            FLOOR_ESTIMATION.STEPS_PER_FLOOR,
+          );
+          floorDelta = totalFloors - stepFloorsCountedRef.current;
+          stepFloorsCountedRef.current = totalFloors;
+        }
+        setMetrics((prev) => ({
+          ...prev,
+          steps: prev.steps + 1,
+          floorsUp: prev.floorsUp + floorDelta,
+        }));
       }
     };
     motionHandlerRef.current = handleMotion;
@@ -266,8 +298,12 @@ export function useLiveActivity() {
     lastPosRef.current = null;
     lastPressureRef.current = null;
     motionHandlerRef.current = null;
+    stairsModeRef.current = false;
+    setStairsModeState(false);
+    stairStepsRef.current = 0;
+    stepFloorsCountedRef.current = 0;
 
-    const finalMetrics = { ...metrics };
+    const finalMetrics = { ...metrics, distanceMeters: roundMeters(metrics.distanceMeters) };
     setMetrics({
       distanceMeters: 0,
       steps: 0,
@@ -338,5 +374,33 @@ export function useLiveActivity() {
     }
   }, []);
 
-  return { sessionState, metrics, prepare, start, stop, cancel, refreshSensors };
+  /** Manual "tap as you go" floor correction — composes with sensor/stairs-mode counts */
+  const addManualFloor = useCallback((direction: 'up' | 'down') => {
+    setMetrics((prev) => ({
+      ...prev,
+      floorsUp: direction === 'up' ? prev.floorsUp + 1 : prev.floorsUp,
+      floorsDown: direction === 'down' ? prev.floorsDown + 1 : prev.floorsDown,
+    }));
+  }, []);
+
+  /** Toggles stairs mode (steps→floors heuristic); resets its counters on each switch */
+  const setStairsMode = useCallback((on: boolean) => {
+    stairsModeRef.current = on;
+    stairStepsRef.current = 0;
+    stepFloorsCountedRef.current = 0;
+    setStairsModeState(on);
+  }, []);
+
+  return {
+    sessionState,
+    metrics,
+    stairsMode,
+    prepare,
+    start,
+    stop,
+    cancel,
+    refreshSensors,
+    addManualFloor,
+    setStairsMode,
+  };
 }

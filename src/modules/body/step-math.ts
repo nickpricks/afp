@@ -76,10 +76,33 @@ export const computeStrideDistance = (steps: number, strideCm: number): Result<n
     return err('Stride length must be between 20 and 200 cm');
   }
   const CM_PER_M = 100;
-  return ok((steps * strideCm) / CM_PER_M);
+  return ok(roundMeters((steps * strideCm) / CM_PER_M));
 };
 
 /** Converts meters to km for display parity with the rest of the body module */
 export const metersToKm = (meters: number): number => {
   return meters / CONFIG.METERS_PER_KM;
+};
+
+/** Rounds a distance in meters to two decimals — applied live (accumulation) AND on save so floats never leak */
+export const roundMeters = (meters: number): number => {
+  return Math.round(meters * 100) / 100;
+};
+
+/** Steps-per-floor heuristic for barometer-less devices (typical residential flight ≈ 12 steps) */
+export const FLOOR_ESTIMATION = {
+  STEPS_PER_FLOOR: 12,
+} as const;
+
+/**
+ * Estimates whole floors climbed from a stair-mode step count (floor division —
+ * partial flights don't count). Fallback signal when neither PressureSensor nor
+ * usable GPS altitude exists; user corrections come from the manual ↑/↓ taps.
+ */
+export const computeStepFloors = (
+  stairSteps: number,
+  stepsPerFloor: number = FLOOR_ESTIMATION.STEPS_PER_FLOOR,
+): number => {
+  if (!Number.isFinite(stairSteps) || stairSteps <= 0 || stepsPerFloor <= 0) return 0;
+  return Math.floor(stairSteps / stepsPerFloor);
 };
