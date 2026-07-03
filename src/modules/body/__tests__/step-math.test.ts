@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  computeStepFloors,
   computeSteps,
   computeStrideDistance,
+  FLOOR_ESTIMATION,
   initialStepState,
   metersToKm,
   processMotionSample,
+  roundMeters,
   STEP_DETECTION,
 } from '@/modules/body/step-math';
 import type { MotionSample } from '@/modules/body/step-math';
@@ -85,5 +88,37 @@ describe('computeStrideDistance', () => {
 describe('metersToKm', () => {
   it('converts via CONFIG.METERS_PER_KM', () => {
     expect(metersToKm(2500)).toBe(2.5);
+  });
+});
+
+/** Tests the two-decimal distance invariant helper */
+describe('roundMeters', () => {
+  it('rounds to two decimals', () => {
+    expect(roundMeters(12.34567)).toBe(12.35);
+    expect(roundMeters(0.1 + 0.2)).toBe(0.3);
+    expect(roundMeters(100)).toBe(100);
+  });
+
+  it('keeps stride distances two-decimal via computeStrideDistance', () => {
+    const result = computeStrideDistance(3, 70.5);
+    // 3 × 70.5cm = 211.5cm = 2.115m → 2.12 (not 2.1150000000000002)
+    expect(isOk(result) && result.data).toBe(2.12);
+  });
+});
+
+/** Tests the steps→floors fallback heuristic (barometer-less devices) */
+describe('computeStepFloors', () => {
+  it('floor-divides stair steps by steps-per-floor', () => {
+    expect(computeStepFloors(0)).toBe(0);
+    expect(computeStepFloors(FLOOR_ESTIMATION.STEPS_PER_FLOOR - 1)).toBe(0);
+    expect(computeStepFloors(FLOOR_ESTIMATION.STEPS_PER_FLOOR)).toBe(1);
+    expect(computeStepFloors(FLOOR_ESTIMATION.STEPS_PER_FLOOR * 3 + 5)).toBe(3);
+  });
+
+  it('accepts a custom steps-per-floor and rejects nonsense input', () => {
+    expect(computeStepFloors(20, 10)).toBe(2);
+    expect(computeStepFloors(-5)).toBe(0);
+    expect(computeStepFloors(Number.NaN)).toBe(0);
+    expect(computeStepFloors(10, 0)).toBe(0);
   });
 });

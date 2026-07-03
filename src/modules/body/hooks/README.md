@@ -6,7 +6,7 @@ Data hooks for the Body module. Real-time listeners for body config and activity
 
 - `useBodyConfig.ts` -- Listens to `body_config/main`, provides config read/write. Returns config state that gates `BodyConfigForm` vs `BodyPage`
 - `useBodyData.ts` -- Listens to daily body documents and `body_activities` collection. Provides `logActivity` (optional date param for backfill + optional `TrackingSource` — defaults Manual), `updateActivity`, `deleteActivity`, `deleteRecord`, and floor tap handler; stale closure fixed via `recordsRef`
-- `useLiveActivity.ts` -- Low-level sensor-session hook (GPS distance via haversine, DeviceMotion steps via `step-math`'s rising-edge + refractory detector, PressureSensor floors with GPS-altitude fallback, WakeLock). Raw samples processed in-memory only — never persisted. Wrapped by `LiveActivityContext`
+- `useLiveActivity.ts` -- Low-level sensor-session hook (GPS distance via haversine, DeviceMotion steps via `step-math`'s rising-edge + refractory detector, PressureSensor floors with GPS-altitude fallback + stairs-mode steps-per-floor heuristic + manual tap-as-you-go, WakeLock). Distance rounded to two decimals on every accumulation. Raw samples processed in-memory only — never persisted. Wrapped by `LiveActivityContext`
 
 ## Conventions
 

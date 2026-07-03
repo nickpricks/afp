@@ -4,6 +4,16 @@ All notable changes to AFP ("It Started On April Fools Day") are documented here
 
 ---
 
+## [0.2.26] — 2026-07-02 (Auto-track mods — two-decimal distance + multi-signal floors)
+
+### Changed
+
+- **Two-decimal distance invariant** — `roundMeters()` applied on every GPS accumulation tick (live value never drifts into float noise), on session stop, in `computeStrideDistance`, in `logActivity` (every save path), and on `walkMeters`/`runMeters` daily-summary sums.
+- **Floors without a barometer** — signal priority is now: PressureSensor → GPS altitude → **🪜 Stairs mode** (steps-per-floor heuristic, `computeStepFloors` with `FLOOR_ESTIMATION.STEPS_PER_FLOOR` = 12; up-only by design) → **manual tap-as-you-go** `+` buttons next to Floors Up / Floors Down in the session overlay. Manual taps and stairs mode compose with sensor counts; stairs-mode counters reset on toggle and session stop.
+- Sensor Probe gains a Gyroscope availability pill (future signal-fusion candidate) and documents the floor-signal priority chain.
+
+---
+
 ## [0.2.25] — 2026-07-02 (Family Umbrella — Pillar 4: body auto-tracking hardening)
 
 > Live sensor sessions already existed (`useLiveActivity` + `BodyTracker`/`ActiveSessionOverlay` — GPS distance, DeviceMotion steps, PressureSensor/GPS-altitude floors). Pillar 4 executes as a hardening pass on that infra rather than a rebuild.

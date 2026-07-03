@@ -6,6 +6,7 @@ type ProbeState = {
   deviceMotion: boolean;
   motionPermissionApi: boolean;
   pressureSensor: boolean;
+  gyroscope: boolean;
   wakeLock: boolean;
   lastMagnitude: number | null;
   sampleCount: number;
@@ -21,6 +22,7 @@ function detectAvailability(): ProbeState {
       typeof (DeviceMotionEvent as unknown as { requestPermission?: unknown }).requestPermission ===
         'function',
     pressureSensor: typeof window !== 'undefined' && 'PressureSensor' in window,
+    gyroscope: typeof window !== 'undefined' && 'Gyroscope' in window,
     wakeLock: typeof navigator !== 'undefined' && 'wakeLock' in navigator,
     lastMagnitude: null,
     sampleCount: 0,
@@ -96,6 +98,7 @@ export function SensorProbe() {
         <Pill label="DeviceMotion" on={probe.deviceMotion} />
         <Pill label="Motion permission API (iOS)" on={probe.motionPermissionApi} />
         <Pill label="PressureSensor (floors)" on={probe.pressureSensor} />
+        <Pill label="Gyroscope" on={probe.gyroscope} />
         <Pill label="WakeLock" on={probe.wakeLock} />
       </div>
       <div className="flex items-center gap-3">
@@ -125,8 +128,9 @@ export function SensorProbe() {
         </span>
       </div>
       <p className="text-[10px] text-fg-muted">
-        Floors need the barometer (PressureSensor) — budget devices often lack it; GPS-altitude
-        fallback applies. Raw samples are never persisted.
+        Floor signals in priority order: barometer (PressureSensor) → GPS altitude → stairs-mode
+        steps-per-floor heuristic → manual ↑/↓ taps in the session overlay. Budget devices often
+        have only 1–2 sensors. Raw samples are never persisted.
       </p>
     </div>
   );
